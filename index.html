@@ -249,7 +249,7 @@ const store={
 const SB_URL='https://vvgkjgvzjeklaadusbne.supabase.co';
 const SB_KEY='sb_publishable_DMMPv5L2kGhrHTxeQ72iKw_dIh13iT1';
 // Các key được đồng bộ (KHÔNG gồm ju.me/ju.device/ju.sync — đó là riêng từng máy)
-const SYNC_KEYS=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood','ju.qa','ju.timeline','ju.coupons','ju.chores','ju.lovejar','ju.quiz','ju.city','ju.goals'];
+const SYNC_KEYS=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood','ju.qa','ju.timeline','ju.coupons','ju.chores','ju.lovejar','ju.quiz','ju.city','ju.goals','ju.checkin'];
 let _sb=null;
 function sbClient(){
   if(_sb) return _sb;
@@ -533,6 +533,7 @@ const QUESTIONS=[
  'Hôm nay bạn muốn gửi đối phương một lời nhắn gì?'
 ];
 function dayNumber(){ const d=new Date(); return Math.floor(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())/86400000); }
+function weekKey(){ const d=new Date(); d.setHours(0,0,0,0); const day=(d.getDay()+6)%7; d.setDate(d.getDate()-day); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
 function questionOfToday(){ return QUESTIONS[((dayNumber()%QUESTIONS.length)+QUESTIONS.length)%QUESTIONS.length]; }
 const QUIZ_Q=['Món ăn yêu thích của tôi là gì?','Nơi tôi muốn đi du lịch nhất?','Tật xấu đáng yêu của tôi?','Điều khiến tôi vui nhất?','Bài hát tôi hay nghe gần đây?','Tôi sợ điều gì nhất?','Món quà tôi mơ ước?','Thói quen buổi sáng của tôi?','Điều tôi muốn cải thiện ở bản thân?','Cách tôi thích được an ủi khi buồn?','Màu sắc tôi thích nhất?','Nếu trúng số, việc đầu tiên tôi làm?','Kiểu hẹn hò tôi thích nhất?','Điều nhỏ khiến tôi khó chịu?','Ước mơ thời bé của tôi?'];
 function quizOfToday(){ return QUIZ_Q[((dayNumber()%QUIZ_Q.length)+QUIZ_Q.length)%QUIZ_Q.length]; }
@@ -778,6 +779,30 @@ function CoupleQuiz({people,me}){
   );
 }
 
+/* ============ Check-in tuần ============ */
+function WeeklyCheckin({people,me}){
+  const [data,setData]=useLocal('ju.checkin',{});
+  const wk=weekKey();
+  const week=data[wk]||{};
+  const mine=week[me]||{}, other=me==='a'?'b':'a', theirs=week[other]||{};
+  const [rating,setRating]=useState(0); const [note,setNote]=useState('');
+  useEffect(()=>{ const w=(data[wk]||{})[me]||{}; setRating(w.rating||0); setNote(w.note||''); },[wk,me]);
+  const save=()=>{ if(!rating)return; setData({...data,[wk]:{...(data[wk]||{}),[me]:{rating,note:note.trim()}}}); };
+  return (
+    <div className="card">
+      <div className="row"><b>📝 Check-in tuần này</b><span className="grow"></span><span className="muted" style={{fontSize:12}}>tuần {fmtDateVN(wk)}</span></div>
+      <div className="muted" style={{fontSize:12.5,margin:'6px 0'}}>Tuần qua của hai đứa thế nào?</div>
+      <div className="row" style={{gap:2}}>{[1,2,3,4,5].map(i=><button key={i} onClick={()=>setRating(i)} style={{fontSize:24,lineHeight:1}}>{i<=rating?'❤️':'🤍'}</button>)}</div>
+      <input className="inp" style={{marginTop:8}} placeholder="Điều gì đáng nhớ tuần này? (tuỳ chọn)" value={note} onChange={e=>setNote(e.target.value)} onKeyDown={e=>{ if(e.key==='Enter') save(); }}/>
+      <button className="btn" style={{marginTop:8}} onClick={save}>{mine.rating?'Cập nhật check-in':'Gửi check-in'}</button>
+      {theirs.rating
+        ? <div style={{marginTop:10,background:'var(--chip)',color:'var(--chip-tx)',borderRadius:12,padding:'9px 11px',fontSize:13}}>
+            <b>{people[other].name}:</b> {'❤️'.repeat(theirs.rating)}{theirs.note?' · '+theirs.note:''}</div>
+        : <div className="muted" style={{fontSize:12,marginTop:8}}>{people[other].name} chưa check-in tuần này.</div>}
+    </div>
+  );
+}
+
 /* ============ Lọ yêu thương ============ */
 function LoveJar({people,me}){
   const [jar,setJar]=useLocal('ju.lovejar',[]);
@@ -1013,6 +1038,9 @@ function Home({setup,people,me,go}){
 
       {/* Lọ yêu thương */}
       <LoveJar people={people} me={me}/>
+
+      {/* Check-in tuần */}
+      <WeeklyCheckin people={people} me={me}/>
 
       {/* Sắp tới */}
       <div className="sec-title">⏳ Sắp tới</div>
