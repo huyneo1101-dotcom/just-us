@@ -234,7 +234,7 @@ const store={
 const SB_URL='https://vvgkjgvzjeklaadusbne.supabase.co';
 const SB_KEY='sb_publishable_DMMPv5L2kGhrHTxeQ72iKw_dIh13iT1';
 // Các key được đồng bộ (KHÔNG gồm ju.me/ju.device/ju.sync — đó là riêng từng máy)
-const SYNC_KEYS=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood','ju.qa','ju.timeline','ju.coupons'];
+const SYNC_KEYS=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood','ju.qa','ju.timeline','ju.coupons','ju.chores'];
 let _sb=null;
 function sbClient(){
   if(_sb) return _sb;
@@ -416,6 +416,15 @@ function nextMilestone(days){
   const m=sorted.find(x=>x>days);
   if(!m) return null;
   return {mark:m, inDays:m-days, isYear:m%365===0, years:Math.round(m/365)};
+}
+// Chuỗi ngày liên tiếp có trả lời câu hỏi (giữ streak nếu hôm nay chưa trả lời nhưng hôm qua có)
+function answerStreak(qa){
+  if(!qa) return 0;
+  const has=(date)=>{ const k=date.getFullYear()+'-'+pad(date.getMonth()+1)+'-'+pad(date.getDate()); const e=qa[k]; return !!(e && (e.a||e.b)); };
+  let d=new Date(); d.setHours(0,0,0,0);
+  if(!has(d)) d.setDate(d.getDate()-1);
+  let n=0; while(has(d)){ n++; d.setDate(d.getDate()-1); }
+  return n;
 }
 
 const BUDGETS=[
@@ -647,9 +656,10 @@ function DailyQuestion({people,me}){
   const other=me==='a'?'b':'a';
   const myAnswer=today[me], otherAnswer=today[other];
   const save=()=>{ if(!draft.trim())return; setQa({...qa,[key]:{...today,q,[me]:draft.trim()}}); setEditing(false); };
+  const streak=answerStreak(qa);
   return (
     <div className="card">
-      <div className="row"><b>❓ Câu hỏi hôm nay</b><span className="grow"></span><span className="muted" style={{fontSize:12}}>{fmtDateVN(key)}</span></div>
+      <div className="row"><b>❓ Câu hỏi hôm nay</b>{streak>1 && <span className="pill" style={{marginLeft:8}}>🔥 {streak} ngày</span>}<span className="grow"></span><span className="muted" style={{fontSize:12}}>{fmtDateVN(key)}</span></div>
       <div style={{fontWeight:700,margin:'8px 0 10px',fontSize:15,lineHeight:1.35}}>{q}</div>
       {(!myAnswer || editing) ? (
         <div className="row" style={{gap:8}}>
@@ -669,6 +679,29 @@ function DailyQuestion({people,me}){
             <span className="muted" style={{fontSize:11}}>{people[other].name}</span>
             <div style={{marginTop:2}}>{otherAnswer}</div></div>
         : <div className="muted" style={{fontSize:12,marginTop:8}}>Đã trả lời ✓ — chờ {people[other].name} trả lời nhé 💞</div>)}
+    </div>
+  );
+}
+
+/* ============ "Ăn gì / Làm gì" random ============ */
+function FunPickers(){
+  const [ideas]=useLocal('ju.ideas',[]);
+  const [food]=useLocal('ju.food',[]);
+  const [res,setRes]=useState(null);
+  const allIdeas=[].concat.apply([],Object.keys(IDEA_SUGGEST).map(k=>IDEA_SUGGEST[k]));
+  const pickFood=()=>{ const pool=food.length?food.map(f=>f.title):FOOD_SUGGEST; setRes({label:'Hôm nay ăn',icon:'🍽️',value:pool[Math.floor(Math.random()*pool.length)]}); };
+  const pickDo=()=>{ const pool=ideas.length?ideas.map(i=>i.title):allIdeas; setRes({label:'Hôm nay làm',icon:'💡',value:pool[Math.floor(Math.random()*pool.length)]}); };
+  return (
+    <div className="card">
+      <b>🎲 Phân vân quá?</b>
+      <div className="row" style={{gap:8,marginTop:8}}>
+        <button className="btn soft grow" onClick={pickFood}>🍽️ Ăn gì?</button>
+        <button className="btn soft grow" onClick={pickDo}>💡 Làm gì?</button>
+      </div>
+      {res && <div className="center" style={{marginTop:10}}>
+        <div className="muted" style={{fontSize:12}}>{res.label}:</div>
+        <div style={{fontSize:18,fontWeight:800,marginTop:2}}>{res.icon} {res.value}</div>
+      </div>}
     </div>
   );
 }
@@ -756,6 +789,9 @@ function Home({setup,people,me,go}){
 
       {/* Câu hỏi mỗi ngày */}
       <DailyQuestion people={people} me={me}/>
+
+      {/* Phân vân: ăn gì / làm gì */}
+      <FunPickers/>
 
       {/* Sắp tới */}
       <div className="sec-title">⏳ Sắp tới</div>
@@ -1107,6 +1143,44 @@ function TimelineForm({init,onClose,onSave}){
   );
 }
 
+/* ============ Chia việc nhà ============ */
+function Chores({people,me}){
+  const [items,setItems]=useLocal('ju.chores',[]);
+  const [t,setT]=useState('');
+  const [who,setWho]=useState('both');
+  const add=()=>{ if(!t.trim())return; setItems([{id:uid(),title:t.trim(),who,done:false,by:me,createdAt:Date.now()},...items]); setT(''); };
+  const toggle=(id)=>setItems(items.map(x=>x.id===id?{...x,done:!x.done}:x));
+  const del=(id)=>setItems(items.filter(x=>x.id!==id));
+  const resetAll=()=>setItems(items.map(x=>({...x,done:false})));
+  const whoLabel=(w)=> w==='a'?people.a.name : w==='b'?people.b.name : 'Cả hai';
+  const whoAv=(w)=> w==='a'?people.a.avatar : w==='b'?people.b.avatar : '👫';
+  return (
+    <div>
+      <div className="muted center" style={{fontSize:12.5,margin:'10px 14px'}}>🧹 Chia việc nhà cho công bằng — ai làm việc gì.</div>
+      <div className="row" style={{margin:'0 14px',gap:6}}>
+        <input className="inp grow" placeholder="Thêm việc nhà…" value={t} onChange={e=>setT(e.target.value)} onKeyDown={e=>{ if(e.key==='Enter') add(); }}/>
+        <select className="inp" style={{width:92,flex:'0 0 auto'}} value={who} onChange={e=>setWho(e.target.value)}>
+          <option value="both">Cả hai</option><option value="a">{people.a.name}</option><option value="b">{people.b.name}</option>
+        </select>
+        <button className="btn sm" onClick={add}>＋</button>
+      </div>
+      {items.length===0 && <div className="empty"><span className="big">🧹</span>Chưa có việc nào. Thêm việc rồi chia cho công bằng nhé!</div>}
+      {items.length>0 && <div className="row" style={{margin:'12px 14px 0'}}><span className="grow muted" style={{fontSize:12}}>{items.filter(x=>!x.done).length} việc chưa xong</span>
+        <button className="pill" onClick={resetAll}>↻ Đặt lại tất cả</button></div>}
+      <div className="card" style={{padding:'4px 13px'}}>
+        {items.map(x=>(
+          <div key={x.id} className="row" style={{padding:'9px 0',borderBottom:'1px solid var(--line)'}}>
+            <button onClick={()=>toggle(x.id)} style={{fontSize:20}}>{x.done?'✅':'⬜'}</button>
+            <span className="grow" style={{textDecoration:x.done?'line-through':'none',opacity:x.done?.55:1}}>{x.title}</span>
+            <span className="pill">{whoAv(x.who)} {whoLabel(x.who)}</span>
+            <button className="muted" onClick={()=>del(x.id)} style={{marginLeft:6}}>✕</button>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function UsTab({people,me,flash}){
   const [seg,setSeg]=useState('events');
   return (
@@ -1117,6 +1191,7 @@ function UsTab({people,me,flash}){
         <button className={seg==='timeline'?'on':''} onClick={()=>setSeg('timeline')}>🕰️ Kỷ niệm</button>
         <button className={seg==='fund'?'on':''} onClick={()=>setSeg('fund')}>💰 Quỹ chung</button>
         <button className={seg==='shop'?'on':''} onClick={()=>setSeg('shop')}>🛒 Đi chợ</button>
+        <button className={seg==='chores'?'on':''} onClick={()=>setSeg('chores')}>🧹 Việc nhà</button>
         <button className={seg==='notes'?'on':''} onClick={()=>setSeg('notes')}>💌 Nhắn nhau</button>
       </div>
       {seg==='events' && <Events people={people} me={me}/>}
@@ -1124,6 +1199,7 @@ function UsTab({people,me,flash}){
       {seg==='timeline' && <Timeline people={people} me={me}/>}
       {seg==='fund' && <Fund people={people} me={me}/>}
       {seg==='shop' && <Shopping people={people} me={me}/>}
+      {seg==='chores' && <Chores people={people} me={me}/>}
       {seg==='notes' && <Notes people={people} me={me}/>}
     </div>
   );
