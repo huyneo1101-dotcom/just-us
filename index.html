@@ -1159,11 +1159,15 @@ function DateTab({people,me,flash}){
 
 function DateIdeas({people,me}){
   const [items,setItems]=useLocal('ju.ideas',[]);
+  const [events,setEvents]=useLocal('ju.events',[]);
   const [bFilter,setBFilter]=useState('');
   const [open,setOpen]=useState(false);
   const [edit,setEdit]=useState(null);
   const [pick,setPick]=useState(null);
   const [sugOpen,setSugOpen]=useState(false);
+  const [planning,setPlanning]=useState(null);
+  const [planDate,setPlanDate]=useState('');
+  const schedule=()=>{ if(!planDate)return; setEvents([{id:uid(),title:'Hẹn hò: '+planning.title,date:planDate,note:planning.note||'',remind:1,by:me,todos:[]},...events]); celebrate(['📅','💞','✨']); setPlanning(null); setPlanDate(''); };
 
   const save=(it)=>{
     if(it.id) setItems(items.map(x=>x.id===it.id?it:x));
@@ -1209,6 +1213,7 @@ function DateIdeas({people,me}){
             <span className="av-sm">{people[it.by]?.avatar||'❤️'}</span>
             {it.budget && <span className="pill">{budgetLabel(it.budget)}</span>}
             <span className="grow"></span>
+            <button className="pill" onClick={()=>{setPlanning(it);setPlanDate('');}}>📅 Lên lịch</button>
             <button className="pill" onClick={()=>toggle(it.id,'done')}>{it.done?'↩︎ Bỏ':'✓ Đã đi'}</button>
             <button className="iconbtn" onClick={()=>{setEdit(it);setOpen(true);}}>✏️</button>
             <button className="iconbtn" onClick={()=>del(it.id)}>🗑️</button>
@@ -1233,6 +1238,13 @@ function DateIdeas({people,me}){
           );
         })}
         <div className="muted center" style={{fontSize:12}}>Chạm để thêm vào danh sách của hai bạn.</div>
+      </Sheet>}
+
+      {planning && <Sheet title={'📅 Lên lịch: '+planning.title} onClose={()=>setPlanning(null)}>
+        <div className="muted" style={{fontSize:12.5,marginBottom:10}}>Chọn ngày hẹn — sẽ tạo một sự kiện và nhắc trước 1 ngày.</div>
+        <div className="field"><label>Ngày hẹn hò</label>
+          <input className="inp" type="date" value={planDate} onChange={e=>setPlanDate(e.target.value)} autoFocus/></div>
+        <button className="btn" onClick={schedule}>💞 Tạo lịch hẹn</button>
       </Sheet>}
     </div>
   );
