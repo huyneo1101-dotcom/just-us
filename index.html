@@ -6,6 +6,15 @@
 <meta name="theme-color" content="#e85d8a" />
 <title>Just Us — Của riêng hai đứa</title>
 
+<!-- PWA: cài lên màn hình điện thoại + chạy offline -->
+<link rel="manifest" href="manifest.json" />
+<link rel="icon" href="icon.svg" type="image/svg+xml" />
+<link rel="apple-touch-icon" href="icon.svg" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="Just Us" />
+<meta name="mobile-web-app-capable" content="yes" />
+
 <!-- Thư viện qua CDN (cần Internet lần đầu; bản đồ luôn cần mạng) -->
 <script crossorigin src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.production.min.js"></script>
 <script crossorigin src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
@@ -225,7 +234,7 @@ const store={
 const SB_URL='https://vvgkjgvzjeklaadusbne.supabase.co';
 const SB_KEY='sb_publishable_DMMPv5L2kGhrHTxeQ72iKw_dIh13iT1';
 // Các key được đồng bộ (KHÔNG gồm ju.me/ju.device/ju.sync — đó là riêng từng máy)
-const SYNC_KEYS=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood'];
+const SYNC_KEYS=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood','ju.qa','ju.timeline'];
 let _sb=null;
 function sbClient(){
   if(_sb) return _sb;
@@ -420,6 +429,57 @@ function applyTheme(k){ document.body.className='theme-'+k; }
 const AVATARS=['🧑','👩','👨','🧔','👱‍♀️','👩‍🦱','🧑‍🦰','👸','🤴','🐰','🐱','🐻','🦊','🐧','🌷','⭐'];
 const MOODS=['😍','😊','🥰','😌','😎','😴','🤒','😢','😠','🤩','🥺','😋'];
 
+/* ===== Thư viện gợi ý nội dung (chạm để thêm) ===== */
+const IDEA_SUGGEST={
+  free:['Đi dạo công viên lúc hoàng hôn','Nấu một bữa tối cùng nhau','Xem phim ở nhà + bỏng ngô tự làm','Ngắm sao trên sân thượng','Picnic ở công viên','Đạp xe quanh hồ','Cùng nghe một playlist mới','Chơi board game / cờ','Đi bộ ngắm phố đêm','Tự pha cà phê & tâm sự','Cùng tập thể dục buổi sáng','Cùng dọn nhà rồi thưởng trà'],
+  u100:['Cà phê view đẹp','Ăn kem / chè','Đi nhà sách','Dạo chợ đêm','Ăn vặt vỉa hè','Thuê xe đạp đôi','Ghé tiệm bánh mới mở','Đi siêu thị mua đồ nấu ăn'],
+  u300:['Xem phim rạp + ăn vặt','Ăn lẩu / nướng','Hát karaoke','Đi bảo tàng / triển lãm','Buffet sáng','Lớp học vẽ / gốm','Đi công viên giải trí'],
+  u500:['Ăn nhà hàng lãng mạn','Bowling / patin','Spa thư giãn đôi','Lớp học nấu ăn','Chèo SUP / đạp vịt','Đi vườn dâu / nông trại'],
+  o500:['Đặt khách sạn nghỉ 1 đêm','Đi du lịch ngắn ngày','Concert / show ca nhạc','Nhà hàng fine-dining','Thuê studio chụp ảnh đôi','Học một bộ môn mới (lặn, golf…)'],
+};
+const BUCKET_SUGGEST=['Cùng đi 5 tỉnh thành mới','Xem mặt trời mọc cùng nhau','Tự làm một cuốn album ảnh','Học nấu một món mới mỗi tháng','Chạy bộ 5km cùng nhau','Trồng một cái cây và chăm nó lớn','Cùng đọc xong một cuốn sách','Đi cắm trại qua đêm','Học nhảy một điệu cùng nhau','Viết thư tay cho nhau','Đi xem biển vào mùa đông','Cùng tiết kiệm cho một chuyến đi lớn','Làm thiện nguyện cùng nhau','Thử một môn thể thao mới','Cùng xem trọn một bộ phim hay'];
+const FOOD_SUGGEST=['Lẩu Thái','Bún chả','Pizza','Sushi','Lẩu nướng Hàn Quốc','Bánh xèo','Ốc các loại','Dimsum','Buffet hải sản','Trà sữa quán mới','Kem Tràng Tiền','Cà phê muối','Phở khuya','Bánh tráng nướng'];
+const QUESTIONS=[
+ 'Kỷ niệm nào với nhau khiến bạn nhớ nhất?',
+ 'Điều gì ở đối phương khiến bạn biết ơn nhất tuần này?',
+ 'Nếu được đi du lịch bất cứ đâu ngay bây giờ, bạn muốn đi đâu cùng nhau?',
+ 'Lần gần nhất đối phương làm bạn cười là khi nào?',
+ 'Bạn muốn 5 năm nữa hai đứa mình sẽ như thế nào?',
+ 'Món ăn nào gợi cho bạn nhớ về hai đứa?',
+ 'Điều nhỏ nào đối phương làm khiến bạn thấy được yêu?',
+ 'Bài hát nào bạn muốn là "bài của hai đứa"?',
+ 'Bạn muốn thử cùng nhau làm điều gì mà chưa làm bao giờ?',
+ 'Khoảnh khắc nào bạn thấy tự hào về đối phương?',
+ 'Cuối tuần này nếu được làm mọi thứ bạn thích, bạn muốn làm gì cùng nhau?',
+ 'Thói quen nào của đối phương bạn thấy đáng yêu nhất?',
+ 'Điều gì khiến bạn cảm thấy an toàn khi ở bên nhau?',
+ 'Bạn mong được đối phương hỗ trợ điều gì lúc này?',
+ 'Một điều bạn học được từ đối phương?',
+ 'Bữa hẹn hò trong mơ của bạn trông như thế nào?',
+ 'Điều gì khiến bạn phải lòng đối phương ngay từ đầu?',
+ 'Nếu mở một quán nhỏ cùng nhau, bạn muốn bán gì?',
+ 'Bạn muốn cùng nhau bỏ thói quen xấu nào?',
+ 'Một mục tiêu bạn muốn hai đứa cùng đạt được năm nay?',
+ 'Bạn thấy hai đứa hợp nhau nhất ở điểm nào?',
+ 'Điều gì khiến bạn thấy được trân trọng?',
+ 'Kỳ nghỉ tới bạn muốn làm gì cùng nhau?',
+ 'Nếu tặng đối phương một ngày hoàn hảo, bạn sẽ sắp xếp thế nào?',
+ 'Bạn nhớ điều gì nhất khi xa nhau?',
+ 'Một lời khen bạn muốn nói với đối phương ngay bây giờ?',
+ 'Truyền thống nhỏ nào bạn muốn hai đứa duy trì?',
+ 'Điều gì ở tổ ấm của mình khiến bạn hạnh phúc?',
+ 'Bạn muốn cùng học kỹ năng gì trong năm nay?',
+ 'Bộ phim nào bạn muốn xem lại cùng nhau?',
+ 'Bạn thấy mình thay đổi tích cực thế nào từ khi yêu nhau?',
+ 'Một điều bạn muốn nói "cảm ơn" với đối phương?',
+ 'Nếu hai đứa trốn khỏi mọi thứ một ngày, bạn muốn đi đâu?',
+ 'Điều gì khiến bạn tin hai đứa sẽ đi đường dài cùng nhau?',
+ 'Bạn muốn được ôm, được nghe, hay được ở cạnh lặng yên hôm nay?',
+ 'Hôm nay bạn muốn gửi đối phương một lời nhắn gì?'
+];
+function dayNumber(){ const d=new Date(); return Math.floor(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())/86400000); }
+function questionOfToday(){ return QUESTIONS[((dayNumber()%QUESTIONS.length)+QUESTIONS.length)%QUESTIONS.length]; }
+
 /* ============ small components ============ */
 function Av({emoji,size=22}){
   return <span className="av-sm" style={{width:size,height:size,fontSize:size*0.62}}>{emoji||'❤️'}</span>;
@@ -445,18 +505,20 @@ function Sheet({title,onClose,children}){
 }
 
 /* ============ Generic list (Wishlist, Bucket, Watch, Links, Places, Food, Date ideas) ============ */
-function SimpleList({skey, people, me, addLabel, doneLabel='Xong', fields=[], tagOptions, empty, flash}){
+function SimpleList({skey, people, me, addLabel, doneLabel='Xong', fields=[], tagOptions, empty, flash, suggest}){
   const [items,setItems]=useLocal(skey,[]);
   const [filter,setFilter]=useState('all');
   const [q,setQ]=useState('');
   const [open,setOpen]=useState(false);
   const [edit,setEdit]=useState(null);
+  const [sugOpen,setSugOpen]=useState(false);
 
   const save=(it)=>{
     if(it.id){ setItems(items.map(x=>x.id===it.id?it:x)); }
     else { setItems([{...it,id:uid(),by:me,fav:false,done:false,createdAt:Date.now()}, ...items]); }
     setOpen(false); setEdit(null);
   };
+  const addQuick=(title)=> setItems(prev=>[{title,id:uid(),by:me,fav:false,done:false,createdAt:Date.now()},...prev]);
   const del=(id)=> setItems(items.filter(x=>x.id!==id));
   const toggle=(id,f)=> setItems(items.map(x=>x.id===id?{...x,[f]:!x[f]}:x));
 
@@ -474,6 +536,7 @@ function SimpleList({skey, people, me, addLabel, doneLabel='Xong', fields=[], ta
     <div>
       <div className="row" style={{margin:'4px 14px 0',gap:8}}>
         <input className="inp grow" placeholder="🔎 Tìm…" value={q} onChange={e=>setQ(e.target.value)} />
+        {suggest && <button className="btn sm soft" onClick={()=>setSugOpen(true)}>💡</button>}
         <button className="btn sm" onClick={()=>{setEdit(null);setOpen(true);}}>＋ Thêm</button>
       </div>
       <div className="filters">
@@ -511,6 +574,17 @@ function SimpleList({skey, people, me, addLabel, doneLabel='Xong', fields=[], ta
 
       {open && <ItemForm title={(edit?'Sửa ':'Thêm ')+addLabel} init={edit} fields={fields} tagOptions={tagOptions}
         onClose={()=>{setOpen(false);setEdit(null);}} onSave={save} />}
+
+      {sugOpen && suggest && <Sheet title="💡 Gợi ý — chạm để thêm" onClose={()=>setSugOpen(false)}>
+        <div>
+          {suggest.filter(s=>!items.some(it=>(it.title||'').trim().toLowerCase()===s.toLowerCase())).map(s=>(
+            <button key={s} className="pill" style={{margin:'4px 6px 4px 0',padding:'8px 12px',fontSize:13}}
+              onClick={()=>{ addQuick(s); flash&&flash('Đã thêm: '+s); }}>＋ {s}</button>
+          ))}
+          {suggest.filter(s=>!items.some(it=>(it.title||'').trim().toLowerCase()===s.toLowerCase())).length===0 &&
+            <div className="muted center" style={{padding:'16px 0'}}>Bạn đã thêm hết gợi ý rồi 🎉</div>}
+        </div>
+      </Sheet>}
     </div>
   );
 }
@@ -544,6 +618,44 @@ function ItemForm({title,init,fields,tagOptions,onClose,onSave}){
         <textarea className="inp" value={f.note||''} onChange={e=>set('note',e.target.value)} placeholder="Thêm chi tiết…"/></div>}
       <button className="btn" onClick={submit}>💾 Lưu</button>
     </Sheet>
+  );
+}
+
+/* ============ Câu hỏi mỗi ngày ============ */
+function DailyQuestion({people,me}){
+  const [qa,setQa]=useLocal('ju.qa',{});
+  const key=todayISO();
+  const q=questionOfToday();
+  const today=qa[key]||{q};
+  const [draft,setDraft]=useState('');
+  const [editing,setEditing]=useState(false);
+  useEffect(()=>{ setDraft((qa[key]||{})[me]||''); setEditing(false); },[key]);
+  const other=me==='a'?'b':'a';
+  const myAnswer=today[me], otherAnswer=today[other];
+  const save=()=>{ if(!draft.trim())return; setQa({...qa,[key]:{...today,q,[me]:draft.trim()}}); setEditing(false); };
+  return (
+    <div className="card">
+      <div className="row"><b>❓ Câu hỏi hôm nay</b><span className="grow"></span><span className="muted" style={{fontSize:12}}>{fmtDateVN(key)}</span></div>
+      <div style={{fontWeight:700,margin:'8px 0 10px',fontSize:15,lineHeight:1.35}}>{q}</div>
+      {(!myAnswer || editing) ? (
+        <div className="row" style={{gap:8}}>
+          <input className="inp grow" placeholder="Câu trả lời của bạn…" value={draft}
+            onChange={e=>setDraft(e.target.value)} onKeyDown={e=>{ if(e.key==='Enter') save(); }} autoFocus={editing}/>
+          <button className="btn sm" onClick={save}>Gửi</button>
+        </div>
+      ) : (
+        <div style={{background:'var(--chip)',color:'var(--chip-tx)',borderRadius:12,padding:'9px 12px',fontSize:14}}>
+          <div className="row"><span className="muted" style={{fontSize:11}}>{people[me].name} (bạn)</span>
+            <span className="grow"></span><button className="muted" style={{fontSize:11}} onClick={()=>{setDraft(myAnswer);setEditing(true);}}>✏️ sửa</button></div>
+          <div style={{marginTop:2}}>{myAnswer}</div>
+        </div>
+      )}
+      {myAnswer && (otherAnswer
+        ? <div style={{background:'var(--bg)',border:'1px solid var(--line)',borderRadius:12,padding:'9px 12px',fontSize:14,marginTop:6}}>
+            <span className="muted" style={{fontSize:11}}>{people[other].name}</span>
+            <div style={{marginTop:2}}>{otherAnswer}</div></div>
+        : <div className="muted" style={{fontSize:12,marginTop:8}}>Đã trả lời ✓ — chờ {people[other].name} trả lời nhé 💞</div>)}
+    </div>
   );
 }
 
@@ -612,6 +724,9 @@ function Home({setup,people,me,go}){
         </div>
       </div>
 
+      {/* Câu hỏi mỗi ngày */}
+      <DailyQuestion people={people} me={me}/>
+
       {/* Sắp tới */}
       <div className="sec-title">⏳ Sắp tới</div>
       {upcoming.length===0 && <div className="empty">Chưa có sự kiện nào sắp tới.</div>}
@@ -658,7 +773,7 @@ function WishTab({people,me,flash}){
       {seg==='gift' && <SimpleList skey="ju.wish" people={people} me={me} addLabel="món quà" doneLabel="Đã tặng"
         fields={['price','link','note']} empty={{icon:'🎁',text:'Ghi lại món quà bạn mơ ước — để nửa kia biết đường!'}} flash={flash}/>}
       {seg==='bucket' && <SimpleList skey="ju.bucket" people={people} me={me} addLabel="điều muốn làm" doneLabel="Đã làm"
-        fields={['note']} empty={{icon:'🎯',text:'Những điều hai đứa muốn làm cùng nhau…'}} flash={flash}/>}
+        fields={['note']} suggest={BUCKET_SUGGEST} empty={{icon:'🎯',text:'Những điều hai đứa muốn làm cùng nhau… Bấm 💡 để xem gợi ý!'}} flash={flash}/>}
       {seg==='watch' && <SimpleList skey="ju.watch" people={people} me={me} addLabel="phim/sách/nhạc" doneLabel="Đã xong"
         fields={['tag','link','rating','note']} tagOptions={['Phim','Phim bộ','Sách','Nhạc','Podcast','Khác']}
         empty={{icon:'🎬',text:'Phim, sách, nhạc muốn thưởng thức cùng nhau.'}} flash={flash}/>}
@@ -680,7 +795,7 @@ function DateTab({people,me,flash}){
       </div>
       {seg==='idea' && <DateIdeas people={people} me={me}/>}
       {seg==='food' && <SimpleList skey="ju.food" people={people} me={me} addLabel="quán/món" doneLabel="Đã thử"
-        fields={['address','rating','link','note']} empty={{icon:'🍜',text:'Quán ăn, món muốn thử cùng nhau.'}} flash={flash}/>}
+        fields={['address','rating','link','note']} suggest={FOOD_SUGGEST} empty={{icon:'🍜',text:'Quán ăn, món muốn thử cùng nhau. Bấm 💡 để xem gợi ý!'}} flash={flash}/>}
       {seg==='map' && <MapSpots people={people} me={me}/>}
     </div>
   );
@@ -692,12 +807,14 @@ function DateIdeas({people,me}){
   const [open,setOpen]=useState(false);
   const [edit,setEdit]=useState(null);
   const [pick,setPick]=useState(null);
+  const [sugOpen,setSugOpen]=useState(false);
 
   const save=(it)=>{
     if(it.id) setItems(items.map(x=>x.id===it.id?it:x));
     else setItems([{...it,id:uid(),by:me,fav:false,done:false,createdAt:Date.now()},...items]);
     setOpen(false);setEdit(null);
   };
+  const addIdea=(title,budget)=> setItems(prev=>[{title,budget,id:uid(),by:me,fav:false,done:false,createdAt:Date.now()},...prev]);
   const del=(id)=>setItems(items.filter(x=>x.id!==id));
   const toggle=(id,f)=>setItems(items.map(x=>x.id===id?{...x,[f]:!x[f]}:x));
 
@@ -713,7 +830,8 @@ function DateIdeas({people,me}){
       </div>
       <div className="row" style={{margin:'10px 14px',gap:8}}>
         <button className="btn grow" onClick={random}>🎲 Gợi ý ngẫu nhiên</button>
-        <button className="btn sm soft" onClick={()=>{setEdit(null);setOpen(true);}}>＋ Thêm</button>
+        <button className="btn sm soft" onClick={()=>setSugOpen(true)}>💡 Thư viện</button>
+        <button className="btn sm soft" onClick={()=>{setEdit(null);setOpen(true);}}>＋</button>
       </div>
       {pick && (
         <div className="card center" style={{borderColor:'var(--primary)',borderWidth:2}}>
@@ -743,6 +861,23 @@ function DateIdeas({people,me}){
       ))}
       {open && <ItemForm title={(edit?'Sửa ':'Thêm ')+'ý tưởng hẹn hò'} init={edit} fields={['budget','note']}
         onClose={()=>{setOpen(false);setEdit(null);}} onSave={save}/>}
+
+      {sugOpen && <Sheet title="💡 Thư viện ý tưởng hẹn hò" onClose={()=>setSugOpen(false)}>
+        {BUDGETS.map(b=>{
+          const left=(IDEA_SUGGEST[b.k]||[]).filter(s=>!items.some(it=>(it.title||'').trim().toLowerCase()===s.toLowerCase()));
+          if(left.length===0) return null;
+          return (
+            <div key={b.k} style={{marginBottom:12}}>
+              <div className="muted" style={{fontSize:12.5,fontWeight:800,margin:'4px 0 6px'}}>{b.label}</div>
+              <div>{left.map(s=>(
+                <button key={s} className="pill" style={{margin:'3px 6px 3px 0',padding:'7px 11px',fontSize:12.5}}
+                  onClick={()=>addIdea(s,b.k)}>＋ {s}</button>
+              ))}</div>
+            </div>
+          );
+        })}
+        <div className="muted center" style={{fontSize:12}}>Chạm để thêm vào danh sách của hai bạn.</div>
+      </Sheet>}
     </div>
   );
 }
@@ -1618,6 +1753,15 @@ function App(){
 
 window.__JU_OK=true;
 ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+
+<!-- Đăng ký service worker (PWA). Dùng đường dẫn tương đối để chạy cả localhost lẫn /just-us/ -->
+<script>
+if('serviceWorker' in navigator){
+  window.addEventListener('load',function(){
+    navigator.serviceWorker.register('sw.js').catch(function(){});
+  });
+}
 </script>
 </body>
 </html>
