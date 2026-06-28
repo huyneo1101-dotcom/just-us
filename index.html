@@ -234,7 +234,7 @@ const store={
 const SB_URL='https://vvgkjgvzjeklaadusbne.supabase.co';
 const SB_KEY='sb_publishable_DMMPv5L2kGhrHTxeQ72iKw_dIh13iT1';
 // Các key được đồng bộ (KHÔNG gồm ju.me/ju.device/ju.sync — đó là riêng từng máy)
-const SYNC_KEYS=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood','ju.qa','ju.timeline','ju.coupons','ju.chores'];
+const SYNC_KEYS=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood','ju.qa','ju.timeline','ju.coupons','ju.chores','ju.lovejar'];
 let _sb=null;
 function sbClient(){
   if(_sb) return _sb;
@@ -462,6 +462,7 @@ const FOOD_SUGGEST=['Lẩu Thái','Bún chả','Pizza','Sushi','Lẩu nướng H
 const GIFT_SUGGEST=['Nước hoa','Đồng hồ','Sách người ấy thích','Vé xem phim / concert','Đồ đôi (áo, vòng tay)','Hoa + thiệp viết tay','Bữa tối tự nấu','Voucher spa','Tai nghe','Album ảnh in','Phụ kiện cho sở thích','Đồ chăm sóc da'];
 const WATCH_SUGGEST=['Phim: Your Name','Phim: La La Land','Phim: About Time','Phim: Coco','Phim: Up','Phim bộ: Reply 1988','Phim bộ: Hometown Cha-Cha-Cha','Sách: Nhà giả kim','Sách: Tuổi trẻ đáng giá bao nhiêu','Nhạc: playlist acoustic chill'];
 const COUPON_SUGGEST=['1 bữa tối tự nấu','1 lần massage vai 15 phút','1 buổi xem phim do em chọn','1 lần rửa bát thay phiên','1 cái ôm bất cứ lúc nào','1 ngày làm theo ý người kia','1 ly trà sữa','1 lần đấm lưng','1 lời khen mỗi sáng cả tuần','1 chuyến đi chơi bất ngờ'];
+const LOVEJAR_SUGGEST=['Vì luôn lắng nghe mình','Vì nụ cười của em/anh','Vì luôn ở bên lúc mình khó khăn','Vì nấu ăn ngon','Vì kiên nhẫn với mình','Vì làm mình thấy bình yên','Vì luôn cố gắng vì gia đình','Vì những cái ôm ấm áp'];
 const QUESTIONS=[
  'Kỷ niệm nào với nhau khiến bạn nhớ nhất?',
  'Điều gì ở đối phương khiến bạn biết ơn nhất tuần này?',
@@ -683,6 +684,39 @@ function DailyQuestion({people,me}){
   );
 }
 
+/* ============ Lọ yêu thương ============ */
+function LoveJar({people,me}){
+  const [jar,setJar]=useLocal('ju.lovejar',[]);
+  const [drawn,setDrawn]=useState(null);
+  const [open,setOpen]=useState(false);
+  const [text,setText]=useState('');
+  const add=(t)=>{ const x=((t!=null?t:text)||'').trim(); if(!x)return; setJar(prev=>[{id:uid(),text:x,by:me,createdAt:Date.now()},...prev]); setText(''); };
+  const draw=()=>{ if(jar.length===0)return; setDrawn(jar[Math.floor(Math.random()*jar.length)]); };
+  return (
+    <div className="card">
+      <div className="row"><b>🫙 Lọ yêu thương</b><span className="grow"></span><span className="muted" style={{fontSize:12}}>{jar.length} điều</span></div>
+      {drawn
+        ? <div className="center" style={{margin:'10px 0'}}>
+            <div style={{fontSize:16,fontWeight:700,lineHeight:1.4}}>“{drawn.text}”</div>
+            <div className="muted" style={{fontSize:11,marginTop:4}}>— {people[drawn.by]?.name} viết</div>
+          </div>
+        : <div className="muted" style={{fontSize:12.5,margin:'8px 0'}}>Cất những lý do yêu nhau / điều biết ơn vào lọ — lúc buồn rút ra đọc 💞</div>}
+      <div className="row" style={{gap:8}}>
+        <button className="btn grow" onClick={draw} disabled={jar.length===0}>{jar.length===0?'Lọ đang trống':'💝 Rút một điều'}</button>
+        <button className="btn sm soft" onClick={()=>setOpen(true)}>＋</button>
+      </div>
+      {open && <Sheet title="🫙 Thêm vào lọ yêu thương" onClose={()=>setOpen(false)}>
+        <div className="field"><label>Điều bạn yêu / biết ơn ở người ấy</label>
+          <textarea className="inp" autoFocus value={text} onChange={e=>setText(e.target.value)} placeholder="Vì em luôn…"/></div>
+        <button className="btn" onClick={()=>{ if(text.trim()){ add(); setOpen(false); } }}>💾 Cất vào lọ</button>
+        <div className="muted" style={{fontSize:12,margin:'14px 0 6px'}}>Gợi ý nhanh:</div>
+        <div>{LOVEJAR_SUGGEST.map(s=><button key={s} className="pill" style={{margin:'3px 6px 3px 0',padding:'7px 11px',fontSize:12.5}}
+          onClick={()=>{ add(s); setOpen(false); }}>＋ {s}</button>)}</div>
+      </Sheet>}
+    </div>
+  );
+}
+
 /* ============ "Ăn gì / Làm gì" random ============ */
 function FunPickers(){
   const [ideas]=useLocal('ju.ideas',[]);
@@ -792,6 +826,9 @@ function Home({setup,people,me,go}){
 
       {/* Phân vân: ăn gì / làm gì */}
       <FunPickers/>
+
+      {/* Lọ yêu thương */}
+      <LoveJar people={people} me={me}/>
 
       {/* Sắp tới */}
       <div className="sec-title">⏳ Sắp tới</div>
@@ -1476,22 +1513,26 @@ function Notes({people,me}){
   const add=()=>{ if(!t.trim())return; setNotes([...notes,{id:uid(),by:me,text:t.trim(),createdAt:Date.now()}]); setT(''); };
   useEffect(()=>{ endRef.current?.scrollIntoView({behavior:'smooth'}); },[notes.length]);
   const del=(id)=>setNotes(notes.filter(x=>x.id!==id));
+  const heart=(id)=>setNotes(notes.map(n=>{ if(n.id!==id) return n; const r={...(n.reacts||{})}; r[me]=r[me]?null:'❤️'; return {...n,reacts:r}; }));
   return (
     <div>
-      <div className="muted center" style={{fontSize:12,margin:'10px 14px'}}>💌 Lời nhắn yêu thương — để lại cho nhau mỗi ngày</div>
+      <div className="muted center" style={{fontSize:12,margin:'10px 14px'}}>💌 Lời nhắn yêu thương — chạm 🤍 để thả tim</div>
       <div style={{padding:'0 6px'}}>
         {notes.length===0 && <div className="empty"><span className="big">💌</span>Viết lời nhắn đầu tiên cho người ấy…</div>}
         {notes.map(n=>{
           const mine=n.by===me;
+          const reacts=[n.reacts&&n.reacts.a, n.reacts&&n.reacts.b].filter(Boolean);
           return (
-            <div key={n.id} style={{display:'flex',justifyContent:mine?'flex-end':'flex-start',padding:'4px 10px'}}>
-              <div style={{maxWidth:'78%'}}>
+            <div key={n.id} style={{display:'flex',justifyContent:mine?'flex-end':'flex-start',padding:'4px 10px',gap:4,alignItems:'center'}}>
+              {mine && <button className="muted" style={{fontSize:12}} onClick={()=>{ if(confirm('Xoá lời nhắn này?')) del(n.id); }}>✕</button>}
+              <div style={{maxWidth:'72%'}}>
                 <div className="muted" style={{fontSize:11,margin:'0 6px 2px',textAlign:mine?'right':'left'}}>{people[n.by]?.avatar} {people[n.by]?.name}</div>
-                <div onClick={()=>{ if(mine&&confirm('Xoá lời nhắn này?')) del(n.id); }}
-                  style={{background:mine?'linear-gradient(135deg,var(--primary),var(--primary2))':'var(--card)',
+                <div style={{background:mine?'linear-gradient(135deg,var(--primary),var(--primary2))':'var(--card)',
                     color:mine?'var(--on-primary)':'var(--text)',border:'1px solid var(--line)',
                     padding:'9px 13px',borderRadius:16,fontSize:14.5,whiteSpace:'pre-wrap',boxShadow:'var(--shadow)'}}>{n.text}</div>
+                {reacts.length>0 && <div style={{textAlign:mine?'right':'left',fontSize:13,marginTop:2}}>{reacts.join(' ')}</div>}
               </div>
+              <button onClick={()=>heart(n.id)} style={{fontSize:16,lineHeight:1}}>{(n.reacts&&n.reacts[me])?'❤️':'🤍'}</button>
             </div>
           );
         })}
