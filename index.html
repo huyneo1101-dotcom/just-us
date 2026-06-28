@@ -234,7 +234,7 @@ const store={
 const SB_URL='https://vvgkjgvzjeklaadusbne.supabase.co';
 const SB_KEY='sb_publishable_DMMPv5L2kGhrHTxeQ72iKw_dIh13iT1';
 // Các key được đồng bộ (KHÔNG gồm ju.me/ju.device/ju.sync — đó là riêng từng máy)
-const SYNC_KEYS=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood','ju.qa','ju.timeline'];
+const SYNC_KEYS=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood','ju.qa','ju.timeline','ju.coupons'];
 let _sb=null;
 function sbClient(){
   if(_sb) return _sb;
@@ -406,6 +406,17 @@ function yearsBetween(iso){
 }
 function genCode(){ const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; let s=''; for(let i=0;i<8;i++) s+=A[Math.floor(Math.random()*A.length)]; return s.slice(0,4)+'-'+s.slice(4); }
 function normCode(s){ return (s||'').toUpperCase().replace(/[^A-Z0-9-]/g,''); }
+// Mốc "ngày bên nhau" sắp tới (bội số 100 ngày hoặc mốc năm)
+function nextMilestone(days){
+  if(days==null||days<0) return null;
+  const set=new Set();
+  for(let n=100;n<=20000;n+=100) set.add(n);
+  for(let y=1;y<=60;y++) set.add(y*365);
+  const sorted=[...set].sort((a,b)=>a-b);
+  const m=sorted.find(x=>x>days);
+  if(!m) return null;
+  return {mark:m, inDays:m-days, isYear:m%365===0, years:Math.round(m/365)};
+}
 
 const BUDGETS=[
   {k:'free', label:'Miễn phí 💸', max:0},
@@ -439,6 +450,9 @@ const IDEA_SUGGEST={
 };
 const BUCKET_SUGGEST=['Cùng đi 5 tỉnh thành mới','Xem mặt trời mọc cùng nhau','Tự làm một cuốn album ảnh','Học nấu một món mới mỗi tháng','Chạy bộ 5km cùng nhau','Trồng một cái cây và chăm nó lớn','Cùng đọc xong một cuốn sách','Đi cắm trại qua đêm','Học nhảy một điệu cùng nhau','Viết thư tay cho nhau','Đi xem biển vào mùa đông','Cùng tiết kiệm cho một chuyến đi lớn','Làm thiện nguyện cùng nhau','Thử một môn thể thao mới','Cùng xem trọn một bộ phim hay'];
 const FOOD_SUGGEST=['Lẩu Thái','Bún chả','Pizza','Sushi','Lẩu nướng Hàn Quốc','Bánh xèo','Ốc các loại','Dimsum','Buffet hải sản','Trà sữa quán mới','Kem Tràng Tiền','Cà phê muối','Phở khuya','Bánh tráng nướng'];
+const GIFT_SUGGEST=['Nước hoa','Đồng hồ','Sách người ấy thích','Vé xem phim / concert','Đồ đôi (áo, vòng tay)','Hoa + thiệp viết tay','Bữa tối tự nấu','Voucher spa','Tai nghe','Album ảnh in','Phụ kiện cho sở thích','Đồ chăm sóc da'];
+const WATCH_SUGGEST=['Phim: Your Name','Phim: La La Land','Phim: About Time','Phim: Coco','Phim: Up','Phim bộ: Reply 1988','Phim bộ: Hometown Cha-Cha-Cha','Sách: Nhà giả kim','Sách: Tuổi trẻ đáng giá bao nhiêu','Nhạc: playlist acoustic chill'];
+const COUPON_SUGGEST=['1 bữa tối tự nấu','1 lần massage vai 15 phút','1 buổi xem phim do em chọn','1 lần rửa bát thay phiên','1 cái ôm bất cứ lúc nào','1 ngày làm theo ý người kia','1 ly trà sữa','1 lần đấm lưng','1 lời khen mỗi sáng cả tuần','1 chuyến đi chơi bất ngờ'];
 const QUESTIONS=[
  'Kỷ niệm nào với nhau khiến bạn nhớ nhất?',
  'Điều gì ở đối phương khiến bạn biết ơn nhất tuần này?',
@@ -704,6 +718,22 @@ function Home({setup,people,me,go}){
         </div>
       </div>
 
+      {/* Mốc kỷ niệm sắp tới */}
+      {loveDays!=null && (()=>{
+        const todayMilestone = loveDays>0 && (loveDays%100===0 || loveDays%365===0);
+        const ms=nextMilestone(loveDays);
+        return (
+          <div className="card" style={{background:'linear-gradient(135deg,var(--chip),var(--card))'}}>
+            {todayMilestone
+              ? <div className="center"><div style={{fontSize:28}}>🎉</div><b style={{fontSize:15}}>Hôm nay tròn {loveDays.toLocaleString('vi-VN')} ngày bên nhau!</b></div>
+              : ms && <div className="row" style={{gap:10,alignItems:'center'}}>
+                  <div style={{fontSize:24}}>🎯</div>
+                  <div className="grow" style={{fontSize:13.5}}>Còn <b>{ms.inDays} ngày</b> nữa tới mốc <b>{ms.mark.toLocaleString('vi-VN')} ngày</b> bên nhau{ms.isYear?` (${ms.years} năm)`:''} 💞</div>
+                </div>}
+          </div>
+        );
+      })()}
+
       {/* Tâm trạng hôm nay */}
       <div className="card">
         <div className="row"><b>Tâm trạng hôm nay</b><span className="grow"></span>
@@ -759,6 +789,64 @@ function Home({setup,people,me,go}){
   );
 }
 
+/* ============ Phiếu yêu thương ============ */
+function Coupons({people,me,flash}){
+  const [coupons,setCoupons]=useLocal('ju.coupons',[]);
+  const [t,setT]=useState('');
+  const [sugOpen,setSugOpen]=useState(false);
+  const other=me==='a'?'b':'a';
+  const add=(title)=>{ const x=((title!=null?title:t)||'').trim(); if(!x)return; setCoupons(prev=>[{id:uid(),title:x,by:me,redeemed:false,createdAt:Date.now()},...prev]); setT(''); };
+  const redeem=(id)=>setCoupons(coupons.map(c=>c.id===id?{...c,redeemed:true,redeemedAt:Date.now()}:c));
+  const del=(id)=>setCoupons(coupons.filter(c=>c.id!==id));
+
+  const received=coupons.filter(c=>c.by===other);
+  const given=coupons.filter(c=>c.by===me);
+  return (
+    <div>
+      <div className="muted center" style={{fontSize:12.5,margin:'10px 14px'}}>🎟️ Tặng nhau những “phiếu” dễ thương — người kia đổi được bất cứ lúc nào.</div>
+      <div className="row" style={{margin:'0 14px',gap:8}}>
+        <input className="inp grow" placeholder={'Tặng '+people[other].name+' một phiếu…'} value={t}
+          onChange={e=>setT(e.target.value)} onKeyDown={e=>{ if(e.key==='Enter') add(); }}/>
+        <button className="btn sm soft" onClick={()=>setSugOpen(true)}>💡</button>
+        <button className="btn sm" onClick={()=>add()}>Tặng</button>
+      </div>
+
+      <div className="sec-title">🎁 Phiếu bạn nhận ({received.filter(c=>!c.redeemed).length})</div>
+      {received.length===0 && <div className="empty" style={{padding:'14px'}}>Chưa có phiếu nào — rủ {people[other].name} tặng bạn nhé 💕</div>}
+      {received.map(c=>(
+        <div key={c.id} className={'item'+(c.redeemed?' dn':'')}>
+          <div className="it-top"><h4>🎟️ {c.title}</h4></div>
+          <div className="it-meta">
+            <span className="av-sm">{people[c.by]?.avatar}</span><span className="muted" style={{fontSize:12}}>{people[c.by]?.name} tặng</span>
+            <span className="grow"></span>
+            {c.redeemed ? <span className="pill">✓ Đã đổi</span> : <button className="btn sm" onClick={()=>redeem(c.id)}>Đổi ngay 🎉</button>}
+          </div>
+        </div>
+      ))}
+
+      <div className="sec-title">💝 Phiếu bạn đã tặng ({given.length})</div>
+      {given.length===0 && <div className="empty" style={{padding:'14px'}}>Bạn chưa tặng phiếu nào.</div>}
+      {given.map(c=>(
+        <div key={c.id} className={'item'+(c.redeemed?' dn':'')}>
+          <div className="it-top"><h4>🎟️ {c.title}</h4>
+            <button className="iconbtn" onClick={()=>del(c.id)}>🗑️</button></div>
+          <div className="it-meta"><span className="muted" style={{fontSize:12}}>Tặng {people[other].name}</span>
+            <span className="grow"></span>
+            {c.redeemed ? <span className="pill" style={{background:'var(--good)',color:'#fff'}}>Đã được đổi 🎉</span> : <span className="pill">Chờ đổi</span>}
+          </div>
+        </div>
+      ))}
+
+      {sugOpen && <Sheet title="💡 Gợi ý phiếu — chạm để tặng" onClose={()=>setSugOpen(false)}>
+        <div>{COUPON_SUGGEST.map(s=>(
+          <button key={s} className="pill" style={{margin:'4px 6px 4px 0',padding:'8px 12px',fontSize:13}}
+            onClick={()=>{ add(s); flash&&flash('Đã tặng phiếu: '+s); }}>＋ {s}</button>
+        ))}</div>
+      </Sheet>}
+    </div>
+  );
+}
+
 /* ============ Tab: Ước muốn ============ */
 function WishTab({people,me,flash}){
   const [seg,setSeg]=useState('gift');
@@ -768,15 +856,17 @@ function WishTab({people,me,flash}){
         <button className={seg==='gift'?'on':''} onClick={()=>setSeg('gift')}>🎁 Quà tặng</button>
         <button className={seg==='bucket'?'on':''} onClick={()=>setSeg('bucket')}>🎯 Muốn làm cùng</button>
         <button className={seg==='watch'?'on':''} onClick={()=>setSeg('watch')}>🎬 Xem·Đọc·Nghe</button>
+        <button className={seg==='coupon'?'on':''} onClick={()=>setSeg('coupon')}>🎟️ Phiếu yêu thương</button>
         <button className={seg==='link'?'on':''} onClick={()=>setSeg('link')}>🔗 Link hay</button>
       </div>
       {seg==='gift' && <SimpleList skey="ju.wish" people={people} me={me} addLabel="món quà" doneLabel="Đã tặng"
-        fields={['price','link','note']} empty={{icon:'🎁',text:'Ghi lại món quà bạn mơ ước — để nửa kia biết đường!'}} flash={flash}/>}
+        fields={['price','link','note']} suggest={GIFT_SUGGEST} empty={{icon:'🎁',text:'Ghi lại món quà bạn mơ ước — để nửa kia biết đường! Bấm 💡 để xem gợi ý.'}} flash={flash}/>}
       {seg==='bucket' && <SimpleList skey="ju.bucket" people={people} me={me} addLabel="điều muốn làm" doneLabel="Đã làm"
         fields={['note']} suggest={BUCKET_SUGGEST} empty={{icon:'🎯',text:'Những điều hai đứa muốn làm cùng nhau… Bấm 💡 để xem gợi ý!'}} flash={flash}/>}
       {seg==='watch' && <SimpleList skey="ju.watch" people={people} me={me} addLabel="phim/sách/nhạc" doneLabel="Đã xong"
-        fields={['tag','link','rating','note']} tagOptions={['Phim','Phim bộ','Sách','Nhạc','Podcast','Khác']}
-        empty={{icon:'🎬',text:'Phim, sách, nhạc muốn thưởng thức cùng nhau.'}} flash={flash}/>}
+        fields={['tag','link','rating','note']} tagOptions={['Phim','Phim bộ','Sách','Nhạc','Podcast','Khác']} suggest={WATCH_SUGGEST}
+        empty={{icon:'🎬',text:'Phim, sách, nhạc muốn thưởng thức cùng nhau. Bấm 💡 để xem gợi ý!'}} flash={flash}/>}
+      {seg==='coupon' && <Coupons people={people} me={me} flash={flash}/>}
       {seg==='link' && <SimpleList skey="ju.links" people={people} me={me} addLabel="link/bài viết" doneLabel="Đã đọc"
         fields={['link','note']} empty={{icon:'🔗',text:'Gửi nhau bài viết, link hay ở đây.'}} flash={flash}/>}
     </div>
@@ -966,6 +1056,57 @@ function MapSpots({people,me}){
 }
 
 /* ============ Tab: Tụi mình ============ */
+/* ============ Dòng thời gian tình yêu ============ */
+function Timeline({people,me}){
+  const [items,setItems]=useLocal('ju.timeline',[]);
+  const [open,setOpen]=useState(false);
+  const [edit,setEdit]=useState(null);
+  const save=(it)=>{ if(it.id) setItems(items.map(x=>x.id===it.id?it:x)); else setItems([...items,{...it,id:uid(),by:me,createdAt:Date.now()}]); setOpen(false); setEdit(null); };
+  const del=(id)=>setItems(items.filter(x=>x.id!==id));
+  const shown=items.slice().sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+  return (
+    <div>
+      <div className="row" style={{margin:'10px 14px'}}><span className="grow muted" style={{fontSize:13}}>Những cột mốc của hai đứa 💞</span>
+        <button className="btn sm" onClick={()=>{setEdit(null);setOpen(true);}}>＋ Thêm mốc</button></div>
+      {shown.length===0 && <div className="empty"><span className="big">🕰️</span>Lần đầu gặp, ngày yêu, chuyến đi đầu tiên, ngày cưới… ghi lại hành trình nhé!</div>}
+      {shown.length>0 && (
+        <div style={{margin:'6px 22px 10px',borderLeft:'2px solid var(--line)',paddingLeft:18}}>
+          {shown.map(it=>(
+            <div key={it.id} style={{position:'relative',paddingBottom:14}}>
+              <div style={{position:'absolute',left:-28,top:0,width:20,height:20,borderRadius:'50%',background:'var(--primary)',display:'grid',placeItems:'center',fontSize:11,boxShadow:'0 0 0 3px var(--bg)'}}>{it.icon||'💗'}</div>
+              <div className="card" style={{margin:0,padding:'10px 12px'}}>
+                <div className="row"><b style={{fontSize:14.5,flex:1}}>{it.title}</b>
+                  <button className="iconbtn" onClick={()=>{setEdit(it);setOpen(true);}}>✏️</button>
+                  <button className="iconbtn" onClick={()=>del(it.id)}>🗑️</button></div>
+                <div className="muted" style={{fontSize:12,marginTop:2}}>{fmtDateVN(it.date)}</div>
+                {it.note && <div className="it-note">{it.note}</div>}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+      {open && <TimelineForm init={edit} onClose={()=>{setOpen(false);setEdit(null);}} onSave={save}/>}
+    </div>
+  );
+}
+function TimelineForm({init,onClose,onSave}){
+  const ICONS=['💗','💑','💍','🏠','✈️','🎁','🌹','🎓','👶','🐾','🎉','📸'];
+  const [f,setF]=useState(()=>init?{...init}:{title:'',date:'',note:'',icon:'💗'});
+  return (
+    <Sheet title={(init?'Sửa ':'Thêm ')+'cột mốc'} onClose={onClose}>
+      <div className="field"><label>Cột mốc</label>
+        <input className="inp" autoFocus value={f.title} onChange={e=>setF({...f,title:e.target.value})} placeholder="VD: Lần đầu gặp nhau"/></div>
+      <div className="field"><label>Ngày</label>
+        <input className="inp" type="date" value={f.date||''} onChange={e=>setF({...f,date:e.target.value})}/></div>
+      <div className="field"><label>Biểu tượng</label>
+        <div className="emoji-row">{ICONS.map(i=><button key={i} className={f.icon===i?'on':''} onClick={()=>setF({...f,icon:i})}>{i}</button>)}</div></div>
+      <div className="field"><label>Kỷ niệm / ghi chú</label>
+        <textarea className="inp" value={f.note||''} onChange={e=>setF({...f,note:e.target.value})} placeholder="Hôm đó thế nào…"/></div>
+      <button className="btn" onClick={()=>{ if(f.title.trim()&&f.date) onSave(f); }}>💾 Lưu</button>
+    </Sheet>
+  );
+}
+
 function UsTab({people,me,flash}){
   const [seg,setSeg]=useState('events');
   return (
@@ -973,12 +1114,14 @@ function UsTab({people,me,flash}){
       <div className="seg">
         <button className={seg==='events'?'on':''} onClick={()=>setSeg('events')}>📅 Sự kiện</button>
         <button className={seg==='dates'?'on':''} onClick={()=>setSeg('dates')}>🎂 Ngày nhớ</button>
+        <button className={seg==='timeline'?'on':''} onClick={()=>setSeg('timeline')}>🕰️ Kỷ niệm</button>
         <button className={seg==='fund'?'on':''} onClick={()=>setSeg('fund')}>💰 Quỹ chung</button>
         <button className={seg==='shop'?'on':''} onClick={()=>setSeg('shop')}>🛒 Đi chợ</button>
         <button className={seg==='notes'?'on':''} onClick={()=>setSeg('notes')}>💌 Nhắn nhau</button>
       </div>
       {seg==='events' && <Events people={people} me={me}/>}
       {seg==='dates' && <ImportantDates people={people} me={me}/>}
+      {seg==='timeline' && <Timeline people={people} me={me}/>}
       {seg==='fund' && <Fund people={people} me={me}/>}
       {seg==='shop' && <Shopping people={people} me={me}/>}
       {seg==='notes' && <Notes people={people} me={me}/>}
