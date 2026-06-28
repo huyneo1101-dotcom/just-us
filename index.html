@@ -1257,6 +1257,13 @@ function MapSpots({people,me}){
   const [picking,setPicking]=useState(false);
   const [draft,setDraft]=useState(null); // {lat,lng}
   const [form,setForm]=useState(null);
+  const [search,setSearch]=useState(''); const [results,setResults]=useState([]); const [searching,setSearching]=useState(false);
+  const doSearch=async()=>{ if(!search.trim())return; setSearching(true);
+    try{ const r=await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=6&accept-language=vi&q='+encodeURIComponent(search)); setResults(await r.json()); }
+    catch(e){ setResults([]); } setSearching(false); };
+  const chooseResult=(r)=>{ const lat=parseFloat(r.lat), lng=parseFloat(r.lon);
+    if(mapRef.current) mapRef.current.setView([lat,lng],15);
+    setDraft({lat,lng}); setForm({title:(r.display_name||'').split(',')[0],cat:'chơi',note:''}); setResults([]); setSearch(''); };
 
   useEffect(()=>{
     if(!window.L || mapRef.current) return;
@@ -1298,6 +1305,18 @@ function MapSpots({people,me}){
           {picking?'👆 Chạm lên bản đồ để ghim…':'📍 Ghim chỗ mới'}</button>
       </div>
       <div className="muted center" style={{fontSize:12,margin:'6px 14px'}}>Lưu những chỗ hai đứa muốn đi / đã đi.</div>
+      <div className="row" style={{margin:'0 14px 6px',gap:8}}>
+        <input className="inp grow" placeholder="🔎 Tìm địa điểm theo tên…" value={search}
+          onChange={e=>setSearch(e.target.value)} onKeyDown={e=>{ if(e.key==='Enter') doSearch(); }}/>
+        <button className="btn sm" onClick={doSearch}>{searching?'…':'Tìm'}</button>
+      </div>
+      {results.length>0 && <div className="card" style={{padding:'4px 12px',marginTop:0}}>
+        {results.map((r,i)=>(
+          <div key={i} className="row" style={{padding:'8px 0',borderBottom:'1px solid var(--line)',cursor:'pointer'}} onClick={()=>chooseResult(r)}>
+            <span style={{fontSize:15}}>📍</span><span className="grow" style={{fontSize:13}}>{r.display_name}</span>
+          </div>
+        ))}
+      </div>}
       <div id="map" ref={elRef}></div>
 
       {spots.length===0 && <div className="empty">Chưa ghim chỗ nào. Bấm “Ghim chỗ mới” rồi chạm lên bản đồ.</div>}
