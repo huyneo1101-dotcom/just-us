@@ -772,9 +772,48 @@ function Reminders({setup,go}){
   );
 }
 
+/* ============ Tâm trạng + lịch 14 ngày ============ */
+function MoodCard({people,me}){
+  const [mood,setMood]=useLocal('ju.mood',{});
+  const key=todayISO();
+  const today=mood[key]||{};
+  const [note,setNote]=useState('');
+  useEffect(()=>{ setNote((mood[key]||{})[me+'n']||''); },[key,me]);
+  const setMyMood=(emo)=> setMood({...mood,[key]:{...(mood[key]||{}),[me]:emo}});
+  const saveNote=()=> setMood({...mood,[key]:{...(mood[key]||{}),[me+'n']:note.trim()}});
+  const days=[];
+  for(let i=13;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i); const k=d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); days.push({k,day:d.getDate(),m:mood[k]||{}}); }
+  return (
+    <div className="card">
+      <div className="row"><b>Tâm trạng hôm nay</b><span className="grow"></span><span className="muted" style={{fontSize:12}}>{fmtDateVN(key)}</span></div>
+      <div className="row" style={{marginTop:8,gap:14}}>
+        <div className="grow"><div className="muted" style={{fontSize:12,marginBottom:4}}>{people.a.name} {me==='a'?'(bạn)':''}</div>
+          <div style={{fontSize:30}}>{today.a||'—'}</div>{today.an && <div className="muted" style={{fontSize:11}}>“{today.an}”</div>}</div>
+        <div className="grow"><div className="muted" style={{fontSize:12,marginBottom:4}}>{people.b.name} {me==='b'?'(bạn)':''}</div>
+          <div style={{fontSize:30}}>{today.b||'—'}</div>{today.bn && <div className="muted" style={{fontSize:11}}>“{today.bn}”</div>}</div>
+      </div>
+      <div className="muted" style={{fontSize:12,marginTop:10}}>Chọn tâm trạng của bạn:</div>
+      <div className="mood-pick">{MOODS.map(m=><button key={m} className={today[me]===m?'on':''} onClick={()=>setMyMood(m)}>{m}</button>)}</div>
+      {today[me] && <div className="row" style={{gap:8,marginTop:8}}>
+        <input className="inp grow" placeholder="Vì sao? (tuỳ chọn)" value={note}
+          onChange={e=>setNote(e.target.value)} onBlur={saveNote} onKeyDown={e=>{ if(e.key==='Enter') saveNote(); }}/>
+      </div>}
+      <div className="muted" style={{fontSize:12,marginTop:12,marginBottom:4}}>📅 14 ngày qua</div>
+      <div style={{display:'flex',gap:4,overflowX:'auto',paddingBottom:4}}>
+        {days.map(d=>(
+          <div key={d.k} style={{flex:'0 0 auto',textAlign:'center',minWidth:24,background:d.k===key?'var(--chip)':'transparent',borderRadius:8,padding:'3px 1px'}}>
+            <div style={{fontSize:15,lineHeight:1.15}}>{d.m.a||'·'}</div>
+            <div style={{fontSize:15,lineHeight:1.15}}>{d.m.b||'·'}</div>
+            <div className="muted" style={{fontSize:9}}>{d.day}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 /* ============ HOME ============ */
 function Home({setup,people,me,go}){
-  const [mood,setMood]=useLocal('ju.mood',{});
   const [notes]=useLocal('ju.notes',[]);
   const [events]=useLocal('ju.events',[]);
   const [dates]=useLocal('ju.dates',[]);
@@ -796,9 +835,6 @@ function Home({setup,people,me,go}){
     list.sort((a,b)=>a.d-b.d);
     return list.slice(0,3);
   },[events,dates,setup]);
-
-  const todayMood=mood[todayISO()]||{};
-  const setMyMood=(emo)=> setMood({...mood,[todayISO()]:{...todayMood,[me]:emo}});
 
   const lastNote=notes.slice().sort((a,b)=>b.createdAt-a.createdAt)[0];
   const cover=photos[0]?.src;
@@ -837,24 +873,7 @@ function Home({setup,people,me,go}){
       })()}
 
       {/* Tâm trạng hôm nay */}
-      <div className="card">
-        <div className="row"><b>Tâm trạng hôm nay</b><span className="grow"></span>
-          <span className="muted" style={{fontSize:12}}>{fmtDateVN(todayISO())}</span></div>
-        <div className="row" style={{marginTop:8,gap:14}}>
-          <div className="grow">
-            <div className="muted" style={{fontSize:12,marginBottom:4}}>{people.a.name} {me==='a'?'(bạn)':''}</div>
-            <div style={{fontSize:30}}>{todayMood.a||'—'}</div>
-          </div>
-          <div className="grow">
-            <div className="muted" style={{fontSize:12,marginBottom:4}}>{people.b.name} {me==='b'?'(bạn)':''}</div>
-            <div style={{fontSize:30}}>{todayMood.b||'—'}</div>
-          </div>
-        </div>
-        <div className="muted" style={{fontSize:12,marginTop:10}}>Chọn tâm trạng của bạn:</div>
-        <div className="mood-pick">
-          {MOODS.map(m=><button key={m} className={todayMood[me]===m?'on':''} onClick={()=>setMyMood(m)}>{m}</button>)}
-        </div>
-      </div>
+      <MoodCard people={people} me={me}/>
 
       {/* Câu hỏi mỗi ngày */}
       <DailyQuestion people={people} me={me}/>
