@@ -59,6 +59,21 @@ body.theme-night{
   --chip:#3a2740; --chip-tx:#ffb3cd; --heart:#ff6f9d; --on-primary:#1a1024;
   --shadow:0 12px 34px rgba(0,0,0,.45);
 }
+body.theme-cherry{
+  --bg:#fff1f0; --bg2:#ffe0dd; --card:#fff; --text:#43282a; --muted:#b08a8a;
+  --line:#f6d3cf; --primary:#e03131; --primary2:#ff7a7a; --accent:#d6336c;
+  --chip:#ffe0dd; --chip-tx:#c92a2a; --heart:#ff3b5c;
+}
+body.theme-sky{
+  --bg:#eef5ff; --bg2:#dbe9ff; --card:#fff; --text:#23344a; --muted:#7d93ad;
+  --line:#d3e2f7; --primary:#3b82f6; --primary2:#7cb0ff; --accent:#7048e8;
+  --chip:#dbe9ff; --chip-tx:#1c5bd6; --heart:#ff5a8a;
+}
+body.theme-mocha{
+  --bg:#f6efe9; --bg2:#ece0d4; --card:#fffaf6; --text:#3e2f25; --muted:#a08a78;
+  --line:#e6d6c7; --primary:#b07a4f; --primary2:#d6a878; --accent:#c0392b;
+  --chip:#ecdccd; --chip-tx:#8a5a36; --heart:#e0607a;
+}
 
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;padding:0}
@@ -456,6 +471,9 @@ const THEMES=[
   {k:'ocean', name:'Đại dương', c:'#119cb0'},
   {k:'forest', name:'Rừng xanh', c:'#2f9e57'},
   {k:'night', name:'Đêm tình', c:'#ff6f9d'},
+  {k:'cherry', name:'Anh đào', c:'#e03131'},
+  {k:'sky', name:'Trời xanh', c:'#3b82f6'},
+  {k:'mocha', name:'Mocha', c:'#b07a4f'},
 ];
 function applyTheme(k){ document.body.className='theme-'+k; }
 
@@ -939,7 +957,11 @@ function Home({setup,people,me,go}){
   },[events,dates,setup]);
 
   const lastNote=notes.slice().sort((a,b)=>b.createdAt-a.createdAt)[0];
-  const cover=photos[0]?.src;
+  const [cover,setCover]=useState(null);
+  useEffect(()=>{ let on=true; const c=setup.cover||photos[0]; if(!c){ setCover(null); return; }
+    if(c.path){ Cloud.signedUrl(c.path).then(u=>{ if(on) setCover(u); }); } else setCover(c.src||null);
+    return ()=>{ on=false; };
+  },[setup.cover, photos]);
 
   return (
     <div>
@@ -2142,9 +2164,10 @@ function Profile({setup,setSetup,people,me,setMe,flash}){
             <PhotoImg photo={viewer} style={{maxWidth:'100%',maxHeight:'74vh',borderRadius:14,display:'block',margin:'0 auto'}}/>
             {viewer.caption && <div style={{color:'#fff',marginTop:8,fontSize:14}}>{viewer.caption}</div>}
             <div className="muted" style={{color:'#eee',fontSize:12,marginTop:4}}>{people[viewer.by]?.avatar} {people[viewer.by]?.name} · {fmtDateVN(viewer.date)}</div>
-            <div className="row" style={{justifyContent:'center',gap:8,marginTop:12}}>
+            <div className="row" style={{justifyContent:'center',gap:8,marginTop:12,flexWrap:'wrap'}}>
               <button className="btn soft sm" onClick={()=>setViewer(null)}>Đóng</button>
-              <button className="btn sm" style={{background:'#e0436b'}} onClick={()=>{ delPhoto(viewer); setViewer(null); }}>🗑️ Xoá ảnh</button>
+              <button className="btn sm" onClick={()=>{ setSetup({...setup,cover: viewer.path?{path:viewer.path}:{src:viewer.src}}); setViewer(null); flash('Đã đặt ảnh bìa 🖼️'); }}>🖼️ Làm ảnh bìa</button>
+              <button className="btn sm" style={{background:'#e0436b'}} onClick={()=>{ delPhoto(viewer); setViewer(null); }}>🗑️ Xoá</button>
             </div>
           </div>
         </div>
