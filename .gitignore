@@ -1,0 +1,9 @@
+# File phụ trợ dev cục bộ — không cần đăng
+.preview-server.js
+
+# Hệ điều hành / editor
+.DS_Store
+Thumbs.db
+*.log
+node_modules/
+.vscode/

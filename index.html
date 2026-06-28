@@ -1,0 +1,1623 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<meta name="theme-color" content="#e85d8a" />
+<title>Just Us — Của riêng hai đứa</title>
+
+<!-- Thư viện qua CDN (cần Internet lần đầu; bản đồ luôn cần mạng) -->
+<script crossorigin src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.production.min.js"></script>
+<script crossorigin src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.23.6/babel.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+<!-- Supabase: đồng bộ 2 máy (tuỳ chọn; app vẫn chạy offline nếu thiếu) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.js"></script>
+
+<style>
+:root{
+  --bg:#fff0f4; --bg2:#ffe3ec; --card:#ffffff; --text:#3a2b31; --muted:#9b8088;
+  --line:#f3d3dd; --primary:#e85d8a; --primary2:#ff8fb1; --on-primary:#fff;
+  --accent:#b65cff; --chip:#ffe0ea; --chip-tx:#b23a63; --good:#2bb673; --warn:#e8a13a;
+  --heart:#ff4d76; --shadow:0 10px 30px rgba(232,93,138,.16); --radius:18px;
+}
+/* ===== Themes ===== */
+body.theme-rose{ }
+body.theme-peach{
+  --bg:#fff4ec; --bg2:#ffe7d6; --card:#fff; --text:#4a3326; --muted:#a98a76;
+  --line:#f6d9c4; --primary:#f0803c; --primary2:#ffb27a; --accent:#e85d5d;
+  --chip:#ffe3cf; --chip-tx:#b85b22; --heart:#ff6a4d;
+}
+body.theme-lavender{
+  --bg:#f4f0ff; --bg2:#e9e1ff; --card:#fff; --text:#352a4a; --muted:#8d7fae;
+  --line:#e2d7f7; --primary:#8b5cf6; --primary2:#b794ff; --accent:#e85d8a;
+  --chip:#ebe1ff; --chip-tx:#6d3fc0; --heart:#c44dff;
+}
+body.theme-ocean{
+  --bg:#eef9fb; --bg2:#d9f0f5; --card:#fff; --text:#1f3a42; --muted:#6f97a1;
+  --line:#cdeaef; --primary:#119cb0; --primary2:#5fd0dd; --accent:#1f6feb;
+  --chip:#d4f1f5; --chip-tx:#0a7080; --heart:#ff5a8a;
+}
+body.theme-forest{
+  --bg:#eef7ef; --bg2:#dcefe0; --card:#fff; --text:#26392b; --muted:#74917a;
+  --line:#cfe9d3; --primary:#2f9e57; --primary2:#74d28d; --accent:#d98a2b;
+  --chip:#d7f0db; --chip-tx:#1f7a42; --heart:#ff5a7a;
+}
+body.theme-night{
+  --bg:#171221; --bg2:#221a30; --card:#241b33; --text:#f3e9f5; --muted:#a892b8;
+  --line:#3a2c4d; --primary:#ff6f9d; --primary2:#c277ff; --accent:#7aa2ff;
+  --chip:#3a2740; --chip-tx:#ffb3cd; --heart:#ff6f9d; --on-primary:#1a1024;
+  --shadow:0 12px 34px rgba(0,0,0,.45);
+}
+
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  font-family:'Segoe UI',system-ui,-apple-system,Roboto,Arial,sans-serif;
+  background:linear-gradient(180deg,var(--bg),var(--bg2));
+  color:var(--text); min-height:100vh; transition:background .3s,color .3s;
+}
+#root{max-width:480px;margin:0 auto;min-height:100vh;position:relative}
+.app{padding:0 0 86px}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,textarea,select{font-family:inherit;font-size:15px}
+a{color:var(--primary)}
+
+/* Header */
+.topbar{position:sticky;top:0;z-index:40;backdrop-filter:blur(10px);
+  background:linear-gradient(180deg,rgba(255,255,255,.85),rgba(255,255,255,.4));
+  border-bottom:1px solid var(--line);padding:10px 14px;display:flex;align-items:center;gap:10px}
+body.theme-night .topbar{background:linear-gradient(180deg,rgba(36,27,51,.9),rgba(36,27,51,.5))}
+.brand{font-weight:800;font-size:18px;letter-spacing:.3px;display:flex;align-items:center;gap:6px}
+.brand .heart{color:var(--heart)}
+.who{margin-left:auto;display:flex;align-items:center;gap:6px;background:var(--chip);
+  color:var(--chip-tx);border-radius:999px;padding:5px 10px;font-size:12.5px;font-weight:700}
+.who .av{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:#fff;font-size:14px}
+
+/* Cards & generic */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:14px;margin:12px 14px}
+.sec-title{font-weight:800;font-size:15px;margin:18px 16px 6px;display:flex;align-items:center;gap:8px}
+.muted{color:var(--muted)}
+.row{display:flex;gap:10px;align-items:center}
+.pill{display:inline-flex;align-items:center;gap:5px;background:var(--chip);color:var(--chip-tx);
+  border-radius:999px;padding:3px 10px;font-size:12px;font-weight:700}
+.btn{background:linear-gradient(135deg,var(--primary),var(--primary2));color:var(--on-primary);
+  border-radius:12px;padding:11px 14px;font-weight:800;font-size:14.5px;display:inline-flex;
+  align-items:center;justify-content:center;gap:7px;box-shadow:var(--shadow);width:100%}
+.btn.sm{padding:8px 12px;font-size:13px;width:auto}
+.btn.ghost{background:transparent;color:var(--primary);border:1.5px solid var(--primary);box-shadow:none}
+.btn.soft{background:var(--chip);color:var(--chip-tx);box-shadow:none}
+.iconbtn{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:var(--chip);color:var(--chip-tx);font-size:15px}
+
+/* Inputs */
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:10px}
+.field label{font-size:12.5px;font-weight:700;color:var(--muted)}
+.inp{background:var(--bg);border:1.5px solid var(--line);border-radius:12px;padding:11px 12px;width:100%;color:var(--text)}
+textarea.inp{resize:vertical;min-height:64px}
+.seg{display:flex;gap:6px;background:var(--chip);border-radius:14px;padding:5px;margin:12px 14px;overflow:auto}
+.seg button{flex:0 0 auto;padding:8px 13px;border-radius:10px;font-weight:700;font-size:13px;color:var(--chip-tx);white-space:nowrap}
+.seg button.on{background:var(--card);color:var(--primary);box-shadow:0 3px 10px rgba(0,0,0,.08)}
+
+/* Filter chips */
+.filters{display:flex;gap:7px;margin:10px 14px 0;flex-wrap:wrap}
+.filters button{font-size:12.5px;font-weight:700;padding:6px 12px;border-radius:999px;background:var(--card);
+  border:1.5px solid var(--line);color:var(--muted)}
+.filters button.on{background:var(--primary);color:var(--on-primary);border-color:var(--primary)}
+
+/* List item card */
+.item{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 13px;margin:10px 14px;box-shadow:var(--shadow)}
+.item .it-top{display:flex;align-items:flex-start;gap:8px}
+.item h4{margin:0;font-size:15.5px;font-weight:800;flex:1;line-height:1.3}
+.item.dn h4{text-decoration:line-through;opacity:.6}
+.it-note{font-size:13.5px;color:var(--text);opacity:.92;margin:6px 0 0;white-space:pre-wrap}
+.it-meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;align-items:center}
+.av-sm{width:20px;height:20px;border-radius:50%;background:var(--chip);display:grid;place-items:center;font-size:12px}
+.heartbtn{font-size:18px;line-height:1}
+.heartbtn.on{color:var(--heart)}
+.stars{font-size:14px;letter-spacing:1px;color:var(--warn)}
+.empty{text-align:center;color:var(--muted);padding:30px 20px;font-size:14px}
+.empty .big{font-size:38px;display:block;margin-bottom:8px}
+
+/* Home */
+.hero{margin:14px;border-radius:24px;overflow:hidden;position:relative;
+  background:linear-gradient(135deg,var(--primary),var(--accent));color:#fff;padding:20px 18px;box-shadow:var(--shadow)}
+.hero .names{font-size:22px;font-weight:800;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.hero .count{font-size:40px;font-weight:900;margin-top:10px;line-height:1}
+.hero .sub{opacity:.92;font-size:13.5px;margin-top:4px}
+.hero .cover{position:absolute;inset:0;background-size:cover;background-position:center;opacity:.28}
+.hero .inner{position:relative;z-index:1}
+.stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:12px 14px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px;box-shadow:var(--shadow)}
+.stat .n{font-size:22px;font-weight:900;color:var(--primary)}
+.stat .l{font-size:12.5px;color:var(--muted);font-weight:600}
+.mood-pick{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.mood-pick button{font-size:22px;width:42px;height:42px;border-radius:12px;background:var(--bg);border:1.5px solid var(--line)}
+.mood-pick button.on{border-color:var(--primary);background:var(--chip)}
+
+/* Progress */
+.prog{height:10px;border-radius:999px;background:var(--chip);overflow:hidden;margin-top:8px}
+.prog > i{display:block;height:100%;background:linear-gradient(90deg,var(--primary),var(--primary2))}
+
+/* Photos */
+.gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:10px 14px}
+.gallery .ph{position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;background:var(--chip)}
+.gallery .ph img{width:100%;height:100%;object-fit:cover;display:block}
+.gallery .ph .cap{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(transparent,rgba(0,0,0,.6));
+  color:#fff;font-size:10px;padding:10px 6px 4px}
+
+/* Map */
+#map{height:340px;border-radius:16px;margin:10px 14px;border:1px solid var(--line);overflow:hidden}
+
+/* Bottom nav */
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;z-index:50;
+  background:var(--card);border-top:1px solid var(--line);display:flex;padding:7px 4px 9px}
+.nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--muted);font-size:10.5px;font-weight:700}
+.nav button .ic{font-size:21px;line-height:1}
+.nav button.on{color:var(--primary)}
+
+/* Modal */
+.ov{position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--card);width:100%;max-width:480px;border-radius:22px 22px 0 0;padding:16px 16px 22px;max-height:88vh;overflow:auto;animation:up .25s ease}
+@keyframes up{from{transform:translateY(40px);opacity:.5}to{transform:translateY(0);opacity:1}}
+.sheet h3{margin:2px 0 14px;font-size:18px}
+.sheet .x{position:absolute;right:16px;top:14px;font-size:22px;color:var(--muted)}
+.flash{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:99;background:var(--text);color:var(--card);
+  padding:10px 16px;border-radius:999px;font-size:13.5px;font-weight:700;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.emoji-row{display:flex;gap:6px;flex-wrap:wrap}
+.emoji-row button{font-size:22px;width:40px;height:40px;border-radius:10px;background:var(--bg);border:1.5px solid var(--line)}
+.emoji-row button.on{border-color:var(--primary);background:var(--chip)}
+.dim{opacity:.55}
+.center{text-align:center}
+.grow{flex:1}
+.danger{color:#e0436b}
+.linkout{color:var(--primary);font-weight:700;font-size:13px;text-decoration:none;word-break:break-all}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<!-- Chống nháy theme: áp class trước khi React mount -->
+<script>
+(function(){
+  try{
+    var raw=localStorage.getItem('ju.setup');
+    var t=raw?(JSON.parse(raw).theme||'rose'):'rose';
+    document.body.className='theme-'+t;
+  }catch(e){document.body.className='theme-rose';}
+})();
+</script>
+
+<!-- Chẩn đoán: nếu app không chạy, hiện lý do thay vì màn trắng -->
+<script>
+window.__JU_OK=false;
+setTimeout(function(){
+  if(!window.__JU_OK){
+    var miss=[];
+    if(!window.React) miss.push('React');
+    if(!window.ReactDOM) miss.push('ReactDOM');
+    if(!window.Babel) miss.push('Babel');
+    if(!window.L) miss.push('Leaflet');
+    var r=document.getElementById('root');
+    if(r && !r.firstChild){
+      r.innerHTML='<div style="padding:40px 22px;font-family:sans-serif;color:#3a2b31">'
+      +'<h2>💔 App chưa khởi động</h2>'
+      +'<p>'+(miss.length? 'Thiếu thư viện: <b>'+miss.join(', ')+'</b>. Kiểm tra kết nối Internet (CDN jsDelivr) rồi tải lại.' : 'Có lỗi cú pháp trong mã. Mở DevTools (F12 → Console) để xem chi tiết.')+'</p>'
+      +'</div>';
+    }
+  }
+},4000);
+</script>
+
+<script type="text/babel" data-presets="react">
+const {useState,useEffect,useRef,useMemo} = React;
+
+/* ============ store (fallback in-memory cho file://) ============ */
+const mem={};
+const store={
+  get(k,d){ try{ const v=localStorage.getItem(k); return v==null?d:JSON.parse(v); }catch(e){ return (k in mem)?mem[k]:d; } },
+  set(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){ mem[k]=v; } },
+  del(k){ try{ localStorage.removeItem(k); }catch(e){ delete mem[k]; } }
+};
+
+/* ============ Cloud: đồng bộ 2 máy qua Supabase (tuỳ chọn) ============ */
+const SB_URL='https://ltmlueqkajqmduoqghdf.supabase.co';
+const SB_KEY='sb_publishable_74Lm6cc0CkoOOzy3A4IRrQ_BX0jHQcg';
+// Các key được đồng bộ (KHÔNG gồm ju.me/ju.device/ju.sync — đó là riêng từng máy)
+const SYNC_KEYS=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood'];
+let _sb=null;
+function sbClient(){
+  if(_sb) return _sb;
+  if(window.supabase && window.supabase.createClient){
+    _sb=window.supabase.createClient(SB_URL,SB_KEY,{ auth:{ persistSession:true, autoRefreshToken:true, detectSessionInUrl:false } });
+  }
+  return _sb;
+}
+const Cloud={
+  ready:false, channel:null, lastHash:'', pushTimer:null, onChange:null,
+  coupleId:null, sessionUser:null, _inited:false, _urlCache:{},
+  client(){ return sbClient(); },
+  device(){ let d=store.get('ju.device',null); if(!d){ d=Math.random().toString(36).slice(2)+Date.now().toString(36); store.set('ju.device',d);} return d; },
+  loggedIn(){ return !!this.sessionUser; },
+  connected(){ return !!(this.sessionUser && this.coupleId); },
+  couple(){ return store.get('ju.couple',null); },
+  emailOf(){ return this.sessionUser ? this.sessionUser.email : ''; },
+
+  /* ---------- auth ---------- */
+  async init(){
+    const c=this.client(); if(!c||this._inited) return; this._inited=true;
+    c.auth.onAuthStateChange((_e,session)=>{ this._onSession(session); });
+  },
+  async _onSession(session){
+    const u=session?session.user:null;
+    const same=u && this.sessionUser && u.id===this.sessionUser.id;
+    this.sessionUser=u;
+    if(!u){ this.coupleId=null; this.stop(); store.del('ju.couple'); if(this.onChange)this.onChange(); return; }
+    if(same && this.coupleId && this.channel){ if(this.onChange)this.onChange(); return; } // token refresh → bỏ qua
+    await this.loadCouple();
+  },
+  async signUp(email,pw,name){
+    const c=this.client();
+    const {data,error}=await c.auth.signUp({email,password:pw,options:{data:{name}}});
+    if(error) throw error;
+    if(!data.session){ try{ const r=await c.auth.signInWithPassword({email,password:pw}); if(r.data&&r.data.session) return r.data; }catch(e){} }
+    return data;
+  },
+  async signIn(email,pw){ const c=this.client(); const {data,error}=await c.auth.signInWithPassword({email,password:pw}); if(error) throw error; return data; },
+  async signOut(){ const c=this.client(); try{ await c.auth.signOut(); }catch(e){} this.sessionUser=null; this.coupleId=null; this.stop(); store.del('ju.couple'); if(this.onChange)this.onChange(); },
+
+  /* ---------- couple ---------- */
+  async loadCouple(){
+    const c=this.client(); if(!c||!this.sessionUser){ this.coupleId=null; return; }
+    const {data,error}=await c.rpc('ju_my_couple');
+    if(!error && data && data.id){ this.coupleId=data.id; store.set('ju.couple',data); await this.start(); }
+    else { this.coupleId=null; this.stop(); store.del('ju.couple'); }
+    if(this.onChange)this.onChange();
+  },
+  async createCouple(name){ const c=this.client(); const {data,error}=await c.rpc('ju_create_couple',{p_name:name||null}); if(error) throw error; await this.loadCouple(); return data; },
+  async joinCouple(code,name){ const c=this.client(); const {data,error}=await c.rpc('ju_join_couple',{p_code:code,p_name:name||null}); if(error) throw error; await this.loadCouple(); return data; },
+  async leaveCouple(){ const c=this.client(); const {error}=await c.rpc('ju_leave_couple'); if(error) throw error; this.coupleId=null; this.stop(); store.del('ju.couple'); if(this.onChange)this.onChange(); },
+
+  /* ---------- sync ---------- */
+  snapshot(){ const s={}; SYNC_KEYS.forEach(k=>{ const v=store.get(k,null); if(v!=null) s[k]=v; }); return s; },
+  applyRemote(data){
+    if(!data) return;
+    SYNC_KEYS.forEach(k=>{ if(k in data) store.set(k,data[k]); });
+    this.lastHash=JSON.stringify(this.snapshot());
+    window.dispatchEvent(new CustomEvent('ju:remote'));
+  },
+  schedulePush(){ if(!this.connected()||!this.ready) return; clearTimeout(this.pushTimer); this.pushTimer=setTimeout(()=>this.push(),700); },
+  async push(){
+    const c=this.client(); if(!this.connected()||!c) return;
+    const snap=this.snapshot(), h=JSON.stringify(snap);
+    if(h===this.lastHash) return;
+    this.lastHash=h;
+    try{ await c.from('justus_data').upsert({couple_id:this.coupleId,data:snap,last_writer:this.device(),updated_at:new Date().toISOString()}); this._stamp(); }
+    catch(e){}
+  },
+  async pull(){
+    const c=this.client(); if(!this.connected()||!c) return {ok:false};
+    const {data,error}=await c.from('justus_data').select('data,last_writer').eq('couple_id',this.coupleId).maybeSingle();
+    if(error) return {ok:false,error};
+    if(data && data.data && Object.keys(data.data).length){ this.applyRemote(data.data); return {ok:true,found:true}; }
+    return {ok:true,found:false};
+  },
+  async start(){
+    if(!this.connected()) return;
+    this.ready=false;
+    const r=await this.pull();
+    if(r.ok && !r.found){ this.lastHash=''; await this.push(); } // couple mới → đẩy dữ liệu máy này lên làm gốc
+    this.subscribe();
+    this.ready=true; this._stamp();
+  },
+  subscribe(){
+    const c=this.client(); if(!this.connected()||!c) return;
+    if(this.channel){ c.removeChannel(this.channel); this.channel=null; }
+    this.channel=c.channel('ju-'+this.coupleId)
+      .on('postgres_changes',{event:'*',schema:'public',table:'justus_data',filter:'couple_id=eq.'+this.coupleId},async (payload)=>{
+        const nw=payload.new||{};
+        if(nw.last_writer===this.device()) return;
+        const r=await this.pull();
+        if(r.ok && this.onChange) this.onChange();
+        this._stamp();
+      })
+      .subscribe();
+  },
+  stop(){ const c=this.client(); if(this.channel&&c){ c.removeChannel(this.channel); this.channel=null; } this.ready=false; },
+
+  /* ---------- photos (Storage) ---------- */
+  async uploadPhoto(file){
+    const c=this.client(); if(!this.connected()||!c) throw new Error('not_connected');
+    const ext=((file.name||'img').split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';
+    const path=this.coupleId+'/'+this.device()+'-'+Date.now()+'-'+Math.random().toString(36).slice(2,6)+'.'+ext;
+    const {error}=await c.storage.from('justus-photos').upload(path,file,{upsert:false,contentType:file.type||'image/jpeg'});
+    if(error) throw error;
+    return path;
+  },
+  async signedUrl(path){
+    const c=this.client(); if(!c||!path) return null;
+    if(this._urlCache[path]) return this._urlCache[path];
+    const {data,error}=await c.storage.from('justus-photos').createSignedUrl(path,60*60*24*7);
+    if(error||!data) return null;
+    this._urlCache[path]=data.signedUrl; return data.signedUrl;
+  },
+  async deletePhoto(path){ const c=this.client(); if(!c||!path) return; try{ await c.storage.from('justus-photos').remove([path]); delete this._urlCache[path]; }catch(e){} },
+
+  _stamp(){ try{ store.set('ju.synced', Date.now()); }catch(e){} }
+};
+window.__JU_Cloud=Cloud;
+
+function useLocal(key,initial){
+  const [v,setV]=useState(()=>store.get(key,initial));
+  useEffect(()=>{ store.set(key,v); Cloud.schedulePush(); },[key,v]);
+  // nhận thay đổi từ máy kia
+  useEffect(()=>{
+    const h=()=>{ const nv=store.get(key,initial); setV(prev=> JSON.stringify(prev)===JSON.stringify(nv)?prev:nv); };
+    window.addEventListener('ju:remote',h);
+    return ()=>window.removeEventListener('ju:remote',h);
+  },[key]);
+  return [v,setV];
+}
+
+/* ============ helpers ============ */
+const uid=()=> Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const VND=(n)=> (Number(n)||0).toLocaleString('vi-VN')+'đ';
+const pad=(n)=> n<10?'0'+n:''+n;
+function todayISO(){ const d=new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+function fmtDateVN(s){ if(!s) return ''; const [y,m,d]=s.split('-'); return d+'/'+m+'/'+y; }
+function daysFromToday(iso){
+  if(!iso) return null;
+  const t=new Date(); t.setHours(0,0,0,0);
+  const d=new Date(iso+'T00:00:00');
+  return Math.round((d-t)/86400000);
+}
+function nextOccurrence(iso){
+  // lấy ngày-tháng, đẩy về lần xuất hiện kế tiếp (>= hôm nay)
+  if(!iso) return null;
+  const [_,m,d]=iso.split('-').map(Number);
+  const t=new Date(); t.setHours(0,0,0,0);
+  let y=t.getFullYear();
+  let nd=new Date(y,m-1,d);
+  if(nd<t){ nd=new Date(y+1,m-1,d); }
+  return nd;
+}
+function daysToNext(iso){
+  const nd=nextOccurrence(iso); if(!nd) return null;
+  const t=new Date(); t.setHours(0,0,0,0);
+  return Math.round((nd-t)/86400000);
+}
+function yearsBetween(iso){
+  if(!iso) return 0;
+  const a=new Date(iso+'T00:00:00'), b=new Date();
+  let y=b.getFullYear()-a.getFullYear();
+  const m=b.getMonth()-a.getMonth();
+  if(m<0||(m===0&&b.getDate()<a.getDate())) y--;
+  return y;
+}
+function genCode(){ const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; let s=''; for(let i=0;i<8;i++) s+=A[Math.floor(Math.random()*A.length)]; return s.slice(0,4)+'-'+s.slice(4); }
+function normCode(s){ return (s||'').toUpperCase().replace(/[^A-Z0-9-]/g,''); }
+
+const BUDGETS=[
+  {k:'free', label:'Miễn phí 💸', max:0},
+  {k:'u100', label:'Dưới 100k', max:100000},
+  {k:'u300', label:'100–300k', max:300000},
+  {k:'u500', label:'300–500k', max:500000},
+  {k:'o500', label:'Trên 500k', max:Infinity},
+];
+const budgetLabel=(k)=> (BUDGETS.find(b=>b.k===k)||{}).label||'';
+
+const THEMES=[
+  {k:'rose', name:'Hồng yêu', c:'#e85d8a'},
+  {k:'peach', name:'Hoàng hôn', c:'#f0803c'},
+  {k:'lavender', name:'Oải hương', c:'#8b5cf6'},
+  {k:'ocean', name:'Đại dương', c:'#119cb0'},
+  {k:'forest', name:'Rừng xanh', c:'#2f9e57'},
+  {k:'night', name:'Đêm tình', c:'#ff6f9d'},
+];
+function applyTheme(k){ document.body.className='theme-'+k; }
+
+const AVATARS=['🧑','👩','👨','🧔','👱‍♀️','👩‍🦱','🧑‍🦰','👸','🤴','🐰','🐱','🐻','🦊','🐧','🌷','⭐'];
+const MOODS=['😍','😊','🥰','😌','😎','😴','🤒','😢','😠','🤩','🥺','😋'];
+
+/* ============ small components ============ */
+function Av({emoji,size=22}){
+  return <span className="av-sm" style={{width:size,height:size,fontSize:size*0.62}}>{emoji||'❤️'}</span>;
+}
+function Stars({value=0,onChange}){
+  return <span className="stars">{[1,2,3,4,5].map(i=>(
+    <span key={i} onClick={onChange?()=>onChange(i===value?0:i):undefined} style={{cursor:onChange?'pointer':'default'}}>
+      {i<=value?'★':'☆'}</span>
+  ))}</span>;
+}
+
+/* ============ Sheet (modal) ============ */
+function Sheet({title,onClose,children}){
+  return (
+    <div className="ov" onClick={onClose}>
+      <div className="sheet" onClick={e=>e.stopPropagation()}>
+        <div className="x" onClick={onClose}>✕</div>
+        {title && <h3>{title}</h3>}
+        {children}
+      </div>
+    </div>
+  );
+}
+
+/* ============ Generic list (Wishlist, Bucket, Watch, Links, Places, Food, Date ideas) ============ */
+function SimpleList({skey, people, me, addLabel, doneLabel='Xong', fields=[], tagOptions, empty, flash}){
+  const [items,setItems]=useLocal(skey,[]);
+  const [filter,setFilter]=useState('all');
+  const [q,setQ]=useState('');
+  const [open,setOpen]=useState(false);
+  const [edit,setEdit]=useState(null);
+
+  const save=(it)=>{
+    if(it.id){ setItems(items.map(x=>x.id===it.id?it:x)); }
+    else { setItems([{...it,id:uid(),by:me,fav:false,done:false,createdAt:Date.now()}, ...items]); }
+    setOpen(false); setEdit(null);
+  };
+  const del=(id)=> setItems(items.filter(x=>x.id!==id));
+  const toggle=(id,f)=> setItems(items.map(x=>x.id===id?{...x,[f]:!x[f]}:x));
+
+  const shown=useMemo(()=>{
+    let a=items.slice();
+    if(filter==='mine') a=a.filter(x=>x.by===me);
+    if(filter==='fav') a=a.filter(x=>x.fav);
+    if(filter==='todo') a=a.filter(x=>!x.done);
+    if(q.trim()){ const s=q.toLowerCase(); a=a.filter(x=>(x.title||'').toLowerCase().includes(s)||(x.note||'').toLowerCase().includes(s)); }
+    a.sort((p,r)=> (r.fav?1:0)-(p.fav?1:0) || r.createdAt-p.createdAt);
+    return a;
+  },[items,filter,q,me]);
+
+  return (
+    <div>
+      <div className="row" style={{margin:'4px 14px 0',gap:8}}>
+        <input className="inp grow" placeholder="🔎 Tìm…" value={q} onChange={e=>setQ(e.target.value)} />
+        <button className="btn sm" onClick={()=>{setEdit(null);setOpen(true);}}>＋ Thêm</button>
+      </div>
+      <div className="filters">
+        <button className={filter==='all'?'on':''} onClick={()=>setFilter('all')}>Tất cả</button>
+        <button className={filter==='todo'?'on':''} onClick={()=>setFilter('todo')}>Chưa {doneLabel.toLowerCase()}</button>
+        <button className={filter==='mine'?'on':''} onClick={()=>setFilter('mine')}>Của tôi</button>
+        <button className={filter==='fav'?'on':''} onClick={()=>setFilter('fav')}>❤️ Thích</button>
+      </div>
+
+      {shown.length===0 && <div className="empty"><span className="big">{empty?.icon||'✨'}</span>{empty?.text||'Chưa có gì cả — thêm mục đầu tiên nhé!'}</div>}
+
+      {shown.map(it=>(
+        <div key={it.id} className={'item'+(it.done?' dn':'')}>
+          <div className="it-top">
+            <h4>{it.title}</h4>
+            <button className={'heartbtn'+(it.fav?' on':'')} onClick={()=>toggle(it.id,'fav')}>{it.fav?'❤️':'🤍'}</button>
+          </div>
+          {it.note && <div className="it-note">{it.note}</div>}
+          {it.address && <div className="it-note muted">📍 {it.address}</div>}
+          {it.link && <div style={{marginTop:6}}><a className="linkout" href={it.link} target="_blank" rel="noreferrer">🔗 {it.link}</a></div>}
+          <div className="it-meta">
+            <span className="av-sm">{people[it.by]?.avatar||'❤️'}</span>
+            <span className="muted" style={{fontSize:12}}>{people[it.by]?.name||''}</span>
+            {it.budget && <span className="pill">{budgetLabel(it.budget)}</span>}
+            {typeof it.price==='number' && it.price>0 && <span className="pill">{VND(it.price)}</span>}
+            {it.tag && <span className="pill">{it.tag}</span>}
+            {typeof it.rating==='number' && it.rating>0 && <Stars value={it.rating} />}
+            <span className="grow"></span>
+            <button className="pill" onClick={()=>toggle(it.id,'done')}>{it.done?'↩︎ Bỏ':'✓ '+doneLabel}</button>
+            <button className="iconbtn" onClick={()=>{setEdit(it);setOpen(true);}}>✏️</button>
+            <button className="iconbtn" onClick={()=>del(it.id)}>🗑️</button>
+          </div>
+        </div>
+      ))}
+
+      {open && <ItemForm title={(edit?'Sửa ':'Thêm ')+addLabel} init={edit} fields={fields} tagOptions={tagOptions}
+        onClose={()=>{setOpen(false);setEdit(null);}} onSave={save} />}
+    </div>
+  );
+}
+
+function ItemForm({title,init,fields,tagOptions,onClose,onSave}){
+  const [f,setF]=useState(()=> init? {...init} : {title:''});
+  const set=(k,v)=>setF(p=>({...p,[k]:v}));
+  const has=(k)=>fields.includes(k);
+  const submit=()=>{ if(!f.title || !f.title.trim()){ return; } onSave(f); };
+  return (
+    <Sheet title={title} onClose={onClose}>
+      <div className="field"><label>Tiêu đề</label>
+        <input className="inp" value={f.title||''} onChange={e=>set('title',e.target.value)} placeholder="Nhập…" autoFocus/></div>
+      {has('budget') && <div className="field"><label>Ngân sách</label>
+        <select className="inp" value={f.budget||''} onChange={e=>set('budget',e.target.value)}>
+          <option value="">— chọn —</option>{BUDGETS.map(b=><option key={b.k} value={b.k}>{b.label}</option>)}
+        </select></div>}
+      {has('tag') && <div className="field"><label>Loại</label>
+        <select className="inp" value={f.tag||''} onChange={e=>set('tag',e.target.value)}>
+          <option value="">— chọn —</option>{(tagOptions||[]).map(t=><option key={t} value={t}>{t}</option>)}
+        </select></div>}
+      {has('price') && <div className="field"><label>Giá ước tính (đ)</label>
+        <input className="inp" type="number" value={f.price||''} onChange={e=>set('price',Number(e.target.value))} placeholder="0"/></div>}
+      {has('address') && <div className="field"><label>Địa chỉ</label>
+        <input className="inp" value={f.address||''} onChange={e=>set('address',e.target.value)} placeholder="Ở đâu?"/></div>}
+      {has('link') && <div className="field"><label>Link</label>
+        <input className="inp" value={f.link||''} onChange={e=>set('link',e.target.value)} placeholder="https://…"/></div>}
+      {has('rating') && <div className="field"><label>Đánh giá</label>
+        <div><Stars value={f.rating||0} onChange={v=>set('rating',v)} /></div></div>}
+      {has('note') && <div className="field"><label>Ghi chú</label>
+        <textarea className="inp" value={f.note||''} onChange={e=>set('note',e.target.value)} placeholder="Thêm chi tiết…"/></div>}
+      <button className="btn" onClick={submit}>💾 Lưu</button>
+    </Sheet>
+  );
+}
+
+/* ============ HOME ============ */
+function Home({setup,people,me,go}){
+  const [mood,setMood]=useLocal('ju.mood',{});
+  const [notes]=useLocal('ju.notes',[]);
+  const [events]=useLocal('ju.events',[]);
+  const [dates]=useLocal('ju.dates',[]);
+  const [photos]=useLocal('ju.photos',[]);
+  const [wish]=useLocal('ju.wish',[]);
+  const [bucket]=useLocal('ju.bucket',[]);
+
+  const loveDays = setup.loveDate ? Math.max(0,(daysFromToday(setup.loveDate)||0)*-1) : null;
+  const weddingDays = setup.weddingDate ? Math.max(0,(daysFromToday(setup.weddingDate)||0)*-1) : null;
+
+  // sự kiện / ngày sắp tới gần nhất
+  const upcoming=useMemo(()=>{
+    const list=[];
+    events.forEach(e=>{ const d=daysFromToday(e.date); if(d!=null&&d>=0) list.push({t:e.title,d,date:e.date,kind:'Sự kiện'}); });
+    dates.forEach(e=>{ const d=daysToNext(e.date); if(d!=null) list.push({t:e.title,d,kind:'Ngày nhớ'}); });
+    // kỷ niệm yêu/cưới
+    if(setup.loveDate){ const d=daysToNext(setup.loveDate); list.push({t:'Kỷ niệm ngày yêu',d,kind:'💗'}); }
+    if(setup.weddingDate){ const d=daysToNext(setup.weddingDate); list.push({t:'Kỷ niệm ngày cưới',d,kind:'💍'}); }
+    list.sort((a,b)=>a.d-b.d);
+    return list.slice(0,3);
+  },[events,dates,setup]);
+
+  const todayMood=mood[todayISO()]||{};
+  const setMyMood=(emo)=> setMood({...mood,[todayISO()]:{...todayMood,[me]:emo}});
+
+  const lastNote=notes.slice().sort((a,b)=>b.createdAt-a.createdAt)[0];
+  const cover=photos[0]?.src;
+
+  return (
+    <div>
+      <div className="hero">
+        {cover && <div className="cover" style={{backgroundImage:`url(${cover})`}}></div>}
+        <div className="inner">
+          <div className="names">{people.a.avatar} {people.a.name} <span style={{opacity:.85}}>＋</span> {people.b.name} {people.b.avatar}</div>
+          {loveDays!=null
+            ? <><div className="count">{loveDays.toLocaleString('vi-VN')} ngày</div>
+                <div className="sub">bên nhau từ {fmtDateVN(setup.loveDate)} · {yearsBetween(setup.loveDate)} năm 💗</div></>
+            : <div className="sub" style={{marginTop:10}}>Thêm ngày yêu nhau trong Hồ sơ để bắt đầu đếm nhé ✨</div>}
+          {weddingDays!=null && <div className="sub" style={{marginTop:6}}>💍 Cưới nhau {weddingDays.toLocaleString('vi-VN')} ngày · {yearsBetween(setup.weddingDate)} năm</div>}
+        </div>
+      </div>
+
+      {/* Tâm trạng hôm nay */}
+      <div className="card">
+        <div className="row"><b>Tâm trạng hôm nay</b><span className="grow"></span>
+          <span className="muted" style={{fontSize:12}}>{fmtDateVN(todayISO())}</span></div>
+        <div className="row" style={{marginTop:8,gap:14}}>
+          <div className="grow">
+            <div className="muted" style={{fontSize:12,marginBottom:4}}>{people.a.name} {me==='a'?'(bạn)':''}</div>
+            <div style={{fontSize:30}}>{todayMood.a||'—'}</div>
+          </div>
+          <div className="grow">
+            <div className="muted" style={{fontSize:12,marginBottom:4}}>{people.b.name} {me==='b'?'(bạn)':''}</div>
+            <div style={{fontSize:30}}>{todayMood.b||'—'}</div>
+          </div>
+        </div>
+        <div className="muted" style={{fontSize:12,marginTop:10}}>Chọn tâm trạng của bạn:</div>
+        <div className="mood-pick">
+          {MOODS.map(m=><button key={m} className={todayMood[me]===m?'on':''} onClick={()=>setMyMood(m)}>{m}</button>)}
+        </div>
+      </div>
+
+      {/* Sắp tới */}
+      <div className="sec-title">⏳ Sắp tới</div>
+      {upcoming.length===0 && <div className="empty">Chưa có sự kiện nào sắp tới.</div>}
+      {upcoming.map((u,i)=>(
+        <div key={i} className="item" onClick={()=>go('us')} style={{cursor:'pointer'}}>
+          <div className="it-top">
+            <h4>{u.t}</h4>
+            <span className="pill">{u.d===0?'Hôm nay!':u.d===1?'Ngày mai':'còn '+u.d+' ngày'}</span>
+          </div>
+          <div className="muted" style={{fontSize:12,marginTop:4}}>{u.kind}{u.date?' · '+fmtDateVN(u.date):''}</div>
+        </div>
+      ))}
+
+      {/* Lời nhắn mới nhất */}
+      {lastNote && (
+        <div className="card" onClick={()=>go('us')} style={{cursor:'pointer'}}>
+          <div className="row"><b>💌 Lời nhắn mới</b><span className="grow"></span><span className="muted" style={{fontSize:12}}>{people[lastNote.by]?.name}</span></div>
+          <div className="it-note" style={{marginTop:6}}>{lastNote.text}</div>
+        </div>
+      )}
+
+      <div className="stat-grid">
+        <div className="stat" onClick={()=>go('wish')} style={{cursor:'pointer'}}><div className="n">{wish.length}</div><div className="l">🎁 Quà mong muốn</div></div>
+        <div className="stat" onClick={()=>go('wish')} style={{cursor:'pointer'}}><div className="n">{bucket.filter(b=>!b.done).length}</div><div className="l">🎯 Điều muốn làm cùng</div></div>
+        <div className="stat" onClick={()=>go('us')} style={{cursor:'pointer'}}><div className="n">{events.length}</div><div className="l">📅 Sự kiện</div></div>
+        <div className="stat" onClick={()=>go('me')} style={{cursor:'pointer'}}><div className="n">{photos.length}</div><div className="l">📷 Ảnh chung</div></div>
+      </div>
+      <div style={{height:8}}></div>
+    </div>
+  );
+}
+
+/* ============ Tab: Ước muốn ============ */
+function WishTab({people,me,flash}){
+  const [seg,setSeg]=useState('gift');
+  return (
+    <div>
+      <div className="seg">
+        <button className={seg==='gift'?'on':''} onClick={()=>setSeg('gift')}>🎁 Quà tặng</button>
+        <button className={seg==='bucket'?'on':''} onClick={()=>setSeg('bucket')}>🎯 Muốn làm cùng</button>
+        <button className={seg==='watch'?'on':''} onClick={()=>setSeg('watch')}>🎬 Xem·Đọc·Nghe</button>
+        <button className={seg==='link'?'on':''} onClick={()=>setSeg('link')}>🔗 Link hay</button>
+      </div>
+      {seg==='gift' && <SimpleList skey="ju.wish" people={people} me={me} addLabel="món quà" doneLabel="Đã tặng"
+        fields={['price','link','note']} empty={{icon:'🎁',text:'Ghi lại món quà bạn mơ ước — để nửa kia biết đường!'}} flash={flash}/>}
+      {seg==='bucket' && <SimpleList skey="ju.bucket" people={people} me={me} addLabel="điều muốn làm" doneLabel="Đã làm"
+        fields={['note']} empty={{icon:'🎯',text:'Những điều hai đứa muốn làm cùng nhau…'}} flash={flash}/>}
+      {seg==='watch' && <SimpleList skey="ju.watch" people={people} me={me} addLabel="phim/sách/nhạc" doneLabel="Đã xong"
+        fields={['tag','link','rating','note']} tagOptions={['Phim','Phim bộ','Sách','Nhạc','Podcast','Khác']}
+        empty={{icon:'🎬',text:'Phim, sách, nhạc muốn thưởng thức cùng nhau.'}} flash={flash}/>}
+      {seg==='link' && <SimpleList skey="ju.links" people={people} me={me} addLabel="link/bài viết" doneLabel="Đã đọc"
+        fields={['link','note']} empty={{icon:'🔗',text:'Gửi nhau bài viết, link hay ở đây.'}} flash={flash}/>}
+    </div>
+  );
+}
+
+/* ============ Tab: Hẹn hò ============ */
+function DateTab({people,me,flash}){
+  const [seg,setSeg]=useState('idea');
+  return (
+    <div>
+      <div className="seg">
+        <button className={seg==='idea'?'on':''} onClick={()=>setSeg('idea')}>💡 Ý tưởng</button>
+        <button className={seg==='food'?'on':''} onClick={()=>setSeg('food')}>🍜 Quán & Món</button>
+        <button className={seg==='map'?'on':''} onClick={()=>setSeg('map')}>🗺️ Bản đồ</button>
+      </div>
+      {seg==='idea' && <DateIdeas people={people} me={me}/>}
+      {seg==='food' && <SimpleList skey="ju.food" people={people} me={me} addLabel="quán/món" doneLabel="Đã thử"
+        fields={['address','rating','link','note']} empty={{icon:'🍜',text:'Quán ăn, món muốn thử cùng nhau.'}} flash={flash}/>}
+      {seg==='map' && <MapSpots people={people} me={me}/>}
+    </div>
+  );
+}
+
+function DateIdeas({people,me}){
+  const [items,setItems]=useLocal('ju.ideas',[]);
+  const [bFilter,setBFilter]=useState('');
+  const [open,setOpen]=useState(false);
+  const [edit,setEdit]=useState(null);
+  const [pick,setPick]=useState(null);
+
+  const save=(it)=>{
+    if(it.id) setItems(items.map(x=>x.id===it.id?it:x));
+    else setItems([{...it,id:uid(),by:me,fav:false,done:false,createdAt:Date.now()},...items]);
+    setOpen(false);setEdit(null);
+  };
+  const del=(id)=>setItems(items.filter(x=>x.id!==id));
+  const toggle=(id,f)=>setItems(items.map(x=>x.id===id?{...x,[f]:!x[f]}:x));
+
+  const pool=bFilter?items.filter(x=>x.budget===bFilter):items;
+  const shown=pool.slice().sort((a,b)=>(b.fav?1:0)-(a.fav?1:0)||b.createdAt-a.createdAt);
+  const random=()=>{ if(pool.length===0) return; setPick(pool[Math.floor(Math.random()*pool.length)]); };
+
+  return (
+    <div>
+      <div className="filters">
+        <button className={bFilter===''?'on':''} onClick={()=>setBFilter('')}>Mọi mức</button>
+        {BUDGETS.map(b=><button key={b.k} className={bFilter===b.k?'on':''} onClick={()=>setBFilter(b.k)}>{b.label}</button>)}
+      </div>
+      <div className="row" style={{margin:'10px 14px',gap:8}}>
+        <button className="btn grow" onClick={random}>🎲 Gợi ý ngẫu nhiên</button>
+        <button className="btn sm soft" onClick={()=>{setEdit(null);setOpen(true);}}>＋ Thêm</button>
+      </div>
+      {pick && (
+        <div className="card center" style={{borderColor:'var(--primary)',borderWidth:2}}>
+          <div className="muted" style={{fontSize:12}}>🎲 Hôm nay đi đâu nhỉ…</div>
+          <div style={{fontSize:20,fontWeight:800,margin:'6px 0'}}>{pick.title}</div>
+          {pick.budget && <span className="pill">{budgetLabel(pick.budget)}</span>}
+          {pick.note && <div className="it-note" style={{marginTop:8}}>{pick.note}</div>}
+        </div>
+      )}
+      {shown.length===0 && <div className="empty"><span className="big">💡</span>Thêm ý tưởng hẹn hò theo từng mức ngân sách.</div>}
+      {shown.map(it=>(
+        <div key={it.id} className={'item'+(it.done?' dn':'')}>
+          <div className="it-top">
+            <h4>{it.title}</h4>
+            <button className={'heartbtn'+(it.fav?' on':'')} onClick={()=>toggle(it.id,'fav')}>{it.fav?'❤️':'🤍'}</button>
+          </div>
+          {it.note && <div className="it-note">{it.note}</div>}
+          <div className="it-meta">
+            <span className="av-sm">{people[it.by]?.avatar||'❤️'}</span>
+            {it.budget && <span className="pill">{budgetLabel(it.budget)}</span>}
+            <span className="grow"></span>
+            <button className="pill" onClick={()=>toggle(it.id,'done')}>{it.done?'↩︎ Bỏ':'✓ Đã đi'}</button>
+            <button className="iconbtn" onClick={()=>{setEdit(it);setOpen(true);}}>✏️</button>
+            <button className="iconbtn" onClick={()=>del(it.id)}>🗑️</button>
+          </div>
+        </div>
+      ))}
+      {open && <ItemForm title={(edit?'Sửa ':'Thêm ')+'ý tưởng hẹn hò'} init={edit} fields={['budget','note']}
+        onClose={()=>{setOpen(false);setEdit(null);}} onSave={save}/>}
+    </div>
+  );
+}
+
+/* ============ Map spots ============ */
+function MapSpots({people,me}){
+  const [spots,setSpots]=useLocal('ju.spots',[]);
+  const mapRef=useRef(null), elRef=useRef(null), layerRef=useRef(null);
+  const [picking,setPicking]=useState(false);
+  const [draft,setDraft]=useState(null); // {lat,lng}
+  const [form,setForm]=useState(null);
+
+  useEffect(()=>{
+    if(!window.L || mapRef.current) return;
+    const map=L.map(elRef.current,{zoomControl:true}).setView([21.0278,105.8342],12); // Hà Nội
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'}).addTo(map);
+    layerRef.current=L.layerGroup().addTo(map);
+    map.on('click',(e)=>{
+      setPicking(p=>{
+        if(p){ setDraft({lat:e.latlng.lat,lng:e.latlng.lng}); setForm({title:'',cat:'chơi',note:''}); return false; }
+        return p;
+      });
+    });
+    mapRef.current=map;
+  },[]);
+
+  // vẽ markers
+  useEffect(()=>{
+    const lg=layerRef.current; if(!lg) return;
+    lg.clearLayers();
+    spots.forEach(s=>{
+      if(s.lat==null) return;
+      const m=L.marker([s.lat,s.lng]).addTo(lg);
+      m.bindPopup('<b>'+(s.cat==='ăn'?'🍜 ':'📍 ')+(s.title||'')+'</b>'+(s.done?' ✅':'')+(s.note?'<br>'+s.note:''));
+    });
+  },[spots]);
+
+  const addSpot=()=>{
+    if(!form.title.trim()){ return; }
+    setSpots([{id:uid(),title:form.title,cat:form.cat,note:form.note,lat:draft.lat,lng:draft.lng,by:me,done:false,createdAt:Date.now()},...spots]);
+    setForm(null);setDraft(null);
+  };
+  const del=(id)=>setSpots(spots.filter(x=>x.id!==id));
+  const toggle=(id)=>setSpots(spots.map(x=>x.id===id?{...x,done:!x.done}:x));
+
+  return (
+    <div>
+      <div className="row" style={{margin:'10px 14px 0',gap:8}}>
+        <button className={'btn grow'+(picking?'':' soft')} onClick={()=>setPicking(!picking)}>
+          {picking?'👆 Chạm lên bản đồ để ghim…':'📍 Ghim chỗ mới'}</button>
+      </div>
+      <div className="muted center" style={{fontSize:12,margin:'6px 14px'}}>Lưu những chỗ hai đứa muốn đi / đã đi.</div>
+      <div id="map" ref={elRef}></div>
+
+      {spots.length===0 && <div className="empty">Chưa ghim chỗ nào. Bấm “Ghim chỗ mới” rồi chạm lên bản đồ.</div>}
+      {spots.map(s=>(
+        <div key={s.id} className={'item'+(s.done?' dn':'')}>
+          <div className="it-top">
+            <h4>{s.cat==='ăn'?'🍜 ':'📍 '}{s.title}</h4>
+            <button className="iconbtn" onClick={()=>{ if(mapRef.current&&s.lat!=null){ mapRef.current.setView([s.lat,s.lng],16); window.scrollTo({top:0,behavior:'smooth'});} }}>🔍</button>
+          </div>
+          {s.note && <div className="it-note">{s.note}</div>}
+          <div className="it-meta">
+            <span className="av-sm">{people[s.by]?.avatar||'❤️'}</span>
+            <span className="grow"></span>
+            <button className="pill" onClick={()=>toggle(s.id)}>{s.done?'↩︎ Chưa đi':'✓ Đã đi'}</button>
+            <button className="iconbtn" onClick={()=>del(s.id)}>🗑️</button>
+          </div>
+        </div>
+      ))}
+
+      {form && (
+        <Sheet title="Ghim chỗ mới" onClose={()=>{setForm(null);setDraft(null);}}>
+          <div className="field"><label>Tên chỗ</label>
+            <input className="inp" autoFocus value={form.title} onChange={e=>setForm({...form,title:e.target.value})} placeholder="Quán cà phê, công viên…"/></div>
+          <div className="field"><label>Loại</label>
+            <select className="inp" value={form.cat} onChange={e=>setForm({...form,cat:e.target.value})}>
+              <option value="chơi">📍 Chỗ chơi</option><option value="ăn">🍜 Chỗ ăn</option></select></div>
+          <div className="field"><label>Ghi chú</label>
+            <textarea className="inp" value={form.note} onChange={e=>setForm({...form,note:e.target.value})}/></div>
+          <button className="btn" onClick={addSpot}>💾 Lưu chỗ này</button>
+        </Sheet>
+      )}
+    </div>
+  );
+}
+
+/* ============ Tab: Tụi mình ============ */
+function UsTab({people,me,flash}){
+  const [seg,setSeg]=useState('events');
+  return (
+    <div>
+      <div className="seg">
+        <button className={seg==='events'?'on':''} onClick={()=>setSeg('events')}>📅 Sự kiện</button>
+        <button className={seg==='dates'?'on':''} onClick={()=>setSeg('dates')}>🎂 Ngày nhớ</button>
+        <button className={seg==='fund'?'on':''} onClick={()=>setSeg('fund')}>💰 Quỹ chung</button>
+        <button className={seg==='shop'?'on':''} onClick={()=>setSeg('shop')}>🛒 Đi chợ</button>
+        <button className={seg==='notes'?'on':''} onClick={()=>setSeg('notes')}>💌 Nhắn nhau</button>
+      </div>
+      {seg==='events' && <Events people={people} me={me}/>}
+      {seg==='dates' && <ImportantDates people={people} me={me}/>}
+      {seg==='fund' && <Fund people={people} me={me}/>}
+      {seg==='shop' && <Shopping people={people} me={me}/>}
+      {seg==='notes' && <Notes people={people} me={me}/>}
+    </div>
+  );
+}
+
+function Events({people,me}){
+  const [events,setEvents]=useLocal('ju.events',[]);
+  const [open,setOpen]=useState(false);
+  const [edit,setEdit]=useState(null);
+
+  const save=(e)=>{
+    if(e.id) setEvents(events.map(x=>x.id===e.id?e:x));
+    else setEvents([{...e,id:uid(),by:me,todos:[],createdAt:Date.now()},...events]);
+    setOpen(false);setEdit(null);
+  };
+  const del=(id)=>setEvents(events.filter(x=>x.id!==id));
+  const addTodo=(id,text)=> setEvents(events.map(e=>e.id===id?{...e,todos:[...(e.todos||[]),{id:uid(),text,done:false}]}:e));
+  const toggleTodo=(id,tid)=> setEvents(events.map(e=>e.id===id?{...e,todos:e.todos.map(t=>t.id===tid?{...t,done:!t.done}:t)}:e));
+  const delTodo=(id,tid)=> setEvents(events.map(e=>e.id===id?{...e,todos:e.todos.filter(t=>t.id!==tid)}:e));
+
+  const shown=events.slice().sort((a,b)=>(a.date||'9').localeCompare(b.date||'9'));
+  return (
+    <div>
+      <div className="row" style={{margin:'10px 14px'}}><span className="grow muted" style={{fontSize:13}}>Sự kiện chung cần chuẩn bị</span>
+        <button className="btn sm" onClick={()=>{setEdit(null);setOpen(true);}}>＋ Thêm</button></div>
+      {shown.length===0 && <div className="empty"><span className="big">📅</span>Sinh nhật, du lịch, kỷ niệm… kèm checklist chuẩn bị.</div>}
+      {shown.map(e=>{
+        const d=daysFromToday(e.date);
+        const done=(e.todos||[]).filter(t=>t.done).length, total=(e.todos||[]).length;
+        return (
+          <div key={e.id} className="item">
+            <div className="it-top">
+              <h4>{e.title}</h4>
+              {d!=null && <span className="pill">{d<0?'đã qua':d===0?'Hôm nay!':d===1?'Ngày mai':'còn '+d+' ngày'}</span>}
+            </div>
+            <div className="muted" style={{fontSize:12,marginTop:3}}>{e.date?fmtDateVN(e.date):'chưa đặt ngày'} · thêm bởi {people[e.by]?.name}</div>
+            {e.note && <div className="it-note">{e.note}</div>}
+            {total>0 && <div className="prog"><i style={{width:(done/total*100)+'%'}}></i></div>}
+            <div style={{marginTop:8}}>
+              {(e.todos||[]).map(t=>(
+                <div key={t.id} className="row" style={{padding:'3px 0'}}>
+                  <button onClick={()=>toggleTodo(e.id,t.id)} style={{fontSize:17}}>{t.done?'✅':'⬜'}</button>
+                  <span className={'grow'+(t.done?' dim':'')} style={{fontSize:14,textDecoration:t.done?'line-through':'none'}}>{t.text}</span>
+                  <button className="muted" onClick={()=>delTodo(e.id,t.id)}>✕</button>
+                </div>
+              ))}
+              <TodoAdd onAdd={(t)=>addTodo(e.id,t)}/>
+            </div>
+            <div className="it-meta">
+              <span className="grow"></span>
+              <button className="iconbtn" onClick={()=>{setEdit(e);setOpen(true);}}>✏️</button>
+              <button className="iconbtn" onClick={()=>del(e.id)}>🗑️</button>
+            </div>
+          </div>
+        );
+      })}
+      {open && <EventForm init={edit} onClose={()=>{setOpen(false);setEdit(null);}} onSave={save}/>}
+    </div>
+  );
+}
+function TodoAdd({onAdd}){
+  const [t,setT]=useState('');
+  return (
+    <div className="row" style={{marginTop:6,gap:6}}>
+      <input className="inp grow" placeholder="+ việc cần chuẩn bị…" value={t}
+        onChange={e=>setT(e.target.value)} onKeyDown={e=>{ if(e.key==='Enter'&&t.trim()){onAdd(t.trim());setT('');} }}/>
+      <button className="iconbtn" onClick={()=>{ if(t.trim()){onAdd(t.trim());setT('');} }}>＋</button>
+    </div>
+  );
+}
+function EventForm({init,onClose,onSave}){
+  const [f,setF]=useState(()=>init?{...init}:{title:'',date:'',note:''});
+  return (
+    <Sheet title={(init?'Sửa ':'Thêm ')+'sự kiện'} onClose={onClose}>
+      <div className="field"><label>Tên sự kiện</label>
+        <input className="inp" autoFocus value={f.title} onChange={e=>setF({...f,title:e.target.value})} placeholder="VD: Sinh nhật Em"/></div>
+      <div className="field"><label>Ngày</label>
+        <input className="inp" type="date" value={f.date||''} onChange={e=>setF({...f,date:e.target.value})}/></div>
+      <div className="field"><label>Ghi chú</label>
+        <textarea className="inp" value={f.note||''} onChange={e=>setF({...f,note:e.target.value})}/></div>
+      <button className="btn" onClick={()=>{ if(f.title.trim()) onSave(f); }}>💾 Lưu</button>
+    </Sheet>
+  );
+}
+
+function ImportantDates({people,me}){
+  const [dates,setDates]=useLocal('ju.dates',[]);
+  const [open,setOpen]=useState(false);
+  const [edit,setEdit]=useState(null);
+  const save=(d)=>{
+    if(d.id) setDates(dates.map(x=>x.id===d.id?d:x));
+    else setDates([{...d,id:uid(),by:me,createdAt:Date.now()},...dates]);
+    setOpen(false);setEdit(null);
+  };
+  const del=(id)=>setDates(dates.filter(x=>x.id!==id));
+  const shown=dates.slice().sort((a,b)=>(daysToNext(a.date)??999)-(daysToNext(b.date)??999));
+  return (
+    <div>
+      <div className="row" style={{margin:'10px 14px'}}><span className="grow muted" style={{fontSize:13}}>Ngày lặp lại mỗi năm — nhắc trước</span>
+        <button className="btn sm" onClick={()=>{setEdit(null);setOpen(true);}}>＋ Thêm</button></div>
+      {shown.length===0 && <div className="empty"><span className="big">🎂</span>Sinh nhật, kỷ niệm, giỗ chạp 2 bên nội ngoại…</div>}
+      {shown.map(d=>{
+        const dd=daysToNext(d.date);
+        return (
+          <div key={d.id} className="item">
+            <div className="it-top">
+              <h4>{d.icon||'🎂'} {d.title}</h4>
+              <span className="pill">{dd===0?'Hôm nay!':dd===1?'Ngày mai':'còn '+dd+' ngày'}</span>
+            </div>
+            <div className="muted" style={{fontSize:12,marginTop:3}}>{fmtDateVN(d.date)} hằng năm{d.remind?` · nhắc trước ${d.remind} ngày`:''}</div>
+            <div className="it-meta"><span className="grow"></span>
+              <button className="iconbtn" onClick={()=>{setEdit(d);setOpen(true);}}>✏️</button>
+              <button className="iconbtn" onClick={()=>del(d.id)}>🗑️</button></div>
+          </div>
+        );
+      })}
+      {open && <DateForm init={edit} onClose={()=>{setOpen(false);setEdit(null);}} onSave={save}/>}
+    </div>
+  );
+}
+function DateForm({init,onClose,onSave}){
+  const ICONS=['🎂','💍','💗','🌸','🕯️','🎉','👶','📿'];
+  const [f,setF]=useState(()=>init?{...init}:{title:'',date:'',icon:'🎂',remind:3});
+  return (
+    <Sheet title={(init?'Sửa ':'Thêm ')+'ngày nhớ'} onClose={onClose}>
+      <div className="field"><label>Tên ngày</label>
+        <input className="inp" autoFocus value={f.title} onChange={e=>setF({...f,title:e.target.value})} placeholder="VD: Sinh nhật mẹ"/></div>
+      <div className="field"><label>Ngày (sẽ lặp mỗi năm)</label>
+        <input className="inp" type="date" value={f.date||''} onChange={e=>setF({...f,date:e.target.value})}/></div>
+      <div className="field"><label>Biểu tượng</label>
+        <div className="emoji-row">{ICONS.map(i=><button key={i} className={f.icon===i?'on':''} onClick={()=>setF({...f,icon:i})}>{i}</button>)}</div></div>
+      <div className="field"><label>Nhắc trước (ngày)</label>
+        <input className="inp" type="number" value={f.remind||0} onChange={e=>setF({...f,remind:Number(e.target.value)})}/></div>
+      <button className="btn" onClick={()=>{ if(f.title.trim()&&f.date) onSave(f); }}>💾 Lưu</button>
+    </Sheet>
+  );
+}
+
+function Fund({people,me}){
+  const [goals,setGoals]=useLocal('ju.fund',[]);
+  const [open,setOpen]=useState(false);
+  const [edit,setEdit]=useState(null);
+  const [contrib,setContrib]=useState(null); // goal
+
+  const save=(g)=>{
+    if(g.id) setGoals(goals.map(x=>x.id===g.id?g:x));
+    else setGoals([{...g,id:uid(),by:me,contribs:[],createdAt:Date.now()},...goals]);
+    setOpen(false);setEdit(null);
+  };
+  const del=(id)=>setGoals(goals.filter(x=>x.id!==id));
+  const addContrib=(gid,amount,who)=> setGoals(goals.map(g=>g.id===gid?{...g,contribs:[...(g.contribs||[]),{id:uid(),amount,by:who,date:todayISO()}]}:g));
+
+  return (
+    <div>
+      <div className="row" style={{margin:'10px 14px'}}><span className="grow muted" style={{fontSize:13}}>Mục tiêu tiết kiệm chung</span>
+        <button className="btn sm" onClick={()=>{setEdit(null);setOpen(true);}}>＋ Thêm</button></div>
+      {goals.length===0 && <div className="empty"><span className="big">💰</span>Góp quỹ cho du lịch, mua nhà, em bé…</div>}
+      {goals.map(g=>{
+        const saved=(g.contribs||[]).reduce((s,c)=>s+c.amount,0);
+        const pct=g.target?Math.min(100,Math.round(saved/g.target*100)):0;
+        return (
+          <div key={g.id} className="item">
+            <div className="it-top"><h4>{g.title}</h4><span className="pill">{pct}%</span></div>
+            <div className="row" style={{marginTop:4}}>
+              <b style={{color:'var(--primary)'}}>{VND(saved)}</b>
+              <span className="muted" style={{fontSize:13}}>/ {VND(g.target)}</span>
+            </div>
+            <div className="prog"><i style={{width:pct+'%'}}></i></div>
+            {(g.contribs||[]).length>0 && (
+              <div style={{marginTop:8}}>
+                {g.contribs.slice().reverse().slice(0,4).map(c=>(
+                  <div key={c.id} className="row" style={{fontSize:12.5,padding:'2px 0'}}>
+                    <span>{people[c.by]?.avatar} {people[c.by]?.name}</span>
+                    <span className="grow"></span><span className="muted">{fmtDateVN(c.date)}</span>
+                    <b style={{marginLeft:8}}>+{VND(c.amount)}</b>
+                  </div>
+                ))}
+              </div>
+            )}
+            <div className="it-meta"><span className="grow"></span>
+              <button className="pill" onClick={()=>setContrib(g)}>＋ Góp tiền</button>
+              <button className="iconbtn" onClick={()=>{setEdit(g);setOpen(true);}}>✏️</button>
+              <button className="iconbtn" onClick={()=>del(g.id)}>🗑️</button></div>
+          </div>
+        );
+      })}
+      {open && (
+        <Sheet title={(edit?'Sửa ':'Thêm ')+'mục tiêu'} onClose={()=>{setOpen(false);setEdit(null);}}>
+          <GoalForm init={edit} onSave={save}/>
+        </Sheet>
+      )}
+      {contrib && (
+        <Sheet title={'Góp vào: '+contrib.title} onClose={()=>setContrib(null)}>
+          <ContribForm people={people} me={me} onSave={(amt,who)=>{ addContrib(contrib.id,amt,who); setContrib(null); }}/>
+        </Sheet>
+      )}
+    </div>
+  );
+}
+function GoalForm({init,onSave}){
+  const [f,setF]=useState(()=>init?{...init}:{title:'',target:0});
+  return (<div>
+    <div className="field"><label>Tên mục tiêu</label>
+      <input className="inp" autoFocus value={f.title} onChange={e=>setF({...f,title:e.target.value})} placeholder="VD: Du lịch Đà Nẵng"/></div>
+    <div className="field"><label>Số tiền cần (đ)</label>
+      <input className="inp" type="number" value={f.target||''} onChange={e=>setF({...f,target:Number(e.target.value)})}/></div>
+    <button className="btn" onClick={()=>{ if(f.title.trim()) onSave(f); }}>💾 Lưu</button>
+  </div>);
+}
+function ContribForm({people,me,onSave}){
+  const [amt,setAmt]=useState('');
+  const [who,setWho]=useState(me);
+  return (<div>
+    <div className="field"><label>Người góp</label>
+      <select className="inp" value={who} onChange={e=>setWho(e.target.value)}>
+        <option value="a">{people.a.name}</option><option value="b">{people.b.name}</option></select></div>
+    <div className="field"><label>Số tiền (đ)</label>
+      <input className="inp" type="number" autoFocus value={amt} onChange={e=>setAmt(e.target.value)} placeholder="0"/></div>
+    <button className="btn" onClick={()=>{ const n=Number(amt); if(n>0) onSave(n,who); }}>💾 Góp</button>
+  </div>);
+}
+
+function Shopping({people,me}){
+  const [items,setItems]=useLocal('ju.shop',[]);
+  const [t,setT]=useState('');
+  const add=()=>{ if(!t.trim())return; setItems([{id:uid(),text:t.trim(),by:me,done:false},...items]); setT(''); };
+  const toggle=(id)=>setItems(items.map(x=>x.id===id?{...x,done:!x.done}:x));
+  const del=(id)=>setItems(items.filter(x=>x.id!==id));
+  const clearDone=()=>setItems(items.filter(x=>!x.done));
+  const left=items.filter(x=>!x.done);
+  const done=items.filter(x=>x.done);
+  return (
+    <div>
+      <div className="row" style={{margin:'10px 14px',gap:8}}>
+        <input className="inp grow" placeholder="Thêm món cần mua…" value={t}
+          onChange={e=>setT(e.target.value)} onKeyDown={e=>{ if(e.key==='Enter') add(); }}/>
+        <button className="btn sm" onClick={add}>＋</button>
+      </div>
+      {items.length===0 && <div className="empty"><span className="big">🛒</span>Danh sách đi chợ chung — cả hai cùng thêm.</div>}
+      <div className="card" style={{padding:'6px 13px'}}>
+        {left.map(x=>(
+          <div key={x.id} className="row" style={{padding:'8px 0',borderBottom:'1px solid var(--line)'}}>
+            <button onClick={()=>toggle(x.id)} style={{fontSize:19}}>⬜</button>
+            <span className="grow">{x.text}</span>
+            <span className="av-sm">{people[x.by]?.avatar}</span>
+            <button className="muted" onClick={()=>del(x.id)}>✕</button>
+          </div>
+        ))}
+        {left.length===0 && items.length>0 && <div className="muted center" style={{padding:'10px 0'}}>Đã mua hết! 🎉</div>}
+      </div>
+      {done.length>0 && (
+        <div>
+          <div className="row" style={{margin:'14px 14px 4px'}}><b className="grow muted" style={{fontSize:13}}>Đã mua ({done.length})</b>
+            <button className="pill" onClick={clearDone}>🧹 Xoá đã mua</button></div>
+          <div className="card" style={{padding:'6px 13px'}}>
+            {done.map(x=>(
+              <div key={x.id} className="row" style={{padding:'8px 0',borderBottom:'1px solid var(--line)'}}>
+                <button onClick={()=>toggle(x.id)} style={{fontSize:19}}>✅</button>
+                <span className="grow dim" style={{textDecoration:'line-through'}}>{x.text}</span>
+                <button className="muted" onClick={()=>del(x.id)}>✕</button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function Notes({people,me}){
+  const [notes,setNotes]=useLocal('ju.notes',[]);
+  const [t,setT]=useState('');
+  const endRef=useRef(null);
+  const add=()=>{ if(!t.trim())return; setNotes([...notes,{id:uid(),by:me,text:t.trim(),createdAt:Date.now()}]); setT(''); };
+  useEffect(()=>{ endRef.current?.scrollIntoView({behavior:'smooth'}); },[notes.length]);
+  const del=(id)=>setNotes(notes.filter(x=>x.id!==id));
+  return (
+    <div>
+      <div className="muted center" style={{fontSize:12,margin:'10px 14px'}}>💌 Lời nhắn yêu thương — để lại cho nhau mỗi ngày</div>
+      <div style={{padding:'0 6px'}}>
+        {notes.length===0 && <div className="empty"><span className="big">💌</span>Viết lời nhắn đầu tiên cho người ấy…</div>}
+        {notes.map(n=>{
+          const mine=n.by===me;
+          return (
+            <div key={n.id} style={{display:'flex',justifyContent:mine?'flex-end':'flex-start',padding:'4px 10px'}}>
+              <div style={{maxWidth:'78%'}}>
+                <div className="muted" style={{fontSize:11,margin:'0 6px 2px',textAlign:mine?'right':'left'}}>{people[n.by]?.avatar} {people[n.by]?.name}</div>
+                <div onClick={()=>{ if(mine&&confirm('Xoá lời nhắn này?')) del(n.id); }}
+                  style={{background:mine?'linear-gradient(135deg,var(--primary),var(--primary2))':'var(--card)',
+                    color:mine?'var(--on-primary)':'var(--text)',border:'1px solid var(--line)',
+                    padding:'9px 13px',borderRadius:16,fontSize:14.5,whiteSpace:'pre-wrap',boxShadow:'var(--shadow)'}}>{n.text}</div>
+              </div>
+            </div>
+          );
+        })}
+        <div ref={endRef}></div>
+      </div>
+      <div className="row" style={{position:'sticky',bottom:0,background:'var(--card)',padding:'10px 14px',borderTop:'1px solid var(--line)',gap:8,margin:'10px 0 0'}}>
+        <input className="inp grow" placeholder="Nhắn gì đó ngọt ngào…" value={t}
+          onChange={e=>setT(e.target.value)} onKeyDown={e=>{ if(e.key==='Enter') add(); }}/>
+        <button className="btn sm" onClick={add}>💕</button>
+      </div>
+    </div>
+  );
+}
+
+/* ============ Tài khoản & ghép đôi (đăng nhập thật) ============ */
+function authErrVN(e){
+  const m=(e&&e.message||'').toLowerCase();
+  if(m.includes('invalid login')) return 'Sai email hoặc mật khẩu.';
+  if(m.includes('already registered')||m.includes('already been registered')) return 'Email này đã đăng ký — hãy Đăng nhập.';
+  if(m.includes('password')&&m.includes('6')) return 'Mật khẩu cần ít nhất 6 ký tự.';
+  if(m.includes('email')&&m.includes('invalid')) return 'Email không hợp lệ.';
+  if(m.includes('invalid_code')) return 'Mã mời không đúng.';
+  if(m.includes('couple_full')) return 'Cặp đôi này đã đủ 2 người.';
+  if(m.includes('already_in_couple')) return 'Bạn đã ở trong một cặp đôi khác.';
+  return (e&&e.message)||'Có lỗi xảy ra.';
+}
+function AccountPanel({flash}){
+  const [,force]=useState(0);
+  useEffect(()=>{
+    const h=()=>force(x=>x+1);
+    window.addEventListener('ju:remote',h);
+    Cloud.onChange=()=>force(x=>x+1);
+    return ()=>{ window.removeEventListener('ju:remote',h); Cloud.onChange=null; };
+  },[]);
+  const noLib=!sbClient();
+  const [mode,setMode]=useState('login');   // login | signup
+  const [email,setEmail]=useState(''); const [pw,setPw]=useState(''); const [name,setName]=useState('');
+  const [code,setCode]=useState(''); const [busy,setBusy]=useState(false); const [note,setNote]=useState('');
+
+  const doAuth=async()=>{
+    if(noLib){ flash('Cần Internet để đăng nhập.'); return; }
+    if(!email.trim()||pw.length<6){ setNote('Nhập email và mật khẩu (≥6 ký tự).'); return; }
+    setBusy(true); setNote('');
+    try{
+      if(mode==='signup'){
+        const r=await Cloud.signUp(email.trim(),pw,name.trim());
+        if(r && !r.session){ setNote('Đã tạo tài khoản. Nếu chưa vào được, hãy mở email xác nhận — hoặc tắt "Confirm email" trong Supabase.'); }
+        else flash('Chào mừng! 💞');
+      }else{
+        await Cloud.signIn(email.trim(),pw); flash('Đăng nhập thành công 💞');
+      }
+      setPw('');
+    }catch(e){ setNote(authErrVN(e)); }
+    setBusy(false);
+  };
+  const doCreate=async()=>{ setBusy(true); setNote(''); try{ await Cloud.createCouple(name.trim()||null); flash('Đã tạo cặp đôi ☁️'); }catch(e){ setNote(authErrVN(e)); } setBusy(false); };
+  const doJoin=async()=>{
+    const c=normCode(code); if(c.replace(/-/g,'').length<6){ setNote('Mã mời chưa đúng.'); return; }
+    if(!confirm('Tham gia sẽ TẢI dữ liệu của cặp đôi này về máy và GHI ĐÈ dữ liệu hiện tại trên máy này. Tiếp tục?')) return;
+    setBusy(true); setNote('');
+    try{ await Cloud.joinCouple(c,name.trim()||null); window.dispatchEvent(new CustomEvent('ju:remote')); flash('Đã ghép đôi ☁️ — đã tải dữ liệu về.'); }
+    catch(e){ setNote(authErrVN(e)); }
+    setBusy(false);
+  };
+  const doSync=async()=>{ setBusy(true); await Cloud.push(); await Cloud.pull(); window.dispatchEvent(new CustomEvent('ju:remote')); setBusy(false); flash('Đã đồng bộ ✓'); };
+  const doLeave=async()=>{ if(confirm('Rời cặp đôi? Bạn sẽ không còn đồng bộ với người kia (dữ liệu trên máy này vẫn giữ).')){ try{ await Cloud.leaveCouple(); }catch(e){ flash(authErrVN(e)); } } };
+  const doLogout=async()=>{ if(confirm('Đăng xuất khỏi tài khoản này trên máy?')){ await Cloud.signOut(); } };
+  const copy=()=>{ const cp=Cloud.couple(); try{ navigator.clipboard.writeText(cp.invite_code); flash('Đã chép mã 📋'); }catch(e){} };
+
+  const loggedIn=Cloud.loggedIn(), connected=Cloud.connected(), couple=Cloud.couple();
+  const synced=store.get('ju.synced',null);
+  const syncedTxt=synced? new Date(synced).toLocaleString('vi-VN') : '—';
+
+  return (
+    <div>
+      <div className="sec-title">☁️ Tài khoản & đồng bộ 2 máy</div>
+      <div className="card">
+        {noLib && <div className="danger" style={{fontSize:12.5}}>⚠️ Chưa tải được Supabase (cần Internet/chạy qua web). Mở app qua localhost hoặc bản đã đăng để đăng nhập.</div>}
+
+        {!loggedIn && !noLib && (
+          <div>
+            <div className="row" style={{gap:6,marginBottom:12}}>
+              <button className={'btn grow '+(mode==='login'?'':'soft')} onClick={()=>{setMode('login');setNote('');}}>Đăng nhập</button>
+              <button className={'btn grow '+(mode==='signup'?'':'soft')} onClick={()=>{setMode('signup');setNote('');}}>Tạo tài khoản</button>
+            </div>
+            {mode==='signup' && <div className="field"><label>Tên gọi (tuỳ chọn)</label>
+              <input className="inp" value={name} onChange={e=>setName(e.target.value)} placeholder="VD: Huy"/></div>}
+            <div className="field"><label>Email</label>
+              <input className="inp" type="email" autoCapitalize="none" value={email} onChange={e=>setEmail(e.target.value)} placeholder="ban@email.com"/></div>
+            <div className="field"><label>Mật khẩu</label>
+              <input className="inp" type="password" value={pw} onChange={e=>setPw(e.target.value)} placeholder="≥ 6 ký tự"
+                onKeyDown={e=>{ if(e.key==='Enter') doAuth(); }}/></div>
+            <button className="btn" disabled={busy} onClick={doAuth}>{busy?'…':(mode==='signup'?'✨ Tạo tài khoản':'🔑 Đăng nhập')}</button>
+            <div className="muted" style={{fontSize:11.5,marginTop:10}}>Đăng nhập để dữ liệu được bảo mật theo tài khoản và đồng bộ an toàn giữa 2 máy.</div>
+          </div>
+        )}
+
+        {loggedIn && !connected && (
+          <div>
+            <div className="row"><span className="muted grow" style={{fontSize:12.5}}>Đăng nhập: <b>{Cloud.emailOf()}</b></span>
+              <button className="pill" onClick={doLogout}>Đăng xuất</button></div>
+            <div style={{height:10}}></div>
+            <div className="muted" style={{fontSize:12.5,marginBottom:8}}>Bạn chưa ghép đôi. Một người <b>Tạo cặp đôi</b>, người kia <b>nhập mã mời</b>.</div>
+            <div className="field"><label>Tên gọi của bạn (tuỳ chọn)</label>
+              <input className="inp" value={name} onChange={e=>setName(e.target.value)} placeholder="VD: Huy"/></div>
+            <button className="btn" disabled={busy} onClick={doCreate}>{busy?'…':'💞 Tạo cặp đôi mới'}</button>
+            <div className="center muted" style={{fontSize:12,margin:'12px 0 8px'}}>— hoặc nhập mã mời —</div>
+            <div className="row" style={{gap:8}}>
+              <input className="inp grow" placeholder="VD: A1B2-C3D4" value={code}
+                onChange={e=>setCode(normCode(e.target.value))} style={{textTransform:'uppercase',letterSpacing:1}}/>
+              <button className="btn sm soft" disabled={busy} onClick={doJoin}>{busy?'…':'Tham gia'}</button>
+            </div>
+          </div>
+        )}
+
+        {connected && couple && (
+          <div>
+            <div className="row"><b className="grow">Đã ghép đôi ☁️</b>
+              <span className="pill" style={{background:'var(--good)',color:'#fff'}}>● {couple.members>=2?'Đủ 2 người':'Chờ người kia'}</span></div>
+            <div className="muted" style={{fontSize:12,margin:'6px 0 2px'}}>Mã mời (đưa cho người kia nhập):</div>
+            <div className="row" style={{margin:'4px 0 6px',gap:8}}>
+              <div className="grow" style={{background:'var(--bg)',border:'1.5px dashed var(--primary)',borderRadius:12,padding:'10px 12px',
+                fontSize:20,fontWeight:900,letterSpacing:3,textAlign:'center'}}>{couple.invite_code}</div>
+              <button className="iconbtn" onClick={copy}>📋</button>
+            </div>
+            <div className="muted" style={{fontSize:12}}>Tài khoản: <b>{Cloud.emailOf()}</b> · Đồng bộ gần nhất: {syncedTxt}</div>
+            <div className="row" style={{gap:8,marginTop:12}}>
+              <button className="btn soft grow" disabled={busy} onClick={doSync}>{busy?'…':'🔄 Đồng bộ ngay'}</button>
+              <button className="btn ghost grow" onClick={doLogout}>Đăng xuất</button>
+            </div>
+            <div className="center" style={{marginTop:8}}><button className="pill" onClick={doLeave}>Rời cặp đôi</button></div>
+            <div className="muted" style={{fontSize:11.5,marginTop:10}}>
+              ⓘ Chỉ 2 tài khoản trong cặp đôi mới xem/sửa được dữ liệu & ảnh. Ảnh được lưu an toàn trên Supabase Storage.
+            </div>
+          </div>
+        )}
+
+        {note && <div className="danger" style={{fontSize:12.5,marginTop:10}}>{note}</div>}
+      </div>
+    </div>
+  );
+}
+
+/* Ảnh: lấy URL ký tạm nếu là ảnh trên Storage; nếu là base64/link thì dùng trực tiếp */
+function PhotoImg({photo}){
+  const [url,setUrl]=useState(photo.src||null);
+  useEffect(()=>{
+    let on=true;
+    if(photo.path){ Cloud.signedUrl(photo.path).then(u=>{ if(on&&u) setUrl(u); }); }
+    else setUrl(photo.src||null);
+    return ()=>{ on=false; };
+  },[photo.path,photo.src]);
+  return <img src={url||''} alt="" onError={e=>{e.target.style.opacity=.3;}}/>;
+}
+
+/* ============ Tab: Hồ sơ ============ */
+function Profile({setup,setSetup,people,me,setMe,flash}){
+  const [photos,setPhotos]=useLocal('ju.photos',[]);
+  const [editP,setEditP]=useState(false);
+  const fileRef=useRef(null);
+  const [addPhoto,setAddPhoto]=useState(false);
+
+  const onFile=async(e)=>{
+    const f=e.target.files[0]; if(!f) return;
+    e.target.value='';
+    if(Cloud.connected()){
+      flash('Đang tải ảnh lên…');
+      try{
+        const path=await Cloud.uploadPhoto(f);
+        setPhotos([{id:uid(),path,caption:'',by:me,date:todayISO()},...photos]);
+        flash('Đã thêm ảnh 📷');
+      }catch(err){ flash('Tải ảnh lỗi: '+(err.message||err)); }
+    }else{
+      if(f.size>2.5*1024*1024){ flash('Ảnh nặng (>2.5MB) — đăng nhập để lưu lên đám mây thay vì máy.'); }
+      const r=new FileReader();
+      r.onload=()=>{ setPhotos([{id:uid(),src:r.result,caption:'',by:me,date:todayISO()},...photos]); flash('Đã thêm ảnh (cục bộ) 📷'); };
+      r.readAsDataURL(f);
+    }
+  };
+  const addUrl=(url,cap)=>{ if(!url.trim())return; setPhotos([{id:uid(),src:url,caption:cap,by:me,date:todayISO()},...photos]); setAddPhoto(false); };
+  const delPhoto=(p)=>{ if(confirm('Xoá ảnh này?')){ if(p.path) Cloud.deletePhoto(p.path); setPhotos(photos.filter(x=>x.id!==p.id)); } };
+
+  const exportData=()=>{
+    const keys=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood'];
+    const dump={};
+    keys.forEach(k=>{ const v=store.get(k,null); if(v!=null) dump[k]=v; });
+    const blob=new Blob([JSON.stringify(dump,null,2)],{type:'application/json'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download='justus-backup-'+todayISO()+'.json';
+    a.click();
+    flash('Đã xuất file sao lưu 💾');
+  };
+  const importRef=useRef(null);
+  const onImport=(e)=>{
+    const f=e.target.files[0]; if(!f) return;
+    const r=new FileReader();
+    r.onload=()=>{
+      try{
+        const data=JSON.parse(r.result);
+        Object.keys(data).forEach(k=>store.set(k,data[k]));
+        flash('Đã khôi phục! Đang tải lại…');
+        setTimeout(()=>location.reload(),700);
+      }catch(err){ flash('File không hợp lệ.'); }
+    };
+    r.readAsText(f); e.target.value='';
+  };
+
+  const PinSection=()=>{
+    const [v,setV]=useState('');
+    if(setup.pin){
+      return <button className="btn soft" onClick={()=>{ if(confirm('Tắt khoá PIN?')) setSetup({...setup,pin:''}); }}>🔓 Tắt khoá PIN</button>;
+    }
+    return (
+      <div className="row" style={{gap:8}}>
+        <input className="inp grow" inputMode="numeric" maxLength={6} placeholder="Đặt mã PIN (4–6 số)" value={v} onChange={e=>setV(e.target.value.replace(/\D/g,''))}/>
+        <button className="btn sm" onClick={()=>{ if(v.length>=4){ setSetup({...setup,pin:v}); flash('Đã bật khoá PIN 🔒'); setV(''); } }}>Bật</button>
+      </div>
+    );
+  };
+
+  return (
+    <div>
+      {/* Cặp đôi */}
+      <div className="card center">
+        <div style={{fontSize:40}}>{people.a.avatar} 💞 {people.b.avatar}</div>
+        <div style={{fontWeight:800,fontSize:18,marginTop:6}}>{people.a.name} &amp; {people.b.name}</div>
+        {setup.loveDate && <div className="muted" style={{fontSize:13}}>Yêu nhau từ {fmtDateVN(setup.loveDate)}</div>}
+        <button className="btn soft sm" style={{marginTop:10}} onClick={()=>setEditP(true)}>✏️ Sửa thông tin cặp đôi</button>
+      </div>
+
+      {/* Người đang dùng */}
+      <div className="card">
+        <b>👤 Bạn là ai?</b>
+        <div className="row" style={{marginTop:8,gap:8}}>
+          <button className={'btn '+(me==='a'?'':'soft')} onClick={()=>setMe('a')}>{people.a.avatar} {people.a.name}</button>
+          <button className={'btn '+(me==='b'?'':'soft')} onClick={()=>setMe('b')}>{people.b.avatar} {people.b.name}</button>
+        </div>
+        <div className="muted" style={{fontSize:12,marginTop:8}}>Chọn để biết ai thêm mục nào & thả tim. (Lựa chọn này riêng từng máy.)</div>
+      </div>
+
+      {/* Tài khoản & ghép đôi */}
+      <AccountPanel flash={flash}/>
+
+      {/* Ảnh chung */}
+      <div className="sec-title">📷 Ảnh chung <span className="grow"></span>
+        <button className="pill" onClick={()=>fileRef.current.click()}>＋ Tải ảnh</button>
+        <button className="pill" onClick={()=>setAddPhoto(true)}>🔗 Link</button>
+      </div>
+      <input ref={fileRef} type="file" accept="image/*" hidden onChange={onFile}/>
+      {!Cloud.connected() && <div className="muted center" style={{fontSize:11.5,margin:'0 16px'}}>Đăng nhập & ghép đôi để ảnh được lưu an toàn trên đám mây và đồng bộ. Khi chưa đăng nhập, ảnh tải lên chỉ nằm trong máy này.</div>}
+      {photos.length===0 && <div className="empty" style={{padding:'18px'}}>Chưa có ảnh chung nào.</div>}
+      <div className="gallery">
+        {photos.map(p=>(
+          <div key={p.id} className="ph" onClick={()=>delPhoto(p)}>
+            <PhotoImg photo={p}/>
+            {p.caption && <div className="cap">{p.caption}</div>}
+          </div>
+        ))}
+      </div>
+      {photos.length>0 && <div className="muted center" style={{fontSize:11}}>Chạm ảnh để xoá</div>}
+
+      {/* Theme */}
+      <div className="sec-title">🎨 Giao diện đôi</div>
+      <div className="card">
+        <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:8}}>
+          {THEMES.map(t=>(
+            <button key={t.k} onClick={()=>{ applyTheme(t.k); setSetup({...setup,theme:t.k}); }}
+              style={{padding:'12px 6px',borderRadius:14,border:setup.theme===t.k?'2.5px solid '+t.c:'1.5px solid var(--line)',
+                background:'var(--bg)',fontWeight:700,fontSize:12.5}}>
+              <div style={{width:26,height:26,borderRadius:'50%',background:t.c,margin:'0 auto 6px'}}></div>{t.name}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Sao lưu & bảo mật */}
+      <div className="sec-title">💾 Sao lưu & bảo mật</div>
+      <div className="card">
+        <div className="muted" style={{fontSize:12.5,marginBottom:8}}>Dữ liệu chỉ nằm trong máy này. Nên xuất file để khỏi mất khi xoá cache hoặc đổi máy.</div>
+        <div className="row" style={{gap:8}}>
+          <button className="btn soft grow" onClick={exportData}>⬇️ Xuất sao lưu</button>
+          <button className="btn soft grow" onClick={()=>importRef.current.click()}>⬆️ Khôi phục</button>
+        </div>
+        <input ref={importRef} type="file" accept="application/json" hidden onChange={onImport}/>
+        <div style={{marginTop:12}}><PinSection/></div>
+      </div>
+
+      <div className="card">
+        <button className="btn ghost" style={{borderColor:'#e0436b',color:'#e0436b'}}
+          onClick={async()=>{ if(confirm('Xoá TẤT CẢ dữ liệu trên máy này và bắt đầu lại? (Không xoá dữ liệu trên đám mây của cặp đôi.) Không thể hoàn tác.')){ try{await Cloud.signOut();}catch(e){} ['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood','ju.couple','ju.me','ju.synced'].forEach(k=>store.del(k)); location.reload(); } }}>
+          🗑️ Xoá toàn bộ & bắt đầu lại</button>
+      </div>
+      <div className="center muted" style={{fontSize:11,padding:'4px 0 14px'}}>Just Us · của riêng hai đứa 💞</div>
+
+      {editP && <CoupleForm init={setup} onClose={()=>setEditP(false)} onSave={(s)=>{ setSetup(s); setEditP(false); }}/>}
+      {addPhoto && (
+        <Sheet title="Thêm ảnh qua link" onClose={()=>setAddPhoto(false)}>
+          <PhotoUrlForm onSave={addUrl}/>
+        </Sheet>
+      )}
+    </div>
+  );
+}
+function PhotoUrlForm({onSave}){
+  const [url,setUrl]=useState(''),[cap,setCap]=useState('');
+  return (<div>
+    <div className="field"><label>Link ảnh</label>
+      <input className="inp" autoFocus value={url} onChange={e=>setUrl(e.target.value)} placeholder="https://…jpg"/></div>
+    <div className="field"><label>Chú thích</label>
+      <input className="inp" value={cap} onChange={e=>setCap(e.target.value)} placeholder="(tuỳ chọn)"/></div>
+    <button className="btn" onClick={()=>onSave(url,cap)}>💾 Thêm ảnh</button>
+  </div>);
+}
+
+function CoupleForm({init,onClose,onSave}){
+  const [s,setS]=useState(()=>({...init}));
+  const [pickAv,setPickAv]=useState(null); // 'a'|'b'|null
+  const set=(path,v)=>{
+    if(path==='aName') setS({...s,a:{...s.a,name:v}});
+    else if(path==='bName') setS({...s,b:{...s.b,name:v}});
+    else setS({...s,[path]:v});
+  };
+  return (
+    <Sheet title="Thông tin cặp đôi" onClose={onClose}>
+      <div className="row" style={{gap:10}}>
+        <div className="grow">
+          <div className="field"><label>Người 1</label>
+            <input className="inp" value={s.a.name} onChange={e=>set('aName',e.target.value)}/></div>
+          <button className="btn soft sm" onClick={()=>setPickAv(pickAv==='a'?null:'a')}>{s.a.avatar} đổi</button>
+        </div>
+        <div className="grow">
+          <div className="field"><label>Người 2</label>
+            <input className="inp" value={s.b.name} onChange={e=>set('bName',e.target.value)}/></div>
+          <button className="btn soft sm" onClick={()=>setPickAv(pickAv==='b'?null:'b')}>{s.b.avatar} đổi</button>
+        </div>
+      </div>
+      {pickAv && (
+        <div className="emoji-row" style={{margin:'8px 0'}}>
+          {AVATARS.map(a=><button key={a} className={s[pickAv].avatar===a?'on':''}
+            onClick={()=>{ setS({...s,[pickAv]:{...s[pickAv],avatar:a}}); }}>{a}</button>)}
+        </div>
+      )}
+      <div className="field" style={{marginTop:8}}><label>Ngày yêu nhau 💗</label>
+        <input className="inp" type="date" value={s.loveDate||''} onChange={e=>set('loveDate',e.target.value)}/></div>
+      <div className="field"><label>Ngày cưới 💍 (nếu có)</label>
+        <input className="inp" type="date" value={s.weddingDate||''} onChange={e=>set('weddingDate',e.target.value)}/></div>
+      <button className="btn" onClick={()=>onSave(s)}>💾 Lưu</button>
+    </Sheet>
+  );
+}
+
+/* ============ Onboarding ============ */
+function Onboarding({onDone}){
+  const [a,setA]=useState({name:'',avatar:'🧑'});
+  const [b,setB]=useState({name:'',avatar:'👩'});
+  const [loveDate,setLove]=useState('');
+  const [step,setStep]=useState(0);
+  const [pickAv,setPickAv]=useState(null);
+
+  const finish=()=>{
+    onDone({a:{name:a.name||'Anh',avatar:a.avatar}, b:{name:b.name||'Em',avatar:b.avatar},
+      loveDate, weddingDate:'', theme:'rose', me:'a', pin:''});
+  };
+  return (
+    <div style={{minHeight:'100vh',display:'flex',flexDirection:'column',justifyContent:'center',padding:'24px'}}>
+      <div className="center" style={{marginBottom:18}}>
+        <div style={{fontSize:54}}>💞</div>
+        <div className="brand" style={{justifyContent:'center',fontSize:26}}>Just <span className="heart">Us</span></div>
+        <div className="muted" style={{marginTop:6}}>Không gian riêng của hai đứa mình</div>
+      </div>
+
+      {step===0 && (
+        <div className="card">
+          <h3 style={{marginTop:0}}>Hai bạn tên gì?</h3>
+          <div className="field"><label>Người 1</label>
+            <div className="row" style={{gap:8}}>
+              <button className="iconbtn" style={{width:46,height:46,fontSize:20}} onClick={()=>setPickAv(pickAv==='a'?null:'a')}>{a.avatar}</button>
+              <input className="inp grow" placeholder="VD: Anh" value={a.name} onChange={e=>setA({...a,name:e.target.value})}/>
+            </div>
+            {pickAv==='a' && <div className="emoji-row" style={{marginTop:8}}>{AVATARS.map(x=><button key={x} className={a.avatar===x?'on':''} onClick={()=>{setA({...a,avatar:x});setPickAv(null);}}>{x}</button>)}</div>}
+          </div>
+          <div className="field"><label>Người 2</label>
+            <div className="row" style={{gap:8}}>
+              <button className="iconbtn" style={{width:46,height:46,fontSize:20}} onClick={()=>setPickAv(pickAv==='b'?null:'b')}>{b.avatar}</button>
+              <input className="inp grow" placeholder="VD: Em" value={b.name} onChange={e=>setB({...b,name:e.target.value})}/>
+            </div>
+            {pickAv==='b' && <div className="emoji-row" style={{marginTop:8}}>{AVATARS.map(x=><button key={x} className={b.avatar===x?'on':''} onClick={()=>{setB({...b,avatar:x});setPickAv(null);}}>{x}</button>)}</div>}
+          </div>
+          <button className="btn" onClick={()=>setStep(1)}>Tiếp tục →</button>
+        </div>
+      )}
+
+      {step===1 && (
+        <div className="card">
+          <h3 style={{marginTop:0}}>Hai bạn yêu nhau từ ngày nào? 💗</h3>
+          <div className="field"><input className="inp" type="date" value={loveDate} onChange={e=>setLove(e.target.value)}/></div>
+          <div className="muted" style={{fontSize:12.5,marginBottom:12}}>Để app đếm số ngày hai đứa bên nhau (có thể bỏ qua, sửa sau).</div>
+          <div className="row" style={{gap:8}}>
+            <button className="btn soft grow" onClick={finish}>Bỏ qua</button>
+            <button className="btn grow" onClick={finish}>Bắt đầu 💞</button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ============ PIN lock ============ */
+function PinLock({pin,onOk}){
+  const [v,setV]=useState('');
+  const [err,setErr]=useState(false);
+  const check=(val)=>{ if(val===pin){ onOk(); } else { setErr(true); setTimeout(()=>{setErr(false);setV('');},500); } };
+  return (
+    <div style={{minHeight:'100vh',display:'flex',flexDirection:'column',justifyContent:'center',alignItems:'center',padding:24}}>
+      <div style={{fontSize:48}}>🔒</div>
+      <div className="brand" style={{fontSize:24,margin:'8px 0'}}>Just <span className="heart">Us</span></div>
+      <div className="muted" style={{marginBottom:16}}>Nhập mã PIN để mở</div>
+      <input className="inp" inputMode="numeric" maxLength={6} autoFocus
+        style={{textAlign:'center',fontSize:24,letterSpacing:8,width:180,borderColor:err?'#e0436b':'var(--line)'}}
+        value={v} onChange={e=>{ const x=e.target.value.replace(/\D/g,''); setV(x); if(x.length>=pin.length) check(x); }}/>
+      {err && <div className="danger" style={{marginTop:10}}>Sai PIN, thử lại</div>}
+    </div>
+  );
+}
+
+/* ============ APP ============ */
+function App(){
+  const [setup,setSetup]=useLocal('ju.setup',null);
+  const [tab,setTab]=useState('home');
+  const [me,setMe]=useState(()=> store.get('ju.me', (store.get('ju.setup',{})||{}).me || 'a'));
+  const [flashMsg,setFlashMsg]=useState('');
+  const [unlocked,setUnlocked]=useState(false);
+  const flash=(m)=>{ setFlashMsg(m); setTimeout(()=>setFlashMsg(''),2200); };
+
+  // áp theme khi setup đổi
+  useEffect(()=>{ if(setup?.theme) applyTheme(setup.theme); },[setup?.theme]);
+  // "me" là riêng từng máy (không đồng bộ)
+  useEffect(()=>{ store.set('ju.me',me); },[me]);
+  // khởi tạo auth + tự kết nối lại đám mây khi mở app
+  useEffect(()=>{ if(sbClient()) Cloud.init(); },[]);
+
+  if(!setup){
+    return <Onboarding onDone={(s)=>{ setSetup(s); setMe('a'); applyTheme(s.theme); }}/>;
+  }
+  if(setup.pin && !unlocked){
+    return <PinLock pin={setup.pin} onOk={()=>setUnlocked(true)}/>;
+  }
+
+  const people={a:setup.a, b:setup.b};
+
+  return (
+    <div className="app">
+      {flashMsg && <div className="flash">{flashMsg}</div>}
+      <div className="topbar">
+        <div className="brand">Just <span className="heart">Us</span></div>
+        <button className="who" onClick={()=>setMe(me==='a'?'b':'a')}>
+          <span className="av">{people[me].avatar}</span>{people[me].name} ⇄
+        </button>
+      </div>
+
+      {tab==='home' && <Home setup={setup} people={people} me={me} go={setTab}/>}
+      {tab==='wish' && <WishTab people={people} me={me} flash={flash}/>}
+      {tab==='date' && <DateTab people={people} me={me} flash={flash}/>}
+      {tab==='us' && <UsTab people={people} me={me} flash={flash}/>}
+      {tab==='me' && <Profile setup={setup} setSetup={setSetup} people={people} me={me} setMe={setMe} flash={flash}/>}
+
+      <div className="nav">
+        {[['home','🏠','Tổ ấm'],['wish','💝','Ước muốn'],['date','🗺️','Hẹn hò'],['us','📅','Tụi mình'],['me','💞','Hồ sơ']].map(([k,ic,l])=>(
+          <button key={k} className={tab===k?'on':''} onClick={()=>setTab(k)}>
+            <span className="ic">{ic}</span>{l}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+window.__JU_OK=true;
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+# Cấu hình Netlify cho Just Us (trang tĩnh, không cần build)
+[build]
+  publish = "."
+  command = ""
+
+# Một vài header bảo mật cơ bản
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    X-Content-Type-Options = "nosniff"
