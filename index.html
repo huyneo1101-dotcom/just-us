@@ -2104,15 +2104,47 @@ function Profile({setup,setSetup,people,me,setMe,flash}){
   const delPhoto=(p)=>{ if(confirm('Xoá ảnh này?')){ if(p.path) Cloud.deletePhoto(p.path); setPhotos(photos.filter(x=>x.id!==p.id)); } };
 
   const exportData=()=>{
-    const keys=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood'];
     const dump={};
-    keys.forEach(k=>{ const v=store.get(k,null); if(v!=null) dump[k]=v; });
+    SYNC_KEYS.forEach(k=>{ const v=store.get(k,null); if(v!=null) dump[k]=v; });
     const blob=new Blob([JSON.stringify(dump,null,2)],{type:'application/json'});
     const a=document.createElement('a');
     a.href=URL.createObjectURL(blob);
     a.download='justus-backup-'+todayISO()+'.json';
     a.click();
     flash('Đã xuất file sao lưu 💾');
+  };
+  const exportYearbook=()=>{
+    const g=(k,d)=>store.get(k,d)||d;
+    const esc=(s)=>String(s==null?'':s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+    const loveDays=setup.loveDate?Math.max(0,(daysFromToday(setup.loveDate)||0)*-1):0;
+    const timeline=g('ju.timeline',[]).slice().sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+    const jar=g('ju.lovejar',[]), notes=g('ju.notes',[]), photos=g('ju.photos',[]),
+      spots=g('ju.spots',[]), bucket=g('ju.bucket',[]), food=g('ju.food',[]);
+    const stat=(n,l)=>'<div class="stat"><b>'+n+'</b><span>'+l+'</span></div>';
+    const html='<!doctype html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
+      +'<title>Kỷ yếu '+esc(setup.a.name)+' &amp; '+esc(setup.b.name)+'</title><style>'
+      +'body{font-family:Georgia,"Times New Roman",serif;max-width:720px;margin:0 auto;padding:42px 28px;color:#3a2b31;background:#fff}'
+      +'h1{text-align:center;color:#e85d8a;margin:0 0 4px;font-size:30px}.sub{text-align:center;color:#a07f88;margin:0 0 26px}'
+      +'h2{color:#e85d8a;border-bottom:2px solid #ffd0de;padding-bottom:4px;margin-top:30px}'
+      +'.grid{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}'
+      +'.stat{background:#fff0f4;border:1px solid #ffd0de;border-radius:12px;padding:10px 16px;text-align:center;min-width:90px}'
+      +'.stat b{display:block;font-size:22px;color:#e85d8a}.stat span{font-size:12px;color:#8a6c74}'
+      +'.mile{margin:10px 0;padding:8px 14px;border-left:3px solid #e85d8a;background:#fff6f9;border-radius:0 8px 8px 0}'
+      +'.mile .d{font-size:12px;color:#a07f88}.q{font-style:italic;color:#6a4f57;margin:6px 0}'
+      +'@media print{body{padding:10px}}</style></head><body>'
+      +'<h1>💞 '+esc(setup.a.name)+' &amp; '+esc(setup.b.name)+'</h1>'
+      +'<p class="sub">'+(setup.loveDate?('Bên nhau từ '+fmtDateVN(setup.loveDate)+' · '+loveDays.toLocaleString('vi-VN')+' ngày'):'Kỷ yếu tình yêu')+'</p>'
+      +'<div class="grid">'+stat(loveDays.toLocaleString('vi-VN'),'ngày bên nhau')+stat(timeline.length,'cột mốc')+stat(notes.length,'lời nhắn')+stat(photos.length,'ảnh chung')+stat(spots.filter(s=>s.done).length,'chỗ đã đi')+stat(food.filter(f=>f.done).length,'món đã thử')+stat(bucket.filter(b=>b.done).length,'điều đã làm')+'</div>'
+      +(timeline.length?('<h2>🕰️ Dòng thời gian</h2>'+timeline.map(t=>'<div class="mile"><div class="d">'+fmtDateVN(t.date)+'</div><b>'+(t.icon||'💗')+' '+esc(t.title)+'</b>'+(t.note?'<div class="q">'+esc(t.note)+'</div>':'')+'</div>').join('')):'')
+      +(jar.length?('<h2>🫙 Lọ yêu thương</h2>'+jar.slice(0,20).map(j=>'<div class="q">“'+esc(j.text)+'”</div>').join('')):'')
+      +'<p class="sub" style="margin-top:36px">Tạo từ Just Us 💞 · '+fmtDateVN(todayISO())+'</p>'
+      +'</body></html>';
+    const blob=new Blob([html],{type:'text/html;charset=utf-8'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download='ky-yeu-'+todayISO()+'.html';
+    a.click();
+    flash('Đã xuất kỷ yếu 📖 — mở file rồi Ctrl/⌘+P để lưu PDF');
   };
   const importRef=useRef(null);
   const onImport=(e)=>{
@@ -2224,12 +2256,13 @@ function Profile({setup,setSetup,people,me,setMe,flash}){
           <button className="btn soft grow" onClick={()=>importRef.current.click()}>⬆️ Khôi phục</button>
         </div>
         <input ref={importRef} type="file" accept="application/json" hidden onChange={onImport}/>
+        <button className="btn soft" style={{marginTop:8}} onClick={exportYearbook}>📖 Xuất "Kỷ yếu" (in / PDF)</button>
         <div style={{marginTop:12}}><PinSection/></div>
       </div>
 
       <div className="card">
         <button className="btn ghost" style={{borderColor:'#e0436b',color:'#e0436b'}}
-          onClick={async()=>{ if(confirm('Xoá TẤT CẢ dữ liệu trên máy này và bắt đầu lại? (Không xoá dữ liệu trên đám mây của cặp đôi.) Không thể hoàn tác.')){ try{await Cloud.signOut();}catch(e){} ['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood','ju.couple','ju.me','ju.synced'].forEach(k=>store.del(k)); location.reload(); } }}>
+          onClick={async()=>{ if(confirm('Xoá TẤT CẢ dữ liệu trên máy này và bắt đầu lại? (Không xoá dữ liệu trên đám mây của cặp đôi.) Không thể hoàn tác.')){ try{await Cloud.signOut();}catch(e){} SYNC_KEYS.concat(['ju.couple','ju.me','ju.synced']).forEach(k=>store.del(k)); location.reload(); } }}>
           🗑️ Xoá toàn bộ & bắt đầu lại</button>
       </div>
       <div className="center muted" style={{fontSize:11,padding:'4px 0 14px'}}>Just Us · của riêng hai đứa 💞</div>
