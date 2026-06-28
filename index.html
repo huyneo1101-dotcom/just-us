@@ -1765,6 +1765,42 @@ function AccountPanel({flash}){
   );
 }
 
+/* ============ Thống kê "Hồ sơ tình yêu" ============ */
+function LoveStats({setup}){
+  const g=(k,d)=>store.get(k,d)||d;
+  const notes=g('ju.notes',[]), photos=g('ju.photos',[]), spots=g('ju.spots',[]),
+    bucket=g('ju.bucket',[]), coupons=g('ju.coupons',[]), timeline=g('ju.timeline',[]),
+    food=g('ju.food',[]), ideas=g('ju.ideas',[]), qa=g('ju.qa',{}), jar=g('ju.lovejar',[]);
+  const loveDays=setup.loveDate?Math.max(0,(daysFromToday(setup.loveDate)||0)*-1):0;
+  const tiles=[
+    ['💗',loveDays.toLocaleString('vi-VN'),'ngày bên nhau'],
+    ['💌',notes.length,'lời nhắn'],
+    ['📷',photos.length,'ảnh chung'],
+    ['🗺️',spots.filter(s=>s.done).length,'chỗ đã đi'],
+    ['🍜',food.filter(f=>f.done).length,'món đã thử'],
+    ['💡',ideas.filter(i=>i.done).length,'buổi hẹn đã đi'],
+    ['🎯',bucket.filter(b=>b.done).length,'điều đã làm cùng'],
+    ['🎟️',coupons.filter(c=>c.redeemed).length,'phiếu đã đổi'],
+    ['🕰️',timeline.length,'cột mốc'],
+    ['🫙',jar.length,'điều yêu thương'],
+    ['🔥',answerStreak(qa),'ngày streak'],
+  ];
+  return (
+    <div>
+      <div className="sec-title">📊 Hồ sơ tình yêu</div>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:10,margin:'0 14px'}}>
+        {tiles.map((t,i)=>(
+          <div key={i} className="card" style={{margin:0,padding:'11px 12px',display:'flex',alignItems:'center',gap:10}}>
+            <div style={{fontSize:23}}>{t[0]}</div>
+            <div><div style={{fontWeight:900,fontSize:18,color:'var(--primary)',lineHeight:1.1}}>{t[1]}</div>
+              <div className="muted" style={{fontSize:11.5}}>{t[2]}</div></div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 /* Ảnh: lấy URL ký tạm nếu là ảnh trên Storage; nếu là base64/link thì dùng trực tiếp */
 function PhotoImg({photo,style}){
   const [url,setUrl]=useState(photo.src||null);
@@ -1853,6 +1889,9 @@ function Profile({setup,setSetup,people,me,setMe,flash}){
         {setup.loveDate && <div className="muted" style={{fontSize:13}}>Yêu nhau từ {fmtDateVN(setup.loveDate)}</div>}
         <button className="btn soft sm" style={{marginTop:10}} onClick={()=>setEditP(true)}>✏️ Sửa thông tin cặp đôi</button>
       </div>
+
+      {/* Thống kê tình yêu */}
+      <LoveStats setup={setup}/>
 
       {/* Người đang dùng */}
       <div className="card">
