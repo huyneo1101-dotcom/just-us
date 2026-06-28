@@ -417,6 +417,19 @@ function nextMilestone(days){
   if(!m) return null;
   return {mark:m, inDays:m-days, isYear:m%365===0, years:Math.round(m/365)};
 }
+// Hiệu ứng confetti + rung nhẹ khi có khoảnh khắc vui
+function celebrate(emojis){
+  try{ if(navigator.vibrate) navigator.vibrate([28,40,28]); }catch(e){}
+  const set=emojis||['❤️','💖','🎉','✨','💞','💕'];
+  for(let i=0;i<26;i++){
+    const el=document.createElement('div');
+    el.textContent=set[Math.floor(Math.random()*set.length)];
+    el.style.cssText='position:fixed;z-index:200;left:'+(Math.random()*100)+'vw;top:-30px;font-size:'+(16+Math.random()*18)+'px;pointer-events:none;will-change:transform,opacity;transition:transform 1.7s cubic-bezier(.3,.7,.4,1), opacity 1.7s;';
+    document.body.appendChild(el);
+    requestAnimationFrame(()=>{ el.style.transform='translateY('+(105+Math.random()*15)+'vh) rotate('+(Math.random()*540-270)+'deg)'; el.style.opacity='0'; });
+    setTimeout(()=>{ try{el.remove();}catch(e){} },1800);
+  }
+}
 // Chuỗi ngày liên tiếp có trả lời câu hỏi (giữ streak nếu hôm nay chưa trả lời nhưng hôm qua có)
 function answerStreak(qa){
   if(!qa) return 0;
@@ -544,7 +557,7 @@ function SimpleList({skey, people, me, addLabel, doneLabel='Xong', fields=[], ta
   };
   const addQuick=(title)=> setItems(prev=>[{title,id:uid(),by:me,fav:false,done:false,createdAt:Date.now()},...prev]);
   const del=(id)=> setItems(items.filter(x=>x.id!==id));
-  const toggle=(id,f)=> setItems(items.map(x=>x.id===id?{...x,[f]:!x[f]}:x));
+  const toggle=(id,f)=> setItems(items.map(x=>{ if(x.id!==id) return x; const nv={...x,[f]:!x[f]}; if(f==='done'&&nv.done) celebrate(); return nv; }));
 
   const shown=useMemo(()=>{
     let a=items.slice();
@@ -823,6 +836,7 @@ function Home({setup,people,me,go}){
 
   const loveDays = setup.loveDate ? Math.max(0,(daysFromToday(setup.loveDate)||0)*-1) : null;
   const weddingDays = setup.weddingDate ? Math.max(0,(daysFromToday(setup.weddingDate)||0)*-1) : null;
+  useEffect(()=>{ if(loveDays!=null && loveDays>0 && (loveDays%100===0||loveDays%365===0)) celebrate(['🎉','🎊','💞','✨','💖']); },[]);
 
   // sự kiện / ngày sắp tới gần nhất
   const upcoming=useMemo(()=>{
@@ -923,7 +937,7 @@ function Coupons({people,me,flash}){
   const [sugOpen,setSugOpen]=useState(false);
   const other=me==='a'?'b':'a';
   const add=(title)=>{ const x=((title!=null?title:t)||'').trim(); if(!x)return; setCoupons(prev=>[{id:uid(),title:x,by:me,redeemed:false,createdAt:Date.now()},...prev]); setT(''); };
-  const redeem=(id)=>setCoupons(coupons.map(c=>c.id===id?{...c,redeemed:true,redeemedAt:Date.now()}:c));
+  const redeem=(id)=>{ setCoupons(coupons.map(c=>c.id===id?{...c,redeemed:true,redeemedAt:Date.now()}:c)); celebrate(['🎟️','🎉','💝','✨','💞']); };
   const del=(id)=>setCoupons(coupons.filter(c=>c.id!==id));
 
   const received=coupons.filter(c=>c.by===other);
@@ -2050,11 +2064,48 @@ function PinLock({pin,onOk}){
 }
 
 /* ============ APP ============ */
+const SEARCH_SRC=[
+  {key:'ju.wish',cat:'🎁 Quà',tab:'wish'},{key:'ju.bucket',cat:'🎯 Muốn làm',tab:'wish'},
+  {key:'ju.watch',cat:'🎬 Xem·Đọc·Nghe',tab:'wish'},{key:'ju.links',cat:'🔗 Link',tab:'wish'},
+  {key:'ju.coupons',cat:'🎟️ Phiếu',tab:'wish'},{key:'ju.ideas',cat:'💡 Ý tưởng',tab:'date'},
+  {key:'ju.food',cat:'🍜 Quán/Món',tab:'date'},{key:'ju.spots',cat:'🗺️ Bản đồ',tab:'date'},
+  {key:'ju.events',cat:'📅 Sự kiện',tab:'us'},{key:'ju.timeline',cat:'🕰️ Kỷ niệm',tab:'us'},
+  {key:'ju.chores',cat:'🧹 Việc nhà',tab:'us'},{key:'ju.lovejar',cat:'🫙 Lọ yêu thương',tab:'home'},
+];
+function GlobalSearch({onClose,go}){
+  const [q,setQ]=useState('');
+  const results=useMemo(()=>{
+    const s=q.trim().toLowerCase(); if(!s) return [];
+    const out=[];
+    SEARCH_SRC.forEach(src=>{ (store.get(src.key,[])||[]).forEach(it=>{ const title=it.title||it.text||''; if(title.toLowerCase().includes(s)||(it.note||'').toLowerCase().includes(s)) out.push({cat:src.cat,tab:src.tab,title}); }); });
+    (store.get('ju.notes',[])||[]).forEach(n=>{ if((n.text||'').toLowerCase().includes(s)) out.push({cat:'💌 Nhắn nhau',tab:'us',title:n.text}); });
+    return out.slice(0,40);
+  },[q]);
+  return (
+    <div className="ov" onClick={onClose}>
+      <div className="sheet" onClick={e=>e.stopPropagation()} style={{minHeight:'62vh'}}>
+        <div className="x" onClick={onClose}>✕</div>
+        <h3>🔎 Tìm kiếm</h3>
+        <input className="inp" autoFocus placeholder="Tìm trong mọi danh sách…" value={q} onChange={e=>setQ(e.target.value)}/>
+        {q.trim() && results.length===0 && <div className="empty" style={{padding:'24px'}}>Không tìm thấy “{q}”.</div>}
+        <div style={{marginTop:10}}>
+          {results.map((r,i)=>(
+            <div key={i} className="item" style={{margin:'8px 0',cursor:'pointer'}} onClick={()=>{ go(r.tab); onClose(); }}>
+              <div className="row"><span className="grow" style={{fontSize:14}}>{r.title}</span><span className="pill" style={{flex:'0 0 auto'}}>{r.cat}</span></div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function App(){
   const [setup,setSetup]=useLocal('ju.setup',null);
   const [tab,setTab]=useState('home');
   const [me,setMe]=useState(()=> store.get('ju.me', (store.get('ju.setup',{})||{}).me || 'a'));
   const [flashMsg,setFlashMsg]=useState('');
+  const [showSearch,setShowSearch]=useState(false);
   const [unlocked,setUnlocked]=useState(false);
   const flash=(m)=>{ setFlashMsg(m); setTimeout(()=>setFlashMsg(''),2200); };
 
@@ -2079,10 +2130,13 @@ function App(){
       {flashMsg && <div className="flash">{flashMsg}</div>}
       <div className="topbar">
         <div className="brand">Just <span className="heart">Us</span></div>
+        <span className="grow"></span>
+        <button className="iconbtn" onClick={()=>setShowSearch(true)} title="Tìm kiếm">🔎</button>
         <button className="who" onClick={()=>setMe(me==='a'?'b':'a')}>
           <span className="av">{people[me].avatar}</span>{people[me].name} ⇄
         </button>
       </div>
+      {showSearch && <GlobalSearch go={setTab} onClose={()=>setShowSearch(false)}/>}
 
       {tab==='home' && <Home setup={setup} people={people} me={me} go={setTab}/>}
       {tab==='wish' && <WishTab people={people} me={me} flash={flash}/>}
