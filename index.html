@@ -234,7 +234,7 @@ const store={
 const SB_URL='https://vvgkjgvzjeklaadusbne.supabase.co';
 const SB_KEY='sb_publishable_DMMPv5L2kGhrHTxeQ72iKw_dIh13iT1';
 // Các key được đồng bộ (KHÔNG gồm ju.me/ju.device/ju.sync — đó là riêng từng máy)
-const SYNC_KEYS=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood','ju.qa','ju.timeline','ju.coupons','ju.chores','ju.lovejar'];
+const SYNC_KEYS=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood','ju.qa','ju.timeline','ju.coupons','ju.chores','ju.lovejar','ju.quiz'];
 let _sb=null;
 function sbClient(){
   if(_sb) return _sb;
@@ -516,6 +516,8 @@ const QUESTIONS=[
 ];
 function dayNumber(){ const d=new Date(); return Math.floor(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())/86400000); }
 function questionOfToday(){ return QUESTIONS[((dayNumber()%QUESTIONS.length)+QUESTIONS.length)%QUESTIONS.length]; }
+const QUIZ_Q=['Món ăn yêu thích của tôi là gì?','Nơi tôi muốn đi du lịch nhất?','Tật xấu đáng yêu của tôi?','Điều khiến tôi vui nhất?','Bài hát tôi hay nghe gần đây?','Tôi sợ điều gì nhất?','Món quà tôi mơ ước?','Thói quen buổi sáng của tôi?','Điều tôi muốn cải thiện ở bản thân?','Cách tôi thích được an ủi khi buồn?','Màu sắc tôi thích nhất?','Nếu trúng số, việc đầu tiên tôi làm?','Kiểu hẹn hò tôi thích nhất?','Điều nhỏ khiến tôi khó chịu?','Ước mơ thời bé của tôi?'];
+function quizOfToday(){ return QUIZ_Q[((dayNumber()%QUIZ_Q.length)+QUIZ_Q.length)%QUIZ_Q.length]; }
 
 /* ============ small components ============ */
 function Av({emoji,size=22}){
@@ -693,6 +695,49 @@ function DailyQuestion({people,me}){
             <span className="muted" style={{fontSize:11}}>{people[other].name}</span>
             <div style={{marginTop:2}}>{otherAnswer}</div></div>
         : <div className="muted" style={{fontSize:12,marginTop:8}}>Đã trả lời ✓ — chờ {people[other].name} trả lời nhé 💞</div>)}
+    </div>
+  );
+}
+
+/* ============ Đố vui "Hiểu nhau đến đâu?" ============ */
+function CoupleQuiz({people,me}){
+  const [quiz,setQuiz]=useLocal('ju.quiz',{});
+  const key=todayISO(); const q=quizOfToday();
+  const today=quiz[key]||{q};
+  const other=me==='a'?'b':'a';
+  const mine=today[me]||{}, theirs=today[other]||{};
+  const [self,setSelf]=useState(''); const [guess,setGuess]=useState('');
+  useEffect(()=>{ const t=(quiz[key]||{})[me]||{}; setSelf(t.self||''); setGuess(t.guess||''); },[key,me]);
+  const done=mine.self&&mine.guess;
+  const bothDone=done && theirs.self && theirs.guess;
+  const save=()=>{ if(!self.trim()||!guess.trim())return; setQuiz({...quiz,[key]:{...today,q,[me]:{self:self.trim(),guess:guess.trim()}}}); };
+  const norm=(s)=>(s||'').trim().toLowerCase();
+  const iRight=bothDone && norm(mine.guess)===norm(theirs.self);
+  const theyRight=bothDone && norm(theirs.guess)===norm(mine.self);
+  const score=(iRight?1:0)+(theyRight?1:0);
+  return (
+    <div className="card">
+      <div className="row"><b>💞 Hiểu nhau đến đâu?</b><span className="grow"></span><span className="muted" style={{fontSize:12}}>đố vui mỗi ngày</span></div>
+      <div style={{fontWeight:700,margin:'8px 0 10px'}}>{q}</div>
+      {!done ? (
+        <div>
+          <div className="field"><label>Câu trả lời thật của bạn</label>
+            <input className="inp" value={self} onChange={e=>setSelf(e.target.value)} placeholder="Về chính bạn…"/></div>
+          <div className="field"><label>Đoán câu trả lời của {people[other].name}</label>
+            <input className="inp" value={guess} onChange={e=>setGuess(e.target.value)} placeholder="Bạn nghĩ người kia trả lời gì?"/></div>
+          <button className="btn" onClick={save}>Gửi</button>
+        </div>
+      ) : !bothDone ? (
+        <div className="muted" style={{fontSize:13}}>Bạn đã chơi ✓ — chờ {people[other].name} để lật kết quả 💕</div>
+      ) : (
+        <div>
+          <div style={{background:'var(--chip)',color:'var(--chip-tx)',borderRadius:12,padding:'10px',fontSize:13}}>
+            <div>Bạn đoán {people[other].name}: “{mine.guess}” → {iRight?'✅ Đúng!':'❌ thật ra: “'+theirs.self+'”'}</div>
+            <div style={{marginTop:6}}>{people[other].name} đoán bạn: “{theirs.guess}” → {theyRight?'✅ Đúng!':'❌ thật ra: “'+mine.self+'”'}</div>
+          </div>
+          <div className="center" style={{marginTop:8,fontWeight:800}}>Điểm hiểu nhau: {score}/2 {score===2?'🎉':'💪'}</div>
+        </div>
+      )}
     </div>
   );
 }
@@ -919,6 +964,9 @@ function Home({setup,people,me,go}){
 
       {/* Câu hỏi mỗi ngày */}
       <DailyQuestion people={people} me={me}/>
+
+      {/* Đố vui hiểu nhau */}
+      <CoupleQuiz people={people} me={me}/>
 
       {/* Phân vân: ăn gì / làm gì */}
       <FunPickers/>
