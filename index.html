@@ -740,6 +740,38 @@ function FunPickers(){
   );
 }
 
+/* ============ Nhắc nhở hôm nay ============ */
+function Reminders({setup,go}){
+  const [events]=useLocal('ju.events',[]);
+  const [dates]=useLocal('ju.dates',[]);
+  const [chores]=useLocal('ju.chores',[]);
+  const [shop]=useLocal('ju.shop',[]);
+  const list=[];
+  events.forEach(e=>{ const d=daysFromToday(e.date); const lead=e.remind!=null?e.remind:3; if(d!=null && d>=0 && d<=lead) list.push({icon:'📅',text:e.title,d}); });
+  dates.forEach(e=>{ const d=daysToNext(e.date); const lead=e.remind!=null?e.remind:3; if(d!=null && d<=lead) list.push({icon:e.icon||'🎂',text:e.title,d}); });
+  if(setup.loveDate){ const d=daysToNext(setup.loveDate); if(d<=3) list.push({icon:'💗',text:'Kỷ niệm ngày yêu',d}); }
+  if(setup.weddingDate){ const d=daysToNext(setup.weddingDate); if(d<=3) list.push({icon:'💍',text:'Kỷ niệm ngày cưới',d}); }
+  list.sort((a,b)=>a.d-b.d);
+  const choreLeft=chores.filter(c=>!c.done).length;
+  const shopLeft=shop.filter(s=>!s.done).length;
+  if(list.length===0 && choreLeft===0 && shopLeft===0) return null;
+  return (
+    <div className="card" style={{borderLeft:'4px solid var(--primary)'}}>
+      <b>🔔 Hôm nay cần nhớ</b>
+      {list.map((r,i)=>(
+        <div key={i} className="row" onClick={()=>go('us')} style={{cursor:'pointer',marginTop:6,fontSize:13.5}}>
+          <span>{r.icon}</span><span className="grow">{r.text}</span>
+          <span className="pill">{r.d===0?'Hôm nay!':r.d===1?'Ngày mai':'còn '+r.d+' ngày'}</span>
+        </div>
+      ))}
+      {(choreLeft>0||shopLeft>0) && <div className="row" style={{marginTop:10,gap:8,flexWrap:'wrap'}}>
+        {choreLeft>0 && <button className="pill" onClick={()=>go('us')}>🧹 {choreLeft} việc nhà chưa xong</button>}
+        {shopLeft>0 && <button className="pill" onClick={()=>go('us')}>🛒 {shopLeft} món cần mua</button>}
+      </div>}
+    </div>
+  );
+}
+
 /* ============ HOME ============ */
 function Home({setup,people,me,go}){
   const [mood,setMood]=useLocal('ju.mood',{});
@@ -784,6 +816,9 @@ function Home({setup,people,me,go}){
           {weddingDays!=null && <div className="sub" style={{marginTop:6}}>💍 Cưới nhau {weddingDays.toLocaleString('vi-VN')} ngày · {yearsBetween(setup.weddingDate)} năm</div>}
         </div>
       </div>
+
+      {/* Nhắc nhở hôm nay */}
+      <Reminders setup={setup} go={go}/>
 
       {/* Mốc kỷ niệm sắp tới */}
       {loveDays!=null && (()=>{
@@ -1308,13 +1343,15 @@ function TodoAdd({onAdd}){
   );
 }
 function EventForm({init,onClose,onSave}){
-  const [f,setF]=useState(()=>init?{...init}:{title:'',date:'',note:''});
+  const [f,setF]=useState(()=>init?{...init}:{title:'',date:'',note:'',remind:3});
   return (
     <Sheet title={(init?'Sửa ':'Thêm ')+'sự kiện'} onClose={onClose}>
       <div className="field"><label>Tên sự kiện</label>
         <input className="inp" autoFocus value={f.title} onChange={e=>setF({...f,title:e.target.value})} placeholder="VD: Sinh nhật Em"/></div>
       <div className="field"><label>Ngày</label>
         <input className="inp" type="date" value={f.date||''} onChange={e=>setF({...f,date:e.target.value})}/></div>
+      <div className="field"><label>Nhắc trước (ngày)</label>
+        <input className="inp" type="number" value={f.remind!=null?f.remind:3} onChange={e=>setF({...f,remind:Number(e.target.value)})}/></div>
       <div className="field"><label>Ghi chú</label>
         <textarea className="inp" value={f.note||''} onChange={e=>setF({...f,note:e.target.value})}/></div>
       <button className="btn" onClick={()=>{ if(f.title.trim()) onSave(f); }}>💾 Lưu</button>
