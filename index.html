@@ -234,7 +234,7 @@ const store={
 const SB_URL='https://vvgkjgvzjeklaadusbne.supabase.co';
 const SB_KEY='sb_publishable_DMMPv5L2kGhrHTxeQ72iKw_dIh13iT1';
 // Các key được đồng bộ (KHÔNG gồm ju.me/ju.device/ju.sync — đó là riêng từng máy)
-const SYNC_KEYS=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood','ju.qa','ju.timeline','ju.coupons','ju.chores','ju.lovejar','ju.quiz','ju.city'];
+const SYNC_KEYS=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood','ju.qa','ju.timeline','ju.coupons','ju.chores','ju.lovejar','ju.quiz','ju.city','ju.goals'];
 let _sb=null;
 function sbClient(){
   if(_sb) return _sb;
@@ -1461,6 +1461,60 @@ function Chores({people,me}){
   );
 }
 
+/* ============ Mục tiêu chung (có các bước) ============ */
+function Goals({people,me}){
+  const [goals,setGoals]=useLocal('ju.goals',[]);
+  const [open,setOpen]=useState(false);
+  const save=(g)=>{ setGoals([{...g,id:uid(),by:me,steps:[],createdAt:Date.now()},...goals]); setOpen(false); };
+  const del=(id)=>setGoals(goals.filter(x=>x.id!==id));
+  const addStep=(gid,text)=>setGoals(goals.map(g=>g.id===gid?{...g,steps:[...(g.steps||[]),{id:uid(),text,done:false}]}:g));
+  const toggleStep=(gid,sid)=>setGoals(goals.map(g=>{ if(g.id!==gid) return g; const steps=g.steps.map(s=>s.id===sid?{...s,done:!s.done}:s); if(steps.length&&steps.every(s=>s.done)&&!g.steps.every(s=>s.done)) celebrate(['🏆','🎉','💞','✨']); return {...g,steps}; }));
+  const delStep=(gid,sid)=>setGoals(goals.map(g=>g.id===gid?{...g,steps:g.steps.filter(s=>s.id!==sid)}:g));
+  return (
+    <div>
+      <div className="row" style={{margin:'10px 14px'}}><span className="grow muted" style={{fontSize:13}}>Mục tiêu hai đứa cùng theo đuổi 🎯</span>
+        <button className="btn sm" onClick={()=>setOpen(true)}>＋ Thêm</button></div>
+      {goals.length===0 && <div className="empty"><span className="big">🏆</span>VD: học tiếng Anh, tập gym cùng nhau, tiết kiệm mua nhà… chia thành các bước nhỏ.</div>}
+      {goals.map(g=>{
+        const total=(g.steps||[]).length, done=(g.steps||[]).filter(s=>s.done).length;
+        const pct=total?Math.round(done/total*100):0;
+        return (
+          <div key={g.id} className="item">
+            <div className="it-top"><h4>{g.title}</h4><span className="pill">{pct}%</span></div>
+            {g.note && <div className="it-note">{g.note}</div>}
+            {total>0 && <div className="prog"><i style={{width:pct+'%'}}></i></div>}
+            <div style={{marginTop:8}}>
+              {(g.steps||[]).map(s=>(
+                <div key={s.id} className="row" style={{padding:'3px 0'}}>
+                  <button onClick={()=>toggleStep(g.id,s.id)} style={{fontSize:17}}>{s.done?'✅':'⬜'}</button>
+                  <span className={'grow'+(s.done?' dim':'')} style={{fontSize:14,textDecoration:s.done?'line-through':'none'}}>{s.text}</span>
+                  <button className="muted" onClick={()=>delStep(g.id,s.id)}>✕</button>
+                </div>
+              ))}
+              <TodoAdd onAdd={(t)=>addStep(g.id,t)}/>
+            </div>
+            <div className="it-meta"><span className="av-sm">{people[g.by]?.avatar}</span><span className="grow"></span>
+              <button className="iconbtn" onClick={()=>del(g.id)}>🗑️</button></div>
+          </div>
+        );
+      })}
+      {open && <BigGoalForm onClose={()=>setOpen(false)} onSave={save}/>}
+    </div>
+  );
+}
+function BigGoalForm({onClose,onSave}){
+  const [f,setF]=useState({title:'',note:''});
+  return (
+    <Sheet title="Thêm mục tiêu chung" onClose={onClose}>
+      <div className="field"><label>Mục tiêu</label>
+        <input className="inp" autoFocus value={f.title} onChange={e=>setF({...f,title:e.target.value})} placeholder="VD: Cùng học tiếng Anh"/></div>
+      <div className="field"><label>Ghi chú</label>
+        <textarea className="inp" value={f.note} onChange={e=>setF({...f,note:e.target.value})} placeholder="(tuỳ chọn)"/></div>
+      <button className="btn" onClick={()=>{ if(f.title.trim()) onSave(f); }}>💾 Lưu (thêm các bước sau)</button>
+    </Sheet>
+  );
+}
+
 function UsTab({people,me,flash}){
   const [seg,setSeg]=useState('events');
   return (
@@ -1470,6 +1524,7 @@ function UsTab({people,me,flash}){
         <button className={seg==='dates'?'on':''} onClick={()=>setSeg('dates')}>🎂 Ngày nhớ</button>
         <button className={seg==='timeline'?'on':''} onClick={()=>setSeg('timeline')}>🕰️ Kỷ niệm</button>
         <button className={seg==='fund'?'on':''} onClick={()=>setSeg('fund')}>💰 Quỹ chung</button>
+        <button className={seg==='goals'?'on':''} onClick={()=>setSeg('goals')}>🎯 Mục tiêu</button>
         <button className={seg==='shop'?'on':''} onClick={()=>setSeg('shop')}>🛒 Đi chợ</button>
         <button className={seg==='chores'?'on':''} onClick={()=>setSeg('chores')}>🧹 Việc nhà</button>
         <button className={seg==='notes'?'on':''} onClick={()=>setSeg('notes')}>💌 Nhắn nhau</button>
@@ -1478,6 +1533,7 @@ function UsTab({people,me,flash}){
       {seg==='dates' && <ImportantDates people={people} me={me}/>}
       {seg==='timeline' && <Timeline people={people} me={me}/>}
       {seg==='fund' && <Fund people={people} me={me}/>}
+      {seg==='goals' && <Goals people={people} me={me}/>}
       {seg==='shop' && <Shopping people={people} me={me}/>}
       {seg==='chores' && <Chores people={people} me={me}/>}
       {seg==='notes' && <Notes people={people} me={me}/>}
