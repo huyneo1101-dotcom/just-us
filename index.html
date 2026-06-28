@@ -234,7 +234,7 @@ const store={
 const SB_URL='https://vvgkjgvzjeklaadusbne.supabase.co';
 const SB_KEY='sb_publishable_DMMPv5L2kGhrHTxeQ72iKw_dIh13iT1';
 // Các key được đồng bộ (KHÔNG gồm ju.me/ju.device/ju.sync — đó là riêng từng máy)
-const SYNC_KEYS=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood','ju.qa','ju.timeline','ju.coupons','ju.chores','ju.lovejar','ju.quiz'];
+const SYNC_KEYS=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood','ju.qa','ju.timeline','ju.coupons','ju.chores','ju.lovejar','ju.quiz','ju.city'];
 let _sb=null;
 function sbClient(){
   if(_sb) return _sb;
@@ -518,6 +518,24 @@ function dayNumber(){ const d=new Date(); return Math.floor(Date.UTC(d.getFullYe
 function questionOfToday(){ return QUESTIONS[((dayNumber()%QUESTIONS.length)+QUESTIONS.length)%QUESTIONS.length]; }
 const QUIZ_Q=['Món ăn yêu thích của tôi là gì?','Nơi tôi muốn đi du lịch nhất?','Tật xấu đáng yêu của tôi?','Điều khiến tôi vui nhất?','Bài hát tôi hay nghe gần đây?','Tôi sợ điều gì nhất?','Món quà tôi mơ ước?','Thói quen buổi sáng của tôi?','Điều tôi muốn cải thiện ở bản thân?','Cách tôi thích được an ủi khi buồn?','Màu sắc tôi thích nhất?','Nếu trúng số, việc đầu tiên tôi làm?','Kiểu hẹn hò tôi thích nhất?','Điều nhỏ khiến tôi khó chịu?','Ước mơ thời bé của tôi?'];
 function quizOfToday(){ return QUIZ_Q[((dayNumber()%QUIZ_Q.length)+QUIZ_Q.length)%QUIZ_Q.length]; }
+const CITIES=[
+  {k:'hanoi',name:'Hà Nội',lat:21.03,lng:105.85},{k:'hcm',name:'TP.HCM',lat:10.78,lng:106.70},
+  {k:'danang',name:'Đà Nẵng',lat:16.05,lng:108.22},{k:'haiphong',name:'Hải Phòng',lat:20.86,lng:106.68},
+  {k:'cantho',name:'Cần Thơ',lat:10.03,lng:105.78},{k:'dalat',name:'Đà Lạt',lat:11.94,lng:108.46},
+  {k:'nhatrang',name:'Nha Trang',lat:12.24,lng:109.19},{k:'hue',name:'Huế',lat:16.46,lng:107.59},
+  {k:'vungtau',name:'Vũng Tàu',lat:10.41,lng:107.14},{k:'quynhon',name:'Quy Nhơn',lat:13.78,lng:109.22},
+];
+function wmo(c){
+  if(c===0) return {icon:'☀️',text:'Quang đãng'};
+  if(c<=2) return {icon:'⛅',text:'Ít mây'};
+  if(c===3) return {icon:'☁️',text:'Nhiều mây'};
+  if(c<=48) return {icon:'🌫️',text:'Sương mù'};
+  if(c<=57) return {icon:'🌦️',text:'Mưa phùn'};
+  if(c<=67) return {icon:'🌧️',text:'Mưa'};
+  if(c<=77) return {icon:'🌨️',text:'Tuyết'};
+  if(c<=82) return {icon:'🌧️',text:'Mưa rào'};
+  return {icon:'⛈️',text:'Dông'};
+}
 
 /* ============ small components ============ */
 function Av({emoji,size=22}){
@@ -1090,6 +1108,37 @@ function WishTab({people,me,flash}){
   );
 }
 
+/* ============ Thời tiết + gợi ý theo thời tiết ============ */
+function WeatherCard(){
+  const [cityKey,setCityKey]=useLocal('ju.city','hanoi');
+  const city=CITIES.find(c=>c.k===cityKey)||CITIES[0];
+  const [w,setW]=useState(null); const [err,setErr]=useState(false);
+  useEffect(()=>{ let on=true; setW(null); setErr(false);
+    fetch('https://api.open-meteo.com/v1/forecast?latitude='+city.lat+'&longitude='+city.lng+'&current=temperature_2m,weather_code,precipitation&timezone=auto')
+      .then(r=>r.json()).then(d=>{ if(on) d&&d.current?setW(d.current):setErr(true); }).catch(()=>{ if(on) setErr(true); });
+    return ()=>{ on=false; };
+  },[city.k]);
+  const sel=(
+    <select className="inp" style={{width:120,flex:'0 0 auto',padding:'6px 8px',fontSize:12.5}} value={cityKey} onChange={e=>setCityKey(e.target.value)}>
+      {CITIES.map(c=><option key={c.k} value={c.k}>{c.name}</option>)}
+    </select>
+  );
+  if(err) return <div className="card row" style={{gap:8}}><span className="muted grow" style={{fontSize:12.5}}>⛅ Không lấy được thời tiết (cần mạng).</span>{sel}</div>;
+  if(!w) return <div className="card row" style={{gap:8}}><span className="muted grow" style={{fontSize:12.5}}>⛅ Đang xem thời tiết…</span>{sel}</div>;
+  const wm=wmo(w.weather_code);
+  const rainy=(w.precipitation>0)||[51,53,55,61,63,65,80,81,82,95,96,99].indexOf(w.weather_code)>=0;
+  return (
+    <div className="card">
+      <div className="row" style={{gap:12,alignItems:'center'}}>
+        <div style={{fontSize:34}}>{wm.icon}</div>
+        <div className="grow"><b>{Math.round(w.temperature_2m)}°C · {wm.text}</b>
+          <div className="muted" style={{fontSize:12}}>{rainy?'Trời ẩm ướt — hợp hẹn hò trong nhà ☕🎬':'Thời tiết đẹp — đi chơi ngoài trời thôi 🌳🚲'}</div></div>
+        {sel}
+      </div>
+    </div>
+  );
+}
+
 /* ============ Tab: Hẹn hò ============ */
 function DateTab({people,me,flash}){
   const [seg,setSeg]=useState('idea');
@@ -1100,7 +1149,7 @@ function DateTab({people,me,flash}){
         <button className={seg==='food'?'on':''} onClick={()=>setSeg('food')}>🍜 Quán & Món</button>
         <button className={seg==='map'?'on':''} onClick={()=>setSeg('map')}>🗺️ Bản đồ</button>
       </div>
-      {seg==='idea' && <DateIdeas people={people} me={me}/>}
+      {seg==='idea' && <><WeatherCard/><DateIdeas people={people} me={me}/></>}
       {seg==='food' && <SimpleList skey="ju.food" people={people} me={me} addLabel="quán/món" doneLabel="Đã thử"
         fields={['address','rating','link','note']} suggest={FOOD_SUGGEST} empty={{icon:'🍜',text:'Quán ăn, món muốn thử cùng nhau. Bấm 💡 để xem gợi ý!'}} flash={flash}/>}
       {seg==='map' && <MapSpots people={people} me={me}/>}
