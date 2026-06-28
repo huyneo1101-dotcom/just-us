@@ -1187,6 +1187,7 @@ function Timeline({people,me}){
                   <button className="iconbtn" onClick={()=>{setEdit(it);setOpen(true);}}>✏️</button>
                   <button className="iconbtn" onClick={()=>del(it.id)}>🗑️</button></div>
                 <div className="muted" style={{fontSize:12,marginTop:2}}>{fmtDateVN(it.date)}</div>
+                {it.photo && <PhotoImg photo={it.photo} style={{width:'100%',maxHeight:220,objectFit:'cover',borderRadius:10,marginTop:8,display:'block'}}/>}
                 {it.note && <div className="it-note">{it.note}</div>}
               </div>
             </div>
@@ -1199,7 +1200,17 @@ function Timeline({people,me}){
 }
 function TimelineForm({init,onClose,onSave}){
   const ICONS=['💗','💑','💍','🏠','✈️','🎁','🌹','🎓','👶','🐾','🎉','📸'];
-  const [f,setF]=useState(()=>init?{...init}:{title:'',date:'',note:'',icon:'💗'});
+  const [f,setF]=useState(()=>init?{...init}:{title:'',date:'',note:'',icon:'💗',photo:null});
+  const [busy,setBusy]=useState(false);
+  const fileRef=useRef(null);
+  const onFile=async(e)=>{
+    const file=e.target.files[0]; if(!file)return; e.target.value='';
+    setBusy(true);
+    try{
+      if(Cloud.connected()){ const path=await Cloud.uploadPhoto(file); setF(p=>({...p,photo:{path}})); setBusy(false); }
+      else { const r=new FileReader(); r.onload=()=>{ setF(p=>({...p,photo:{src:r.result}})); setBusy(false); }; r.readAsDataURL(file); }
+    }catch(err){ setBusy(false); }
+  };
   return (
     <Sheet title={(init?'Sửa ':'Thêm ')+'cột mốc'} onClose={onClose}>
       <div className="field"><label>Cột mốc</label>
@@ -1208,6 +1219,14 @@ function TimelineForm({init,onClose,onSave}){
         <input className="inp" type="date" value={f.date||''} onChange={e=>setF({...f,date:e.target.value})}/></div>
       <div className="field"><label>Biểu tượng</label>
         <div className="emoji-row">{ICONS.map(i=><button key={i} className={f.icon===i?'on':''} onClick={()=>setF({...f,icon:i})}>{i}</button>)}</div></div>
+      <div className="field"><label>Ảnh kỷ niệm (tuỳ chọn)</label>
+        {f.photo
+          ? <div style={{position:'relative'}}>
+              <PhotoImg photo={f.photo} style={{width:'100%',height:150,objectFit:'cover',borderRadius:12,display:'block'}}/>
+              <button className="pill" style={{position:'absolute',top:6,right:6}} onClick={()=>setF(p=>({...p,photo:null}))}>✕ Bỏ ảnh</button>
+            </div>
+          : <button className="btn soft" onClick={()=>fileRef.current.click()}>{busy?'Đang tải…':'📷 Thêm ảnh'}</button>}
+        <input ref={fileRef} type="file" accept="image/*" hidden onChange={onFile}/></div>
       <div className="field"><label>Kỷ niệm / ghi chú</label>
         <textarea className="inp" value={f.note||''} onChange={e=>setF({...f,note:e.target.value})} placeholder="Hôm đó thế nào…"/></div>
       <button className="btn" onClick={()=>{ if(f.title.trim()&&f.date) onSave(f); }}>💾 Lưu</button>
@@ -1714,7 +1733,7 @@ function AccountPanel({flash}){
 }
 
 /* Ảnh: lấy URL ký tạm nếu là ảnh trên Storage; nếu là base64/link thì dùng trực tiếp */
-function PhotoImg({photo}){
+function PhotoImg({photo,style}){
   const [url,setUrl]=useState(photo.src||null);
   useEffect(()=>{
     let on=true;
@@ -1722,7 +1741,7 @@ function PhotoImg({photo}){
     else setUrl(photo.src||null);
     return ()=>{ on=false; };
   },[photo.path,photo.src]);
-  return <img src={url||''} alt="" onError={e=>{e.target.style.opacity=.3;}}/>;
+  return <img src={url||''} alt="" style={style} onError={e=>{e.target.style.opacity=.3;}}/>;
 }
 
 /* ============ Tab: Hồ sơ ============ */
@@ -1731,6 +1750,7 @@ function Profile({setup,setSetup,people,me,setMe,flash}){
   const [editP,setEditP]=useState(false);
   const fileRef=useRef(null);
   const [addPhoto,setAddPhoto]=useState(false);
+  const [viewer,setViewer]=useState(null);
 
   const onFile=async(e)=>{
     const f=e.target.files[0]; if(!f) return;
@@ -1824,13 +1844,27 @@ function Profile({setup,setSetup,people,me,setMe,flash}){
       {photos.length===0 && <div className="empty" style={{padding:'18px'}}>Chưa có ảnh chung nào.</div>}
       <div className="gallery">
         {photos.map(p=>(
-          <div key={p.id} className="ph" onClick={()=>delPhoto(p)}>
+          <div key={p.id} className="ph" onClick={()=>setViewer(p)}>
             <PhotoImg photo={p}/>
             {p.caption && <div className="cap">{p.caption}</div>}
           </div>
         ))}
       </div>
-      {photos.length>0 && <div className="muted center" style={{fontSize:11}}>Chạm ảnh để xoá</div>}
+      {photos.length>0 && <div className="muted center" style={{fontSize:11}}>Chạm ảnh để xem lớn</div>}
+
+      {viewer && (
+        <div className="ov" style={{alignItems:'center'}} onClick={()=>setViewer(null)}>
+          <div onClick={e=>e.stopPropagation()} style={{maxWidth:'94%',maxHeight:'90vh',textAlign:'center'}}>
+            <PhotoImg photo={viewer} style={{maxWidth:'100%',maxHeight:'74vh',borderRadius:14,display:'block',margin:'0 auto'}}/>
+            {viewer.caption && <div style={{color:'#fff',marginTop:8,fontSize:14}}>{viewer.caption}</div>}
+            <div className="muted" style={{color:'#eee',fontSize:12,marginTop:4}}>{people[viewer.by]?.avatar} {people[viewer.by]?.name} · {fmtDateVN(viewer.date)}</div>
+            <div className="row" style={{justifyContent:'center',gap:8,marginTop:12}}>
+              <button className="btn soft sm" onClick={()=>setViewer(null)}>Đóng</button>
+              <button className="btn sm" style={{background:'#e0436b'}} onClick={()=>{ delPhoto(viewer); setViewer(null); }}>🗑️ Xoá ảnh</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Theme */}
       <div className="sec-title">🎨 Giao diện đôi</div>
