@@ -249,7 +249,7 @@ const store={
 const SB_URL='https://vvgkjgvzjeklaadusbne.supabase.co';
 const SB_KEY='sb_publishable_DMMPv5L2kGhrHTxeQ72iKw_dIh13iT1';
 // Các key được đồng bộ (KHÔNG gồm ju.me/ju.device/ju.sync — đó là riêng từng máy)
-const SYNC_KEYS=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood','ju.qa','ju.timeline','ju.coupons','ju.chores','ju.lovejar','ju.quiz','ju.city','ju.goals','ju.checkin','ju.challengeDone'];
+const SYNC_KEYS=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood','ju.qa','ju.timeline','ju.coupons','ju.chores','ju.lovejar','ju.quiz','ju.city','ju.goals','ju.checkin','ju.challengeDone','ju.homecfg'];
 let _sb=null;
 function sbClient(){
   if(_sb) return _sb;
@@ -1104,6 +1104,8 @@ function Home({setup,people,me,go}){
     if(c.path){ Cloud.signedUrl(c.path).then(u=>{ if(on) setCover(u); }); } else setCover(c.src||null);
     return ()=>{ on=false; };
   },[setup.cover, photos]);
+  const [homecfg]=useLocal('ju.homecfg',{hidden:[]});
+  const show=(k)=> !((homecfg&&homecfg.hidden)||[]).includes(k);
 
   return (
     <div>
@@ -1120,10 +1122,10 @@ function Home({setup,people,me,go}){
       </div>
 
       {/* Nhắc nhở hôm nay */}
-      <Reminders setup={setup} go={go}/>
+      {show('reminders') && <Reminders setup={setup} go={go}/>}
 
       {/* Mốc kỷ niệm sắp tới */}
-      {loveDays!=null && (()=>{
+      {show('milestone') && loveDays!=null && (()=>{
         const todayMilestone = loveDays>0 && (loveDays%100===0 || loveDays%365===0);
         const ms=nextMilestone(loveDays);
         return (
@@ -1139,28 +1141,28 @@ function Home({setup,people,me,go}){
       })()}
 
       {/* Ngày này năm xưa */}
-      <OnThisDay/>
+      {show('onthisday') && <OnThisDay/>}
 
       {/* Tâm trạng hôm nay */}
-      <MoodCard people={people} me={me}/>
+      {show('mood') && <MoodCard people={people} me={me}/>}
 
       {/* Câu hỏi mỗi ngày */}
-      <DailyQuestion people={people} me={me}/>
+      {show('question') && <DailyQuestion people={people} me={me}/>}
 
       {/* Đố vui hiểu nhau */}
-      <CoupleQuiz people={people} me={me}/>
+      {show('quiz') && <CoupleQuiz people={people} me={me}/>}
 
       {/* Thử thách đôi hôm nay */}
-      <DailyChallenge/>
+      {show('challenge') && <DailyChallenge/>}
 
       {/* Phân vân: ăn gì / làm gì */}
-      <FunPickers/>
+      {show('fun') && <FunPickers/>}
 
       {/* Lọ yêu thương */}
-      <LoveJar people={people} me={me}/>
+      {show('lovejar') && <LoveJar people={people} me={me}/>}
 
       {/* Check-in tuần */}
-      <WeeklyCheckin people={people} me={me}/>
+      {show('checkin') && <WeeklyCheckin people={people} me={me}/>}
 
       {/* Sắp tới */}
       <div className="sec-title">⏳ Sắp tới</div>
@@ -2343,6 +2345,31 @@ function PhotoImg({photo,style}){
   return <img src={url||''} alt="" style={style} onError={e=>{e.target.style.opacity=.3;}}/>;
 }
 
+const HOME_SECTIONS=[
+  ['reminders','🔔 Nhắc nhở hôm nay'],['milestone','🎯 Mốc kỷ niệm'],['onthisday','📆 Ngày này năm xưa'],
+  ['mood','🙂 Tâm trạng'],['question','❓ Câu hỏi mỗi ngày'],['quiz','💞 Đố vui hiểu nhau'],
+  ['challenge','🎯 Thử thách đôi'],['fun','🎲 Ăn gì / Làm gì'],['lovejar','🫙 Lọ yêu thương'],['checkin','📝 Check-in tuần'],
+];
+function HomeSettings(){
+  const [cfg,setCfg]=useLocal('ju.homecfg',{hidden:[]});
+  const hidden=cfg.hidden||[];
+  const toggle=(k)=>{ const h=hidden.includes(k)?hidden.filter(x=>x!==k):[...hidden,k]; setCfg({hidden:h}); };
+  return (
+    <div>
+      <div className="sec-title">🏠 Tuỳ chỉnh Trang chủ</div>
+      <div className="card">
+        <div className="muted" style={{fontSize:12,marginBottom:4}}>Bật/tắt các thẻ ở Trang chủ cho gọn.</div>
+        {HOME_SECTIONS.map(([k,label])=>(
+          <div key={k} className="row" style={{padding:'7px 0',borderBottom:'1px solid var(--line)'}}>
+            <span className="grow" style={{fontSize:14}}>{label}</span>
+            <button className="pill" onClick={()=>toggle(k)} style={{background:hidden.includes(k)?'var(--bg)':'var(--good)',color:hidden.includes(k)?'var(--muted)':'#fff',border:hidden.includes(k)?'1px solid var(--line)':'none'}}>{hidden.includes(k)?'Đang ẩn':'Đang hiện'}</button>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 /* ============ Tab: Hồ sơ ============ */
 function Profile({setup,setSetup,people,me,setMe,flash}){
   const [photos,setPhotos]=useLocal('ju.photos',[]);
@@ -2517,6 +2544,9 @@ function Profile({setup,setSetup,people,me,setMe,flash}){
           ))}
         </div>
       </div>
+
+      {/* Tuỳ chỉnh Trang chủ */}
+      <HomeSettings/>
 
       {/* Sao lưu & bảo mật */}
       <div className="sec-title">💾 Sao lưu & bảo mật</div>
