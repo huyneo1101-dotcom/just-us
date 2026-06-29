@@ -249,7 +249,7 @@ const store={
 const SB_URL='https://vvgkjgvzjeklaadusbne.supabase.co';
 const SB_KEY='sb_publishable_DMMPv5L2kGhrHTxeQ72iKw_dIh13iT1';
 // Các key được đồng bộ (KHÔNG gồm ju.me/ju.device/ju.sync — đó là riêng từng máy)
-const SYNC_KEYS=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood','ju.qa','ju.timeline','ju.coupons','ju.chores','ju.lovejar','ju.quiz','ju.city','ju.goals','ju.checkin'];
+const SYNC_KEYS=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood','ju.qa','ju.timeline','ju.coupons','ju.chores','ju.lovejar','ju.quiz','ju.city','ju.goals','ju.checkin','ju.challengeDone'];
 let _sb=null;
 function sbClient(){
   if(_sb) return _sb;
@@ -633,6 +633,9 @@ function weekKey(){ const d=new Date(); d.setHours(0,0,0,0); const day=(d.getDay
 function questionOfToday(){ return QUESTIONS[((dayNumber()%QUESTIONS.length)+QUESTIONS.length)%QUESTIONS.length]; }
 const QUIZ_Q=['Món ăn yêu thích của tôi là gì?','Nơi tôi muốn đi du lịch nhất?','Tật xấu đáng yêu của tôi?','Điều khiến tôi vui nhất?','Bài hát tôi hay nghe gần đây?','Tôi sợ điều gì nhất?','Món quà tôi mơ ước?','Thói quen buổi sáng của tôi?','Điều tôi muốn cải thiện ở bản thân?','Cách tôi thích được an ủi khi buồn?','Màu sắc tôi thích nhất?','Nếu trúng số, việc đầu tiên tôi làm?','Kiểu hẹn hò tôi thích nhất?','Điều nhỏ khiến tôi khó chịu?','Ước mơ thời bé của tôi?'];
 function quizOfToday(){ return QUIZ_Q[((dayNumber()%QUIZ_Q.length)+QUIZ_Q.length)%QUIZ_Q.length]; }
+const CHALLENGES=['Nói 3 điều bạn thích ở người kia','Ôm nhau thật chặt 20 giây','Cùng nấu hoặc pha một món','Gửi nhau một tin nhắn ngọt ngào','Đi dạo 15 phút, không điện thoại','Cùng nghe trọn một bài hát','Khen người kia một câu thật lòng','Massage vai cho nhau 5 phút','Cùng xem lại ảnh cũ','Lên kế hoạch một chuyến đi nhỏ','Viết 1 điều biết ơn về người kia','Hỏi kỹ về một ngày của nhau','Nắm tay khi ra ngoài','Tắt điện thoại khi ăn cùng nhau','Cùng dọn một góc nhà','Pha cho người kia một ly nước','Nhắc lại một kỷ niệm vui','Cùng tập thể dục 10 phút','Để lại một lời nhắn viết tay','Cùng lên thực đơn tuần này','Ôm từ phía sau khi người kia bận','Cho nhau xem một video buồn cười','Cùng thử một quán/món mới','Nói "cảm ơn" vì một điều nhỏ','Hôn lên trán người kia','Cùng ngắm hoàng hôn hoặc bầu trời','Kể một mong ước cho tương lai chung','Chơi một trò nhỏ cùng nhau (oẳn tù tì…)'];
+function challengeOfToday(){ return CHALLENGES[((dayNumber()%CHALLENGES.length)+CHALLENGES.length)%CHALLENGES.length]; }
+function streakOf(has){ let d=new Date(); d.setHours(0,0,0,0); if(!has(d)) d.setDate(d.getDate()-1); let n=0; while(has(d)){ n++; d.setDate(d.getDate()-1); } return n; }
 const CITIES=[
   {k:'hanoi',name:'Hà Nội',lat:21.03,lng:105.85},{k:'hcm',name:'TP.HCM',lat:10.78,lng:106.70},
   {k:'danang',name:'Đà Nẵng',lat:16.05,lng:108.22},{k:'haiphong',name:'Hải Phòng',lat:20.86,lng:106.68},
@@ -871,6 +874,24 @@ function CoupleQuiz({people,me}){
           <div className="center" style={{marginTop:8,fontWeight:800}}>Điểm hiểu nhau: {score}/2 {score===2?'🎉':'💪'}</div>
         </div>
       )}
+    </div>
+  );
+}
+
+/* ============ Thử thách đôi hôm nay ============ */
+function DailyChallenge(){
+  const [log,setLog]=useLocal('ju.challengeDone',{});
+  const key=todayISO();
+  const ch=challengeOfToday();
+  const done=!!log[key];
+  const has=(d)=>!!log[d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())];
+  const streak=streakOf(has);
+  const toggle=()=>{ const nv={...log}; if(done){ delete nv[key]; } else { nv[key]=true; celebrate(['💞','🎉','✨','💪']); } setLog(nv); };
+  return (
+    <div className="card">
+      <div className="row"><b>🎯 Thử thách đôi hôm nay</b>{streak>1 && <span className="pill" style={{marginLeft:8}}>🔥 {streak} ngày</span>}<span className="grow"></span></div>
+      <div style={{fontWeight:700,fontSize:15,margin:'8px 0 10px',lineHeight:1.35}}>{ch}</div>
+      <button className={'btn'+(done?' soft':'')} onClick={toggle}>{done?'✓ Đã làm cùng nhau 💞 (bỏ đánh dấu)':'Đánh dấu đã làm cùng nhau'}</button>
     </div>
   );
 }
@@ -1128,6 +1149,9 @@ function Home({setup,people,me,go}){
 
       {/* Đố vui hiểu nhau */}
       <CoupleQuiz people={people} me={me}/>
+
+      {/* Thử thách đôi hôm nay */}
+      <DailyChallenge/>
 
       {/* Phân vân: ăn gì / làm gì */}
       <FunPickers/>
@@ -1737,10 +1761,62 @@ function UsTab({people,me,flash}){
   );
 }
 
+function icsDownload(title,dateISO,note){
+  if(!dateISO) return;
+  const dt=dateISO.replace(/-/g,'');
+  const esc=(s)=>String(s||'').replace(/([,;\\])/g,'\\$1').replace(/\n/g,'\\n');
+  const ics=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//JustUs//VI','CALSCALE:GREGORIAN','BEGIN:VEVENT',
+    'UID:'+dt+Math.random().toString(36).slice(2)+'@justus','DTSTART;VALUE=DATE:'+dt,'SUMMARY:'+esc(title),
+    note?'DESCRIPTION:'+esc(note):'','END:VEVENT','END:VCALENDAR'].filter(Boolean).join('\r\n');
+  const blob=new Blob([ics],{type:'text/calendar;charset=utf-8'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download=(title||'su-kien').replace(/[^a-z0-9]+/gi,'-').toLowerCase()+'.ics'; a.click();
+}
+function MiniCalendar(){
+  const setup=store.get('ju.setup',{})||{};
+  const [events]=useLocal('ju.events',[]);
+  const [dates]=useLocal('ju.dates',[]);
+  const now=new Date();
+  const [ym,setYm]=useState({y:now.getFullYear(),m:now.getMonth()});
+  const [sel,setSel]=useState(null);
+  const marks={}; const addMark=(day,t,kind)=>{ (marks[day]=marks[day]||[]).push({t,kind}); };
+  events.forEach(e=>{ if(!e.date)return; const [y,m,d]=e.date.split('-').map(Number); if(y===ym.y&&m-1===ym.m) addMark(d,e.title,'📅'); });
+  dates.forEach(e=>{ if(!e.date)return; const p=e.date.split('-').map(Number); if(p[1]-1===ym.m) addMark(p[2],e.title,e.icon||'🎂'); });
+  [['loveDate','Kỷ niệm ngày yêu'],['weddingDate','Kỷ niệm ngày cưới']].forEach(([k,label])=>{ if(setup[k]){ const p=setup[k].split('-').map(Number); if(p[1]-1===ym.m) addMark(p[2],label,'💞'); } });
+  const startDow=(new Date(ym.y,ym.m,1).getDay()+6)%7;
+  const daysIn=new Date(ym.y,ym.m+1,0).getDate();
+  const cells=[]; for(let i=0;i<startDow;i++) cells.push(null); for(let d=1;d<=daysIn;d++) cells.push(d);
+  const isToday=(d)=> ym.y===now.getFullYear()&&ym.m===now.getMonth()&&d===now.getDate();
+  const moveM=(x)=>{ let m=ym.m+x,y=ym.y; if(m<0){m=11;y--;} if(m>11){m=0;y++;} setYm({y,m}); setSel(null); };
+  const MN=['Tháng 1','Tháng 2','Tháng 3','Tháng 4','Tháng 5','Tháng 6','Tháng 7','Tháng 8','Tháng 9','Tháng 10','Tháng 11','Tháng 12'];
+  return (
+    <div className="card">
+      <div className="row"><button className="iconbtn" onClick={()=>moveM(-1)}>‹</button>
+        <b className="grow" style={{textAlign:'center'}}>{MN[ym.m]} {ym.y}</b>
+        <button className="iconbtn" onClick={()=>moveM(1)}>›</button></div>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(7,1fr)',gap:2,marginTop:8,textAlign:'center'}}>
+        {['T2','T3','T4','T5','T6','T7','CN'].map(w=><div key={w} className="muted" style={{fontSize:10,fontWeight:700}}>{w}</div>)}
+        {cells.map((d,i)=>(
+          <div key={i} onClick={()=>d&&setSel(sel===d?null:d)} style={{aspectRatio:'1',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',
+            borderRadius:8,cursor:d?'pointer':'default',
+            background:d&&isToday(d)?'var(--primary)':(sel===d?'var(--chip)':'transparent'),
+            color:d&&isToday(d)?'var(--on-primary)':'var(--text)',fontSize:12.5}}>
+            {d||''}
+            {d&&marks[d] && <div style={{display:'flex',gap:1,marginTop:1}}>{marks[d].slice(0,3).map((x,j)=><span key={j} style={{width:4,height:4,borderRadius:'50%',background:isToday(d)?'#fff':'var(--primary)'}}></span>)}</div>}
+          </div>
+        ))}
+      </div>
+      {sel && (marks[sel]
+        ? <div style={{marginTop:8}}>{marks[sel].map((x,i)=><div key={i} className="row" style={{fontSize:13,padding:'3px 0'}}><span>{x.kind}</span><span className="grow" style={{marginLeft:6}}>{x.t}</span></div>)}</div>
+        : <div className="muted center" style={{fontSize:12,marginTop:8}}>Ngày {sel} chưa có gì.</div>)}
+    </div>
+  );
+}
 function Events({people,me}){
   const [events,setEvents]=useLocal('ju.events',[]);
   const [open,setOpen]=useState(false);
   const [edit,setEdit]=useState(null);
+  const [showCal,setShowCal]=useState(false);
 
   const save=(e)=>{
     if(e.id) setEvents(events.map(x=>x.id===e.id?e:x));
@@ -1755,8 +1831,10 @@ function Events({people,me}){
   const shown=events.slice().sort((a,b)=>(a.date||'9').localeCompare(b.date||'9'));
   return (
     <div>
-      <div className="row" style={{margin:'10px 14px'}}><span className="grow muted" style={{fontSize:13}}>Sự kiện chung cần chuẩn bị</span>
+      <div className="row" style={{margin:'10px 14px',gap:6}}><span className="grow muted" style={{fontSize:13}}>Sự kiện chung cần chuẩn bị</span>
+        <button className={'btn sm '+(showCal?'':'soft')} onClick={()=>setShowCal(v=>!v)}>🗓️ Lịch</button>
         <button className="btn sm" onClick={()=>{setEdit(null);setOpen(true);}}>＋ Thêm</button></div>
+      {showCal && <MiniCalendar/>}
       {shown.length===0 && <div className="empty"><span className="big">📅</span>Sinh nhật, du lịch, kỷ niệm… kèm checklist chuẩn bị.</div>}
       {shown.map(e=>{
         const d=daysFromToday(e.date);
@@ -1782,6 +1860,7 @@ function Events({people,me}){
             </div>
             <div className="it-meta">
               <span className="grow"></span>
+              {e.date && <button className="pill" onClick={()=>icsDownload(e.title,e.date,e.note)}>📆 Thêm vào lịch</button>}
               <button className="iconbtn" onClick={()=>{setEdit(e);setOpen(true);}}>✏️</button>
               <button className="iconbtn" onClick={()=>del(e.id)}>🗑️</button>
             </div>
@@ -2209,6 +2288,49 @@ function LoveStats({setup}){
   );
 }
 
+/* ============ Huy hiệu thành tích ============ */
+function Achievements({setup}){
+  const g=(k,d)=>store.get(k,d)||d;
+  const loveDays=setup.loveDate?Math.max(0,(daysFromToday(setup.loveDate)||0)*-1):0;
+  const notes=g('ju.notes',[]).length, photos=g('ju.photos',[]).length;
+  const food=g('ju.food',[]).filter(x=>x.done).length, spots=g('ju.spots',[]).filter(x=>x.done).length;
+  const bucket=g('ju.bucket',[]).filter(x=>x.done).length, coupons=g('ju.coupons',[]).filter(x=>x.redeemed).length;
+  const timeline=g('ju.timeline',[]).length, jar=g('ju.lovejar',[]).length;
+  const streak=answerStreak(g('ju.qa',{}));
+  const chDays=Object.keys(g('ju.challengeDone',{})).length;
+  const list=[
+    {i:'💗',n:'Khởi đầu',ok:!!setup.loveDate,h:'Đặt ngày yêu'},
+    {i:'💯',n:'100 ngày',ok:loveDays>=100,h:'Bên nhau 100 ngày'},
+    {i:'🎂',n:'Một năm',ok:loveDays>=365,h:'Bên nhau 1 năm'},
+    {i:'🏆',n:'1000 ngày',ok:loveDays>=1000,h:'Bên nhau 1000 ngày'},
+    {i:'💌',n:'Tâm tình',ok:notes>=10,h:'≥10 lời nhắn'},
+    {i:'📷',n:'Nhiếp ảnh',ok:photos>=5,h:'≥5 ảnh chung'},
+    {i:'🍽️',n:'Thực khách',ok:food>=3,h:'Thử ≥3 món'},
+    {i:'🗺️',n:'Lữ hành',ok:spots>=3,h:'Đi ≥3 chỗ'},
+    {i:'🎯',n:'Đồng đội',ok:bucket>=1,h:'Xong 1 bucket'},
+    {i:'🎟️',n:'Hào phóng',ok:coupons>=1,h:'Đổi 1 phiếu'},
+    {i:'🕰️',n:'Lưu giữ',ok:timeline>=3,h:'≥3 cột mốc'},
+    {i:'🔥',n:'Bền bỉ',ok:streak>=7,h:'Streak ≥7 ngày'},
+    {i:'💪',n:'Cùng cố',ok:chDays>=7,h:'≥7 thử thách'},
+    {i:'🫙',n:'Đầy lọ',ok:jar>=5,h:'≥5 điều yêu thương'},
+  ];
+  const got=list.filter(b=>b.ok).length;
+  return (
+    <div>
+      <div className="sec-title">🏅 Thành tích <span className="grow"></span><span className="muted" style={{fontSize:12}}>{got}/{list.length}</span></div>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:8,margin:'0 14px'}}>
+        {list.map((b,i)=>(
+          <div key={i} className="card" style={{margin:0,padding:'10px 6px',textAlign:'center',opacity:b.ok?1:.5}}>
+            <div style={{fontSize:26}}>{b.ok?b.i:'🔒'}</div>
+            <div style={{fontSize:11.5,fontWeight:700,marginTop:3}}>{b.n}</div>
+            <div className="muted" style={{fontSize:9.5,marginTop:2}}>{b.ok?'Đã mở':b.h}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 /* Ảnh: lấy URL ký tạm nếu là ảnh trên Storage; nếu là base64/link thì dùng trực tiếp */
 function PhotoImg({photo,style}){
   const [url,setUrl]=useState(photo.src||null);
@@ -2332,6 +2454,9 @@ function Profile({setup,setSetup,people,me,setMe,flash}){
 
       {/* Thống kê tình yêu */}
       <LoveStats setup={setup}/>
+
+      {/* Huy hiệu thành tích */}
+      <Achievements setup={setup}/>
 
       {/* Người đang dùng */}
       <div className="card">
