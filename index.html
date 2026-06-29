@@ -254,7 +254,7 @@ const store={
 const SB_URL='https://vvgkjgvzjeklaadusbne.supabase.co';
 const SB_KEY='sb_publishable_DMMPv5L2kGhrHTxeQ72iKw_dIh13iT1';
 // Các key được đồng bộ (KHÔNG gồm ju.me/ju.device/ju.sync — đó là riêng từng máy)
-const SYNC_KEYS=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood','ju.qa','ju.timeline','ju.coupons','ju.chores','ju.lovejar','ju.quiz','ju.city','ju.goals','ju.checkin','ju.challengeDone','ju.homecfg','ju.diary','ju.projects','ju.vinhaUrl','ju.checkins','ju.menu','ju.period','ju.menuPlan','ju.accuKey','ju.habits','ju.hiddenSpots','ju.usOrder','ju.eventPrefs','ju.child','ju.childGrowth','ju.childVaccines','ju.childMilestones','ju.childDiary','ju.partnerWishes','ju.todos','ju.spotify','ju.dishPrefs','ju.favDishes'];
+const SYNC_KEYS=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood','ju.qa','ju.timeline','ju.coupons','ju.chores','ju.lovejar','ju.quiz','ju.city','ju.goals','ju.checkin','ju.challengeDone','ju.homecfg','ju.diary','ju.projects','ju.vinhaUrl','ju.checkins','ju.menu','ju.period','ju.menuPlan','ju.accuKey','ju.habits','ju.hiddenSpots','ju.usOrder','ju.eventPrefs','ju.child','ju.childGrowth','ju.childVaccines','ju.childMilestones','ju.childDiary','ju.partnerWishes','ju.todos','ju.spotify','ju.dishPrefs','ju.favDishes','ju.childPack','ju.childSkills','ju.childMed','ju.childIllness','ju.childWords','ju.childTantrum','ju.childParenting'];
 let _sb=null;
 function sbClient(){
   if(_sb) return _sb;
@@ -487,22 +487,22 @@ const MOODS=['😍','😊','🥰','😌','😎','😴','🤒','😢','😠','�
 
 /* ===== Thư viện gợi ý nội dung (chạm để thêm) ===== */
 const IDEA_SUGGEST={
-  free:['Đi dạo công viên lúc hoàng hôn','Nấu một bữa tối cùng nhau','Xem phim ở nhà + bỏng ngô tự làm','Ngắm sao trên sân thượng','Picnic ở công viên','Đạp xe quanh hồ','Cùng nghe một playlist mới','Chơi board game / cờ','Đi bộ ngắm phố đêm','Tự pha cà phê & tâm sự','Cùng tập thể dục buổi sáng','Cùng dọn nhà rồi thưởng trà','Cùng vẽ / tô tranh','Tắm nắng sớm + cà phê','Cùng viết nhật ký cho nhau','Massage thư giãn cho nhau','Cùng làm bánh tại nhà','Trồng & chăm cây nhỏ','Karaoke tại nhà','Xem lại ảnh cũ và kể chuyện','Cùng đọc to một cuốn sách','Thử cắt tóc/tạo kiểu cho nhau','Cùng làm sữa chua / trà sữa tại nhà','Tổ chức “đêm chiếu phim” theo chủ đề','Viết thư cho hai đứa 1 năm sau','Cùng giải một câu đố / xếp hình','Thử thiền 10 phút cùng nhau','Cùng lập kế hoạch du lịch trong mơ','Học một bài hát để hát chung','Cùng gấp quần áo và nghe nhạc','Pha trà & chơi một ván cờ caro','Cùng làm một bữa sáng kiểu Tây','Đố nhau ký ức cũ qua ảnh điện thoại','Tự tạo "menu nhà mình" cho cả tuần','Cùng ngắm mưa bên cửa sổ với trà nóng','Cùng làm một playlist "bài hát của hai đứa"','Thử thử thách nấu ăn với 1 nguyên liệu bí mật','Cùng tô tượng / nặn đất sét tại nhà','Ngồi ban công đếm sao và kể ước mơ','Cùng làm pizza đế mỏng từ chảo','Viết "5 điều biết ơn" rồi đọc cho nhau nghe','Cùng pha trà sen rồi chơi đoán bài hát','Thi cắm hoa từ một bó hoa chung','Viết "menu mơ ước" cho ngôi nhà tương lai','Cùng làm chậu sen đá mini để bàn','Thử nấu lại món hồi mới yêu hay ăn','Vẽ bản đồ những nơi hai đứa từng đi','Cùng tập một động tác yoga đôi đơn giản','Pha hai ly cacao nóng và kể chuyện hồi nhỏ'],
-  u100:['Cà phê view đẹp','Ăn kem / chè','Đi nhà sách','Dạo chợ đêm','Ăn vặt vỉa hè','Thuê xe đạp đôi','Ghé tiệm bánh mới mở','Đi siêu thị mua đồ nấu ăn','Trà chanh chém gió','Cà phê sách yên tĩnh','Ăn ốc vỉa hè','Đi chợ hoa cuối tuần','Vãn cảnh chùa / nhà thờ','Thuê truyện đọc chung','Ăn trứng nướng / khoai nướng','Cà phê thú cưng (mèo/cún)','Đi hội chợ / phiên chợ cuối tuần','Ăn chè khúc bạch / tào phớ','Dạo phố sách Đinh Lễ','Uống bia hơi vỉa hè','Ăn bánh giò nóng buổi sáng','Ngồi cà phê cóc ngắm phố','Mua hoa ở chợ rồi cắm chung','Đi nhà sách cũ tìm sách đồng giá','Ăn bánh đúc nóng ngày se lạnh','Cà phê trứng phố cổ','Đi chợ Đồng Xuân ăn quà vặt','Thuê thuyền đạp vịt ở công viên','Ăn nem chua rán + trà đá vỉa hè','Ăn bánh rán mặn ngọt đầu ngõ','Đi chợ đêm sinh viên ăn đồ nướng','Uống nước mía sấu đá ngày nóng','Ăn bún ốc nguội ngày hè','Cà phê tầng thượng ngắm hoàng hôn','Đi vườn hoa bãi đá sông Hồng chụp ảnh'],
-  u300:['Xem phim rạp + ăn vặt','Ăn lẩu / nướng','Hát karaoke','Đi bảo tàng / triển lãm','Buffet sáng','Lớp học vẽ / gốm','Đi công viên giải trí','Cà phê board game','Xem phim 4DX','Bắn cung / phi tiêu','Workshop nến thơm','Đi thuỷ cung / sở thú','Massage chân thư giãn','Lớp làm bánh','Đi xem kịch / nhà hát','Lớp yoga đôi','Thử trốn thoát (escape room)','Cà phê acoustic nghe nhạc sống','Đi vườn thú đêm','Lớp vẽ tranh sơn dầu cho hai người','Đi xem xiếc / nhạc nước','Workshop làm xà phòng handmade','Đi sân trượt patin trong nhà','Lớp pha chế mocktail cuối tuần'],
-  u500:['Ăn nhà hàng lãng mạn','Bowling / patin','Spa thư giãn đôi','Lớp học nấu ăn','Chèo SUP / đạp vịt','Đi vườn dâu / nông trại','Buffet lẩu / nướng cao cấp','Trượt băng','Chèo kayak','Đi farmstay ngoại thành','Lớp khiêu vũ đôi','Phòng chiếu phim riêng','Đi câu cá thư giãn ngoại thành','Thuê xe đạp địa hình leo đồi','Lớp gốm xoay nặn cả buổi','Tắm khoáng nóng trong ngày'],
-  o500:['Đặt khách sạn nghỉ 1 đêm','Đi du lịch ngắn ngày','Concert / show ca nhạc','Nhà hàng fine-dining','Thuê studio chụp ảnh đôi','Học một bộ môn mới (lặn, golf…)','Glamping / cắm trại sang','Đi resort cuối tuần','Tour ẩm thực','Vé xem thể thao / bóng đá','Khinh khí cầu / dù lượn','Thuê xe đi phượt 2 ngày','Nghỉ dưỡng homestay view núi 2 đêm','Đi tàu biển ngắm hoàng hôn','Thuê villa có bể bơi cho nhóm bạn thân','Bay ra đảo nghỉ cuối tuần','Trải nghiệm lặn biển ngắm san hô'],
+  free:['Đi dạo công viên lúc hoàng hôn','Nấu một bữa tối cùng nhau','Xem phim ở nhà + bỏng ngô tự làm','Ngắm sao trên sân thượng','Picnic ở công viên','Đạp xe quanh hồ','Cùng nghe một playlist mới','Chơi board game / cờ','Đi bộ ngắm phố đêm','Tự pha cà phê & tâm sự','Cùng tập thể dục buổi sáng','Cùng dọn nhà rồi thưởng trà','Cùng vẽ / tô tranh','Tắm nắng sớm + cà phê','Cùng viết nhật ký cho nhau','Massage thư giãn cho nhau','Cùng làm bánh tại nhà','Trồng & chăm cây nhỏ','Karaoke tại nhà','Xem lại ảnh cũ và kể chuyện','Cùng đọc to một cuốn sách','Thử cắt tóc/tạo kiểu cho nhau','Cùng làm sữa chua / trà sữa tại nhà','Tổ chức “đêm chiếu phim” theo chủ đề','Viết thư cho hai đứa 1 năm sau','Cùng giải một câu đố / xếp hình','Thử thiền 10 phút cùng nhau','Cùng lập kế hoạch du lịch trong mơ','Học một bài hát để hát chung','Cùng gấp quần áo và nghe nhạc','Pha trà & chơi một ván cờ caro','Cùng làm một bữa sáng kiểu Tây','Đố nhau ký ức cũ qua ảnh điện thoại','Tự tạo "menu nhà mình" cho cả tuần','Cùng ngắm mưa bên cửa sổ với trà nóng','Cùng làm một playlist "bài hát của hai đứa"','Thử thử thách nấu ăn với 1 nguyên liệu bí mật','Cùng tô tượng / nặn đất sét tại nhà','Ngồi ban công đếm sao và kể ước mơ','Cùng làm pizza đế mỏng từ chảo','Viết "5 điều biết ơn" rồi đọc cho nhau nghe','Cùng pha trà sen rồi chơi đoán bài hát','Thi cắm hoa từ một bó hoa chung','Viết "menu mơ ước" cho ngôi nhà tương lai','Cùng làm chậu sen đá mini để bàn','Thử nấu lại món hồi mới yêu hay ăn','Vẽ bản đồ những nơi hai đứa từng đi','Cùng tập một động tác yoga đôi đơn giản','Pha hai ly cacao nóng và kể chuyện hồi nhỏ','Cùng nấu một món chay thanh đạm rồi ăn nhẹ buổi tối','Thử thách 30 phút không nói chuyện, chỉ viết giấy cho nhau','Tự làm mặt nạ dưỡng da rồi đắp cùng nhau xem phim','Cùng dọn tủ lạnh và sáng tạo một món từ đồ còn thừa','Học một câu tỏ tình bằng tiếng nước ngoài rồi nói cho nhau'],
+  u100:['Cà phê view đẹp','Ăn kem / chè','Đi nhà sách','Dạo chợ đêm','Ăn vặt vỉa hè','Thuê xe đạp đôi','Ghé tiệm bánh mới mở','Đi siêu thị mua đồ nấu ăn','Trà chanh chém gió','Cà phê sách yên tĩnh','Ăn ốc vỉa hè','Đi chợ hoa cuối tuần','Vãn cảnh chùa / nhà thờ','Thuê truyện đọc chung','Ăn trứng nướng / khoai nướng','Cà phê thú cưng (mèo/cún)','Đi hội chợ / phiên chợ cuối tuần','Ăn chè khúc bạch / tào phớ','Dạo phố sách Đinh Lễ','Uống bia hơi vỉa hè','Ăn bánh giò nóng buổi sáng','Ngồi cà phê cóc ngắm phố','Mua hoa ở chợ rồi cắm chung','Đi nhà sách cũ tìm sách đồng giá','Ăn bánh đúc nóng ngày se lạnh','Cà phê trứng phố cổ','Đi chợ Đồng Xuân ăn quà vặt','Thuê thuyền đạp vịt ở công viên','Ăn nem chua rán + trà đá vỉa hè','Ăn bánh rán mặn ngọt đầu ngõ','Đi chợ đêm sinh viên ăn đồ nướng','Uống nước mía sấu đá ngày nóng','Ăn bún ốc nguội ngày hè','Cà phê tầng thượng ngắm hoàng hôn','Đi vườn hoa bãi đá sông Hồng chụp ảnh','Đi chợ phiên đồ cũ tìm món hay ho','Ăn xôi chè cô bán rong rồi đi dạo','Đạp xe ra cầu ngắm sông lúc chiều muộn','Ăn bún riêu cua buổi trưa cuối tuần','Mua một cuốn truyện tranh cũ đọc chung'],
+  u300:['Xem phim rạp + ăn vặt','Ăn lẩu / nướng','Hát karaoke','Đi bảo tàng / triển lãm','Buffet sáng','Lớp học vẽ / gốm','Đi công viên giải trí','Cà phê board game','Xem phim 4DX','Bắn cung / phi tiêu','Workshop nến thơm','Đi thuỷ cung / sở thú','Massage chân thư giãn','Lớp làm bánh','Đi xem kịch / nhà hát','Lớp yoga đôi','Thử trốn thoát (escape room)','Cà phê acoustic nghe nhạc sống','Đi vườn thú đêm','Lớp vẽ tranh sơn dầu cho hai người','Đi xem xiếc / nhạc nước','Workshop làm xà phòng handmade','Đi sân trượt patin trong nhà','Lớp pha chế mocktail cuối tuần','Lớp vẽ tranh màu nước cho hai người','Đi xem phim indie ở rạp nghệ thuật','Workshop cắm hoa nghệ thuật cuối tuần','Đi sân golf mini / driving range thử sức'],
+  u500:['Ăn nhà hàng lãng mạn','Bowling / patin','Spa thư giãn đôi','Lớp học nấu ăn','Chèo SUP / đạp vịt','Đi vườn dâu / nông trại','Buffet lẩu / nướng cao cấp','Trượt băng','Chèo kayak','Đi farmstay ngoại thành','Lớp khiêu vũ đôi','Phòng chiếu phim riêng','Đi câu cá thư giãn ngoại thành','Thuê xe đạp địa hình leo đồi','Lớp gốm xoay nặn cả buổi','Tắm khoáng nóng trong ngày','Lớp học làm gốm tráng men cả buổi','Buổi chụp ảnh đôi tại studio nhỏ','Đi vườn nho / vườn ổi ngoại thành hái quả'],
+  o500:['Đặt khách sạn nghỉ 1 đêm','Đi du lịch ngắn ngày','Concert / show ca nhạc','Nhà hàng fine-dining','Thuê studio chụp ảnh đôi','Học một bộ môn mới (lặn, golf…)','Glamping / cắm trại sang','Đi resort cuối tuần','Tour ẩm thực','Vé xem thể thao / bóng đá','Khinh khí cầu / dù lượn','Thuê xe đi phượt 2 ngày','Nghỉ dưỡng homestay view núi 2 đêm','Đi tàu biển ngắm hoàng hôn','Thuê villa có bể bơi cho nhóm bạn thân','Bay ra đảo nghỉ cuối tuần','Trải nghiệm lặn biển ngắm san hô','Thuê biệt thự gần biển đón năm mới cùng nhau','Đặt phòng khách sạn có bồn tắm view thành phố','Đi tour ngắm cá heo / cá voi ngoài khơi','Trải nghiệm một đêm ở khách sạn băng / bong bóng ngắm sao'],
 };
-const BUCKET_SUGGEST=['Cùng đi 5 tỉnh thành mới','Xem mặt trời mọc cùng nhau','Tự làm một cuốn album ảnh','Học nấu một món mới mỗi tháng','Chạy bộ 5km cùng nhau','Trồng một cái cây và chăm nó lớn','Cùng đọc xong một cuốn sách','Đi cắm trại qua đêm','Học nhảy một điệu cùng nhau','Viết thư tay cho nhau','Đi xem biển vào mùa đông','Cùng tiết kiệm cho một chuyến đi lớn','Làm thiện nguyện cùng nhau','Thử một môn thể thao mới','Cùng xem trọn một bộ phim hay','Đi phượt bằng xe máy một cung đường','Học bơi / lặn cùng nhau','Tự tay làm một món đồ trang trí nhà','Đi ăn hết món đặc sản một vùng','Cùng leo một ngọn núi','Quay một video kỷ niệm mỗi năm','Học một ngoại ngữ cơ bản','Đi ngắm tuyết / mùa lá đỏ','Tổ chức một bữa tiệc cho bạn bè','Cùng chạy một giải marathon ngắn','Cùng nuôi một thú cưng','Tự tay sơn/trang trí lại một góc nhà','Đi ngắm pháo hoa giao thừa cùng nhau','Cùng tiết kiệm mua một món đồ lớn','Học chụp ảnh film và rửa một cuộn','Cùng về thăm quê của cả hai','Cùng trồng một vườn rau nhỏ trên sân thượng','Đi tàu hoả Bắc–Nam ngắm cảnh','Học pha chế một loại cocktail tại nhà','Cùng hiến máu nhân đạo một lần','Đi ngắm ruộng bậc thang mùa lúa chín','Tự tay làm một mẻ mứt Tết','Cùng tham gia một lớp gốm và giữ thành phẩm','Chạy xe đêm ăn sáng ở một tỉnh khác','Cùng tự tay gói bánh chưng dịp Tết','Đi xem một trận bóng đá ở sân vận động','Học làm cà phê pha máy và mời nhau mỗi sáng','Cùng đạp xe xuyên một thành phố trong ngày','Trồng và thu hoạch một mẻ rau tự trồng','Quay một đoạn phim ngắn kể chuyện hai đứa','Cùng tham gia một khoá thiện nguyện dài ngày','Tự thiết kế và in một bộ huy hiệu của hai đứa','Đi ngắm bình minh trên đỉnh một ngọn núi','Cùng học và biểu diễn một bản nhạc cho người thân nghe'];
-const FOOD_SUGGEST=['Lẩu Thái','Bún chả','Pizza','Sushi','Lẩu nướng Hàn Quốc','Bánh xèo','Ốc các loại','Dimsum','Buffet hải sản','Trà sữa quán mới','Kem Tràng Tiền','Cà phê muối','Phở khuya','Bánh tráng nướng','Bún đậu mắm tôm','Mì cay Hàn','Gà rán + bia','Cơm niêu','Nem nướng Nha Trang','Bánh cuốn','Chè khúc bạch','Hủ tiếu Nam Vang','Cháo sườn sụn','Bánh mì chảo','Lẩu gà lá é','Sushi băng chuyền','Bún bò Huế','Pizza viền phô mai','Cơm tấm sườn bì chả','Bánh canh cua','Vịt quay / vịt nướng','Cháo lòng + quẩy','Mì trộn Indomie kiểu Việt','Lẩu cua đồng','Bánh đa cua Hải Phòng','Xôi gà / xôi xéo','Lẩu riêu cua bắp bò','Bánh khọt Vũng Tàu','Phá lấu bò','Cơm gà Hội An','Bún ốc nóng','Bánh bèo / bánh nậm Huế','Chả cá Lã Vọng','Súp cua trứng bắc thảo','Bún thang Hà Nội','Bánh giò nóng buổi tối','Cháo trai / cháo sườn ngày se lạnh','Nem cua bể Hải Phòng','Mì vằn thắn sủi cảo','Bánh tôm Hồ Tây','Lẩu ếch măng cay','Bún ốc chuối đậu'];
-const GIFT_SUGGEST=['Nước hoa','Đồng hồ','Sách người ấy thích','Vé xem phim / concert','Đồ đôi (áo, vòng tay)','Hoa + thiệp viết tay','Bữa tối tự nấu','Voucher spa','Tai nghe','Album ảnh in','Phụ kiện cho sở thích','Đồ chăm sóc da','Ví / thắt lưng','Khăn lụa','Đồ công nghệ (sạc, loa)','Cây cảnh để bàn','Voucher ăn nhà hàng','Khoá học online người ấy thích','Đồ thể thao','Tranh / khung ảnh kỷ niệm','Vòng tay/dây chuyền khắc tên','Bình giữ nhiệt khắc chữ','Gấu bông ôm ngủ','Đèn ngủ để bàn ấm áp','Bộ pha cà phê tại nhà','Thiệp "phiếu yêu thương" tự làm','Chậu sen đá mini','Túi/balo người ấy đang cần','Vòng tay đôi khắc toạ độ nơi gặp nhau','Máy ảnh chụp lấy liền (instax)','Bộ chăm sóc tóc / lược gỗ','Khăn choàng len mùa đông','Móc khoá ảnh hai đứa','Voucher một buổi chụp ảnh couple','Bình hoa khô + nến thơm để bàn','Sổ tay da khắc tên','Vòng cổ mặt đá sinh nhật của người ấy','Bộ ấm trà gốm sứ pha trà cùng nhau','Máy massage cầm tay cho ngày mỏi','Khung ảnh đèn LED in hình hai đứa','Lọ tinh dầu + máy khuếch tán thơm phòng','Đồng hồ đôi khắc ngày kỷ niệm','Set chăm sóc giấc ngủ (gối, mặt nạ mắt)','Hộp quà bất ngờ gồm món vặt người ấy mê'];
-const WATCH_SUGGEST=['Phim: Your Name','Phim: La La Land','Phim: About Time','Phim: Coco','Phim: Up','Phim bộ: Reply 1988','Phim bộ: Hometown Cha-Cha-Cha','Sách: Nhà giả kim','Sách: Tuổi trẻ đáng giá bao nhiêu','Nhạc: playlist acoustic chill','Phim: Inside Out 2','Phim: Spirited Away','Phim: The Notebook','Phim bộ: Our Beloved Summer','Sách: Đắc nhân tâm','Sách: Sapiens','Podcast: chuyện cặp đôi','Nhạc: lo-fi học/làm việc','Phim: Begin Again','Phim bộ: Khi điện thoại đổ chuông','Phim: Mắt Biếc','Phim: Em và Trịnh','Phim bộ: Khi cuộc đời cho bạn quả quýt','Sách: Tôi thấy hoa vàng trên cỏ xanh','Sách: Người tình của Marguerite Duras','Nhạc: playlist nhạc Trịnh nhẹ nhàng','Phim: 500 Days of Summer','Phim bộ: Twenty-Five Twenty-One','Phim: Cô Dâu Hào Môn','Phim: Mai (Trấn Thành)','Phim bộ: Crash Landing on You','Phim bộ: Goblin (Yêu Tinh)','Sách: Cây cam ngọt của tôi','Sách: Hành trình về phương Đông','Nhạc: playlist indie Việt chill tối','Phim hoạt hình: Klaus','Phim: Marriage Story','Phim: Địa Đạo (Mặt Trời Trong Bóng Tối)','Phim bộ: When Life Gives You Tangerines','Phim hoạt hình: Soul','Phim: The Intern','Sách: Tuổi 20 tôi đã sống như một bông hoa dại','Sách: Suối nguồn','Nhạc: playlist nhạc Hoa lời Việt thập niên 2000','Phim bộ: Lật Mặt phần phim chiếu rạp Việt','Podcast: Tâm sự kinh tế cho cặp đôi','Nhạc: playlist piano cover nhẹ buổi tối'];
-const COUPON_SUGGEST=['1 bữa tối tự nấu','1 lần massage vai 15 phút','1 buổi xem phim do em chọn','1 lần rửa bát thay phiên','1 cái ôm bất cứ lúc nào','1 ngày làm theo ý người kia','1 ly trà sữa','1 lần đấm lưng','1 lời khen mỗi sáng cả tuần','1 chuyến đi chơi bất ngờ','1 buổi sáng được ngủ nướng','1 lần gội đầu thư giãn','1 bữa sáng mang tới tận giường','1 lần dọn nhà thay phiên','1 tối không điện thoại','1 lần chọn quán ăn tuỳ ý','1 album ảnh tự làm','1 lần làm tài xế riêng cả ngày','1 lần được chọn phim cả tối','1 buổi hẹn hò do anh/em lên kế hoạch hết','1 lần pha nước chanh giải rượu','1 đêm được ôm ngủ tới sáng','1 lần thua cãi nhau (nhường người kia)','1 bữa được gọi món thoải mái không lo giá','1 lần được nhõng nhẽo cả ngày không bị càm ràm','1 buổi tối được người kia bóp chân thư giãn','1 lần đổi ca rửa bát cả tuần','1 phiếu "giận dỗi được dỗ ngay không hỏi lý do"','1 lần được chọn điểm du lịch kế tiếp','1 buổi cà phê sáng người kia bao trọn','1 lần được ngủ nướng còn người kia lo bữa sáng','1 phiếu "đòi quà nhỏ bất kỳ dưới 200k"','1 buổi tối được chọn cả thực đơn lẫn phim','1 lần được người kia tết tóc / sấy tóc cho','1 phiếu "miễn rửa bát một tuần"','1 lần được nũng nịu mè nheo không bị trêu','1 buổi được người kia chở đi cà phê tận nơi','1 phiếu đổi việc nhà bất kỳ trong ngày'];
-const LOVEJAR_SUGGEST=['Vì luôn lắng nghe mình','Vì nụ cười của em/anh','Vì luôn ở bên lúc mình khó khăn','Vì nấu ăn ngon','Vì kiên nhẫn với mình','Vì làm mình thấy bình yên','Vì luôn cố gắng vì gia đình','Vì những cái ôm ấm áp','Vì luôn nhớ những điều nhỏ mình thích','Vì cách em/anh chăm sóc khi mình ốm','Vì giọng nói làm mình yên tâm','Vì luôn ủng hộ ước mơ của mình','Vì những tin nhắn chúc buổi sáng','Vì biết cách làm mình bật cười','Vì luôn nắm tay mình khi qua đường','Vì là người mình muốn về nhà mỗi tối','Vì luôn để phần đồ ăn ngon cho mình','Vì chịu nghe mình kể chuyện linh tinh','Vì luôn xin lỗi trước mỗi khi giận','Vì nhớ pha sẵn nước/ cà phê cho mình','Vì luôn nhường mình phần chăn ấm','Vì làm mình tin vào tình yêu lâu dài','Vì luôn nhắn "đi đường cẩn thận" mỗi khi mình ra ngoài','Vì biết mình mệt nên lặng lẽ làm hết việc nhà','Vì luôn nhớ ngày kỷ niệm của hai đứa','Vì gọt sẵn hoa quả để phần cho mình','Vì luôn nắm tay mình khi mình lo lắng','Vì chưa bao giờ to tiếng dù mình sai','Vì luôn nhường mình miếng ngon nhất trong mâm','Vì đứng ra lo liệu khi mình rối trí','Vì nhớ sở thích nhỏ mà chính mình còn quên','Vì luôn để đèn chờ mình về khuya','Vì kiên nhẫn dạy mình những thứ mình vụng','Vì luôn tin mình kể cả khi người khác nghi ngờ','Vì những cái nắm tay siết nhẹ động viên','Vì luôn giữ lời hứa dù là chuyện nhỏ'];
+const BUCKET_SUGGEST=['Cùng đi 5 tỉnh thành mới','Xem mặt trời mọc cùng nhau','Tự làm một cuốn album ảnh','Học nấu một món mới mỗi tháng','Chạy bộ 5km cùng nhau','Trồng một cái cây và chăm nó lớn','Cùng đọc xong một cuốn sách','Đi cắm trại qua đêm','Học nhảy một điệu cùng nhau','Viết thư tay cho nhau','Đi xem biển vào mùa đông','Cùng tiết kiệm cho một chuyến đi lớn','Làm thiện nguyện cùng nhau','Thử một môn thể thao mới','Cùng xem trọn một bộ phim hay','Đi phượt bằng xe máy một cung đường','Học bơi / lặn cùng nhau','Tự tay làm một món đồ trang trí nhà','Đi ăn hết món đặc sản một vùng','Cùng leo một ngọn núi','Quay một video kỷ niệm mỗi năm','Học một ngoại ngữ cơ bản','Đi ngắm tuyết / mùa lá đỏ','Tổ chức một bữa tiệc cho bạn bè','Cùng chạy một giải marathon ngắn','Cùng nuôi một thú cưng','Tự tay sơn/trang trí lại một góc nhà','Đi ngắm pháo hoa giao thừa cùng nhau','Cùng tiết kiệm mua một món đồ lớn','Học chụp ảnh film và rửa một cuộn','Cùng về thăm quê của cả hai','Cùng trồng một vườn rau nhỏ trên sân thượng','Đi tàu hoả Bắc–Nam ngắm cảnh','Học pha chế một loại cocktail tại nhà','Cùng hiến máu nhân đạo một lần','Đi ngắm ruộng bậc thang mùa lúa chín','Tự tay làm một mẻ mứt Tết','Cùng tham gia một lớp gốm và giữ thành phẩm','Chạy xe đêm ăn sáng ở một tỉnh khác','Cùng tự tay gói bánh chưng dịp Tết','Đi xem một trận bóng đá ở sân vận động','Học làm cà phê pha máy và mời nhau mỗi sáng','Cùng đạp xe xuyên một thành phố trong ngày','Trồng và thu hoạch một mẻ rau tự trồng','Quay một đoạn phim ngắn kể chuyện hai đứa','Cùng tham gia một khoá thiện nguyện dài ngày','Tự thiết kế và in một bộ huy hiệu của hai đứa','Đi ngắm bình minh trên đỉnh một ngọn núi','Cùng học và biểu diễn một bản nhạc cho người thân nghe','Cùng học và nấu trọn một mâm cỗ truyền thống','Đi du lịch một nước Đông Nam Á cùng nhau','Cùng viết một cuốn nhật ký du lịch chung','Tự tay đóng một món đồ gỗ nhỏ cho ngôi nhà','Cùng đi bộ đủ 10.000 bước mỗi ngày trong một tháng','Cùng học vẽ và tổ chức một buổi "triển lãm" mini tại nhà'];
+const FOOD_SUGGEST=['Lẩu Thái','Bún chả','Pizza','Sushi','Lẩu nướng Hàn Quốc','Bánh xèo','Ốc các loại','Dimsum','Buffet hải sản','Trà sữa quán mới','Kem Tràng Tiền','Cà phê muối','Phở khuya','Bánh tráng nướng','Bún đậu mắm tôm','Mì cay Hàn','Gà rán + bia','Cơm niêu','Nem nướng Nha Trang','Bánh cuốn','Chè khúc bạch','Hủ tiếu Nam Vang','Cháo sườn sụn','Bánh mì chảo','Lẩu gà lá é','Sushi băng chuyền','Bún bò Huế','Pizza viền phô mai','Cơm tấm sườn bì chả','Bánh canh cua','Vịt quay / vịt nướng','Cháo lòng + quẩy','Mì trộn Indomie kiểu Việt','Lẩu cua đồng','Bánh đa cua Hải Phòng','Xôi gà / xôi xéo','Lẩu riêu cua bắp bò','Bánh khọt Vũng Tàu','Phá lấu bò','Cơm gà Hội An','Bún ốc nóng','Bánh bèo / bánh nậm Huế','Chả cá Lã Vọng','Súp cua trứng bắc thảo','Bún thang Hà Nội','Bánh giò nóng buổi tối','Cháo trai / cháo sườn ngày se lạnh','Nem cua bể Hải Phòng','Mì vằn thắn sủi cảo','Bánh tôm Hồ Tây','Lẩu ếch măng cay','Bún ốc chuối đậu','Cháo ếch Singapore','Lẩu Tứ Xuyên tê cay','Bánh canh ghẹ','Bún mắm miền Tây','Gỏi cuốn tôm thịt chấm mắm nêm','Mì cay phô mai Hàn Quốc'];
+const GIFT_SUGGEST=['Nước hoa','Đồng hồ','Sách người ấy thích','Vé xem phim / concert','Đồ đôi (áo, vòng tay)','Hoa + thiệp viết tay','Bữa tối tự nấu','Voucher spa','Tai nghe','Album ảnh in','Phụ kiện cho sở thích','Đồ chăm sóc da','Ví / thắt lưng','Khăn lụa','Đồ công nghệ (sạc, loa)','Cây cảnh để bàn','Voucher ăn nhà hàng','Khoá học online người ấy thích','Đồ thể thao','Tranh / khung ảnh kỷ niệm','Vòng tay/dây chuyền khắc tên','Bình giữ nhiệt khắc chữ','Gấu bông ôm ngủ','Đèn ngủ để bàn ấm áp','Bộ pha cà phê tại nhà','Thiệp "phiếu yêu thương" tự làm','Chậu sen đá mini','Túi/balo người ấy đang cần','Vòng tay đôi khắc toạ độ nơi gặp nhau','Máy ảnh chụp lấy liền (instax)','Bộ chăm sóc tóc / lược gỗ','Khăn choàng len mùa đông','Móc khoá ảnh hai đứa','Voucher một buổi chụp ảnh couple','Bình hoa khô + nến thơm để bàn','Sổ tay da khắc tên','Vòng cổ mặt đá sinh nhật của người ấy','Bộ ấm trà gốm sứ pha trà cùng nhau','Máy massage cầm tay cho ngày mỏi','Khung ảnh đèn LED in hình hai đứa','Lọ tinh dầu + máy khuếch tán thơm phòng','Đồng hồ đôi khắc ngày kỷ niệm','Set chăm sóc giấc ngủ (gối, mặt nạ mắt)','Hộp quà bất ngờ gồm món vặt người ấy mê','Vé trải nghiệm workshop đôi (gốm / nến thơm)','Đồng hồ cát trang trí bàn làm việc','Bộ cọ và màu nước cho người mê hội hoạ','Loa bluetooth mini để nghe nhạc chung','Sổ tay "100 điều muốn làm cùng nhau"'];
+const WATCH_SUGGEST=['Phim: Your Name','Phim: La La Land','Phim: About Time','Phim: Coco','Phim: Up','Phim bộ: Reply 1988','Phim bộ: Hometown Cha-Cha-Cha','Sách: Nhà giả kim','Sách: Tuổi trẻ đáng giá bao nhiêu','Nhạc: playlist acoustic chill','Phim: Inside Out 2','Phim: Spirited Away','Phim: The Notebook','Phim bộ: Our Beloved Summer','Sách: Đắc nhân tâm','Sách: Sapiens','Podcast: chuyện cặp đôi','Nhạc: lo-fi học/làm việc','Phim: Begin Again','Phim bộ: Khi điện thoại đổ chuông','Phim: Mắt Biếc','Phim: Em và Trịnh','Phim bộ: Khi cuộc đời cho bạn quả quýt','Sách: Tôi thấy hoa vàng trên cỏ xanh','Sách: Người tình của Marguerite Duras','Nhạc: playlist nhạc Trịnh nhẹ nhàng','Phim: 500 Days of Summer','Phim bộ: Twenty-Five Twenty-One','Phim: Cô Dâu Hào Môn','Phim: Mai (Trấn Thành)','Phim bộ: Crash Landing on You','Phim bộ: Goblin (Yêu Tinh)','Sách: Cây cam ngọt của tôi','Sách: Hành trình về phương Đông','Nhạc: playlist indie Việt chill tối','Phim hoạt hình: Klaus','Phim: Marriage Story','Phim: Địa Đạo (Mặt Trời Trong Bóng Tối)','Phim bộ: When Life Gives You Tangerines','Phim hoạt hình: Soul','Phim: The Intern','Sách: Tuổi 20 tôi đã sống như một bông hoa dại','Sách: Suối nguồn','Nhạc: playlist nhạc Hoa lời Việt thập niên 2000','Phim bộ: Lật Mặt phần phim chiếu rạp Việt','Podcast: Tâm sự kinh tế cho cặp đôi','Nhạc: playlist piano cover nhẹ buổi tối','Phim: Past Lives (Kiếp Trước)','Phim bộ: Lovely Runner','Sách: Người đua diều','Nhạc: playlist bossa nova cuối tuần thảnh thơi','Phim: Về Nhà Đi Con (phim bộ Việt)'];
+const COUPON_SUGGEST=['1 bữa tối tự nấu','1 lần massage vai 15 phút','1 buổi xem phim do em chọn','1 lần rửa bát thay phiên','1 cái ôm bất cứ lúc nào','1 ngày làm theo ý người kia','1 ly trà sữa','1 lần đấm lưng','1 lời khen mỗi sáng cả tuần','1 chuyến đi chơi bất ngờ','1 buổi sáng được ngủ nướng','1 lần gội đầu thư giãn','1 bữa sáng mang tới tận giường','1 lần dọn nhà thay phiên','1 tối không điện thoại','1 lần chọn quán ăn tuỳ ý','1 album ảnh tự làm','1 lần làm tài xế riêng cả ngày','1 lần được chọn phim cả tối','1 buổi hẹn hò do anh/em lên kế hoạch hết','1 lần pha nước chanh giải rượu','1 đêm được ôm ngủ tới sáng','1 lần thua cãi nhau (nhường người kia)','1 bữa được gọi món thoải mái không lo giá','1 lần được nhõng nhẽo cả ngày không bị càm ràm','1 buổi tối được người kia bóp chân thư giãn','1 lần đổi ca rửa bát cả tuần','1 phiếu "giận dỗi được dỗ ngay không hỏi lý do"','1 lần được chọn điểm du lịch kế tiếp','1 buổi cà phê sáng người kia bao trọn','1 lần được ngủ nướng còn người kia lo bữa sáng','1 phiếu "đòi quà nhỏ bất kỳ dưới 200k"','1 buổi tối được chọn cả thực đơn lẫn phim','1 lần được người kia tết tóc / sấy tóc cho','1 phiếu "miễn rửa bát một tuần"','1 lần được nũng nịu mè nheo không bị trêu','1 buổi được người kia chở đi cà phê tận nơi','1 phiếu đổi việc nhà bất kỳ trong ngày','1 lần được người kia dẫn đi ăn món mình thèm bất chợt','1 buổi cùng xem hết một series không ai ngủ gật','1 phiếu "đổi món" khi nấu ăn không hợp ý','1 lần được người kia chở đi vòng vòng ngắm phố đêm','1 phiếu "im lặng lắng nghe mình kể chuyện 15 phút"'];
+const LOVEJAR_SUGGEST=['Vì luôn lắng nghe mình','Vì nụ cười của em/anh','Vì luôn ở bên lúc mình khó khăn','Vì nấu ăn ngon','Vì kiên nhẫn với mình','Vì làm mình thấy bình yên','Vì luôn cố gắng vì gia đình','Vì những cái ôm ấm áp','Vì luôn nhớ những điều nhỏ mình thích','Vì cách em/anh chăm sóc khi mình ốm','Vì giọng nói làm mình yên tâm','Vì luôn ủng hộ ước mơ của mình','Vì những tin nhắn chúc buổi sáng','Vì biết cách làm mình bật cười','Vì luôn nắm tay mình khi qua đường','Vì là người mình muốn về nhà mỗi tối','Vì luôn để phần đồ ăn ngon cho mình','Vì chịu nghe mình kể chuyện linh tinh','Vì luôn xin lỗi trước mỗi khi giận','Vì nhớ pha sẵn nước/ cà phê cho mình','Vì luôn nhường mình phần chăn ấm','Vì làm mình tin vào tình yêu lâu dài','Vì luôn nhắn "đi đường cẩn thận" mỗi khi mình ra ngoài','Vì biết mình mệt nên lặng lẽ làm hết việc nhà','Vì luôn nhớ ngày kỷ niệm của hai đứa','Vì gọt sẵn hoa quả để phần cho mình','Vì luôn nắm tay mình khi mình lo lắng','Vì chưa bao giờ to tiếng dù mình sai','Vì luôn nhường mình miếng ngon nhất trong mâm','Vì đứng ra lo liệu khi mình rối trí','Vì nhớ sở thích nhỏ mà chính mình còn quên','Vì luôn để đèn chờ mình về khuya','Vì kiên nhẫn dạy mình những thứ mình vụng','Vì luôn tin mình kể cả khi người khác nghi ngờ','Vì những cái nắm tay siết nhẹ động viên','Vì luôn giữ lời hứa dù là chuyện nhỏ','Vì luôn pha sẵn ấm trà những tối mình thức khuya','Vì kiên nhẫn chờ mình trang điểm mỗi lần ra ngoài','Vì luôn nhớ hỏi "ăn gì chưa" giữa ngày bận rộn','Vì dám nói thật lòng khi mình làm điều chưa đúng','Vì luôn nhường mình chỗ ngồi thoải mái nhất'];
 const MEAL_SUGGEST={
-  trua:['Cơm văn phòng','Bún chả','Phở bò','Bún đậu mắm tôm','Cơm rang dưa bò','Bánh mì + cà phê','Miến trộn','Cơm tấm sườn','Bún riêu cua','Hủ tiếu','Cơm gà xối mỡ','Bún bò Huế','Xôi + giò','Phở gà','Mì vằn thắn','Cháo sườn','Bún cá','Cơm văn phòng healthy','Bún thang','Cơm rang cá mặn','Bánh cuốn nóng','Mì Quảng','Cơm gà Hội An','Bún mọc','Xôi xéo','Cơm sườn nướng','Bún chả cá','Phở xào bò','Cơm gà Hải Nam','Bánh mì xíu mại','Bún ốc chuối đậu','Cơm gà Tam Kỳ','Mì gói trộn trứng + xúc xích','Cơm cá kho + canh cải','Bánh đa trộn','Phở cuốn','Cơm bò lúc lắc','Bún chả que tre','Cơm rang cá kho','Miến gà','Cháo gà hành răm'],
-  toi:['Thịt kho trứng + canh rau','Cá kho tộ','Gà rang gừng','Đậu sốt cà chua','Rau muống xào tỏi + thịt luộc','Canh chua cá','Trứng chiên + rau luộc','Sườn xào chua ngọt','Tôm rang','Thịt luộc + dưa muối','Lẩu nhỏ tại nhà','Mì xào hải sản','Bò xào hành tây','Canh bí nấu xương','Cà ri gà + bánh mì','Cơm chiên dương châu','Salad ức gà','Đậu phụ tẩm hành','Nem rán','Bún chả tự làm','Cá hấp xì dầu','Gà luộc + xôi','Canh ngao + rau muống xào','Bò kho bánh mì','Mướp xào lòng gà','Gà kho sả ớt','Canh khổ qua nhồi thịt','Chả lá lốt + bún','Cá basa chiên sốt mắm','Mực nhồi thịt sốt cà','Gà rang muối + xôi trắng','Canh cá nấu măng chua','Thịt ba chỉ chiên sả ớt','Đậu phụ nhồi thịt sốt cà','Cá lóc kho tiêu + rau luộc','Tôm rim thịt ba chỉ','Gà kho gừng + canh cải cúc','Thịt bò xào cần tỏi','Cá nục kho cà chua','Mướp đắng xào trứng','Canh chua cá lóc + rau muống xào'],
-  nhahang:['Lẩu Thái / Tomyum','Buffet nướng Hàn Quốc','Pizza 4P’s','Sushi / sashimi','Beefsteak','Buffet hải sản','Lẩu nướng Nhật','Dimsum','Nhà hàng Ý','Gà rán + bia','Hot pot Đài Loan','Bún đậu nhà hàng','Buffet chay','Hải sản bình dân','Nướng ngói','Nhà hàng view đẹp','Lẩu bò nhúng giấm','Cua rang me','Dê núi','Vịt quay Bắc Kinh','Ốc nhà hàng','Cơm Thái','Lẩu Tứ Xuyên','Buffet pizza & mì Ý','Hải sản nướng bãi biển','Nhà hàng chay thanh đạm','Lẩu riêu cua bắp bò','Lẩu cá kèo lá giang','Buffet dim sum Hồng Kông','Bít tết kiểu Âu nến lung linh','Lẩu Thái hải sản chua cay','Nhà hàng Hàn Quốc cơm trộn đá'],
+  trua:['Cơm văn phòng','Bún chả','Phở bò','Bún đậu mắm tôm','Cơm rang dưa bò','Bánh mì + cà phê','Miến trộn','Cơm tấm sườn','Bún riêu cua','Hủ tiếu','Cơm gà xối mỡ','Bún bò Huế','Xôi + giò','Phở gà','Mì vằn thắn','Cháo sườn','Bún cá','Cơm văn phòng healthy','Bún thang','Cơm rang cá mặn','Bánh cuốn nóng','Mì Quảng','Cơm gà Hội An','Bún mọc','Xôi xéo','Cơm sườn nướng','Bún chả cá','Phở xào bò','Cơm gà Hải Nam','Bánh mì xíu mại','Bún ốc chuối đậu','Cơm gà Tam Kỳ','Mì gói trộn trứng + xúc xích','Cơm cá kho + canh cải','Bánh đa trộn','Phở cuốn','Cơm bò lúc lắc','Bún chả que tre','Cơm rang cá kho','Miến gà','Cháo gà hành răm','Bún chả giò','Cơm cá chiên sốt cà chua','Bánh mì pate trứng ốp','Mì xào giòn hải sản'],
+  toi:['Thịt kho trứng + canh rau','Cá kho tộ','Gà rang gừng','Đậu sốt cà chua','Rau muống xào tỏi + thịt luộc','Canh chua cá','Trứng chiên + rau luộc','Sườn xào chua ngọt','Tôm rang','Thịt luộc + dưa muối','Lẩu nhỏ tại nhà','Mì xào hải sản','Bò xào hành tây','Canh bí nấu xương','Cà ri gà + bánh mì','Cơm chiên dương châu','Salad ức gà','Đậu phụ tẩm hành','Nem rán','Bún chả tự làm','Cá hấp xì dầu','Gà luộc + xôi','Canh ngao + rau muống xào','Bò kho bánh mì','Mướp xào lòng gà','Gà kho sả ớt','Canh khổ qua nhồi thịt','Chả lá lốt + bún','Cá basa chiên sốt mắm','Mực nhồi thịt sốt cà','Gà rang muối + xôi trắng','Canh cá nấu măng chua','Thịt ba chỉ chiên sả ớt','Đậu phụ nhồi thịt sốt cà','Cá lóc kho tiêu + rau luộc','Tôm rim thịt ba chỉ','Gà kho gừng + canh cải cúc','Thịt bò xào cần tỏi','Cá nục kho cà chua','Mướp đắng xào trứng','Canh chua cá lóc + rau muống xào','Gà nướng mật ong + salad rau trộn','Cá hồi áp chảo + bông cải hấp','Đậu hũ kho nấm + canh rau cải','Sườn xào chua ngọt + dưa leo'],
+  nhahang:['Lẩu Thái / Tomyum','Buffet nướng Hàn Quốc','Pizza 4P’s','Sushi / sashimi','Beefsteak','Buffet hải sản','Lẩu nướng Nhật','Dimsum','Nhà hàng Ý','Gà rán + bia','Hot pot Đài Loan','Bún đậu nhà hàng','Buffet chay','Hải sản bình dân','Nướng ngói','Nhà hàng view đẹp','Lẩu bò nhúng giấm','Cua rang me','Dê núi','Vịt quay Bắc Kinh','Ốc nhà hàng','Cơm Thái','Lẩu Tứ Xuyên','Buffet pizza & mì Ý','Hải sản nướng bãi biển','Nhà hàng chay thanh đạm','Lẩu riêu cua bắp bò','Lẩu cá kèo lá giang','Buffet dim sum Hồng Kông','Bít tết kiểu Âu nến lung linh','Lẩu Thái hải sản chua cay','Nhà hàng Hàn Quốc cơm trộn đá','Lẩu nấm thiên nhiên thanh mát','Nhà hàng Ấn Độ cà ri & bánh naan','Buffet sushi & sashimi tươi','Nhà hàng Việt món Bắc xưa'],
 };
 const DOW=['Thứ 2','Thứ 3','Thứ 4','Thứ 5','Thứ 6','Thứ 7','Chủ nhật'];
 const MENU_GOALS=[
@@ -572,6 +572,10 @@ const DISHES=[
   {n:'Cải bó xôi xào tỏi',t:'man',g:['bm','gc','dd'],ing:['1 bó cải bó xôi','Tỏi','Dầu olive'],r:'1) Cải bó xôi nhặt rửa sạch, để ráo; tỏi đập dập băm nhỏ.\n2) Phi tỏi thơm vàng với chút dầu olive.\n3) Cho cải vào xào lửa to, đảo nhanh tay 1-2 phút.\n4) Nêm chút muối/hạt nêm, tắt bếp khi rau vừa mềm còn xanh. Nhiều sắt, nhẹ bụng.'},
   {n:'Canh nghêu nấu mồng tơi',t:'canh',g:['gc','cb','bm'],ing:['500g nghêu','1 bó mồng tơi','Gừng, hành'],r:'1) Ngâm nghêu nước vo gạo + ớt cho nhả cát, rửa sạch.\n2) Luộc nghêu với vài lát gừng tới khi mở miệng, gắp thịt, lọc lấy nước trong.\n3) Đun lại nước nghêu, nêm vừa, thả thịt nghêu vào.\n4) Cho mồng tơi nấu sôi 1-2 phút là chín, rắc hành. Canh ngọt mát, bổ máu.'},
   {n:'Yến mạch nấu sữa chuối',t:'canh',g:['gc','dd','tc'],ing:['4 thìa yến mạch','200ml sữa tươi','1 quả chuối','Chút mật ong'],r:'1) Đun sữa tươi ấm, cho yến mạch vào khuấy đều.\n2) Nấu lửa nhỏ 3-5 phút tới khi yến mạch nở mềm sánh.\n3) Thái lát chuối, cho vào khuấy nhẹ.\n4) Rưới chút mật ong, có thể rắc hạt chia. Bữa sáng nhẹ bụng, no lâu, hợp giảm cân.'},
+  {n:'Gà kho gừng nghệ',t:'man',g:['bm','dd','cb'],ing:['400g đùi gà chặt miếng','1 nhánh gừng','1 thìa bột nghệ','Hành tím, nước mắm, đường'],r:'1) Ướp gà với nước mắm, chút đường, bột nghệ và hành tím băm 15 phút.\n2) Phi thơm gừng thái sợi, cho gà vào đảo săn.\n3) Thêm chút nước, kho lửa nhỏ 15-20 phút cho thấm.\n4) Khi nước sánh lại, rắc thêm gừng và hành lá, tắt bếp. Món ấm bụng, tốt cho ngày đèn đỏ.'},
+  {n:'Canh rau củ thập cẩm hầm',t:'canh',g:['gc','cb','dd'],ing:['1 củ cà rốt','1 khúc su su','1/4 bắp cải','100g nấm','Xương hoặc hạt nêm chay'],r:'1) Rửa và cắt miếng vừa ăn cà rốt, su su, bắp cải, nấm.\n2) Đun nước (hoặc nước hầm xương) sôi, cho cà rốt vào trước vì lâu chín.\n3) Lần lượt cho su su, bắp cải, nấm vào, hầm lửa nhỏ 15 phút.\n4) Nêm vừa miệng, rắc hành ngò. Canh ngọt thanh, ít calo, dễ tiêu.'},
+  {n:'Trứng cuộn rau củ kiểu Hàn',t:'man',g:['cb','tc'],ing:['3 quả trứng','1/4 củ cà rốt băm nhỏ','1 nhánh hành lá','Chút muối, dầu ăn'],r:'1) Đánh tan trứng với cà rốt băm, hành lá, chút muối.\n2) Tráng một lớp mỏng trứng trên chảo chống dính lửa nhỏ.\n3) Khi trứng se mặt, cuộn lại một đầu rồi đổ thêm lớp trứng mới, cuộn tiếp.\n4) Lặp lại tới hết, để nguội bớt rồi cắt khoanh. Đẹp mắt, giàu đạm, hợp cả người tập tăng cơ.'},
+  {n:'Cá rô phi chiên sốt cà chua',t:'man',g:['cb','tc'],ing:['1 con cá rô phi','2 quả cà chua','Hành tím, tỏi','Nước mắm, đường, tiêu'],r:'1) Cá làm sạch, khía vài đường, ướp chút muối tiêu rồi chiên vàng hai mặt, gắp ra.\n2) Phi thơm hành tỏi, cho cà chua băm vào xào nhuyễn.\n3) Nêm nước mắm, chút đường, thêm ít nước tạo sốt sánh.\n4) Cho cá vào rưới sốt, đun nhỏ lửa 3 phút cho thấm, rắc hành lá. Ăn nóng với cơm.'},
 ];
 
 /* ===== Âm lịch → Dương lịch (thuật toán Hồ Ngọc Đức) — cho Tết, Giỗ Tổ, giỗ ===== */
@@ -771,9 +775,9 @@ Chúng con cũng xin hồi hướng công đức cho các vong linh không nơi 
 Chúng con lễ bạc tâm thành, cúi xin chứng giám.
 Nam mô A Di Đà Phật! (3 lần)`},
 ];
-const PERIOD_PREP=['Băng vệ sinh / tampon','Thuốc giảm đau (nếu cần)','Túi/chai chườm ấm','Quần lót dự phòng','Khăn ướt, giấy','Nước ấm để uống','Sô-cô-la đen','Sạc dự phòng cho ngày mệt','Vitamin / viên sắt','Trà gừng / trà hoa cúc','Đồ lót & quần áo thoải mái','Miếng dán giữ nhiệt','Gối ôm để kê bụng','Tất ấm giữ chân','Lịch đánh dấu ngày để người kia biết mà chăm','Nước ấm pha mật ong gừng sẵn','Cốc giữ nhiệt đựng trà ấm mang theo','Dầu nóng / cao xoa bụng','Quần áo rộng rãi co giãn','Nhạc nhẹ / podcast thư giãn để dịu cơn đau'];
-const PERIOD_FOOD=['Canh gừng ấm','Thịt bò xào (bổ sắt)','Cá hồi','Rau bina / cải bó xôi','Trà gừng mật ong','Chuối','Sô-cô-la đen','Súp gà ấm','Canh đương quy táo đỏ','Yến mạch','Hạt bí, hạnh nhân','Sữa ấm nghệ','Trứng','Đậu lăng / đậu đỏ','Nước dừa ấm','Khoai lang','Gan gà/heo (bổ sắt)','Trà hoa cúc','Cháo cá hồi đậu xanh','Nước ép củ dền + táo','Canh gà hầm táo đỏ kỷ tử','Sữa đậu nành ấm','Mè đen rang','Chè hạt sen long nhãn','Cháo yến mạch nấu táo đỏ','Nước gừng nấu đường nâu','Canh củ dền hầm xương','Quả bơ dằm sữa ấm'];
-const PERIOD_AVOID=['Đồ uống lạnh/đá','Đồ cay nóng nhiều','Cà phê / trà đặc','Đồ chiên rán dầu mỡ','Đồ quá mặn','Rượu bia','Đồ ngọt nhiều đường tinh luyện','Nước có ga','Đồ ăn nhanh nhiều dầu','Thực phẩm sống/tái'];
+const PERIOD_PREP=['Băng vệ sinh / tampon','Thuốc giảm đau (nếu cần)','Túi/chai chườm ấm','Quần lót dự phòng','Khăn ướt, giấy','Nước ấm để uống','Sô-cô-la đen','Sạc dự phòng cho ngày mệt','Vitamin / viên sắt','Trà gừng / trà hoa cúc','Đồ lót & quần áo thoải mái','Miếng dán giữ nhiệt','Gối ôm để kê bụng','Tất ấm giữ chân','Lịch đánh dấu ngày để người kia biết mà chăm','Nước ấm pha mật ong gừng sẵn','Cốc giữ nhiệt đựng trà ấm mang theo','Dầu nóng / cao xoa bụng','Quần áo rộng rãi co giãn','Nhạc nhẹ / podcast thư giãn để dịu cơn đau','Khăn mặt nóng để chườm vùng bụng/lưng','Áo len mỏng giữ ấm vùng bụng','Sữa ấm uống trước khi ngủ','Đệm sưởi / chăn mỏng cho ngày lạnh người'];
+const PERIOD_FOOD=['Canh gừng ấm','Thịt bò xào (bổ sắt)','Cá hồi','Rau bina / cải bó xôi','Trà gừng mật ong','Chuối','Sô-cô-la đen','Súp gà ấm','Canh đương quy táo đỏ','Yến mạch','Hạt bí, hạnh nhân','Sữa ấm nghệ','Trứng','Đậu lăng / đậu đỏ','Nước dừa ấm','Khoai lang','Gan gà/heo (bổ sắt)','Trà hoa cúc','Cháo cá hồi đậu xanh','Nước ép củ dền + táo','Canh gà hầm táo đỏ kỷ tử','Sữa đậu nành ấm','Mè đen rang','Chè hạt sen long nhãn','Cháo yến mạch nấu táo đỏ','Nước gừng nấu đường nâu','Canh củ dền hầm xương','Quả bơ dằm sữa ấm','Cháo bí đỏ đậu xanh','Trà táo đỏ kỷ tử ấm','Súp rau củ hầm ấm bụng','Chè đậu đen nóng ít đường'];
+const PERIOD_AVOID=['Đồ uống lạnh/đá','Đồ cay nóng nhiều','Cà phê / trà đặc','Đồ chiên rán dầu mỡ','Đồ quá mặn','Rượu bia','Đồ ngọt nhiều đường tinh luyện','Nước có ga','Đồ ăn nhanh nhiều dầu','Thực phẩm sống/tái','Đồ muối chua nhiều','Trà sữa nhiều đá','Đồ nướng cháy khét'];
 
 /* ===== Catalog địa điểm hẹn hò THẬT ở Hà Nội (toạ độ gần đúng theo khu vực) ===== */
 const HANOI_CATS=[
@@ -951,22 +955,27 @@ const QUESTIONS=[
  'Một điều ở bản thân bạn muốn người ấy hiểu hơn?',
  'Khoảnh khắc bình yên nhất bên nhau gần đây là khi nào?',
  'Nếu cùng đặt một mục tiêu sức khoẻ, bạn muốn bắt đầu từ đâu?',
- 'Điều gì khiến bạn tự hào khi giới thiệu người ấy với bạn bè?'
+ 'Điều gì khiến bạn tự hào khi giới thiệu người ấy với bạn bè?',
+ 'Nếu được tặng người ấy một kỳ nghỉ bất ngờ, bạn chọn nơi nào?',
+ 'Khoảnh khắc nào gần đây khiến bạn thầm mỉm cười vì người ấy?',
+ 'Có lời hứa nào hai đứa từng nói mà bạn muốn cùng thực hiện?',
+ 'Điều gì ở những ngày bình thường bên nhau khiến bạn trân quý?',
+ 'Nếu viết một lời nhắn để dành tặng người ấy 10 năm sau, bạn sẽ viết gì?'
 ];
 function dayNumber(){ const d=new Date(); return Math.floor(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())/86400000); }
 function weekKey(){ const d=new Date(); d.setHours(0,0,0,0); const day=(d.getDay()+6)%7; d.setDate(d.getDate()-day); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
 function questionOfToday(){ return QUESTIONS[((dayNumber()%QUESTIONS.length)+QUESTIONS.length)%QUESTIONS.length]; }
-const QUIZ_Q=['Món ăn yêu thích của tôi là gì?','Nơi tôi muốn đi du lịch nhất?','Tật xấu đáng yêu của tôi?','Điều khiến tôi vui nhất?','Bài hát tôi hay nghe gần đây?','Tôi sợ điều gì nhất?','Món quà tôi mơ ước?','Thói quen buổi sáng của tôi?','Điều tôi muốn cải thiện ở bản thân?','Cách tôi thích được an ủi khi buồn?','Màu sắc tôi thích nhất?','Nếu trúng số, việc đầu tiên tôi làm?','Kiểu hẹn hò tôi thích nhất?','Điều nhỏ khiến tôi khó chịu?','Ước mơ thời bé của tôi?','Món tráng miệng tôi mê nhất?','Nhân vật phim/truyện tôi thích?','Tôi thư giãn bằng cách nào?','Mùa tôi thích nhất trong năm?','Đồ uống “tủ” của tôi?','Việc nhà tôi ghét làm nhất?','Nếu nuôi thú cưng, tôi chọn con gì?','Tôi muốn về già sống ở đâu?','Bộ phim tôi có thể xem lại nhiều lần?','Tôi tiêu tiền mạnh tay nhất cho thứ gì?','Điều khiến tôi tự hào nhất về bản thân?','Tôi thích được tặng quà bất ngờ hay được hỏi trước?','Thói quen trước khi ngủ của tôi?','Câu cửa miệng của tôi là gì?','Tôi thích được nhắn tin hay gọi điện hơn?','Bộ phim làm tôi khóc gần đây?','Tôi hay đặt món gì khi đi quán quen?','Nếu nghỉ phép một tuần, tôi muốn làm gì?','Bài hát tôi hay hát khi tắm?','Tôi thích ngồi gần cửa sổ hay góc trong quán?','Loại bánh ngọt tôi không thể chối từ?','Tôi thích ngủ nghiêng hay nằm ngửa?','Ứng dụng tôi mở nhiều nhất trong ngày?','Kiểu thời tiết tôi thích nhất?','Môn thể thao tôi muốn thử một lần?','Tôi thích quà handmade hay quà mua sẵn?','Việc khiến tôi mất kiên nhẫn nhanh nhất?','Tôi thích cà phê đậm hay nhạt?'];
+const QUIZ_Q=['Món ăn yêu thích của tôi là gì?','Nơi tôi muốn đi du lịch nhất?','Tật xấu đáng yêu của tôi?','Điều khiến tôi vui nhất?','Bài hát tôi hay nghe gần đây?','Tôi sợ điều gì nhất?','Món quà tôi mơ ước?','Thói quen buổi sáng của tôi?','Điều tôi muốn cải thiện ở bản thân?','Cách tôi thích được an ủi khi buồn?','Màu sắc tôi thích nhất?','Nếu trúng số, việc đầu tiên tôi làm?','Kiểu hẹn hò tôi thích nhất?','Điều nhỏ khiến tôi khó chịu?','Ước mơ thời bé của tôi?','Món tráng miệng tôi mê nhất?','Nhân vật phim/truyện tôi thích?','Tôi thư giãn bằng cách nào?','Mùa tôi thích nhất trong năm?','Đồ uống “tủ” của tôi?','Việc nhà tôi ghét làm nhất?','Nếu nuôi thú cưng, tôi chọn con gì?','Tôi muốn về già sống ở đâu?','Bộ phim tôi có thể xem lại nhiều lần?','Tôi tiêu tiền mạnh tay nhất cho thứ gì?','Điều khiến tôi tự hào nhất về bản thân?','Tôi thích được tặng quà bất ngờ hay được hỏi trước?','Thói quen trước khi ngủ của tôi?','Câu cửa miệng của tôi là gì?','Tôi thích được nhắn tin hay gọi điện hơn?','Bộ phim làm tôi khóc gần đây?','Tôi hay đặt món gì khi đi quán quen?','Nếu nghỉ phép một tuần, tôi muốn làm gì?','Bài hát tôi hay hát khi tắm?','Tôi thích ngồi gần cửa sổ hay góc trong quán?','Loại bánh ngọt tôi không thể chối từ?','Tôi thích ngủ nghiêng hay nằm ngửa?','Ứng dụng tôi mở nhiều nhất trong ngày?','Kiểu thời tiết tôi thích nhất?','Môn thể thao tôi muốn thử một lần?','Tôi thích quà handmade hay quà mua sẵn?','Việc khiến tôi mất kiên nhẫn nhanh nhất?','Tôi thích cà phê đậm hay nhạt?','Loại hoa tôi thích được tặng nhất?','Giấc mơ nghề nghiệp hồi trẻ của tôi?','Tôi thích đi biển hay lên núi hơn?','Câu chuyện thời sinh viên tôi hay kể nhất?','Món tôi nấu "tủ" nhất để đãi khách?'];
 function quizOfToday(){ return QUIZ_Q[((dayNumber()%QUIZ_Q.length)+QUIZ_Q.length)%QUIZ_Q.length]; }
-const CHALLENGES=['Nói 3 điều bạn thích ở người kia','Ôm nhau thật chặt 20 giây','Cùng nấu hoặc pha một món','Gửi nhau một tin nhắn ngọt ngào','Đi dạo 15 phút, không điện thoại','Cùng nghe trọn một bài hát','Khen người kia một câu thật lòng','Massage vai cho nhau 5 phút','Cùng xem lại ảnh cũ','Lên kế hoạch một chuyến đi nhỏ','Viết 1 điều biết ơn về người kia','Hỏi kỹ về một ngày của nhau','Nắm tay khi ra ngoài','Tắt điện thoại khi ăn cùng nhau','Cùng dọn một góc nhà','Pha cho người kia một ly nước','Nhắc lại một kỷ niệm vui','Cùng tập thể dục 10 phút','Để lại một lời nhắn viết tay','Cùng lên thực đơn tuần này','Ôm từ phía sau khi người kia bận','Cho nhau xem một video buồn cười','Cùng thử một quán/món mới','Nói "cảm ơn" vì một điều nhỏ','Hôn lên trán người kia','Cùng ngắm hoàng hôn hoặc bầu trời','Kể một mong ước cho tương lai chung','Chơi một trò nhỏ cùng nhau (oẳn tù tì…)','Cùng pha một ly nước detox','Khen nhau trước mặt người thân','Cùng chọn một bộ phim không cãi nhau','Dậy sớm 15 phút ngắm bình minh','Cùng dọn tủ lạnh / tủ quần áo','Viết điều bạn mong ở 1 năm tới','Tặng nhau một “phiếu yêu thương”','Cùng tập 10 cái squat','Nhịn điện thoại 1 tiếng buổi tối','Gọi điện hỏi thăm bố mẹ hai bên','Cùng lên kế hoạch tiết kiệm tuần này','Thử một quán mới gần nhà','Nói “xin lỗi” cho một điều nhỏ','Cùng nghe podcast 15 phút','Chụp một tấm ảnh đôi mới','Để lại lời nhắn trong túi/ví người kia','Cùng nấu món tuổi thơ của một người','Nhảy một điệu vui trong bếp 1 bài hát','Cùng viết "wish list" cuối tuần','Đố nhau 5 câu về sở thích của nhau','Cùng uống trà chiều không điện thoại 30 phút','Vẽ chân dung nhau trong 5 phút','Gửi nhau một ảnh "đẹp nhất hôm nay"','Cùng đi siêu thị và chọn món bất ngờ cho nhau','Cùng pha một bình trà và kể chuyện hồi nhỏ','Tự tay làm một món tráng miệng cho người kia','Cùng dậy sớm tập giãn cơ 10 phút','Viết một lời cảm ơn dán lên gương','Cùng chọn một bài hát rồi nhảy 1 phút trong bếp','Nắm tay nhau đi bộ quanh khu nhà buổi tối','Hỏi người kia "hôm nay điều gì làm em/anh vui nhất?"','Cùng dọn và sắp xếp lại một ngăn tủ'];
+const CHALLENGES=['Nói 3 điều bạn thích ở người kia','Ôm nhau thật chặt 20 giây','Cùng nấu hoặc pha một món','Gửi nhau một tin nhắn ngọt ngào','Đi dạo 15 phút, không điện thoại','Cùng nghe trọn một bài hát','Khen người kia một câu thật lòng','Massage vai cho nhau 5 phút','Cùng xem lại ảnh cũ','Lên kế hoạch một chuyến đi nhỏ','Viết 1 điều biết ơn về người kia','Hỏi kỹ về một ngày của nhau','Nắm tay khi ra ngoài','Tắt điện thoại khi ăn cùng nhau','Cùng dọn một góc nhà','Pha cho người kia một ly nước','Nhắc lại một kỷ niệm vui','Cùng tập thể dục 10 phút','Để lại một lời nhắn viết tay','Cùng lên thực đơn tuần này','Ôm từ phía sau khi người kia bận','Cho nhau xem một video buồn cười','Cùng thử một quán/món mới','Nói "cảm ơn" vì một điều nhỏ','Hôn lên trán người kia','Cùng ngắm hoàng hôn hoặc bầu trời','Kể một mong ước cho tương lai chung','Chơi một trò nhỏ cùng nhau (oẳn tù tì…)','Cùng pha một ly nước detox','Khen nhau trước mặt người thân','Cùng chọn một bộ phim không cãi nhau','Dậy sớm 15 phút ngắm bình minh','Cùng dọn tủ lạnh / tủ quần áo','Viết điều bạn mong ở 1 năm tới','Tặng nhau một “phiếu yêu thương”','Cùng tập 10 cái squat','Nhịn điện thoại 1 tiếng buổi tối','Gọi điện hỏi thăm bố mẹ hai bên','Cùng lên kế hoạch tiết kiệm tuần này','Thử một quán mới gần nhà','Nói “xin lỗi” cho một điều nhỏ','Cùng nghe podcast 15 phút','Chụp một tấm ảnh đôi mới','Để lại lời nhắn trong túi/ví người kia','Cùng nấu món tuổi thơ của một người','Nhảy một điệu vui trong bếp 1 bài hát','Cùng viết "wish list" cuối tuần','Đố nhau 5 câu về sở thích của nhau','Cùng uống trà chiều không điện thoại 30 phút','Vẽ chân dung nhau trong 5 phút','Gửi nhau một ảnh "đẹp nhất hôm nay"','Cùng đi siêu thị và chọn món bất ngờ cho nhau','Cùng pha một bình trà và kể chuyện hồi nhỏ','Tự tay làm một món tráng miệng cho người kia','Cùng dậy sớm tập giãn cơ 10 phút','Viết một lời cảm ơn dán lên gương','Cùng chọn một bài hát rồi nhảy 1 phút trong bếp','Nắm tay nhau đi bộ quanh khu nhà buổi tối','Hỏi người kia "hôm nay điều gì làm em/anh vui nhất?"','Cùng dọn và sắp xếp lại một ngăn tủ','Cùng viết ra 3 mục tiêu chung cho tháng tới','Đố nhau hát đúng lời một bài hát thời mới quen','Cùng dậy nấu một bữa sáng đặc biệt','Tặng nhau một cái ôm 1 phút không nói gì','Cùng pha trà rồi kể cho nhau nghe điều biết ơn hôm nay'];
 function challengeOfToday(){ return CHALLENGES[((dayNumber()%CHALLENGES.length)+CHALLENGES.length)%CHALLENGES.length]; }
 function streakOf(has){ let d=new Date(); d.setHours(0,0,0,0); if(!has(d)) d.setDate(d.getDate()-1); let n=0; while(has(d)){ n++; d.setDate(d.getDate()-1); } return n; }
 const TALK_TOPICS=[
-  {k:'Kỷ niệm',icon:'📷',list:['Lần đầu mình gặp nhau, em/anh đã nghĩ gì?','Kỷ niệm nào khiến bạn cười mỗi khi nhớ lại?','Chuyến đi nào đáng nhớ nhất của hai đứa?','Khoảnh khắc nào bạn thấy mình thật sự thuộc về nhau?','Lần nào hai đứa giận nhau rồi làm hoà đáng nhớ?','Món quà nào từ người kia khiến bạn xúc động nhất?','Tin nhắn đầu tiên hai đứa gửi nhau, bạn còn nhớ không?','Lần đầu về ra mắt gia đình, bạn hồi hộp thế nào?']},
+  {k:'Kỷ niệm',icon:'📷',list:['Lần đầu mình gặp nhau, em/anh đã nghĩ gì?','Kỷ niệm nào khiến bạn cười mỗi khi nhớ lại?','Chuyến đi nào đáng nhớ nhất của hai đứa?','Khoảnh khắc nào bạn thấy mình thật sự thuộc về nhau?','Lần nào hai đứa giận nhau rồi làm hoà đáng nhớ?','Món quà nào từ người kia khiến bạn xúc động nhất?','Tin nhắn đầu tiên hai đứa gửi nhau, bạn còn nhớ không?','Lần đầu về ra mắt gia đình, bạn hồi hộp thế nào?','Lần nào người kia làm bạn bất ngờ nhất?','Có mùi hương hay bài hát nào gắn với một kỷ niệm của hai đứa?']},
   {k:'Tương lai',icon:'🌱',list:['5 năm nữa mình muốn sống ở đâu, làm gì?','Mình muốn dạy con điều gì quan trọng nhất?','Một giấc mơ chung mình muốn cùng thực hiện?','Mình muốn về già bên nhau như thế nào?','Có mục tiêu nào năm nay mình muốn cùng cố gắng?','Mình muốn xây dựng truyền thống gia đình nào?']},
   {k:'Cảm xúc',icon:'💗',list:['Điều gì khiến bạn thấy được yêu thương nhất?','Khi buồn, bạn muốn người kia làm gì cho mình?','Gần đây điều gì khiến bạn lo lắng?','Bạn thấy biết ơn người kia vì điều gì tuần này?','Khi nào bạn thấy hạnh phúc nhất khi ở bên nhau?','Có điều gì bạn cần ở người kia nhiều hơn không?']},
   {k:'Mối quan hệ',icon:'🤝',list:['Mình có thể làm gì để hiểu nhau hơn?','Có điều gì bạn muốn nói mà chưa nói?','Mình giải quyết bất đồng đã ổn chưa, cải thiện sao?','Điều gì ở mối quan hệ này khiến bạn tự hào?','Mình có đang dành đủ thời gian cho nhau không?','Một thói quen nhỏ nào mình nên cùng giữ?']},
-  {k:'Vu vơ',icon:'🎈',list:['Nếu có một siêu năng lực, bạn chọn gì?','Món ăn nào bạn có thể ăn cả đời không chán?','Bài hát nào khiến bạn nghĩ tới người kia?','Nếu trúng số, việc đầu tiên hai đứa làm là gì?','Bạn muốn nuôi con vật gì cùng nhau?','Kỳ nghỉ trong mơ của hai đứa là ở đâu?','Nếu hai đứa là nhân vật phim, đó là phim gì?','Mình hợp làm "team" trong trò chơi nào nhất?','Nếu mở một quán nhỏ cùng nhau, mình bán gì?','Nếu được sống ở một đất nước khác, bạn chọn đâu?','Món ăn vặt tuổi thơ nào bạn muốn người kia thử?']},
+  {k:'Vu vơ',icon:'🎈',list:['Nếu có một siêu năng lực, bạn chọn gì?','Món ăn nào bạn có thể ăn cả đời không chán?','Bài hát nào khiến bạn nghĩ tới người kia?','Nếu trúng số, việc đầu tiên hai đứa làm là gì?','Bạn muốn nuôi con vật gì cùng nhau?','Kỳ nghỉ trong mơ của hai đứa là ở đâu?','Nếu hai đứa là nhân vật phim, đó là phim gì?','Mình hợp làm "team" trong trò chơi nào nhất?','Nếu mở một quán nhỏ cùng nhau, mình bán gì?','Nếu được sống ở một đất nước khác, bạn chọn đâu?','Món ăn vặt tuổi thơ nào bạn muốn người kia thử?','Nếu được hoán đổi thân phận với nhau một ngày, bạn muốn làm gì?','Món đồ "vô dụng nhưng dễ thương" nào bạn vẫn muốn mua cùng nhau?']},
   {k:'Tài chính',icon:'💰',list:['Mình muốn tiết kiệm cho mục tiêu nào trước?','Quan điểm của mỗi người về “tiêu cho trải nghiệm” vs “để dành”?','Mình nên có quỹ chung và quỹ riêng thế nào?','Khoản chi nào mình thấy đáng tiền nhất năm qua?','Nếu thu nhập tăng gấp đôi, mình sẽ làm gì?','Mình muốn dạy con về tiền bạc thế nào?']},
   {k:'Gia đình',icon:'👪',list:['Mình muốn cân bằng thời gian cho hai bên nội ngoại sao?','Truyền thống nào của gia đình mỗi người mình muốn giữ?','Mình muốn con cái lớn lên trong môi trường thế nào?','Điều gì ở cách bố mẹ nuôi dạy mình muốn học / muốn khác?','Mình xử lý mâu thuẫn với người thân ra sao cho khéo?','Dịp lễ tết mình muốn tổ chức thế nào?']},
 ];
@@ -979,11 +988,11 @@ function projIcon(k){ const t=PROJ_TYPES.find(x=>x.k===k); return t?t.icon:'📦
 const PROJ_TASK_SUGGEST={
   tet:['Lên lịch về quê / kế hoạch ăn Tết (trước 21 ngày)','Mua vé tàu/xe nếu về quê (trước 21 ngày)','Chuẩn bị quà biếu nội ngoại (trước 10 ngày)','Mua quần áo Tết (trước 10 ngày)','Tổng vệ sinh, dọn nhà (trước 7 ngày)','Mua sắm thực phẩm Tết (trước 7 ngày)','Đổi tiền mới lì xì (trước 7 ngày)','Lên thực đơn cỗ Tết (trước 5 ngày)','Mua bánh chưng / giò chả (trước 5 ngày)','Mua đào/quất/hoa (trước 5 ngày)','Dọn bàn thờ, thay đồ thờ (trước 5 ngày)','Cúng ông Công ông Táo 23 tháng Chạp (trước 7 ngày)','Trang trí nhà đón Tết (trước 3 ngày)','Chuẩn bị phong bao lì xì (trước 3 ngày)','Gói/đặt bánh chưng (trước 3 ngày)','Làm cơm tất niên chiều 30 (trước 1 ngày)','Sắm đồ cúng giao thừa (trước 2 ngày)','Chọn người xông đất hợp tuổi (trước 2 ngày)'],
   wedding:['Chốt ngày cưới','Đặt nhà hàng / địa điểm','Chụp ảnh cưới','Thuê váy/vest','Thiệp mời','Trang điểm cô dâu','Xe hoa','Chốt khách mời','Nhẫn cưới','Trang trí'],
-  travel:['Chốt điểm đến & ngày','Đặt vé máy bay/tàu','Đặt khách sạn','Lên lịch trình','Đổi tiền / thẻ','Chuẩn bị hành lý','Mua bảo hiểm','Thuê xe'],
+  travel:['Chốt điểm đến & ngày','Đặt vé máy bay/tàu','Đặt khách sạn','Lên lịch trình','Đổi tiền / thẻ','Chuẩn bị hành lý','Mua bảo hiểm','Thuê xe','Kiểm tra hộ chiếu/visa còn hạn','Tải bản đồ & lưu địa điểm offline'],
   birthday:['Chốt ngày & khách mời','Đặt bánh','Đặt quán/đồ ăn','Mua quà','Trang trí','Chụp ảnh'],
   baby:['Khám thai định kỳ','Mua đồ sơ sinh','Chuẩn bị phòng cho bé','Chọn tên','Đặt lịch sinh','Học lớp tiền sản'],
   event:['Chốt ngày & địa điểm','Lên danh sách khách mời','Gửi lời mời','Đặt đồ ăn / bánh','Trang trí','Chuẩn bị nhạc / trò chơi','Phân công chuẩn bị','Chụp ảnh / quay phim'],
-  home:['Lên ngân sách sửa nhà','Chốt phong cách / màu sơn','Tìm thợ / báo giá','Mua nội thất chính','Mua đồ điện gia dụng','Dọn dẹp & sắp xếp','Mua cây xanh trang trí','Kiểm tra điện nước'],
+  home:['Lên ngân sách sửa nhà','Chốt phong cách / màu sơn','Tìm thợ / báo giá','Mua nội thất chính','Mua đồ điện gia dụng','Dọn dẹp & sắp xếp','Mua cây xanh trang trí','Kiểm tra điện nước','Lắp rèm / đèn trang trí','Sắp xếp góc làm việc chung'],
 };
 const CITIES=[
   {k:'giangvo',name:'Giảng Võ, HN',lat:21.0313,lng:105.8163},
@@ -3056,20 +3065,88 @@ const CHILD_TIPS=[
   '🦷 Đánh răng 2 lần/ngày, kem fluor lượng bằng hạt gạo.',
 ];
 const vacAgeMonths=(label)=>{ if(/sơ sinh/i.test(label)) return 0; const m=label.match(/\d+/); return m?Number(m[0]):0; };
+const CHILD_PACK=['Bỉm (3–4 cái)','Quần áo dự phòng (1–2 bộ)','Bình / cốc nước','Khăn xô lau','Khăn ướt','Sữa / bình sữa','Mũ + áo khoác','Dép / giày','Túi đựng đồ bẩn','Thuốc riêng (nếu có)','Đồ trấn an quen thuộc'];
+const CHILD_SKILLS=['Tự xúc ăn bằng thìa','Tự cầm cốc uống nước','Báo khi muốn đi vệ sinh','Tự cởi giày / dép','Tự rửa & lau tay','Tự cất đồ chơi','Tự cởi áo khoác','Ngủ trưa không cần bế','Gọi tên cô & bạn','Xa bố mẹ không quấy lâu'];
+const PLAY_LIB=[
+  {c:'🤸 Vận động',n:'Đá & ném bóng',d:'Lăn, đá, ném bóng vào rổ — rèn phối hợp tay chân.'},
+  {c:'🤸 Vận động',n:'Leo trèo có giám sát',d:'Bò qua gối, leo cầu thang có vịn, chui ống vải.'},
+  {c:'🤸 Vận động',n:'Nhảy theo nhạc',d:'Bật nhạc cùng nhảy, dậm chân, vỗ tay theo nhịp.'},
+  {c:'🤸 Vận động',n:'Kéo – đẩy xe đồ chơi',d:'Đẩy xe, kéo đồ chơi có dây đi quanh nhà.'},
+  {c:'🧩 Tư duy',n:'Xếp khối / lồng cốc',d:'Xếp 3–6 khối, lồng cốc to – nhỏ, học kích thước.'},
+  {c:'🧩 Tư duy',n:'Phân loại theo màu / hình',d:'Bỏ đồ vật cùng màu vào một rổ.'},
+  {c:'🧩 Tư duy',n:'Trốn tìm đồ vật',d:'Giấu đồ chơi dưới khăn rồi hỏi “đâu rồi?”.'},
+  {c:'🧩 Tư duy',n:'Ghép hình 2–4 mảnh',d:'Bộ ghép gỗ núm to, hình con vật quen thuộc.'},
+  {c:'🗣️ Ngôn ngữ',n:'Đọc sách tranh',d:'Chỉ & gọi tên đồ vật, hỏi “con gì đây?”.'},
+  {c:'🗣️ Ngôn ngữ',n:'Hát bài có động tác',d:'“Năm ngón tay”, “Con cò” — học từ qua bài hát.'},
+  {c:'🗣️ Ngôn ngữ',n:'Gọi tên bộ phận cơ thể',d:'“Mũi đâu? Tai đâu?” — chỉ đúng & nói tên.'},
+  {c:'🎨 Khéo tay',n:'Tô màu sáp to',d:'Vẽ nguệch ngoạc trên giấy lớn — rèn cầm bút.'},
+  {c:'🎨 Khéo tay',n:'Nặn đất nặn',d:'Bóp, lăn, ấn đất nặn an toàn — khéo ngón tay.'},
+  {c:'🎨 Khéo tay',n:'Dán sticker',d:'Bóc & dán sticker vào ô — rèn ngón tay khéo.'},
+];
+const WEAN_MENU=[
+  {d:'Thứ 2',sang:'Cháo gà bí đỏ',phu:'Chuối + sữa chua',trua:'Cơm nát · cá hồi áp chảo · canh rau ngót',toi:'Cơm nát · trứng hấp thịt · canh bí đỏ'},
+  {d:'Thứ 3',sang:'Súp khoai tây thịt bò',phu:'Đu đủ + phô mai',trua:'Cơm nát · gà xé · canh mồng tơi',toi:'Nui sốt cà thịt bằm · bông cải hấp'},
+  {d:'Thứ 4',sang:'Cháo tôm rau cải',phu:'Sữa + bánh ăn dặm',trua:'Cơm nát · cá kho nhạt · canh bầu',toi:'Cơm nát · đậu hũ sốt thịt · canh rau dền'},
+  {d:'Thứ 5',sang:'Yến mạch sữa chuối',phu:'Xoài + sữa chua',trua:'Cơm nát · bò xào mềm · canh khoai',toi:'Cháo lươn rau ngót'},
+  {d:'Thứ 6',sang:'Bánh mì trứng + sữa',phu:'Lê hấp + phô mai',trua:'Cơm nát · cá hấp · canh cải thịt bằm',toi:'Cơm nát · trứng cút sốt cà · canh bí xanh'},
+  {d:'Thứ 7',sang:'Bún / phở thịt mềm',phu:'Chuối + sữa',trua:'Cơm nát · gà hấp · canh rau củ',toi:'Cháo cá cà rốt'},
+  {d:'Chủ nhật',sang:'Cháo sườn rau củ',phu:'Sữa chua + việt quất',trua:'Cơm nát · tôm rim nhạt · canh mướp',toi:'Súp gà ngô non · bánh mì mềm'},
+];
+const PARENTING_QS=[
+  'Khi con ăn vạ thì xử lý thế nào (lờ đi / ôm dỗ / nghiêm khắc)?',
+  'Có cho xem điện thoại / TV không, bao lâu mỗi ngày?',
+  'Cho ăn vặt & đồ ngọt ở mức nào?',
+  'Ai dỗ khi con khóc đêm, có bế không?',
+  'Thưởng – phạt thế nào cho nhất quán giữa bố và mẹ?',
+  'Khi ông bà chiều khác ý mình thì thống nhất ra sao?',
+  'Cho con ngủ riêng hay ngủ chung tới khi nào?',
+  'Dạy chữ / số sớm hay để con chơi là chính?',
+  'Quy tắc an toàn (ổ điện, cầu thang, đồ nhỏ) đã thống nhất chưa?',
+  'Phân công ai đưa đón / cho ăn / tắm cho con?',
+];
+const ILL_SYMPTOMS=['Sốt','Ho','Sổ mũi','Tiêu chảy','Nôn trớ','Phát ban','Biếng ăn','Khó ngủ'];
 function ChildCare({people,me}){
   const [child,setChild]=useLocal('ju.child',{name:'',dob:'',gender:''});
   const [growth,setGrowth]=useLocal('ju.childGrowth',[]);
   const [vac,setVac]=useLocal('ju.childVaccines',{});
   const [mile,setMile]=useLocal('ju.childMilestones',{});
   const [diary,setDiary]=useLocal('ju.childDiary',[]);
-  const [tab,setTab]=useState('mile');
+  const [pack,setPack]=useLocal('ju.childPack',{});
+  const [skills,setSkills]=useLocal('ju.childSkills',{});
+  const [med,setMed]=useLocal('ju.childMed',{allergy:'',meds:'',sleep:'',note:''});
+  const [ill,setIll]=useLocal('ju.childIllness',[]);
+  const [words,setWords]=useLocal('ju.childWords',[]);
+  const [tantrum,setTantrum]=useLocal('ju.childTantrum',[]);
+  const [pq,setPq]=useLocal('ju.childParenting',{});
+  const [tab,setTab]=useState('develop');
   const [gw,setGw]=useState(''); const [gh,setGh]=useState('');
-  const [dtext,setDtext]=useState('');
+  const [dtext,setDtext]=useState(''); const [wordIn,setWordIn]=useState('');
+  const [illForm,setIllForm]=useState({symptoms:[],meds:'',note:''});
+  const [tanForm,setTanForm]=useState({situation:'',handling:''});
   const months=child.dob? Math.max(0, Math.round((new Date(todayISO()+'T00:00:00')-new Date(child.dob+'T00:00:00'))/(30.44*86400000))) : null;
   const ageLabel = months==null?'chưa đặt ngày sinh' : months<24? months+' tháng tuổi' : Math.floor(months/12)+' tuổi'+(months%12?(' '+(months%12)+' th'):'');
   const tg=(obj,set,key)=>{ const n={...obj}; if(n[key]) delete n[key]; else n[key]=true; set(n); };
   const addGrowth=()=>{ const w=parseFloat(gw), h=parseFloat(gh); if(!w&&!h) return; setGrowth([{id:uid(),date:todayISO(),w:w||null,h:h||null},...growth]); setGw('');setGh(''); celebrate(['📏']); };
   const addDiary=()=>{ if(!dtext.trim()) return; setDiary([{id:uid(),date:todayISO(),text:dtext.trim()},...diary]); setDtext(''); celebrate(['📔','💞']); };
+  const addWord=()=>{ const w=wordIn.trim(); if(!w) return; if(!words.find(x=>x.word.toLowerCase()===w.toLowerCase())) setWords([{id:uid(),word:w,date:todayISO()},...words]); setWordIn(''); celebrate(['🗣️']); };
+  const toggleSym=(s)=> setIllForm(f=>({...f,symptoms:f.symptoms.indexOf(s)>=0?f.symptoms.filter(x=>x!==s):[...f.symptoms,s]}));
+  const addIll=()=>{ if(!illForm.symptoms.length&&!illForm.note.trim()) return; setIll([{id:uid(),date:todayISO(),symptoms:illForm.symptoms,meds:illForm.meds.trim(),note:illForm.note.trim(),recovered:''},...ill]); setIllForm({symptoms:[],meds:'',note:''}); celebrate(['💊']); };
+  const recover=(id)=> setIll(ill.map(x=>x.id===id?{...x,recovered:x.recovered?'':todayISO()}:x));
+  const addTantrum=()=>{ if(!tanForm.situation.trim()) return; setTantrum([{id:uid(),date:todayISO(),situation:tanForm.situation.trim(),handling:tanForm.handling.trim(),worked:null},...tantrum]); setTanForm({situation:'',handling:''}); };
+  const setTanWorked=(id,v)=> setTantrum(tantrum.map(x=>x.id===id?{...x,worked:x.worked===v?null:v}:x));
+  const schoolDays=child.schoolDate? daysFromToday(child.schoolDate) : null;
+  const packDone=CHILD_PACK.filter(it=>pack[it]).length;
+  const skillDone=CHILD_SKILLS.filter(it=>skills[it]).length;
+  const wordsThisWeek=words.filter(w=>{ const d=Math.round((new Date(todayISO()+'T00:00:00')-new Date(w.date+'T00:00:00'))/86400000); return d>=0&&d<7; }).length;
+  const exportMed=()=>{ const lines=['HỒ SƠ Y TẾ — '+(child.name||'Bé'),
+    'Ngày sinh: '+(child.dob?fmtDateVN(child.dob):'—')+(months!=null?(' ('+ageLabel+')'):''),
+    'Giới tính: '+(child.gender==='nam'?'Bé trai':child.gender==='nu'?'Bé gái':'—'),'',
+    'Dị ứng: '+(med.allergy||'Không rõ'),'Thuốc đang dùng: '+(med.meds||'Không'),
+    'Thói quen ngủ: '+(med.sleep||'—'),'Ghi chú cho cô: '+(med.note||'—'),'',
+    'Liên hệ bố/mẹ: '+[people.a.name,people.b.name].filter(Boolean).join(' / ')];
+    const txt=lines.join('\n');
+    try{ const w=window.open('','_blank'); if(w){ w.document.write('<title>Hồ sơ y tế</title><pre style="font-family:system-ui,sans-serif;font-size:15px;white-space:pre-wrap;padding:24px;line-height:1.8">'+txt.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</pre>'); w.document.close(); w.focus(); setTimeout(()=>{ try{w.print();}catch(e){} },350); return; } }catch(e){}
+    if(navigator.share) navigator.share({title:'Hồ sơ y tế',text:txt}).catch(()=>{}); else { navigator.clipboard.writeText(txt); alert('Đã copy hồ sơ — dán để gửi cô nhé!'); } };
   const last=growth[0];
   return (
     <div>
@@ -3087,34 +3164,52 @@ function ChildCare({people,me}){
           <input className="inp" type="date" max={todayISO()} value={child.dob||''} onChange={e=>setChild({...child,dob:e.target.value})}/></div>
       </div>
       <div className="filters">
-        <button className={tab==='mile'?'on':''} onClick={()=>setTab('mile')}>🎯 Mốc</button>
-        <button className={tab==='vac'?'on':''} onClick={()=>setTab('vac')}>💉 Tiêm</button>
-        <button className={tab==='grow'?'on':''} onClick={()=>setTab('grow')}>📏 Cao/nặng</button>
-        <button className={tab==='food'?'on':''} onClick={()=>setTab('food')}>🍎 Ăn & chăm</button>
-        <button className={tab==='diary'?'on':''} onClick={()=>setTab('diary')}>📔 Nhật ký</button>
+        <button className={tab==='develop'?'on':''} onClick={()=>setTab('develop')}>🌱 Phát triển</button>
+        <button className={tab==='health'?'on':''} onClick={()=>setTab('health')}>🏥 Sức khoẻ</button>
+        <button className={tab==='eat'?'on':''} onClick={()=>setTab('eat')}>🍎 Ăn uống</button>
+        <button className={tab==='school'?'on':''} onClick={()=>setTab('school')}>🎒 Đi học</button>
+        <button className={tab==='parent'?'on':''} onClick={()=>setTab('parent')}>💞 Nuôi dạy</button>
       </div>
-      {tab==='mile' && <div>
-        <div className="muted center" style={{fontSize:11.5,margin:'8px 14px'}}>Tích mốc bé đã làm được. Khung <b>tô đậm</b> là độ tuổi hiện tại.</div>
+
+      {tab==='develop' && <div>
+        <div className="sec-title">🎯 Mốc phát triển</div>
+        <div className="muted center" style={{fontSize:11.5,margin:'0 14px 4px'}}>Tích mốc bé đã làm được. Khung <b>tô đậm</b> là độ tuổi hiện tại.</div>
         {CHILD_MILESTONES.map(b=>{ const cur=months!=null&&months>=b.lo&&months<b.hi;
           return <div key={b.band} className="item" style={cur?{borderLeft:'4px solid var(--primary)'}:null}>
             <div className="it-top"><h4>{cur?'⭐ ':''}{b.band}</h4></div>
             <div>{b.items.map(it=>{ const k=b.band+'|'+it; const on=!!mile[k];
               return <button key={it} className="pill" style={{margin:'3px 6px 3px 0',padding:'7px 11px',fontSize:12.5,background:on?'var(--good)':'var(--chip)',color:on?'#fff':'var(--chip-tx)'}} onClick={()=>tg(mile,setMile,k)}>{on?'✓ ':''}{it}</button>; })}</div>
           </div>; })}
-        <div className="muted center" style={{fontSize:11,margin:'4px 14px'}}>Mỗi bé một nhịp riêng — chỉ để tham khảo, không phải để lo lắng 💗</div>
+        <div className="sec-title">🗣️ Mốc ngôn ngữ <span className="grow"></span><span className="muted" style={{fontSize:12}}>{words.length} từ · +{wordsThisWeek} tuần này</span></div>
+        <div className="card">
+          <div className="row" style={{gap:6}}>
+            <input className="inp grow" placeholder="Thêm từ bé mới nói được…" value={wordIn} onChange={e=>setWordIn(e.target.value)} onKeyDown={e=>{ if(e.key==='Enter') addWord(); }}/>
+            <button className="btn sm" onClick={addWord}>＋</button>
+          </div>
+          {words.length===0 && <div className="muted" style={{fontSize:12.5,marginTop:8}}>Ghi lại mỗi từ mới — vài tháng nhìn lại sẽ rất đáng yêu 💕</div>}
+          {words.length>0 && <div style={{marginTop:8}}>{words.slice(0,40).map(w=>(
+            <span key={w.id} className="pill" style={{margin:'3px 6px 3px 0',padding:'6px 10px',fontSize:12.5}}>{w.word} <span onClick={()=>{ if(confirm('Xoá từ này?')) setWords(words.filter(x=>x.id!==w.id)); }} style={{cursor:'pointer',marginLeft:3,opacity:.6}}>✕</span></span>
+          ))}</div>}
+        </div>
+        <div className="sec-title">🎲 Trò chơi gợi ý (20–24 tháng)</div>
+        {PLAY_LIB.map((p,i)=>(
+          <div key={i} className="item" style={{padding:'9px 13px'}}>
+            <div className="row"><b style={{fontSize:13.5}} className="grow">{p.c.split(' ')[0]} {p.n}</b><span className="muted" style={{fontSize:11}}>{p.c.split(' ').slice(1).join(' ')}</span></div>
+            <div className="muted" style={{fontSize:12.5,marginTop:3,lineHeight:1.5}}>{p.d}</div>
+          </div>
+        ))}
       </div>}
-      {tab==='vac' && <div>
-        <div className="muted center" style={{fontSize:11.5,margin:'8px 14px'}}>Lịch tiêm tham khảo (TCMR + dịch vụ). Tích mũi đã tiêm.</div>
-        {CHILD_VACCINES.map(v=>{ const due=months!=null&&vacAgeMonths(v.age)<=months;
-          const allDone=v.items.every(it=>vac[v.age+'|'+it]);
+
+      {tab==='health' && <div>
+        <div className="sec-title">💉 Lịch tiêm chủng</div>
+        <div className="muted center" style={{fontSize:11.5,margin:'0 14px 4px'}}>Tham khảo (TCMR + dịch vụ) — tích mũi đã tiêm.</div>
+        {CHILD_VACCINES.map(v=>{ const due=months!=null&&vacAgeMonths(v.age)<=months; const allDone=v.items.every(it=>vac[v.age+'|'+it]);
           return <div key={v.age} className="item" style={due&&!allDone?{borderLeft:'4px solid var(--primary)'}:null}>
             <div className="it-top"><h4>{v.age}{due&&!allDone?' · đến hạn':''}{allDone?' ✅':''}</h4></div>
             <div>{v.items.map(it=>{ const k=v.age+'|'+it; const on=!!vac[k];
               return <button key={it} className="pill" style={{margin:'3px 6px 3px 0',padding:'7px 11px',fontSize:12.5,background:on?'var(--good)':'var(--chip)',color:on?'#fff':'var(--chip-tx)'}} onClick={()=>tg(vac,setVac,k)}>{on?'✓ ':''}{it}</button>; })}</div>
           </div>; })}
-        <div className="muted center" style={{fontSize:11,margin:'4px 14px'}}>Theo tư vấn của bác sĩ/cơ sở tiêm chủng là chính xác nhất.</div>
-      </div>}
-      {tab==='grow' && <div>
+        <div className="sec-title">📏 Chiều cao & cân nặng</div>
         <div className="card">
           <div className="row" style={{gap:8}}>
             <div className="field grow" style={{margin:0}}><label>Cân nặng (kg)</label><input className="inp" type="number" value={gw} onChange={e=>setGw(e.target.value)} placeholder="vd 11.5"/></div>
@@ -3131,25 +3226,124 @@ function ChildCare({people,me}){
             <button className="iconbtn" onClick={()=>{ if(confirm('Xoá lần đo này?')) setGrowth(growth.filter(x=>x.id!==e.id)); }}>🗑️</button>
           </div>
         ))}
+        <div className="sec-title">🤒 Nhật ký ốm</div>
+        <div className="card">
+          <div style={{display:'flex',flexWrap:'wrap',gap:6}}>{ILL_SYMPTOMS.map(s=>{ const on=illForm.symptoms.indexOf(s)>=0;
+            return <button key={s} className="pill" style={{padding:'6px 10px',fontSize:12.5,background:on?'var(--primary)':'var(--chip)',color:on?'#fff':'var(--chip-tx)'}} onClick={()=>toggleSym(s)}>{on?'✓ ':''}{s}</button>; })}</div>
+          <input className="inp" style={{marginTop:8}} placeholder="Thuốc đã dùng (vd: hạ sốt Hapacol…)" value={illForm.meds} onChange={e=>setIllForm({...illForm,meds:e.target.value})}/>
+          <input className="inp" style={{marginTop:8}} placeholder="Ghi chú thêm (nhiệt độ, bác sĩ dặn…)" value={illForm.note} onChange={e=>setIllForm({...illForm,note:e.target.value})}/>
+          <button className="btn" style={{marginTop:8}} onClick={addIll}>＋ Ghi đợt ốm (hôm nay)</button>
+        </div>
+        {ill.map(x=>(
+          <div key={x.id} className="item" style={x.recovered?{opacity:.7}:{borderLeft:'4px solid #e0a341'}}>
+            <div className="it-top"><h4>{x.recovered?'✅ Đã khỏi':'🤒 Đang ốm'}</h4>
+              <button className="muted" onClick={()=>{ if(confirm('Xoá đợt ốm này?')) setIll(ill.filter(y=>y.id!==x.id)); }}>✕</button></div>
+            <div className="muted" style={{fontSize:12,marginTop:2}}>Bắt đầu {fmtDateVN(x.date)}{x.recovered?` · khỏi ${fmtDateVN(x.recovered)} (${Math.max(1,Math.round((new Date(x.recovered)-new Date(x.date))/86400000))} ngày)`:''}</div>
+            {x.symptoms.length>0 && <div style={{fontSize:13,marginTop:4}}>{x.symptoms.join(' · ')}</div>}
+            {x.meds && <div className="muted" style={{fontSize:12.5,marginTop:2}}>💊 {x.meds}</div>}
+            {x.note && <div className="muted" style={{fontSize:12.5,marginTop:2}}>{x.note}</div>}
+            <button className="pill" style={{marginTop:6}} onClick={()=>recover(x.id)}>{x.recovered?'↩︎ Đánh dấu chưa khỏi':'✅ Đã khỏi hôm nay'}</button>
+          </div>
+        ))}
+        <div className="sec-title">🩺 Hồ sơ y tế gửi cô</div>
+        <div className="card">
+          <div className="field" style={{margin:0}}><label>Dị ứng</label><input className="inp" value={med.allergy||''} onChange={e=>setMed({...med,allergy:e.target.value})} placeholder="Thức ăn / thuốc bé dị ứng…"/></div>
+          <div className="field" style={{margin:'8px 0 0'}}><label>Thuốc đang dùng</label><input className="inp" value={med.meds||''} onChange={e=>setMed({...med,meds:e.target.value})} placeholder="Nếu có"/></div>
+          <div className="field" style={{margin:'8px 0 0'}}><label>Thói quen ngủ</label><input className="inp" value={med.sleep||''} onChange={e=>setMed({...med,sleep:e.target.value})} placeholder="vd: ngủ trưa 12h30, cần ôm gối…"/></div>
+          <div className="field" style={{margin:'8px 0 0'}}><label>Ghi chú cho cô</label><textarea className="inp" value={med.note||''} onChange={e=>setMed({...med,note:e.target.value})} placeholder="Tính cách, món sợ, cách dỗ…"/></div>
+          <button className="btn" style={{marginTop:10}} onClick={exportMed}>🖨️ Xuất để in / gửi cô</button>
+        </div>
       </div>}
-      {tab==='food' && <div>
+
+      {tab==='eat' && <div>
         <div className="sec-title">🍎 Ăn uống & chăm sóc {months!=null?`(~${months} tháng)`:''}</div>
         <div className="card"><div className="muted" style={{fontSize:13.5,lineHeight:1.8}}>{CHILD_TIPS.map((t,i)=><div key={i}>{t}</div>)}</div></div>
-        <div className="muted center" style={{fontSize:11,margin:'4px 14px'}}>👉 Gợi ý món cho bé sẽ phong phú hơn theo từng giai đoạn.</div>
+        <div className="sec-title">🍚 Thực đơn ăn dặm / ăn thô cả tuần</div>
+        <div className="muted center" style={{fontSize:11.5,margin:'0 14px 4px'}}>Gợi ý cho bé ~18–24 tháng (cơm nát + món mềm). Điều chỉnh theo khẩu vị bé nhé.</div>
+        {WEAN_MENU.map((m,i)=>(
+          <div key={i} className="item">
+            <div className="it-top"><h4>{m.d}</h4></div>
+            <div style={{fontSize:13,lineHeight:1.7,marginTop:2}}>
+              <div>🌅 <b>Sáng:</b> {m.sang}</div>
+              <div>🍎 <b>Phụ:</b> {m.phu}</div>
+              <div>🍚 <b>Trưa:</b> {m.trua}</div>
+              <div>🌙 <b>Tối:</b> {m.toi}</div>
+            </div>
+          </div>
+        ))}
       </div>}
-      {tab==='diary' && <div>
-        <div className="row" style={{margin:'10px 14px',gap:8}}>
+
+      {tab==='school' && <div>
+        <div className="sec-title">⏳ Đếm ngược ngày nhập học</div>
+        <div className="card">
+          <div className="field" style={{margin:0}}><label>Ngày bé đi học</label>
+            <input className="inp" type="date" value={child.schoolDate||''} onChange={e=>setChild({...child,schoolDate:e.target.value})}/></div>
+          {schoolDays!=null && <div className="center" style={{marginTop:10}}>
+            {schoolDays>0 ? <><div style={{fontSize:26,fontWeight:800,color:'var(--primary)'}}>{schoolDays} ngày</div><div className="muted" style={{fontSize:12}}>nữa là bé tới lớp — {fmtDateVN(child.schoolDate)} 🎒</div></>
+              : schoolDays===0 ? <div style={{fontSize:18,fontWeight:700}}>🎉 Hôm nay bé đi học!</div>
+              : <div className="muted">Bé đã đi học được {Math.abs(schoolDays)} ngày 💪</div>}
+          </div>}
+        </div>
+        <div className="sec-title">🎒 Đồ mang đi lớp <span className="grow"></span><span className="muted" style={{fontSize:12}}>{packDone}/{CHILD_PACK.length}</span></div>
+        <div className="card" style={{padding:'4px 13px'}}>
+          {CHILD_PACK.map(it=>(
+            <div key={it} className="row" style={{padding:'8px 0',borderBottom:'1px solid var(--line)'}}>
+              <button onClick={()=>tg(pack,setPack,it)} style={{fontSize:19}}>{pack[it]?'✅':'⬜'}</button>
+              <span className="grow" style={{fontSize:14,textDecoration:pack[it]?'line-through':'none',opacity:pack[it]?.6:1}}>{it}</span>
+            </div>
+          ))}
+          <button className="muted" style={{fontSize:11.5,margin:'8px 0'}} onClick={()=>{ if(confirm('Bỏ đánh dấu tất cả để chuẩn bị cho hôm sau?')) setPack({}); }}>↻ Đặt lại cho hôm sau</button>
+        </div>
+        <div className="sec-title">🌟 Kỹ năng tự lập <span className="grow"></span><span className="muted" style={{fontSize:12}}>{skillDone}/{CHILD_SKILLS.length}</span></div>
+        <div className="prog" style={{margin:'0 14px'}}><i style={{width:(skillDone/CHILD_SKILLS.length*100)+'%'}}></i></div>
+        <div className="card" style={{padding:'4px 13px',marginTop:8}}>
+          {CHILD_SKILLS.map(it=>(
+            <div key={it} className="row" style={{padding:'8px 0',borderBottom:'1px solid var(--line)'}}>
+              <button onClick={()=>tg(skills,setSkills,it)} style={{fontSize:19}}>{skills[it]?'✅':'⬜'}</button>
+              <span className="grow" style={{fontSize:14,textDecoration:skills[it]?'line-through':'none',opacity:skills[it]?.6:1}}>{it}</span>
+            </div>
+          ))}
+        </div>
+      </div>}
+
+      {tab==='parent' && <div>
+        <div className="sec-title">📔 Nhật ký “điều đầu tiên”</div>
+        <div className="row" style={{margin:'0 14px 4px',gap:8}}>
           <input className="inp grow" placeholder="Hôm nay bé… (lần đầu nói, bước đi…)" value={dtext} onChange={e=>setDtext(e.target.value)} onKeyDown={e=>{ if(e.key==='Enter') addDiary(); }}/>
           <button className="btn sm" onClick={addDiary}>＋</button>
         </div>
-        {diary.length===0 && <div className="empty"><span className="big">📔</span>Ghi lại những điều đầu tiên đáng nhớ của bé.</div>}
-        {diary.map(d=>(
+        {diary.slice(0,6).map(d=>(
           <div key={d.id} className="item">
             <div className="row"><span className="muted grow" style={{fontSize:12}}>{fmtDateVN(d.date)}</span>
               <button className="iconbtn" onClick={()=>{ if(confirm('Xoá ghi chú này?')) setDiary(diary.filter(x=>x.id!==d.id)); }}>🗑️</button></div>
             <div style={{fontSize:14,marginTop:2}}>{d.text}</div>
           </div>
         ))}
+        <div className="sec-title">😤 Nhật ký “cơn ăn vạ”</div>
+        <div className="muted center" style={{fontSize:11.5,margin:'0 14px 4px'}}>Ghi tình huống + cách xử lý hiệu quả để lần sau rút kinh nghiệm.</div>
+        <div className="card">
+          <input className="inp" placeholder="Tình huống (vd: không cho xem TV thì khóc)" value={tanForm.situation} onChange={e=>setTanForm({...tanForm,situation:e.target.value})}/>
+          <input className="inp" style={{marginTop:8}} placeholder="Cách mình đã xử lý" value={tanForm.handling} onChange={e=>setTanForm({...tanForm,handling:e.target.value})}/>
+          <button className="btn" style={{marginTop:8}} onClick={addTantrum}>＋ Ghi lại</button>
+        </div>
+        {tantrum.map(x=>(
+          <div key={x.id} className="item">
+            <div className="it-top"><h4 style={{fontSize:14}}>😤 {x.situation}</h4>
+              <button className="muted" onClick={()=>{ if(confirm('Xoá ghi chép này?')) setTantrum(tantrum.filter(y=>y.id!==x.id)); }}>✕</button></div>
+            {x.handling && <div className="muted" style={{fontSize:13,marginTop:3}}>💡 Cách xử lý: {x.handling}</div>}
+            <div className="row" style={{marginTop:6,gap:6}}><span className="muted" style={{fontSize:11}}>{fmtDateVN(x.date)} · Hiệu quả?</span>
+              <button className="pill" style={{background:x.worked===true?'var(--good)':'var(--chip)',color:x.worked===true?'#fff':'var(--chip-tx)'}} onClick={()=>setTanWorked(x.id,true)}>👍 Có</button>
+              <button className="pill" style={{background:x.worked===false?'#b06b6b':'var(--chip)',color:x.worked===false?'#fff':'var(--chip-tx)'}} onClick={()=>setTanWorked(x.id,false)}>👎 Không</button></div>
+          </div>
+        ))}
+        <div className="sec-title">🤝 Câu hỏi cần thống nhất: cách dạy con</div>
+        <div className="muted center" style={{fontSize:11.5,margin:'0 14px 4px'}}>Hai vợ chồng cùng thống nhất để dạy con nhất quán.</div>
+        {PARENTING_QS.map((q,i)=>{ const st=pq[i]||{};
+          return <div key={i} className="item">
+            <div className="row"><span style={{fontSize:16}}>{st.agreed?'✅':'❓'}</span><b className="grow" style={{fontSize:13.5}}>{q}</b></div>
+            <textarea className="inp" style={{marginTop:6,minHeight:48,fontSize:13}} placeholder="Hai đứa thống nhất là…" value={st.note||''} onChange={e=>setPq({...pq,[i]:{...st,note:e.target.value}})}/>
+            <button className="pill" style={{marginTop:6,background:st.agreed?'var(--good)':'var(--chip)',color:st.agreed?'#fff':'var(--chip-tx)'}} onClick={()=>setPq({...pq,[i]:{...st,agreed:!st.agreed}})}>{st.agreed?'✓ Đã thống nhất':'Đánh dấu đã thống nhất'}</button>
+          </div>; })}
       </div>}
     </div>
   );
