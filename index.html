@@ -1830,6 +1830,14 @@ function WeatherCardInner({w,rainy,sel,city}){
 }
 
 /* ============ Catalog "Gợi ý Hà Nội" ============ */
+const NHA={lat:21.0301,lng:105.8210,name:'Núi Trúc, Ba Đình, Hà Nội'};
+function haversine(la1,lo1,la2,lo2){ const R=6371,toR=x=>x*Math.PI/180;
+  const dLa=toR(la2-la1),dLo=toR(lo2-lo1);
+  const a=Math.sin(dLa/2)**2+Math.cos(toR(la1))*Math.cos(toR(la2))*Math.sin(dLo/2)**2;
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)); }
+const priceMid=(p)=>{ if(!p) return 0; if(/miễn phí|free/i.test(p)) return 0; const ns=(p.match(/\d+/g)||[]).map(Number); if(!ns.length) return 0; return (ns[0]+ns[ns.length-1])/2; };
+const isKidSpot=(s)=> s.cat==='ngoaitroi' || s.cat==='vanhoa' || /board game|công viên|sở thú|thuỷ cung|thủy cung|kid|trẻ|vui chơi|aquarium|times city|ecopark|đầm sen|thiếu nhi/i.test((s.n||'')+(s.note||''));
+const distOf=(s)=> (s.lat!=null&&s.lng!=null)? haversine(NHA.lat,NHA.lng,s.lat,s.lng) : null;
 function HanoiCatalog({me,flash}){
   const [,setIdeas]=useLocal('ju.ideas',[]);
   const [,setFood]=useLocal('ju.food',[]);
@@ -1837,8 +1845,11 @@ function HanoiCatalog({me,flash}){
   const [hidden,setHidden]=useLocal('ju.hiddenSpots',[]);
   const [cat,setCat]=useState('');
   const [bud,setBud]=useState('');
+  const [sort,setSort]=useState('near');
   const hide=(s)=>{ setHidden([...hidden,s.n]); flash('Đã ẩn gợi ý: '+s.n); };
-  const list=HANOI_SPOTS.filter(s=>(!cat||s.cat===cat)&&(!bud||s.budget===bud)&&hidden.indexOf(s.n)<0);
+  let list=HANOI_SPOTS.filter(s=>(!cat||s.cat===cat)&&(!bud||s.budget===bud)&&hidden.indexOf(s.n)<0&&(sort!=='kid'||isKidSpot(s)));
+  if(sort==='near') list=list.slice().sort((a,b)=>((distOf(a)??1e9)-(distOf(b)??1e9)));
+  else if(sort==='price') list=list.slice().sort((a,b)=>(priceMid(a.p)-priceMid(b.p)));
   const isFood=(s)=>s.cat==='an'||s.cat==='cafe';
   const info=(s)=>[s.h?'🕘 '+s.h:'', s.p?'💵 '+s.p:''].filter(Boolean).join(' · ');
   const mapsUrl=(s)=> 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(s.n+(/Hà Nội|Gia Lâm|Hưng Yên/i.test(s.area)?', '+s.area:', '+s.area+', Hà Nội'));
@@ -1848,7 +1859,7 @@ function HanoiCatalog({me,flash}){
   const catIcon=(k)=>(HANOI_CATS.find(c=>c.k===k)||{}).icon||'📍';
   return (
     <div>
-      <div className="muted center" style={{fontSize:12,margin:'10px 14px 4px'}}>📍 {HANOI_SPOTS.length} địa điểm thật ở Hà Nội — chạm để lưu hoặc ghim bản đồ. <i>(Giờ & giá chỉ để tham khảo.)</i></div>
+      <div className="muted center" style={{fontSize:12,margin:'10px 14px 4px'}}>📍 {HANOI_SPOTS.length} địa điểm thật ở Hà Nội — khoảng cách tính từ <b>Núi Trúc</b>; bấm <b>⭐ Đánh giá</b> để xem rating thật trên Google Maps. <i>(Giờ & giá tham khảo.)</i></div>
       <div className="filters">
         <button className={cat===''?'on':''} onClick={()=>setCat('')}>Tất cả</button>
         {HANOI_CATS.map(c=><button key={c.k} className={cat===c.k?'on':''} onClick={()=>setCat(c.k)}>{c.icon} {c.name}</button>)}
@@ -1857,17 +1868,23 @@ function HanoiCatalog({me,flash}){
         <button className={bud===''?'on':''} onClick={()=>setBud('')}>Mọi mức</button>
         {BUDGETS.map(b=><button key={b.k} className={bud===b.k?'on':''} onClick={()=>setBud(b.k)}>{b.label}</button>)}
       </div>
-      <div className="row" style={{margin:'8px 14px 0'}}><span className="muted grow" style={{fontSize:11.5}}>{list.length} địa điểm{hidden.length?` · đã ẩn ${hidden.length}`:''}</span>
+      <div className="filters">
+        <button className={sort==='near'?'on':''} onClick={()=>setSort('near')}>📍 Gần → xa</button>
+        <button className={sort==='price'?'on':''} onClick={()=>setSort('price')}>💵 Giá ↑</button>
+        <button className={sort==='kid'?'on':''} onClick={()=>setSort('kid')}>🧸 Hợp trẻ em</button>
+        <button className={sort==='default'?'on':''} onClick={()=>setSort('default')}>Mặc định</button>
+      </div>
+      <div className="row" style={{margin:'8px 14px 0'}}><span className="muted grow" style={{fontSize:11.5}}>{list.length} địa điểm · từ nhà ({NHA.name.split(',')[0]}){hidden.length?` · đã ẩn ${hidden.length}`:''}</span>
         {hidden.length>0 && <button className="muted" style={{fontSize:11.5}} onClick={()=>{ if(confirm('Hiện lại tất cả gợi ý đã ẩn?')) setHidden([]); }}>↩︎ Khôi phục</button>}</div>
       {list.map((s,i)=>(
         <div key={i} className="item">
-          <div className="it-top"><h4>{catIcon(s.cat)} {s.n}</h4></div>
-          <div className="muted" style={{fontSize:12,marginTop:2}}>📍 {s.area}</div>
+          <div className="it-top"><h4>{catIcon(s.cat)} {s.n}{isKidSpot(s)?<span className="pill" style={{marginLeft:6,fontSize:10,padding:'1px 6px',verticalAlign:'middle'}}>🧸 hợp trẻ em</span>:null}</h4></div>
+          <div className="muted" style={{fontSize:12,marginTop:2}}>📍 {s.area}{distOf(s)!=null?` · 📏 ~${distOf(s).toFixed(distOf(s)<10?1:0)} km từ nhà`:''}</div>
           {(s.h||s.p) && <div className="muted" style={{fontSize:12,marginTop:3}}>{s.h?'🕘 '+s.h:''}{s.h&&s.p?'  ·  ':''}{s.p?'💵 '+s.p+(isFood(s)&&s.p.indexOf('/')<0?'/người':''):''}</div>}
           {s.note && <div className="it-note">{s.note}</div>}
           <div className="it-meta">
             <span className="pill">{budgetLabel(s.budget)}</span>
-            <a className="pill" href={mapsUrl(s)} target="_blank" rel="noreferrer" style={{textDecoration:'none'}}>🗺️ Chỉ đường</a>
+            <a className="pill" href={mapsUrl(s)} target="_blank" rel="noreferrer" style={{textDecoration:'none'}}>⭐ Đánh giá · chỉ đường</a>
             <span className="grow"></span>
             <button className="pill" onClick={()=>isFood(s)?addFood(s):addIdea(s)}>{isFood(s)?'🍽️ Lưu Quán':'💡 Lưu'}</button>
             {s.lat!=null && <button className="pill" onClick={()=>pin(s)}>📍 Ghim</button>}
@@ -2883,56 +2900,93 @@ function SpiritualSection(){
 function WeeklyMenu({me}){
   const [plan,setPlan]=useLocal('ju.menuPlan',null);
   const [shop,setShop]=useLocal('ju.shop',[]);
+  const [prefs,setPrefs]=useLocal('ju.dishPrefs',{});
+  const [favs,setFavs]=useLocal('ju.favDishes',[]);
   const [goal,setGoal]=useState((plan&&plan.goal)||'cb');
   const [recipe,setRecipe]=useState(null);
-  const dishByName=(n)=>DISHES.find(d=>d.n===n);
-  const matchG=(d)=> goal==='cb'? true : d.g.indexOf(goal)>=0;
+  const [favOpen,setFavOpen]=useState(false);
+  const [favN,setFavN]=useState(''); const [favT,setFavT]=useState('man');
+  const allDishes=()=>DISHES.concat(favs.map(f=>({n:f.n,t:f.t,g:['cb'],ing:[],r:'(Món bạn tự thêm — chưa có công thức sẵn. Bấm “Xem video” để tham khảo cách làm.)',custom:true})));
+  const dishByName=(n)=>allDishes().find(d=>d.n===n);
+  const matchG=(d)=> goal==='cb'? true : (d.g||[]).indexOf(goal)>=0;
+  const rate=(name,v)=>{ const n={...prefs}; n[name]= n[name]===v?0:v; if(!n[name]) delete n[name]; setPrefs(n); };
+  const addFav=()=>{ const nm=favN.trim(); if(!nm) return; if(!favs.find(f=>f.n===nm)) setFavs([{n:nm,t:favT},...favs]); setFavN(''); celebrate(['❤️']); };
+  const shuffle=(a)=>a.slice().sort(()=>Math.random()-0.5);
+  const mkPool=(t)=>{ const base=allDishes();
+    let a=base.filter(d=>d.t===t&&matchG(d)&&prefs[d.n]!==-1);
+    if(a.length<(t==='man'?2:1)) a=base.filter(d=>d.t===t&&prefs[d.n]!==-1); // nới mục tiêu nếu thiếu món
+    if(!a.length) a=base.filter(d=>d.t===t); // cùng lắm bỏ qua cả "không thích"
+    const liked=a.filter(d=>prefs[d.n]===1); return liked.concat(liked).concat(a); }; // ưu tiên món thích
   const gen=()=>{
-    const mans=DISHES.filter(d=>d.t==='man'&&matchG(d)), canhs=DISHES.filter(d=>d.t==='canh'&&matchG(d));
-    const shuffle=(a)=>a.slice().sort(()=>Math.random()-0.5);
-    let mP=shuffle(mans), cP=shuffle(canhs); const days=[];
-    for(let i=0;i<7;i++){ if(mP.length<2) mP=shuffle(mans); if(cP.length<1) cP=shuffle(canhs);
-      const m1=mP.pop(), m2=mP.pop(), c=cP.pop();
+    const mRef={a:shuffle(mkPool('man'))}, cRef={a:shuffle(mkPool('canh'))};
+    const popNot=(ref,ex)=>{ for(let k=ref.a.length-1;k>=0;k--){ if(!ex.has(ref.a[k].n)) return ref.a.splice(k,1)[0]; } return ref.a.pop(); };
+    const days=[];
+    for(let i=0;i<7;i++){ if(mRef.a.length<2) mRef.a=shuffle(mkPool('man')); if(cRef.a.length<1) cRef.a=shuffle(mkPool('canh'));
+      const ex=new Set(); const m1=popNot(mRef,ex); if(m1)ex.add(m1.n); const m2=popNot(mRef,ex); const c=cRef.a.pop();
       days.push({man:[m1&&m1.n,m2&&m2.n].filter(Boolean),canh:c?c.n:''}); }
-    setPlan({goal,days}); celebrate(['🍳','😋','✨']);
+    setPlan({goal,days}); celebrate(['🍱','😋','✨']);
   };
   const toShop=()=>{ if(!plan) return; const ings=new Set();
-    plan.days.forEach(d=>{ (d.man||[]).concat([d.canh]).forEach(n=>{ const dish=dishByName(n); if(dish) dish.ing.forEach(x=>ings.add(x)); }); });
+    plan.days.forEach(d=>{ (d.man||[]).concat([d.canh]).forEach(n=>{ const dish=dishByName(n); if(dish) (dish.ing||[]).forEach(x=>ings.add(x)); }); });
     const have=new Set(shop.map(s=>s.text)); const add=[...ings].filter(x=>!have.has(x)).map(x=>({id:uid(),text:x,by:me||'a',done:false}));
     setShop([...add,...shop]); celebrate(['🛒']); alert('Đã thêm '+add.length+' nguyên liệu vào mục Đi chợ.'); };
   const goalLabel=(k)=>(MENU_GOALS.find(x=>x.k===k)||{}).label||'';
+  const dislikedNames=Object.keys(prefs).filter(k=>prefs[k]===-1);
   return (
     <div>
-      <div className="muted center" style={{fontSize:12.5,margin:'10px 14px 4px'}}>🍳 Thực đơn tối cả tuần — mỗi ngày 2 món mặn + 1 canh. Chọn mục tiêu rồi tạo.</div>
+      <div className="muted center" style={{fontSize:12.5,margin:'10px 14px 4px'}}>🍱 Thực đơn tối cả tuần — mỗi ngày 2 món mặn + 1 canh, đủ chất. Đánh dấu 👍/👎 để lần sau gợi ý hợp khẩu vị hơn.</div>
       <div className="filters">{MENU_GOALS.map(g=><button key={g.k} className={goal===g.k?'on':''} onClick={()=>setGoal(g.k)}>{g.icon} {g.label}</button>)}</div>
       <div className="row" style={{margin:'10px 14px',gap:8}}>
         <button className="btn grow" onClick={gen}>🎲 Tạo thực đơn tuần</button>
+        <button className="btn sm soft" onClick={()=>setFavOpen(true)}>❤️ Món</button>
         {plan && <button className="btn sm soft" onClick={toShop}>🛒 Ra chợ</button>}
       </div>
-      {!plan && <div className="empty"><span className="big">🍳</span>Bấm “Tạo thực đơn tuần” để có 7 ngày đủ chất, kèm công thức & danh sách mua.</div>}
+      {!plan && <div className="empty"><span className="big">🍱</span>Bấm “Tạo thực đơn tuần” để có 7 ngày đủ chất, kèm công thức & danh sách mua.</div>}
       {plan && <div className="muted center" style={{fontSize:11.5,marginBottom:4}}>Mục tiêu: {goalLabel(plan.goal)} · chạm món để xem công thức 📖</div>}
       {plan && plan.days.map((d,i)=>(
         <div key={i} className="item">
           <div className="it-top"><h4>{DOW[i]}</h4></div>
           {(d.man||[]).map((n,j)=>(
-            <div key={j} className="row" style={{padding:'3px 0',cursor:'pointer'}} onClick={()=>setRecipe(dishByName(n))}>
-              <span className="muted" style={{width:48,fontSize:11,flex:'0 0 auto'}}>Mặn {j+1}</span>
-              <span className="grow" style={{fontSize:14}}>🍖 {n}</span><span className="muted">📖</span></div>
+            <div key={j} className="row" style={{padding:'3px 0'}}>
+              <span className="muted" style={{width:42,fontSize:11,flex:'0 0 auto'}}>Mặn {j+1}</span>
+              <span className="grow" style={{fontSize:14,cursor:'pointer'}} onClick={()=>setRecipe(dishByName(n))}>🍖 {n} 📖</span>
+              <button onClick={()=>rate(n,1)} style={{fontSize:14,opacity:prefs[n]===1?1:.4}}>👍</button>
+              <button onClick={()=>rate(n,-1)} style={{fontSize:14,opacity:prefs[n]===-1?1:.4}}>👎</button></div>
           ))}
-          <div className="row" style={{padding:'3px 0',cursor:'pointer'}} onClick={()=>setRecipe(dishByName(d.canh))}>
-            <span className="muted" style={{width:48,fontSize:11,flex:'0 0 auto'}}>Canh</span>
-            <span className="grow" style={{fontSize:14}}>🥣 {d.canh}</span><span className="muted">📖</span></div>
+          <div className="row" style={{padding:'3px 0'}}>
+            <span className="muted" style={{width:42,fontSize:11,flex:'0 0 auto'}}>Canh</span>
+            <span className="grow" style={{fontSize:14,cursor:'pointer'}} onClick={()=>setRecipe(dishByName(d.canh))}>🥣 {d.canh} 📖</span>
+            <button onClick={()=>rate(d.canh,1)} style={{fontSize:14,opacity:prefs[d.canh]===1?1:.4}}>👍</button>
+            <button onClick={()=>rate(d.canh,-1)} style={{fontSize:14,opacity:prefs[d.canh]===-1?1:.4}}>👎</button></div>
         </div>
       ))}
       {recipe && <Sheet title={recipe.n} onClose={()=>setRecipe(null)}>
-        <div className="muted" style={{fontSize:12,marginBottom:8}}>{recipe.t==='canh'?'🥣 Món canh':'🍖 Món mặn'} · {recipe.g.map(g=>goalLabel(g)).filter(Boolean).join(', ')}</div>
-        <b style={{fontSize:13.5}}>Nguyên liệu (2 người):</b>
-        <ul style={{margin:'6px 0 12px',paddingLeft:18,fontSize:13.5,lineHeight:1.6}}>{recipe.ing.map((x,i)=><li key={i}>{x}</li>)}</ul>
+        <div className="row" style={{marginBottom:8}}>
+          <span className="muted grow" style={{fontSize:12}}>{recipe.t==='canh'?'🥣 Món canh':'🍖 Món mặn'} · {(recipe.g||[]).map(g=>goalLabel(g)).filter(Boolean).join(', ')}</span>
+          <button className="pill" style={{background:prefs[recipe.n]===1?'var(--good)':'var(--chip)',color:prefs[recipe.n]===1?'#fff':'var(--chip-tx)'}} onClick={()=>rate(recipe.n,1)}>👍 Thích</button>
+          <button className="pill" style={{background:prefs[recipe.n]===-1?'#b06b6b':'var(--chip)',color:prefs[recipe.n]===-1?'#fff':'var(--chip-tx)'}} onClick={()=>rate(recipe.n,-1)}>👎</button>
+        </div>
+        {(recipe.ing||[]).length>0 && <><b style={{fontSize:13.5}}>Nguyên liệu (2 người):</b>
+          <ul style={{margin:'6px 0 12px',paddingLeft:18,fontSize:13.5,lineHeight:1.6}}>{recipe.ing.map((x,i)=><li key={i}>{x}</li>)}</ul></>}
         <b style={{fontSize:13.5}}>Cách làm:</b>
         <div style={{fontSize:13.5,marginTop:6,lineHeight:1.7,whiteSpace:'pre-wrap'}}>{recipe.r}</div>
         <a className="btn" style={{display:'block',textAlign:'center',marginTop:14,textDecoration:'none'}}
           href={'https://www.youtube.com/results?search_query='+encodeURIComponent('cách làm '+recipe.n)} target="_blank" rel="noreferrer">🎬 Xem video hướng dẫn</a>
         <div className="muted center" style={{fontSize:11,marginTop:6}}>Mở YouTube với nhiều video hướng dẫn món này.</div>
+      </Sheet>}
+      {favOpen && <Sheet title="❤️ Sở thích món ăn" onClose={()=>setFavOpen(false)}>
+        <b style={{fontSize:13.5}}>Thêm món ưa thích của nhà mình</b>
+        <div className="muted" style={{fontSize:12,margin:'4px 0 8px'}}>Món bạn thêm sẽ được ưu tiên đưa vào thực đơn tuần.</div>
+        <div className="row" style={{gap:6}}>
+          <input className="inp grow" placeholder="Tên món (vd: Gà nướng mật ong)" value={favN} onChange={e=>setFavN(e.target.value)} onKeyDown={e=>{ if(e.key==='Enter') addFav(); }}/>
+          <select className="inp" value={favT} onChange={e=>setFavT(e.target.value)} style={{width:84}}><option value="man">Mặn</option><option value="canh">Canh</option></select>
+          <button className="btn sm" onClick={addFav}>＋</button>
+        </div>
+        {favs.length>0 && <div style={{margin:'10px 0'}}>{favs.map((f,i)=>(
+          <span key={i} className="pill" style={{margin:'3px 6px 3px 0',padding:'7px 11px',fontSize:12.5}}>{f.t==='canh'?'🥣':'🍖'} {f.n} <span onClick={()=>setFavs(favs.filter(x=>x.n!==f.n))} style={{cursor:'pointer',marginLeft:4}}>✕</span></span>
+        ))}</div>}
+        {dislikedNames.length>0 && <><div className="sec-title" style={{marginLeft:0}}>👎 Món đang ẩn (không gợi ý)</div>
+          <div>{dislikedNames.map(n=>(<span key={n} className="pill" style={{margin:'3px 6px 3px 0',padding:'7px 11px',fontSize:12.5,background:'var(--chip)'}}>{n} <span onClick={()=>rate(n,-1)} style={{cursor:'pointer',marginLeft:4}}>↩︎</span></span>))}</div></>}
       </Sheet>}
     </div>
   );
@@ -3199,6 +3253,17 @@ function Events({people,me}){
   const makeTet=()=>{ setEvents([{id:uid(),title:'🧧 Chuẩn bị Tết '+tetYr,date:tetISO,note:'Tết Nguyên Đán — việc cần làm trước Tết',by:me,tet:true,tetYear:tetYr,
     todos:(PROJ_TASK_SUGGEST.tet||[]).map(t=>({id:uid(),text:t,done:false})),createdAt:Date.now()},...events]); celebrate(['🧧','🎉','✨']); };
 
+  // #6 Tự động nhắc: SN gia đình nhỏ (≤7 ngày) + Mùng 1/Rằm (≤2 ngày)
+  const [dates]=useLocal('ju.dates',[]);
+  const hasAuto=(mk)=>events.some(e=>e.auto===mk);
+  const autoBdays=dates.filter(x=>sideOf(x)==='gia_dinh_nho'&&kindOf(x)==='birthday').map(x=>({x,d:dnext(x)})).filter(o=>o.d!=null&&o.d>=0&&o.d<=7).sort((a,b)=>a.d-b.d);
+  const autoRam=(()=>{ try{ return upcomingSpiritual(2).filter(h=>/Mùng 1|Rằm/i.test(h.name)); }catch(e){ return []; } })();
+  const bdayMk=(o)=>'bday-'+o.x.id+'-'+todayISO().slice(0,4);
+  const makeBday=(o)=>{ const mk=bdayMk(o); if(hasAuto(mk)) return; setEvents(p=>[{id:uid(),title:'🎂 Sinh nhật '+o.x.title,date:dnextDate(o.x),note:'Chuẩn bị quà & đặt nhà hàng',by:me,auto:mk,
+    todos:['Mua quà','Đặt bàn nhà hàng','Đặt bánh sinh nhật'].map(t=>({id:uid(),text:t,done:false})),createdAt:Date.now()},...p]); celebrate(['🎂','🎁']); };
+  const makeRam=(h)=>{ const mk='ram-'+h.date; if(hasAuto(mk)) return; setEvents(p=>[{id:uid(),title:h.icon+' '+h.name+' — sắm đồ thắp hương',date:h.date,note:'Dậy sớm mua hoa quả, vàng hương',by:me,auto:mk,
+    todos:['Mua hoa tươi','Mua hoa quả','Mua vàng / hương','Bày mâm thắp hương sáng sớm'].map(t=>({id:uid(),text:t,done:false})),createdAt:Date.now()},...p]); celebrate(['🌸']); };
+
   const shown=events.slice().sort((a,b)=>(a.date||'9').localeCompare(b.date||'9'));
   return (
     <div>
@@ -3210,6 +3275,20 @@ function Events({people,me}){
           <span className="grow" style={{fontSize:13.5}}>Còn <b>{tetD} ngày</b> đến Tết {tetYr}! Tạo ngay danh sách việc chuẩn bị nhé.</span></div>
         <button className="btn" style={{marginTop:8}} onClick={makeTet}>🧧 Tạo kế hoạch chuẩn bị Tết</button>
       </div>}
+      {autoBdays.map(o=>{ const made=hasAuto(bdayMk(o));
+        return <div key={o.x.id} className="card" style={{borderLeft:'4px solid var(--primary)'}}>
+          <div className="row" style={{gap:8}}><span style={{fontSize:20}}>🎂</span>
+            <span className="grow" style={{fontSize:13.5}}>{o.d===0?'Hôm nay':o.d===1?'Ngày mai':'Còn '+o.d+' ngày'} sinh nhật <b>{o.x.title}</b> — chuẩn bị quà & đặt nhà hàng nhé!</span></div>
+          {made? <div className="muted" style={{fontSize:12,marginTop:6}}>✓ Đã thêm việc chuẩn bị vào danh sách bên dưới.</div>
+               : <button className="btn" style={{marginTop:8}} onClick={()=>makeBday(o)}>🎁 Tạo việc chuẩn bị</button>}
+        </div>; })}
+      {autoRam.map(h=>{ const made=hasAuto('ram-'+h.date);
+        return <div key={h.date} className="card" style={{borderLeft:'4px solid var(--gold,#caa24a)'}}>
+          <div className="row" style={{gap:8}}><span style={{fontSize:20}}>{h.icon}</span>
+            <span className="grow" style={{fontSize:13.5}}>{h.d===0?'Hôm nay':h.d===1?'Ngày mai':'Còn '+h.d+' ngày'} là <b>{h.name}</b> — dậy sớm mua đồ thắp hương.</span></div>
+          {made? <div className="muted" style={{fontSize:12,marginTop:6}}>✓ Đã thêm việc sắm lễ bên dưới.</div>
+               : <button className="btn" style={{marginTop:8}} onClick={()=>makeRam(h)}>🛒 Tạo việc sắm lễ</button>}
+        </div>; })}
       {showCal && <MiniCalendar/>}
       {shown.length===0 && <div className="empty"><span className="big">📅</span>Sinh nhật, du lịch, kỷ niệm… kèm checklist chuẩn bị.</div>}
       {shown.map(e=>{
@@ -3311,7 +3390,45 @@ const GIFT_IDEAS={
 };
 function giftIdeas(gender,age){ const band=GIFT_IDEAS[bandOf(age)]||GIFT_IDEAS.young;
   const g=gender==='nam'?band.nam:gender==='nu'?band.nu:[]; return [...(g||[]),...band.chung]; }
+function DatesCalendar({dates}){
+  const now=new Date();
+  const [ym,setYm]=useState({y:now.getFullYear(),m:now.getMonth()});
+  const [sel,setSel]=useState(null);
+  const marks={}; const put=(d,e)=>{ (marks[d]=marks[d]||[]).push(e); };
+  dates.forEach(e=>{
+    if(e.lunar&&e.lunarDay&&e.lunarMonth){ const r=lunar2Solar(e.lunarDay,e.lunarMonth,ym.y,0,7); if(r&&r[2]&&r[1]-1===ym.m) put(r[0],e); return; }
+    if(!e.date) return; const p=e.date.split('-').map(Number); if(p[1]-1===ym.m) put(p[2],e);
+  });
+  const startDow=(new Date(ym.y,ym.m,1).getDay()+6)%7, daysIn=new Date(ym.y,ym.m+1,0).getDate();
+  const cells=[]; for(let i=0;i<startDow;i++) cells.push(null); for(let d=1;d<=daysIn;d++) cells.push(d);
+  const isToday=(d)=>ym.y===now.getFullYear()&&ym.m===now.getMonth()&&d===now.getDate();
+  const moveM=(x)=>{ let m=ym.m+x,y=ym.y; if(m<0){m=11;y--;} if(m>11){m=0;y++;} setYm({y,m}); setSel(null); };
+  const MN=['Tháng 1','Tháng 2','Tháng 3','Tháng 4','Tháng 5','Tháng 6','Tháng 7','Tháng 8','Tháng 9','Tháng 10','Tháng 11','Tháng 12'];
+  return (
+    <div className="card">
+      <div className="row"><button className="iconbtn" onClick={()=>moveM(-1)}>‹</button>
+        <b className="grow" style={{textAlign:'center'}}>{MN[ym.m]} {ym.y}</b>
+        <button className="iconbtn" onClick={()=>moveM(1)}>›</button></div>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(7,1fr)',gap:2,marginTop:8,textAlign:'center'}}>
+        {['T2','T3','T4','T5','T6','T7','CN'].map(w=><div key={w} className="muted" style={{fontSize:10,fontWeight:700}}>{w}</div>)}
+        {cells.map((d,i)=> d==null? <div key={i}></div> : (
+          <div key={i} onClick={()=>marks[d]&&setSel({d,items:marks[d]})}
+            style={{padding:'3px 0',borderRadius:8,cursor:marks[d]?'pointer':'default',background:isToday(d)?'var(--chip)':'transparent',border:(sel&&sel.d===d)?'1.5px solid var(--primary)':'1px solid transparent'}}>
+            <div style={{fontSize:12}}>{d}</div>
+            <div style={{fontSize:10,lineHeight:1,height:11,overflow:'hidden'}}>{(marks[d]||[]).slice(0,2).map((e,j)=><span key={j}>{e.icon||'🎂'}</span>)}</div>
+          </div>
+        ))}
+      </div>
+      {sel && <div style={{marginTop:8,borderTop:'1px solid var(--line)',paddingTop:8}}>
+        <b style={{fontSize:13}}>Ngày {sel.d}/{ym.m+1}:</b>
+        {sel.items.map((e,i)=><div key={i} style={{fontSize:12.5,padding:'2px 0'}}>{e.icon||'🎂'} {e.title}{e.lunar?` · ${e.lunarDay}/${e.lunarMonth} ÂL`:''}{sideOf(e)!=='khac'?` · ${sideLabel(sideOf(e))}`:''}</div>)}
+      </div>}
+      <div className="muted center" style={{fontSize:10.5,marginTop:6}}>Chạm ngày có biểu tượng để xem chi tiết.</div>
+    </div>
+  );
+}
 function ImportantDates({people,me}){
+  const [calOpen,setCalOpen]=useState(false);
   const [dates,setDates]=useLocal('ju.dates',[]);
   const [open,setOpen]=useState(false);
   const [edit,setEdit]=useState(null);
@@ -3375,9 +3492,11 @@ function ImportantDates({people,me}){
   return (
     <div>
       <div className="row" style={{margin:'10px 14px 4px',gap:6}}><span className="grow muted" style={{fontSize:13}}>Ngày lặp lại mỗi năm — nhắc trước</span>
+        <button className={'btn sm '+(calOpen?'':'soft')} onClick={()=>setCalOpen(v=>!v)}>🗓️ Lịch</button>
         <button className="btn sm soft" onClick={()=>setExportOpen(true)}>📤 Xuất</button>
         <button className="btn sm soft" onClick={()=>{setBulkMsg('');setBulkOpen(true);}}>📋 Nhập</button>
         <button className="btn sm" onClick={()=>{setEdit(null);setOpen(true);}}>＋ Thêm</button></div>
+      {calOpen && <DatesCalendar dates={dates}/>}
       <div className="filters">
         <button className={fKind==='all'?'on':''} onClick={()=>setFKind('all')}>Tất cả</button>
         {DATE_KINDS.map(k=><button key={k.k} className={fKind===k.k?'on':''} onClick={()=>setFKind(k.k)}>{k.icon} {k.label}</button>)}
