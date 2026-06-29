@@ -2866,18 +2866,20 @@ function PeriodTracker({people}){
   );
 }
 const VEG_RESTAURANTS=[
-  {n:'Chay Vị Lai',a:'177 Bùi Thị Xuân, Hai Bà Trưng'},
-  {n:'Veggie Castle',a:'7 Yên Ninh, Ba Đình (& Âu Cơ, Ngọc Khánh)'},
-  {n:'Ưu Đàm Chay',a:'55 Nguyễn Du, Hai Bà Trưng'},
-  {n:'Buffet Chay An Lạc',a:'109 Trần Hưng Đạo, Hoàn Kiếm'},
-  {n:'Tịnh Thực Quán',a:'43A Nguyên Hồng, Đống Đa'},
-  {n:'Buffet Chay Hương Thiền',a:'261 Xã Đàn, Đống Đa'},
-  {n:'Sadhu Buffet Chay',a:'Tầng 3 Lotte Mall Tây Hồ, 272 Võ Chí Công'},
-  {n:'D\'ve Buffet Chay',a:'83 Mai Hắc Đế, Hai Bà Trưng'},
-  {n:'Cơm Chay Nàng Tấm',a:'79A Trần Hưng Đạo, Hoàn Kiếm'},
-  {n:'Tuệ Tâm Quán',a:'Ngõ 71 Láng Hạ, Ba Đình'},
-  {n:'Om Tara Vegan',a:'Golden Palm, 21 Lê Văn Lương, Thanh Xuân'},
-  {n:'Peace Vegan',a:'Ngõ 54 Nguyễn Khuyến, Hà Đông'},
+  {n:'Chay Vị Lai',a:'177 Bùi Thị Xuân, Hai Bà Trưng',r:4.4},
+  {n:'Veggie Castle',a:'7 Yên Ninh, Ba Đình (& Ngọc Khánh, Âu Cơ)',r:4.5},
+  {n:'Ưu Đàm Chay',a:'55 Nguyễn Du, Hai Bà Trưng',r:4.4},
+  {n:'Buffet Chay An Lạc',a:'109 Trần Hưng Đạo, Hoàn Kiếm',r:4.2},
+  {n:'Tịnh Thực Quán',a:'43A Nguyên Hồng, Đống Đa',r:4.4},
+  {n:'Buffet Chay Hương Thiền',a:'261 Xã Đàn, Đống Đa',r:4.2},
+  {n:'Sadhu Buffet Chay',a:'Tầng 3 Lotte Mall Tây Hồ, 272 Võ Chí Công',r:4.5},
+  {n:'D\'ve Buffet Chay',a:'83 Mai Hắc Đế, Hai Bà Trưng',r:4.3},
+  {n:'Cơm Chay Nàng Tấm',a:'79A Trần Hưng Đạo, Hoàn Kiếm',r:4.3},
+  {n:'Tuệ Tâm Quán',a:'Ngõ 71 Láng Hạ, Ba Đình',r:4.3},
+  {n:'Om Tara Vegan',a:'Golden Palm, 21 Lê Văn Lương, Thanh Xuân',r:4.4},
+  {n:'Peace Vegan',a:'Ngõ 54 Nguyễn Khuyến, Hà Đông',r:4.5},
+  {n:'Phúc Nguyên Hưng',a:'Ngõ 140 Tố Hữu, Hà Đông',r:4.4},
+  {n:'Loving Hut',a:'Nhiều cơ sở (Cầu Giấy, Hai Bà Trưng…)',r:4.3},
 ];
 const SUTRAS=[
   {title:'🪷 Bát Nhã Tâm Kinh',sub:'Tinh hoa trí tuệ Bát Nhã — tụng thường ngày, an định tâm.',
@@ -2886,8 +2888,18 @@ const SUTRAS=[
    text:'CHÚ ĐẠI BI — Thiên Thủ Thiên Nhãn Vô Ngại Đại Bi Tâm Đà La Ni\n\n1. Nam mô hắc ra đát na đa ra dạ da\n2. Nam mô a rị da\n3. Bà lô yết đế thước bát ra da\n4. Bồ đề tát đỏa bà da\n5. Ma ha tát đỏa bà da\n6. Ma ha ca lô ni ca da\n7. Án\n8. Tát bàn ra phạt duệ\n9. Số đát na đát tỏa\n10. Nam mô tất kiết lật đỏa y mông a rị da\n11. Bà lô yết đế thất Phật ra lăng đà bà\n12. Nam mô na ra cẩn trì\n13. Hê rị ma ha bàn đa sa mế\n14. Tát bà a tha đậu du bằng\n15. A thệ dựng\n16. Tát bà tát đa (na ma bà tát đa) na ma bà già\n17. Ma phạt đạt đậu\n18. Đát điệt tha\n19. Án a bà lô hê\n20. Lô ca đế\n21. Ca ra đế\n22. Di hê rị\n23. Ma ha bồ đề tát đỏa\n24. Tát bà tát bà\n25. Ma ra ma ra\n26. Ma hê ma hê rị đà dựng\n27. Cu lô cu lô yết mông\n28. Độ lô độ lô phạt xà da đế\n29. Ma ha phạt xà da đế\n30. Đà ra đà ra\n31. Địa rị ni\n32. Thất Phật ra da\n33. Giá ra giá ra\n34. Mạ mạ phạt ma ra\n35. Mục đế lệ\n36. Y hê y hê\n37. Thất na thất na\n38. A ra sâm Phật ra xá lợi\n39. Phạt sa phạt sâm\n40. Phật ra xá da\n41. Hô lô hô lô ma ra\n42. Hô lô hô lô hê rị\n43. Ta ra ta ra\n44. Tất rị tất rị\n45. Tô rô tô rô\n46. Bồ đề dạ bồ đề dạ\n47. Bồ đà dạ bồ đà dạ\n48. Di đế rị dạ\n49. Na ra cẩn trì\n50. Địa rị sắc ni na\n51. Ba dạ ma na\n52. Ta bà ha\n53. Tất đà dạ\n54. Ta bà ha\n55. Ma ha tất đà dạ\n56. Ta bà ha\n57. Tất đà du nghệ\n58. Thất bàn ra dạ\n59. Ta bà ha\n60. Na ra cẩn trì\n61. Ta bà ha\n62. Ma ra na ra\n63. Ta bà ha\n64. Tất ra tăng a mục khê da\n65. Ta bà ha\n66. Ta bà ma ha a tất đà dạ\n67. Ta bà ha\n68. Giả kiết ra a tất đà dạ\n69. Ta bà ha\n70. Ba đà ma yết tất đà dạ\n71. Ta bà ha\n72. Na ra cẩn trì bàn đà ra dạ\n73. Ta bà ha\n74. Ma bà lị thắng yết ra dạ\n75. Ta bà ha\n76. Nam mô hắc ra đát na đa ra dạ da\n77. Nam mô a rị da\n78. Bà lô yết đế\n79. Thước bàn ra dạ\n80. Ta bà ha\n81. Án tất điện đô\n82. Mạn đa ra\n83. Bạt đà dạ\n84. Ta bà ha.'},
   {title:'🙏 Chú Vãng Sanh',sub:'Vãng Sanh Tịnh Độ Thần Chú — nguyện sinh về cõi an lành.',
    text:'VÃNG SANH TỊNH ĐỘ THẦN CHÚ\n\nNam mô a di đa bà dạ\nĐa tha dà đa dạ\nĐa địa dạ tha.\nA di rị đô bà tỳ\nA di rị đa tất đam bà tỳ\nA di rị đa tỳ ca lan đế\nA di rị đa tỳ ca lan đa\nDà di nị, dà dà na\nChỉ đa ca lệ ta bà ha. (3 lần)'},
-  {title:'☸️ Niệm Phật & các kinh khác',sub:'Gợi ý thực hành hằng ngày.',
-   text:'NIỆM PHẬT\nThành tâm niệm “Nam mô A Di Đà Phật” hoặc “Nam mô Quán Thế Âm Bồ Tát” — bất cứ lúc nào, giúp tâm an, bớt lo phiền.\n\nCÁC KINH QUAN TRỌNG NÊN TỤNG (tìm bản đầy đủ trên mạng / chùa):\n• Kinh A Di Đà — về cõi Tịnh Độ, pháp môn niệm Phật.\n• Kinh Phổ Môn (Quán Thế Âm) — cầu bình an, cứu khổ cứu nạn.\n• Kinh Vu Lan & Báo Hiếu — lòng hiếu với cha mẹ (rằm tháng 7).\n• Kinh Dược Sư — cầu tiêu tai, khỏe mạnh.\n• Sám Hối Hồng Danh — sám hối, làm mới thân tâm.\n\nLƯU Ý: trước khi tụng nên rửa tay, súc miệng, ăn mặc chỉnh tề, giữ tâm thanh tịnh.'},
+  {title:'☸️ Niệm Phật',sub:'Pháp tu đơn giản, hành trì mọi lúc.',
+   text:'NIỆM PHẬT\nThành tâm niệm “Nam mô A Di Đà Phật” hoặc “Nam mô Quán Thế Âm Bồ Tát” — bất cứ lúc nào, giúp tâm an, bớt lo phiền.\n\nLƯU Ý: trước khi tụng kinh nên rửa tay, súc miệng, ăn mặc chỉnh tề, giữ tâm thanh tịnh.'},
+  {title:'🌅 Kinh A Di Đà',sub:'Về cõi Tịnh Độ, pháp môn niệm Phật.',q:'Kinh A Di Đà toàn văn tụng',
+   text:'PHẬT THUYẾT A DI ĐÀ KINH (phần tinh yếu)\n\nĐức Phật dạy ngài Xá Lợi Phất: Từ đây qua phương Tây, cách mười muôn ức cõi Phật, có thế giới tên là Cực Lạc, giáo chủ là Đức Phật A Di Đà; nơi đó chúng sanh không có các khổ, chỉ hưởng những điều vui.\n\nXá Lợi Phất! Nếu có thiện nam, thiện nữ nghe nói về Đức Phật A Di Đà rồi CHẤP TRÌ DANH HIỆU — một ngày, hai ngày… cho đến bảy ngày, NHẤT TÂM BẤT LOẠN; thì khi lâm chung, Phật A Di Đà cùng chư Thánh chúng hiện ra trước mặt, người ấy tâm không điên đảo, liền được vãng sanh về cõi Cực Lạc.\n\nNiệm: NAM MÔ A DI ĐÀ PHẬT.\n\n(Đây là phần tinh yếu thường tụng — bấm “Đọc toàn văn” bên dưới để có bản đầy đủ.)'},
+  {title:'🪷 Kinh Phổ Môn (Quán Thế Âm)',sub:'Cầu bình an, cứu khổ cứu nạn.',q:'Kinh Phổ Môn Quán Thế Âm toàn văn',
+   text:'PHẨM PHỔ MÔN — QUÁN THẾ ÂM BỒ TÁT (phần tinh yếu)\n\nNếu có vô lượng chúng sanh đang chịu các khổ não, nghe danh hiệu Quán Thế Âm Bồ Tát mà một lòng XƯNG NIỆM, thì Bồ Tát tức thì quán xét tiếng kêu cầu ấy, khiến tất cả đều được giải thoát.\n\nVào lửa, lửa chẳng đốt; trôi nước lớn, liền được chỗ cạn; gặp oán tặc, lòng dữ tự tan… đều nhờ sức uy thần của Bồ Tát.\n\nKỆ:\nDiệu âm, Quán Thế Âm,\nPhạm âm, Hải triều âm,\nTiếng nhiệm hơn thế gian,\nCho nên thường phải niệm.\n\nNiệm: NAM MÔ QUÁN THẾ ÂM BỒ TÁT.\n\n(Phần tinh yếu — đọc toàn văn ở link bên dưới.)'},
+  {title:'🕯️ Kinh Vu Lan & Báo Hiếu',sub:'Lòng hiếu với cha mẹ (rằm tháng 7).',q:'Kinh Vu Lan Báo Hiếu toàn văn',
+   text:'KINH VU LAN — BÁO HIẾU (phần tinh yếu)\n\nNgài Đại Mục Kiền Liên tu chứng thần thông, thấy mẹ đọa làm ngạ quỷ đói khổ. Ngài dâng cơm nhưng cơm hóa thành than lửa. Đức Phật dạy: một mình con không cứu được; phải nhờ uy lực chư Tăng mười phương.\n\nNgày Rằm tháng Bảy (lễ Tự Tứ), sắm sửa cúng dường Tam Bảo và chư Tăng, hồi hướng công đức thì cha mẹ nhiều đời được nhẹ nghiệp, siêu thoát.\n\nÝ NGHĨA: nhắc con cháu giữ lòng HIẾU — báo đáp công ơn cha mẹ còn sống và đã khuất. Mùa Vu Lan nhớ về thăm, chăm sóc, làm việc thiện hồi hướng cho cha mẹ.\n\n(Phần tinh yếu — đọc toàn văn ở link bên dưới.)'},
+  {title:'💊 Kinh Dược Sư',sub:'Cầu tiêu tai, khỏe mạnh, an lành.',q:'Kinh Dược Sư bản nguyện công đức toàn văn',
+   text:'KINH DƯỢC SƯ — Bản Nguyện Công Đức (phần tinh yếu)\n\nĐức Phật Dược Sư Lưu Ly Quang Như Lai ngự cõi Tịnh Lưu Ly phương Đông; khi còn tu hạnh Bồ Tát đã phát MƯỜI HAI ĐẠI NGUYỆN cứu độ chúng sanh: trị lành bệnh tật, đủ ăn mặc, thân tướng trang nghiêm, thoát khổ nạn, được giải thoát…\n\nTrì niệm danh hiệu và chú Dược Sư giúp tiêu trừ tai ách, thân tâm khỏe mạnh, tăng phước thọ.\n\nDƯỢC SƯ QUÁN ĐẢNH CHÂN NGÔN:\nNam mô bạc già phạt đế, bệ sát xã, lũ lô thích lưu ly, bác lặc bà, hắc ra xà dã. Đát tha yết đa da, a ra hắc đế. Tam miệu tam bột đà da, đát điệt tha. Án! Bệ sát thệ, bệ sát thệ, bệ sát xã tam một yết đế tóa ha.\n\nNiệm: NAM MÔ DƯỢC SƯ LƯU LY QUANG VƯƠNG PHẬT.\n\n(Phần tinh yếu — đọc toàn văn ở link bên dưới.)'},
+  {title:'🙇 Sám Hối Hồng Danh',sub:'Sám hối nghiệp chướng, làm mới thân tâm.',q:'Sám hối Hồng danh 88 vị Phật toàn văn',
+   text:'SÁM HỐI HỒNG DANH (phần tinh yếu)\n\nPháp lễ lạy danh hiệu chư Phật để sám hối nghiệp chướng, làm mới thân tâm. Hành giả CHÍ TÂM ĐẢNH LỄ danh hiệu 88 vị Phật (Nam mô Phổ Quang Phật, Nam mô Phổ Minh Phật, Nam mô Phổ Tịnh Phật… cho đến Nam mô Bảo Liên Hoa Thiện Trụ Ta La Thọ Vương Phật).\n\nKỆ SÁM HỐI:\nXưa con đã tạo bao ác nghiệp,\nĐều bởi vô thủy tham, sân, si,\nTừ thân, miệng, ý phát sinh ra,\nTất cả nay con xin sám hối.\n\n(Hán Việt: Ngã tích sở tạo chư ác nghiệp / Giai do vô thủy tham sân si / Tùng thân ngữ ý chi sở sanh / Nhất thiết ngã kim giai sám hối.)\n\n(Phần tinh yếu — lễ lạy & đọc toàn văn ở link bên dưới.)'},
 ];
 function SpiritualSection(){
   const [read,setRead]=useState(null);
@@ -2930,19 +2942,21 @@ function SpiritualSection(){
         </div>
       </div>}
       {tab==='chay' && <div>
-        <div className="muted center" style={{fontSize:11.5,margin:'10px 14px'}}>Quán chay ở Hà Nội — địa chỉ tham khảo, nên xem Google Maps trước khi đi.</div>
-        {VEG_RESTAURANTS.map((r,i)=>(
+        <div className="muted center" style={{fontSize:11.5,margin:'10px 14px'}}>Quán chay ở Hà Nội · ⭐ điểm tham khảo — bấm <b>⭐ Đánh giá</b> để xem điểm & review mới nhất trên Google Maps.</div>
+        {VEG_RESTAURANTS.slice().sort((a,b)=>(b.r||0)-(a.r||0)).map((r,i)=>(
           <div key={i} className="item">
-            <div className="it-top"><h4>🍃 {r.n}</h4></div>
+            <div className="it-top"><h4>🍃 {r.n}</h4>{r.r?<span className="pill" style={{background:'var(--chip)'}}>⭐ {r.r.toFixed(1)}</span>:null}</div>
             <div className="muted" style={{fontSize:12,marginTop:2}}>📍 {r.a}</div>
             <div className="it-meta"><span className="grow"></span>
-              <a className="pill" href={mapUrl(r.n,r.a)} target="_blank" rel="noreferrer" style={{textDecoration:'none'}}>🗺️ Chỉ đường</a></div>
+              <a className="pill" href={mapUrl(r.n,r.a)} target="_blank" rel="noreferrer" style={{textDecoration:'none'}}>⭐ Đánh giá · chỉ đường</a></div>
           </div>
         ))}
       </div>}
       {read && <Sheet title={read.title} onClose={()=>setRead(null)}>
         {read.sub && <div className="muted" style={{fontSize:12,marginBottom:8}}>{read.sub}</div>}
         <div style={{whiteSpace:'pre-wrap',fontSize:14,lineHeight:1.7}}>{read.text}</div>
+        {read.q && <a className="btn soft" style={{display:'block',textAlign:'center',marginTop:14,textDecoration:'none'}}
+          href={'https://www.google.com/search?q='+encodeURIComponent(read.q)} target="_blank" rel="noreferrer">📖 Đọc / tụng toàn văn</a>}
       </Sheet>}
     </div>
   );
@@ -3361,7 +3375,7 @@ const US_SEGS=[
   {k:'events',icon:'📅',label:'Sự kiện'},
   {k:'dates',icon:'🎂',label:'Ngày nhớ'},
   {k:'timeline',icon:'🕰️',label:'Kỷ niệm'},
-  {k:'fund',icon:'💰',label:'Quỹ chung'},
+  {k:'fund',icon:'🐷',label:'Tiết kiệm'},
   {k:'todos',icon:'✅',label:'Việc cần làm'},
   {k:'goals',icon:'🎯',label:'Mục tiêu'},
   {k:'shop',icon:'🛒',label:'Đi chợ'},
@@ -3857,11 +3871,36 @@ function DateForm({init,onClose,onSave}){
   );
 }
 
+const SAVE_TIPS=[
+  'Ghi lại mọi khoản chi mỗi ngày',
+  'Lập ngân sách theo tháng (quy tắc 50/30/20)',
+  'Nấu ăn ở nhà, hạn chế ăn ngoài',
+  'Mang theo bình nước & cà phê tự pha',
+  'Mua sắm theo danh sách, tránh mua bốc đồng',
+  'So sánh giá & săn mã giảm giá trước khi mua',
+  'Huỷ các gói đăng ký (app, nhạc, phim) không dùng tới',
+  'Đầu tháng tự chuyển ngay một khoản vào tiết kiệm',
+  'Quy tắc chờ 24–48h trước khi mua món đắt tiền',
+  'Tận dụng/sửa đồ cũ thay vì mua mới',
+  'Đi chợ cuối ngày & mua đồ theo mùa cho rẻ',
+  'Tắt điện–nước khi không dùng, chọn đồ tiết kiệm điện',
+  'Hạn chế trà sữa/cà phê tiệm, để dành tiền vặt',
+  'Lên thực đơn tuần, đi chợ một lần để đỡ lãng phí',
+  'Mua chung số lượng lớn đồ thiết yếu cho rẻ',
+  'Cùng nhau xem lại chi tiêu mỗi cuối tuần',
+];
 function Fund({people,me}){
   const [goals,setGoals]=useLocal('ju.fund',[]);
+  const [tips,setTips]=useLocal('ju.saveTips',{});
+  const [custom,setCustom]=useLocal('ju.saveCustom',[]);
+  const [tipIn,setTipIn]=useState('');
   const [open,setOpen]=useState(false);
   const [edit,setEdit]=useState(null);
   const [contrib,setContrib]=useState(null); // goal
+  const allTips=SAVE_TIPS.concat(custom);
+  const tgTip=(t)=>{ const n={...tips}; if(n[t]) delete n[t]; else n[t]=true; setTips(n); };
+  const addTip=()=>{ const t=tipIn.trim(); if(!t) return; if(!allTips.includes(t)) setCustom([t,...custom]); setTips({...tips,[t]:true}); setTipIn(''); celebrate(['🐷']); };
+  const doneTips=allTips.filter(t=>tips[t]).length;
 
   const save=(g)=>{
     if(g.id) setGoals(goals.map(x=>x.id===g.id?g:x));
@@ -3873,9 +3912,25 @@ function Fund({people,me}){
 
   return (
     <div>
-      <div className="row" style={{margin:'10px 14px'}}><span className="grow muted" style={{fontSize:13}}>Mục tiêu tiết kiệm chung</span>
+      <div className="sec-title">💡 Mẹo sống tiết kiệm <span className="grow"></span><span className="muted" style={{fontSize:12}}>đang áp dụng {doneTips}/{allTips.length}</span></div>
+      <div className="muted center" style={{fontSize:11.5,margin:'0 14px 4px'}}>Tích mẹo hai đứa đang làm — theo dõi mình đã tiết kiệm hơn thế nào.</div>
+      <div className="prog" style={{margin:'0 14px'}}><i style={{width:(allTips.length?doneTips/allTips.length*100:0)+'%'}}></i></div>
+      <div className="card" style={{padding:'4px 13px',marginTop:8}}>
+        {allTips.map(t=>(
+          <div key={t} className="row" style={{padding:'7px 0',borderBottom:'1px solid var(--line)'}}>
+            <button onClick={()=>tgTip(t)} style={{fontSize:18}}>{tips[t]?'✅':'⬜'}</button>
+            <span className="grow" style={{fontSize:13.5,textDecoration:tips[t]?'line-through':'none',opacity:tips[t]?.65:1}}>{t}</span>
+            {custom.includes(t) && <button className="muted" onClick={()=>{ if(confirm('Xoá mẹo này?')){ setCustom(custom.filter(x=>x!==t)); const n={...tips}; delete n[t]; setTips(n); } }}>✕</button>}
+          </div>
+        ))}
+        <div className="row" style={{gap:6,padding:'8px 0'}}>
+          <input className="inp grow" placeholder="Thêm mẹo tiết kiệm của nhà mình…" value={tipIn} onChange={e=>setTipIn(e.target.value)} onKeyDown={e=>{ if(e.key==='Enter') addTip(); }}/>
+          <button className="btn sm" onClick={addTip}>＋</button>
+        </div>
+      </div>
+      <div className="row" style={{margin:'14px 14px 0'}}><span className="grow"><b style={{fontSize:14}}>🎯 Mục tiêu tiết kiệm chung</b></span>
         <button className="btn sm" onClick={()=>{setEdit(null);setOpen(true);}}>＋ Thêm</button></div>
-      {goals.length===0 && <div className="empty"><span className="big">💰</span>Góp quỹ cho du lịch, mua nhà, em bé…</div>}
+      {goals.length===0 && <div className="empty"><span className="big">🐷</span>Góp quỹ cho du lịch, mua nhà, em bé…</div>}
       {goals.map(g=>{
         const saved=(g.contribs||[]).reduce((s,c)=>s+c.amount,0);
         const pct=g.target?Math.min(100,Math.round(saved/g.target*100)):0;
