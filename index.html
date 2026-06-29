@@ -1688,6 +1688,12 @@ function Home({setup,people,me,go}){
       {/* Lọ yêu thương */}
       {show('lovejar') && <LoveJar people={people} me={me}/>}
 
+      {/* Đọc kinh hôm nay */}
+      {show('sutra') && <DailySutra/>}
+
+      {/* Chơi với con */}
+      {show('childplay') && <ChildPlayCard/>}
+
       {/* Sắp tới */}
       <div className="sec-title">⏳ Sắp tới <span className="muted" style={{fontSize:11,fontWeight:400}}>(2 tuần)</span></div>
       {upcoming.length===0 && <div className="empty">Chưa có sự kiện nào sắp tới.</div>}
@@ -3137,6 +3143,7 @@ function ChildCare({people,me}){
   const [tantrum,setTantrum]=useLocal('ju.childTantrum',[]);
   const [pq,setPq]=useLocal('ju.childParenting',{});
   const [tab,setTab]=useState('develop');
+  const [editChild,setEditChild]=useState(false);
   const [gw,setGw]=useState(''); const [gh,setGh]=useState('');
   const [dtext,setDtext]=useState(''); const [wordIn,setWordIn]=useState('');
   const [illForm,setIllForm]=useState({symptoms:[],meds:'',note:''});
@@ -3172,14 +3179,18 @@ function ChildCare({people,me}){
         <div className="row"><span style={{fontSize:24}}>👶</span>
           <div className="grow"><b style={{fontSize:15}}>{child.name||'Bé yêu'}</b>
             <div className="muted" style={{fontSize:12}}>{ageLabel}{child.gender?(' · '+(child.gender==='nam'?'bé trai':'bé gái')):''}</div></div>
+          {(child.name&&child.dob&&!editChild) && <button className="muted" style={{fontSize:12}} onClick={()=>setEditChild(true)}>✎ Sửa</button>}
         </div>
-        <div className="row" style={{gap:8,marginTop:8}}>
-          <input className="inp grow" placeholder="Tên bé" value={child.name||''} onChange={e=>setChild({...child,name:e.target.value})} style={{padding:'7px 10px',fontSize:13}}/>
-          <select className="inp" value={child.gender||''} onChange={e=>setChild({...child,gender:e.target.value})} style={{width:90,padding:'7px',fontSize:13}}>
-            <option value="">—</option><option value="nam">Trai</option><option value="nu">Gái</option></select>
-        </div>
-        <div className="field" style={{margin:'8px 0 0'}}><label>Ngày sinh</label>
-          <input className="inp" type="date" max={todayISO()} value={child.dob||''} onChange={e=>setChild({...child,dob:e.target.value})}/></div>
+        {(!child.name||!child.dob||editChild) && <>
+          <div className="row" style={{gap:8,marginTop:8}}>
+            <input className="inp grow" placeholder="Tên bé" value={child.name||''} onChange={e=>setChild({...child,name:e.target.value})} style={{padding:'7px 10px',fontSize:13}}/>
+            <select className="inp" value={child.gender||''} onChange={e=>setChild({...child,gender:e.target.value})} style={{width:90,padding:'7px',fontSize:13}}>
+              <option value="">—</option><option value="nam">Trai</option><option value="nu">Gái</option></select>
+          </div>
+          <div className="field" style={{margin:'8px 0 0'}}><label>Ngày sinh</label>
+            <input className="inp" type="date" max={todayISO()} value={child.dob||''} onChange={e=>setChild({...child,dob:e.target.value})}/></div>
+          {editChild && child.name && child.dob && <button className="btn sm" style={{marginTop:8}} onClick={()=>setEditChild(false)}>✓ Xong</button>}
+        </>}
       </div>
       <div className="filters">
         <button className={tab==='develop'?'on':''} onClick={()=>setTab('develop')}>🌱 Phát triển</button>
@@ -3191,13 +3202,15 @@ function ChildCare({people,me}){
 
       {tab==='develop' && <div>
         <div className="sec-title">🎯 Mốc phát triển</div>
-        <div className="muted center" style={{fontSize:11.5,margin:'0 14px 4px'}}>Tích mốc bé đã làm được. Khung <b>tô đậm</b> là độ tuổi hiện tại.</div>
-        {CHILD_MILESTONES.map(b=>{ const cur=months!=null&&months>=b.lo&&months<b.hi;
-          return <div key={b.band} className="item" style={cur?{borderLeft:'4px solid var(--primary)'}:null}>
-            <div className="it-top"><h4>{cur?'⭐ ':''}{b.band}</h4></div>
-            <div>{b.items.map(it=>{ const k=b.band+'|'+it; const on=!!mile[k];
-              return <button key={it} className="pill" style={{margin:'3px 6px 3px 0',padding:'7px 11px',fontSize:12.5,background:on?'var(--good)':'var(--chip)',color:on?'#fff':'var(--chip-tx)'}} onClick={()=>tg(mile,setMile,k)}>{on?'✓ ':''}{it}</button>; })}</div>
-          </div>; })}
+        <div className="muted center" style={{fontSize:11.5,margin:'0 14px 4px'}}>Chỉ hiện mốc đúng độ tuổi của bé — tích mốc bé đã làm được.</div>
+        {months==null
+          ? <div className="empty muted">Nhập ngày sinh bé ở trên để hiện mốc đúng tuổi.</div>
+          : (()=>{ const b=CHILD_MILESTONES.find(x=>months>=x.lo&&months<x.hi)||CHILD_MILESTONES[CHILD_MILESTONES.length-1];
+              return <div className="item" style={{borderLeft:'4px solid var(--primary)'}}>
+                <div className="it-top"><h4>⭐ {b.band} <span className="muted" style={{fontSize:11,fontWeight:400}}>(bé {months} tháng)</span></h4></div>
+                <div>{b.items.map(it=>{ const k=b.band+'|'+it; const on=!!mile[k];
+                  return <button key={it} className="pill" style={{margin:'3px 6px 3px 0',padding:'7px 11px',fontSize:12.5,background:on?'var(--good)':'var(--chip)',color:on?'#fff':'var(--chip-tx)'}} onClick={()=>tg(mile,setMile,k)}>{on?'✓ ':''}{it}</button>; })}</div>
+              </div>; })()}
         <div className="sec-title">🗣️ Mốc ngôn ngữ <span className="grow"></span><span className="muted" style={{fontSize:12}}>{words.length} từ · +{wordsThisWeek} tuần này</span></div>
         <div className="card">
           <div className="row" style={{gap:6}}>
@@ -4317,8 +4330,44 @@ function PhotoImg({photo,style}){
   return <img src={url||''} alt="" style={style} onError={e=>{e.target.style.opacity=.3;}}/>;
 }
 
+function DailySutra(){
+  const [read,setRead]=useState(false);
+  const s=SUTRAS[dayNumber()%SUTRAS.length];
+  return (
+    <div className="card">
+      <div className="row" style={{gap:8,cursor:'pointer'}} onClick={()=>setRead(true)}>
+        <span style={{fontSize:20}}>📿</span>
+        <div className="grow"><div className="muted" style={{fontSize:11.5}}>Đọc kinh hôm nay</div>
+          <div style={{fontSize:14,fontWeight:600}}>{s.title}</div>
+          {s.sub && <div className="muted" style={{fontSize:11.5,marginTop:1}}>{s.sub}</div>}</div>
+        <span className="muted">đọc ›</span>
+      </div>
+      {read && <Sheet title={s.title} onClose={()=>setRead(false)}>
+        {s.sub && <div className="muted" style={{fontSize:12,marginBottom:8}}>{s.sub}</div>}
+        <div style={{whiteSpace:'pre-wrap',fontSize:14,lineHeight:1.7}}>{s.text}</div>
+        {s.q && <a className="btn soft" style={{display:'block',textAlign:'center',marginTop:14,textDecoration:'none'}} href={'https://www.google.com/search?q='+encodeURIComponent(s.q)} target="_blank" rel="noreferrer">📖 Đọc / tụng toàn văn</a>}
+      </Sheet>}
+    </div>
+  );
+}
+function ChildPlayCard(){
+  const child=store.get('ju.child',{})||{};
+  const [i,setI]=useState(()=>Math.floor(Math.random()*PLAY_LIB.length));
+  if(!child.name && !child.dob) return null;
+  const p=PLAY_LIB[i]||PLAY_LIB[0];
+  const next=()=>{ let n=i; if(PLAY_LIB.length>1){ while(n===i) n=Math.floor(Math.random()*PLAY_LIB.length); } setI(n); };
+  return (
+    <div className="card">
+      <div className="row" style={{gap:8}}><span style={{fontSize:20}}>🧸</span>
+        <div className="grow"><div className="muted" style={{fontSize:11.5}}>Chơi với con hôm nay</div>
+          <div style={{fontSize:14,fontWeight:600}}>{p.c} {p.n}</div></div>
+        <button className="btn sm soft" onClick={next}>🎲 Đổi</button></div>
+      <div className="muted" style={{fontSize:12.5,marginTop:6,lineHeight:1.5}}>{p.d}</div>
+    </div>
+  );
+}
 const HOME_SECTIONS=[
-  ['fun','🎲 Phân vân (ăn gì/làm gì)'],['anger','😤 Đang cáu / lo lắng'],['reminders','🔔 Nhắc nhở hôm nay'],
+  ['fun','🎲 Phân vân (ăn gì/làm gì)'],['anger','😤 Đang cáu / lo lắng'],['sutra','📿 Đọc kinh hôm nay'],['childplay','🧸 Chơi với con'],['reminders','🔔 Nhắc nhở hôm nay'],
   ['onthisday','📆 Ngày này năm xưa'],['mood','🙂 Tâm trạng'],
   ['challenge','🎯 Thử thách đôi'],['habits','✅ Thói quen chung'],['lovejar','🫙 Lọ yêu thương'],
 ];
