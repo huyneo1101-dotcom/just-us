@@ -254,7 +254,7 @@ const store={
 const SB_URL='https://vvgkjgvzjeklaadusbne.supabase.co';
 const SB_KEY='sb_publishable_DMMPv5L2kGhrHTxeQ72iKw_dIh13iT1';
 // Các key được đồng bộ (KHÔNG gồm ju.me/ju.device/ju.sync — đó là riêng từng máy)
-const SYNC_KEYS=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood','ju.qa','ju.timeline','ju.coupons','ju.chores','ju.lovejar','ju.quiz','ju.city','ju.goals','ju.checkin','ju.challengeDone','ju.homecfg','ju.diary','ju.projects','ju.vinhaUrl','ju.checkins','ju.menu','ju.period','ju.menuPlan'];
+const SYNC_KEYS=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood','ju.qa','ju.timeline','ju.coupons','ju.chores','ju.lovejar','ju.quiz','ju.city','ju.goals','ju.checkin','ju.challengeDone','ju.homecfg','ju.diary','ju.projects','ju.vinhaUrl','ju.checkins','ju.menu','ju.period','ju.menuPlan','ju.accuKey'];
 let _sb=null;
 function sbClient(){
   if(_sb) return _sb;
@@ -843,6 +843,7 @@ const PROJ_TASK_SUGGEST={
   baby:['Khám thai định kỳ','Mua đồ sơ sinh','Chuẩn bị phòng cho bé','Chọn tên','Đặt lịch sinh','Học lớp tiền sản'],
 };
 const CITIES=[
+  {k:'giangvo',name:'Giảng Võ, HN',lat:21.0313,lng:105.8163},
   {k:'hanoi',name:'Hà Nội',lat:21.03,lng:105.85},{k:'hcm',name:'TP.HCM',lat:10.78,lng:106.70},
   {k:'danang',name:'Đà Nẵng',lat:16.05,lng:108.22},{k:'haiphong',name:'Hải Phòng',lat:20.86,lng:106.68},
   {k:'cantho',name:'Cần Thơ',lat:10.03,lng:105.78},{k:'dalat',name:'Đà Lạt',lat:11.94,lng:108.46},
@@ -860,6 +861,40 @@ function wmo(c){
   if(c<=82) return {icon:'🌧️',text:'Mưa rào'};
   return {icon:'⛈️',text:'Dông'};
 }
+const GIANGVO={lat:21.0313,lng:105.8163,name:'Giảng Võ, Ba Đình, Hà Nội'};
+function accuIcon(n){ if(n==null) return '⛅';
+  if([1,2,3,4,30,31,32,33,34].indexOf(n)>=0) return '☀️';
+  if([5,6,7,8,35,36,37,38].indexOf(n)>=0) return '⛅';
+  if([11].indexOf(n)>=0) return '🌫️';
+  if([12,13,14,18,39,40].indexOf(n)>=0) return '🌧️';
+  if([15,16,17,41,42].indexOf(n)>=0) return '⛈️';
+  if([19,20,21,22,23,24,25,26,29,43,44].indexOf(n)>=0) return '🌨️';
+  return '⛅'; }
+const _wcache={};
+async function getWeather(lat,lng){
+  const key=lat.toFixed(3)+','+lng.toFixed(3);
+  const c=_wcache[key]; if(c && Date.now()-c.t<20*60*1000) return c.v;
+  const accu=store.get('ju.accuKey',''); let v=null;
+  if(accu){ try{
+    const loc=await fetch('https://dataservice.accuweather.com/locations/v1/cities/geoposition/search?apikey='+encodeURIComponent(accu)+'&q='+lat+','+lng+'&language=vi-vn').then(r=>r.ok?r.json():null);
+    if(loc&&loc.Key){ const cur=await fetch('https://dataservice.accuweather.com/currentconditions/v1/'+loc.Key+'?apikey='+encodeURIComponent(accu)+'&language=vi-vn&details=true').then(r=>r.ok?r.json():null);
+      const x=cur&&cur[0]; if(x){ const txt=x.WeatherText||''; v={src:'AccuWeather',temp:Math.round(x.Temperature.Metric.Value),text:txt,icon:accuIcon(x.WeatherIcon),rain:!!x.HasPrecipitation,storm:/dông|giông|bão|sấm|thunder|storm/i.test(txt)}; } }
+  }catch(e){} }
+  if(!v){ try{
+    const d=await fetch('https://api.open-meteo.com/v1/forecast?latitude='+lat+'&longitude='+lng+'&current=temperature_2m,weather_code,precipitation,wind_speed_10m&timezone=auto').then(r=>r.json());
+    const w=d.current, code=w.weather_code, wm=wmo(code);
+    v={src:'open-meteo',temp:Math.round(w.temperature_2m),text:wm.text,icon:wm.icon,
+      rain:(w.precipitation>0)||[51,53,55,61,63,65,80,81,82].indexOf(code)>=0,
+      storm:[95,96,99].indexOf(code)>=0||(w.wind_speed_10m>40)};
+  }catch(e){ v=null; } }
+  if(v) _wcache[key]={t:Date.now(),v}; return v;
+}
+function ideaOutdoor(title){ const s=(title||'').toLowerCase();
+  if(/(dạo|đi bộ|công viên|đạp xe|picnic|ngoài trời|biển|cắm trại|glamping|hồ |ven hồ|phố đi bộ|phố đêm|chợ đêm|chợ hoa|vườn |sông|patin|chèo|sup|kayak|nông trại|farmstay|phượt|dù lượn|khinh khí cầu|ngắm sao|hoàng hôn|bãi đá|thung lũng|sân thượng)/.test(s)) return true;
+  if(/(xem phim|rạp|cà phê|cafe|bảo tàng|nhà hàng|karaoke|board game|spa|nấu|ở nhà|workshop|lớp học|bowling|trượt băng|thuỷ cung|thủy cung|nướng|lẩu|buffet|đọc sách|nhà sách|massage|gốm|vẽ|phòng chiếu|hát|trà chiều)/.test(s)) return false;
+  return null; }
+const CALM_ANGRY=['Hít thở sâu kiểu 4–7–8 trong 1 phút','Ra ngoài đi bộ nhanh 5 phút cho hạ nhiệt','Uống một cốc nước mát từ từ','Viết ra điều khiến bạn bực rồi… xé tờ giấy đi','Đếm ngược thật chậm từ 20 về 0','Rửa mặt / rửa tay bằng nước mát','Tạm rời khỏi tình huống 10 phút rồi quay lại','Vận động mạnh 2 phút (chống đẩy, nhảy dây) để xả','Nghe một bài nhạc bạn thích','Tự hỏi: “Việc này 1 tuần nữa còn quan trọng không?”','Nói ra cảm xúc bằng câu “Anh/em đang thấy…” thay vì trách','Bóp một quả bóng/khăn cho xả lực'];
+const CALM_ANXIOUS=['Thở ra dài hơn hít vào, lặp lại 1 phút','Kỹ thuật 5-4-3-2-1: gọi tên 5 thứ nhìn thấy, 4 nghe được, 3 chạm được…','Viết ra điều lo + tách “việc mình kiểm soát được” và “không”','Uống một tách trà ấm','Đi bộ chậm, chú ý từng bước chân','Nhắn cho người ấy điều đang khiến bạn lo','Tắm nước ấm thư giãn','Nghe nhạc thiền / lo-fi 10 phút','Ghi ra 3 điều bạn biết ơn hôm nay','Đặt điện thoại xuống 15 phút','Ôm người ấy 20 giây cho dịu lại','Tự nhủ: “Mình đã vượt qua những lúc khó hơn thế này.”'];
 
 /* ============ small components ============ */
 function Av({emoji,size=22}){
@@ -1335,6 +1370,27 @@ function WeddingCard({setup,go}){
   );
 }
 
+/* ============ Đang cáu / lo lắng ============ */
+function AngerHelper(){
+  const [res,setRes]=useState(null);
+  const pick=(label,icon,pool)=> setRes({label,icon,pool,value:pool[Math.floor(Math.random()*pool.length)]});
+  return (
+    <div className="card">
+      <div className="row"><b>😤 Đang cáu / lo lắng?</b></div>
+      <div className="muted" style={{fontSize:12,marginTop:2}}>Thử một việc nhỏ để dịu lại 💗</div>
+      <div className="row" style={{gap:8,marginTop:8}}>
+        <button className="btn soft grow" onClick={()=>pick('Để hạ hoả','🧯',CALM_ANGRY)}>😤 Bực mình</button>
+        <button className="btn soft grow" onClick={()=>pick('Để bớt lo','🌿',CALM_ANXIOUS)}>😟 Lo lắng</button>
+      </div>
+      {res && <div className="center" style={{marginTop:10}}>
+        <div className="muted" style={{fontSize:12}}>{res.label}:</div>
+        <div style={{fontSize:15.5,fontWeight:700,marginTop:3,lineHeight:1.45}}>{res.icon} {res.value}</div>
+        <button className="btn sm soft" style={{marginTop:8}} onClick={()=>pick(res.label,res.icon,res.pool)}>🔄 Cách khác</button>
+      </div>}
+    </div>
+  );
+}
+
 /* ============ HOME ============ */
 function Home({setup,people,me,go}){
   const [notes]=useLocal('ju.notes',[]);
@@ -1388,6 +1444,9 @@ function Home({setup,people,me,go}){
 
       {/* Phân vân: ăn gì / làm gì — ngay dưới khu đếm ngày */}
       {show('fun') && <FunPickers/>}
+
+      {/* Đang cáu / lo lắng */}
+      {show('anger') && <AngerHelper/>}
 
       {/* Nhắc nhở hôm nay */}
       {show('reminders') && <Reminders setup={setup} go={go}/>}
@@ -1520,31 +1579,30 @@ function WishTab({people,me,flash}){
 
 /* ============ Thời tiết + gợi ý theo thời tiết ============ */
 function WeatherCard(){
-  const [cityKey,setCityKey]=useLocal('ju.city','hanoi');
+  const [cityKey,setCityKey]=useLocal('ju.city','giangvo');
   const city=CITIES.find(c=>c.k===cityKey)||CITIES[0];
   const [w,setW]=useState(null); const [err,setErr]=useState(false);
   useEffect(()=>{ let on=true; setW(null); setErr(false);
-    fetch('https://api.open-meteo.com/v1/forecast?latitude='+city.lat+'&longitude='+city.lng+'&current=temperature_2m,weather_code,precipitation&timezone=auto')
-      .then(r=>r.json()).then(d=>{ if(on) d&&d.current?setW(d.current):setErr(true); }).catch(()=>{ if(on) setErr(true); });
+    getWeather(city.lat,city.lng).then(v=>{ if(on){ v?setW(v):setErr(true); } });
     return ()=>{ on=false; };
   },[city.k]);
   const sel=(
-    <select className="inp" style={{width:120,flex:'0 0 auto',padding:'6px 8px',fontSize:12.5}} value={cityKey} onChange={e=>setCityKey(e.target.value)}>
+    <select className="inp" style={{width:118,flex:'0 0 auto',padding:'6px 8px',fontSize:12.5}} value={cityKey} onChange={e=>setCityKey(e.target.value)}>
       {CITIES.map(c=><option key={c.k} value={c.k}>{c.name}</option>)}
     </select>
   );
   if(err) return <div className="card row" style={{gap:8}}><span className="muted grow" style={{fontSize:12.5}}>⛅ Không lấy được thời tiết (cần mạng).</span>{sel}</div>;
   if(!w) return <div className="card row" style={{gap:8}}><span className="muted grow" style={{fontSize:12.5}}>⛅ Đang xem thời tiết…</span>{sel}</div>;
-  const wm=wmo(w.weather_code);
-  const rainy=(w.precipitation>0)||[51,53,55,61,63,65,80,81,82,95,96,99].indexOf(w.weather_code)>=0;
+  const rainy=w.rain||w.storm;
   return (
     <div className="card">
       <div className="row" style={{gap:12,alignItems:'center'}}>
-        <div style={{fontSize:34}}>{wm.icon}</div>
-        <div className="grow"><b>{Math.round(w.temperature_2m)}°C · {wm.text}</b>
-          <div className="muted" style={{fontSize:12}}>{rainy?'Trời ẩm ướt — hợp hẹn hò trong nhà ☕🎬':'Thời tiết đẹp — đi chơi ngoài trời thôi 🌳🚲'}</div></div>
+        <div style={{fontSize:34}}>{w.icon}</div>
+        <div className="grow"><b>{w.temp}°C · {w.text}</b>
+          <div className="muted" style={{fontSize:12}}>{w.storm?'Giông/gió mạnh — nên ở trong nhà ☕🎬':rainy?'Trời ẩm ướt — hợp hẹn hò trong nhà ☕🎬':'Thời tiết đẹp — ra ngoài thôi 🌳🚲'}</div></div>
         {sel}
       </div>
+      <div className="muted" style={{fontSize:10.5,marginTop:6,textAlign:'right'}}>nguồn: {w.src}</div>
     </div>
   );
 }
@@ -1737,13 +1795,28 @@ function DateIdeas({people,me}){
 
   const pool=bFilter?items.filter(x=>x.budget===bFilter):items;
   const shown=pool.slice().sort((a,b)=>(b.fav?1:0)-(a.fav?1:0)||b.createdAt-a.createdAt);
-  const random=()=>{
+  const [wnote,setWnote]=useState('');
+  const [wbusy,setWbusy]=useState(false);
+  const random=async()=>{
     let arr;
     if(pool.length) arr=pool;
     else if(bFilter) arr=(IDEA_SUGGEST[bFilter]||[]).map(t=>({title:t,budget:bFilter}));
     else arr=[].concat.apply([],Object.keys(IDEA_SUGGEST).map(k=>IDEA_SUGGEST[k].map(t=>({title:t,budget:k}))));
     if(!arr.length) return;
-    setPick(arr[Math.floor(Math.random()*arr.length)]);
+    setWbusy(true);
+    const w=await getWeather(GIANGVO.lat,GIANGVO.lng);
+    setWbusy(false);
+    let filtered=arr, note='';
+    if(w){
+      if(w.storm){ filtered=arr.filter(x=>ideaOutdoor(x.title)===false); note='⛈️ '+w.text+' '+w.temp+'° — chỉ gợi ý trong nhà'; }
+      else if(w.rain){ filtered=arr.filter(x=>ideaOutdoor(x.title)!==true); note='🌧️ '+w.text+' '+w.temp+'° — ưu tiên trong nhà'; }
+      else if(w.temp>=35){ filtered=arr.filter(x=>ideaOutdoor(x.title)!==true); note='🥵 Nắng nóng '+w.temp+'° — ưu tiên trong nhà/có điều hoà'; }
+      else { note=w.icon+' '+w.text+' '+w.temp+'° — thời tiết đẹp, thoải mái ra ngoài'; }
+      if(!filtered.length) filtered=arr;
+      note+=' · nguồn '+w.src;
+    } else { note='(Không lấy được thời tiết — gợi ý ngẫu nhiên)'; }
+    setWnote(note);
+    setPick(filtered[Math.floor(Math.random()*filtered.length)]);
   };
 
   return (
@@ -1753,13 +1826,14 @@ function DateIdeas({people,me}){
         {BUDGETS.map(b=><button key={b.k} className={bFilter===b.k?'on':''} onClick={()=>setBFilter(b.k)}>{b.label}</button>)}
       </div>
       <div className="row" style={{margin:'10px 14px',gap:8}}>
-        <button className="btn grow" onClick={random}>🎲 Gợi ý ngẫu nhiên</button>
+        <button className="btn grow" onClick={random} disabled={wbusy}>{wbusy?'⏳ Xem thời tiết…':'🎲 Gợi ý theo thời tiết'}</button>
         <button className="btn sm soft" onClick={()=>setSugOpen(true)}>💡 Thư viện</button>
         <button className="btn sm soft" onClick={()=>{setEdit(null);setOpen(true);}}>＋</button>
       </div>
       {pick && (
         <div className="card center" style={{borderColor:'var(--primary)',borderWidth:2}}>
-          <div className="muted" style={{fontSize:12}}>🎲 Hôm nay đi đâu nhỉ…</div>
+          {wnote && <div className="muted" style={{fontSize:12,marginBottom:4}}>{wnote}</div>}
+          <div className="muted" style={{fontSize:12}}>🎲 Hôm nay nên…</div>
           <div style={{fontSize:20,fontWeight:800,margin:'6px 0'}}>{pick.title}</div>
           {pick.budget && <span className="pill">{budgetLabel(pick.budget)}</span>}
           {pick.note && <div className="it-note" style={{marginTop:8}}>{pick.note}</div>}
@@ -2983,7 +3057,7 @@ function PhotoImg({photo,style}){
 }
 
 const HOME_SECTIONS=[
-  ['fun','🎲 Phân vân (ăn gì/làm gì)'],['reminders','🔔 Nhắc nhở hôm nay'],
+  ['fun','🎲 Phân vân (ăn gì/làm gì)'],['anger','😤 Đang cáu / lo lắng'],['reminders','🔔 Nhắc nhở hôm nay'],
   ['onthisday','📆 Ngày này năm xưa'],['mood','🙂 Tâm trạng'],
   ['challenge','🎯 Thử thách đôi'],['lovejar','🫙 Lọ yêu thương'],
 ];
@@ -3002,6 +3076,23 @@ function HomeSettings(){
             <button className="pill" onClick={()=>toggle(k)} style={{background:hidden.includes(k)?'var(--bg)':'var(--good)',color:hidden.includes(k)?'var(--muted)':'#fff',border:hidden.includes(k)?'1px solid var(--line)':'none'}}>{hidden.includes(k)?'Đang ẩn':'Đang hiện'}</button>
           </div>
         ))}
+      </div>
+    </div>
+  );
+}
+
+function AccuKeySetting({flash}){
+  const [key,setKey]=useLocal('ju.accuKey','');
+  const [tmp,setTmp]=useState(key);
+  return (
+    <div>
+      <div className="sec-title">🌤️ Nguồn thời tiết</div>
+      <div className="card">
+        <div className="muted" style={{fontSize:12.5,marginBottom:8}}>Gợi ý hẹn hò dùng thời tiết ở <b>Giảng Võ, Ba Đình</b>. Mặc định lấy từ open-meteo (miễn phí). Muốn dùng <b>AccuWeather</b>, tạo API key miễn phí ở developer.accuweather.com rồi dán vào đây.</div>
+        <div className="row" style={{gap:8}}>
+          <input className="inp grow" value={tmp} onChange={e=>setTmp(e.target.value)} placeholder="AccuWeather API key (tuỳ chọn)"/>
+          <button className="btn sm" onClick={()=>{ const k=tmp.trim(); setKey(k); if(flash) flash(k?'Đã lưu key AccuWeather ✓':'Đã xoá — dùng open-meteo'); }}>Lưu</button>
+        </div>
       </div>
     </div>
   );
@@ -3184,6 +3275,9 @@ function Profile({setup,setSetup,people,me,setMe,flash}){
 
       {/* Tuỳ chỉnh Trang chủ */}
       <HomeSettings/>
+
+      {/* Nguồn thời tiết */}
+      <AccuKeySetting flash={flash}/>
 
       {/* Sao lưu & bảo mật */}
       <div className="sec-title">💾 Sao lưu & bảo mật</div>
