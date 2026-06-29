@@ -642,6 +642,18 @@ function upcomingHolidays(within){
     var d=Math.round((new Date(h.date+'T00:00:00')-t)/86400000); if(d>=0&&d<=within) out.push({icon:h.icon,name:h.name,d:d}); }); });
   out.sort(function(a,b){return a.d-b.d;}); return out;
 }
+const GIFT_HOLIDAYS=[
+  {m:1,d:1,name:'Tết Dương lịch',who:'both',note:'Lời chúc & món quà nhỏ đầu năm',icon:'🎉'},
+  {m:2,d:14,name:'Valentine 14/2',who:'both',note:'Hoa, sô-cô-la, quà cho nhau',icon:'💝'},
+  {m:3,d:8,name:'Quốc tế Phụ nữ 8/3',who:'h2w',note:'Mua hoa & quà cho vợ',icon:'🌹'},
+  {m:10,d:20,name:'Phụ nữ Việt Nam 20/10',who:'h2w',note:'Mua hoa & quà cho vợ',icon:'🌷'},
+  {m:11,d:19,name:'Quốc tế Đàn ông 19/11',who:'w2h',note:'Mua quà cho chồng',icon:'🎁'},
+  {m:12,d:24,name:'Giáng sinh 24/12',who:'both',note:'Quà Noel cho nhau',icon:'🎄'},
+];
+function upcomingGiftHolidays(within){ const t=new Date(todayISO()+'T00:00:00'); const cy=t.getFullYear(); const out=[];
+  GIFT_HOLIDAYS.forEach(function(h){ [cy,cy+1].forEach(function(y){ const dt=new Date(y,h.m-1,h.d); const dd=Math.round((dt-t)/86400000);
+    if(dd>=0&&dd<=within) out.push(Object.assign({},h,{d:dd,date:y+'-'+pad(h.m)+'-'+pad(h.d)})); }); });
+  const seen={}, res=[]; out.sort(function(a,b){return a.d-b.d;}).forEach(function(h){ if(!seen[h.name]){seen[h.name]=1;res.push(h);} }); return res; }
 function solar2Lunar(dd,mm,yy,tz){ tz=tz==null?7:tz;
   var dn=jdFromDate(dd,mm,yy);
   var k=Math.floor((dn-2415021.076998695)/29.530588853);
@@ -1087,7 +1099,7 @@ function SimpleList({skey, people, me, addLabel, doneLabel='Xong', fields=[], ta
     setOpen(false); setEdit(null);
   };
   const addQuick=(title)=> setItems(prev=>[{title,id:uid(),by:me,fav:false,done:false,createdAt:Date.now()},...prev]);
-  const del=(id)=> setItems(items.filter(x=>x.id!==id));
+  const del=(id)=>{ if(confirm('Bạn có chắc muốn xoá? Thao tác này không hoàn tác được.')){ setItems(items.filter(x=>x.id!==id)); } };
   const toggle=(id,f)=> setItems(items.map(x=>{ if(x.id!==id) return x; const nv={...x,[f]:!x[f]}; if(f==='done'&&nv.done) celebrate(); return nv; }));
 
   const shown=useMemo(()=>{
@@ -1527,7 +1539,7 @@ function HabitTracker(){
   const key=todayISO();
   const add=()=>{ if(!t.trim())return; setHabits([...habits,{id:uid(),name:t.trim(),log:{}}]); setT(''); };
   const toggle=(id)=>setHabits(habits.map(h=>h.id===id?{...h,log:{...(h.log||{}),[key]:!(h.log||{})[key]}}:h));
-  const del=(id)=>setHabits(habits.filter(h=>h.id!==id));
+  const del=(id)=>{ if(confirm('Bạn có chắc muốn xoá? Thao tác này không hoàn tác được.')){ setHabits(habits.filter(h=>h.id!==id)); } };
   const streak=(h)=>streakOf(d=>!!(h.log||{})[d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())]);
   return (
     <div className="card">
@@ -1689,8 +1701,8 @@ function Home({setup,people,me,go}){
       )}
 
       <div className="stat-grid">
-        <div className="stat" onClick={()=>go('wish')} style={{cursor:'pointer'}}><div className="n">{wish.length}</div><div className="l">🎁 Quà mong muốn</div></div>
-        <div className="stat" onClick={()=>go('wish')} style={{cursor:'pointer'}}><div className="n">{bucket.filter(b=>!b.done).length}</div><div className="l">🎯 Điều muốn làm cùng</div></div>
+        <div className="stat" onClick={()=>go('us')} style={{cursor:'pointer'}}><div className="n">{wish.length}</div><div className="l">🎁 Quà mong muốn</div></div>
+        <div className="stat" onClick={()=>go('us')} style={{cursor:'pointer'}}><div className="n">{bucket.filter(b=>!b.done).length}</div><div className="l">🎯 Điều muốn làm cùng</div></div>
         <div className="stat" onClick={()=>go('us')} style={{cursor:'pointer'}}><div className="n">{events.length}</div><div className="l">📅 Sự kiện</div></div>
         <div className="stat" onClick={()=>go('me')} style={{cursor:'pointer'}}><div className="n">{photos.length}</div><div className="l">📷 Ảnh chung</div></div>
       </div>
@@ -1707,7 +1719,7 @@ function Coupons({people,me,flash}){
   const other=me==='a'?'b':'a';
   const add=(title)=>{ const x=((title!=null?title:t)||'').trim(); if(!x)return; setCoupons(prev=>[{id:uid(),title:x,by:me,redeemed:false,createdAt:Date.now()},...prev]); setT(''); };
   const redeem=(id)=>{ setCoupons(coupons.map(c=>c.id===id?{...c,redeemed:true,redeemedAt:Date.now()}:c)); celebrate(['🎟️','🎉','💝','✨','💞']); };
-  const del=(id)=>setCoupons(coupons.filter(c=>c.id!==id));
+  const del=(id)=>{ if(confirm('Bạn có chắc muốn xoá? Thao tác này không hoàn tác được.')){ setCoupons(coupons.filter(c=>c.id!==id)); } };
 
   const received=coupons.filter(c=>c.by===other);
   const given=coupons.filter(c=>c.by===me);
@@ -1838,6 +1850,23 @@ function haversine(la1,lo1,la2,lo2){ const R=6371,toR=x=>x*Math.PI/180;
 const priceMid=(p)=>{ if(!p) return 0; if(/miễn phí|free/i.test(p)) return 0; const ns=(p.match(/\d+/g)||[]).map(Number); if(!ns.length) return 0; return (ns[0]+ns[ns.length-1])/2; };
 const isKidSpot=(s)=> s.cat==='ngoaitroi' || s.cat==='vanhoa' || /board game|công viên|sở thú|thuỷ cung|thủy cung|kid|trẻ|vui chơi|aquarium|times city|ecopark|đầm sen|thiếu nhi/i.test((s.n||'')+(s.note||''));
 const distOf=(s)=> (s.lat!=null&&s.lng!=null)? haversine(NHA.lat,NHA.lng,s.lat,s.lng) : null;
+const VIBES=[
+  {k:'sach',label:'☕ Cafe sách',cats:['cafe'],re:/sách|book/i},
+  {k:'nhacsong',label:'🎸 Nhạc sống',cats:['cafe'],re:/nhạc sống|acoustic|live|hát/i},
+  {k:'songao',label:'📸 Sống ảo / view đẹp',cats:['cafe'],re:/view|rooftop|sống ảo|đẹp|hoàng hôn|hồ|chụp|decor|địa trung hải|sang|lung linh|sân thượng/i},
+  {k:'bakery',label:'🥐 Bakery / bánh',cats:['cafe'],re:/bánh|bakery|brunch|dessert/i},
+  {k:'rong',label:'🌿 Không gian rộng',cats:['cafe'],re:/rộng|sân vườn|garden|không gian|biệt thự/i},
+  {k:'chill',label:'🍃 Chill / sống chậm',cats:['cafe'],re:/chill|thư giãn|sống chậm|yên|nhẹ nhàng|bình yên/i},
+  {k:'lamviec',label:'💻 Hợp làm việc',cats:['cafe'],re:/làm việc|học bài|yên tĩnh|wifi|sách|cổ điển/i},
+  {k:'boardgame',label:'🎲 Board game',cats:['cafe'],re:/board game|boardgame/i},
+  {k:'lau',label:'🍲 Lẩu',cats:['an'],re:/lẩu/i},
+  {k:'nuong',label:'🔥 Nướng / BBQ',cats:['an'],re:/nướng|bbq/i},
+  {k:'haisan',label:'🦐 Hải sản',cats:['an'],re:/hải sản|ốc|cua|ngao|nghêu|tôm/i},
+  {k:'chay',label:'🥗 Chay',cats:['an'],re:/chay/i},
+  {k:'buffet',label:'🍽️ Buffet',cats:['an'],re:/buffet/i},
+  {k:'dacsan',label:'🍜 Đặc sản truyền thống',cats:['an'],re:/bún|phở|chả|nem|miến|cháo|cơm|đặc sản|truyền thống|bánh/i},
+];
+const vibeTags=(s)=> VIBES.filter(v=>(v.cats.indexOf(s.cat)>=0)&&v.re.test((s.n||'')+' '+(s.note||''))).map(v=>v.k);
 function HanoiCatalog({me,flash}){
   const [,setIdeas]=useLocal('ju.ideas',[]);
   const [,setFood]=useLocal('ju.food',[]);
@@ -1845,9 +1874,11 @@ function HanoiCatalog({me,flash}){
   const [hidden,setHidden]=useLocal('ju.hiddenSpots',[]);
   const [cat,setCat]=useState('');
   const [bud,setBud]=useState('');
+  const [vibe,setVibe]=useState('');
   const [sort,setSort]=useState('near');
+  const pickCat=(k)=>{ setCat(k); setVibe(''); };
   const hide=(s)=>{ setHidden([...hidden,s.n]); flash('Đã ẩn gợi ý: '+s.n); };
-  let list=HANOI_SPOTS.filter(s=>(!cat||s.cat===cat)&&(!bud||s.budget===bud)&&hidden.indexOf(s.n)<0&&(sort!=='kid'||isKidSpot(s)));
+  let list=HANOI_SPOTS.filter(s=>(!cat||s.cat===cat)&&(!bud||s.budget===bud)&&(!vibe||vibeTags(s).indexOf(vibe)>=0)&&hidden.indexOf(s.n)<0&&(sort!=='kid'||isKidSpot(s)));
   if(sort==='near') list=list.slice().sort((a,b)=>((distOf(a)??1e9)-(distOf(b)??1e9)));
   else if(sort==='price') list=list.slice().sort((a,b)=>(priceMid(a.p)-priceMid(b.p)));
   const isFood=(s)=>s.cat==='an'||s.cat==='cafe';
@@ -1861,12 +1892,18 @@ function HanoiCatalog({me,flash}){
     <div>
       <div className="muted center" style={{fontSize:12,margin:'10px 14px 4px'}}>📍 {HANOI_SPOTS.length} địa điểm thật ở Hà Nội — khoảng cách tính từ <b>Núi Trúc</b>; bấm <b>⭐ Đánh giá</b> để xem rating thật trên Google Maps. <i>(Giờ & giá tham khảo.)</i></div>
       <div className="filters">
-        <button className={cat===''?'on':''} onClick={()=>setCat('')}>Tất cả</button>
-        {HANOI_CATS.map(c=><button key={c.k} className={cat===c.k?'on':''} onClick={()=>setCat(c.k)}>{c.icon} {c.name}</button>)}
+        <button className={cat===''?'on':''} onClick={()=>pickCat('')}>Tất cả</button>
+        {HANOI_CATS.map(c=><button key={c.k} className={cat===c.k?'on':''} onClick={()=>pickCat(c.k)}>{c.icon} {c.name}</button>)}
       </div>
-      <div className="filters">
-        <button className={bud===''?'on':''} onClick={()=>setBud('')}>Mọi mức</button>
-        {BUDGETS.map(b=><button key={b.k} className={bud===b.k?'on':''} onClick={()=>setBud(b.k)}>{b.label}</button>)}
+      <div className="row" style={{margin:'6px 14px',gap:8}}>
+        <select className="inp grow" value={bud} onChange={e=>setBud(e.target.value)} style={{fontSize:12.5}}>
+          <option value="">💵 Mọi mức giá</option>
+          {BUDGETS.map(b=><option key={b.k} value={b.k}>{b.label}</option>)}
+        </select>
+        <select className="inp grow" value={vibe} onChange={e=>setVibe(e.target.value)} style={{fontSize:12.5}}>
+          <option value="">🏷️ Mọi kiểu quán</option>
+          {VIBES.filter(v=>!cat||v.cats.indexOf(cat)>=0).map(v=><option key={v.k} value={v.k}>{v.label}</option>)}
+        </select>
       </div>
       <div className="filters">
         <button className={sort==='near'?'on':''} onClick={()=>setSort('near')}>📍 Gần → xa</button>
@@ -2086,7 +2123,7 @@ function DateIdeas({people,me}){
     setOpen(false);setEdit(null);
   };
   const addIdea=(title,budget)=> setItems(prev=>[{title,budget,id:uid(),by:me,fav:false,done:false,createdAt:Date.now()},...prev]);
-  const del=(id)=>setItems(items.filter(x=>x.id!==id));
+  const del=(id)=>{ if(confirm('Bạn có chắc muốn xoá? Thao tác này không hoàn tác được.')){ setItems(items.filter(x=>x.id!==id)); } };
   const toggle=(id,f)=>setItems(items.map(x=>x.id===id?{...x,[f]:!x[f]}:x));
 
   const pool=bFilter?items.filter(x=>x.budget===bFilter):items;
@@ -2237,7 +2274,7 @@ function MapSpots({people,me}){
     setSpots([{id:uid(),title:form.title,cat:form.cat,note:form.note,lat:draft.lat,lng:draft.lng,by:me,done:false,createdAt:Date.now()},...spots]);
     setForm(null);setDraft(null);
   };
-  const del=(id)=>setSpots(spots.filter(x=>x.id!==id));
+  const del=(id)=>{ if(confirm('Bạn có chắc muốn xoá? Thao tác này không hoàn tác được.')){ setSpots(spots.filter(x=>x.id!==id)); } };
   const toggle=(id)=>setSpots(spots.map(x=>x.id===id?{...x,done:!x.done}:x));
 
   return (
@@ -2305,7 +2342,7 @@ function Timeline({people,me}){
   const [open,setOpen]=useState(false);
   const [edit,setEdit]=useState(null);
   const save=(it)=>{ if(it.id) setItems(items.map(x=>x.id===it.id?it:x)); else setItems([...items,{...it,id:uid(),by:me,createdAt:Date.now()}]); setOpen(false); setEdit(null); };
-  const del=(id)=>setItems(items.filter(x=>x.id!==id));
+  const del=(id)=>{ if(confirm('Bạn có chắc muốn xoá? Thao tác này không hoàn tác được.')){ setItems(items.filter(x=>x.id!==id)); } };
   const shown=items.slice().sort((a,b)=>(a.date||'').localeCompare(b.date||''));
   return (
     <div>
@@ -2376,7 +2413,7 @@ function Chores({people,me}){
   const [who,setWho]=useState('both');
   const add=()=>{ if(!t.trim())return; setItems([{id:uid(),title:t.trim(),who,done:false,by:me,createdAt:Date.now()},...items]); setT(''); };
   const toggle=(id)=>setItems(items.map(x=>x.id===id?{...x,done:!x.done}:x));
-  const del=(id)=>setItems(items.filter(x=>x.id!==id));
+  const del=(id)=>{ if(confirm('Bạn có chắc muốn xoá? Thao tác này không hoàn tác được.')){ setItems(items.filter(x=>x.id!==id)); } };
   const resetAll=()=>setItems(items.map(x=>({...x,done:false})));
   const whoLabel=(w)=> w==='a'?people.a.name : w==='b'?people.b.name : 'Cả hai';
   const whoAv=(w)=> w==='a'?people.a.avatar : w==='b'?people.b.avatar : '👫';
@@ -2412,10 +2449,10 @@ function Goals({people,me}){
   const [goals,setGoals]=useLocal('ju.goals',[]);
   const [open,setOpen]=useState(false);
   const save=(g)=>{ setGoals([{...g,id:uid(),by:me,steps:[],createdAt:Date.now()},...goals]); setOpen(false); };
-  const del=(id)=>setGoals(goals.filter(x=>x.id!==id));
+  const del=(id)=>{ if(confirm('Bạn có chắc muốn xoá? Thao tác này không hoàn tác được.')){ setGoals(goals.filter(x=>x.id!==id)); } };
   const addStep=(gid,text)=>setGoals(goals.map(g=>g.id===gid?{...g,steps:[...(g.steps||[]),{id:uid(),text,done:false}]}:g));
   const toggleStep=(gid,sid)=>setGoals(goals.map(g=>{ if(g.id!==gid) return g; const steps=g.steps.map(s=>s.id===sid?{...s,done:!s.done}:s); if(steps.length&&steps.every(s=>s.done)&&!g.steps.every(s=>s.done)) celebrate(['🏆','🎉','💞','✨']); return {...g,steps}; }));
-  const delStep=(gid,sid)=>setGoals(goals.map(g=>g.id===gid?{...g,steps:g.steps.filter(s=>s.id!==sid)}:g));
+  const delStep=(gid,sid)=>{ if(confirm('Bạn có chắc muốn xoá? Thao tác này không hoàn tác được.')){ setGoals(goals.map(g=>g.id===gid?{...g,steps:g.steps.filter(s=>s.id!==sid)}:g)); } };
   return (
     <div>
       <div className="row" style={{margin:'10px 14px'}}><span className="grow muted" style={{fontSize:13}}>Mục tiêu hai đứa cùng theo đuổi 🎯</span>
@@ -2491,7 +2528,7 @@ function PartnerWishes({people,me}){
   const partner=me==='a'?'b':'a';
   const add=()=>{ if(!t.trim())return; setItems([{id:uid(),by:me,text:t.trim(),done:false,createdAt:Date.now()},...items]); setT(''); celebrate(['💛']); };
   const toggle=(id)=>setItems(items.map(x=>x.id===id?{...x,done:!x.done}:x));
-  const del=(id)=>setItems(items.filter(x=>x.id!==id));
+  const del=(id)=>{ if(confirm('Bạn có chắc muốn xoá? Thao tác này không hoàn tác được.')){ setItems(items.filter(x=>x.id!==id)); } };
   const mine=items.filter(x=>x.by===me);
   const forMe=items.filter(x=>x.by===partner);
   return (
@@ -2567,7 +2604,7 @@ function FamilyTodos({people,me}){
   const [showDone,setShowDone]=useState(false);
   const add=()=>{ if(!t.trim())return; setItems([{id:uid(),title:t.trim(),who,priority:prio,due:due||'',done:false,by:me,createdAt:Date.now()},...items]); setT('');setDue(''); celebrate(['📝']); };
   const toggle=(id)=>setItems(items.map(x=>x.id===id?{...x,done:!x.done}:x));
-  const del=(id)=>setItems(items.filter(x=>x.id!==id));
+  const del=(id)=>{ if(confirm('Bạn có chắc muốn xoá? Thao tác này không hoàn tác được.')){ setItems(items.filter(x=>x.id!==id)); } };
   const prioOf=(k)=>TODO_PRIO.find(p=>p.k===k)||TODO_PRIO[1];
   const prioRank=(k)=>({cao:0,vua:1,thap:2}[k]!=null?{cao:0,vua:1,thap:2}[k]:1);
   const whoLabel=(w)=> w==='a'?people.a.name : w==='b'?people.b.name : 'Cả hai';
@@ -2670,7 +2707,7 @@ function FamilyProjects({people,me}){
   const addTask=(id,text)=>setProjects(projects.map(p=>p.id===id?{...p,tasks:[...(p.tasks||[]),{id:uid(),text,done:false}]}:p));
   const addTasks=(id,arr)=>setProjects(projects.map(p=>p.id===id?{...p,tasks:[...(p.tasks||[]),...arr.filter(tx=>!(p.tasks||[]).some(t=>t.text===tx)).map(tx=>({id:uid(),text:tx,done:false}))]}:p));
   const toggleTask=(id,tid)=>setProjects(projects.map(p=>p.id===id?{...p,tasks:p.tasks.map(t=>t.id===tid?{...t,done:!t.done}:t)}:p));
-  const delTask=(id,tid)=>setProjects(projects.map(p=>p.id===id?{...p,tasks:p.tasks.filter(t=>t.id!==tid)}:p));
+  const delTask=(id,tid)=>{ if(confirm('Bạn có chắc muốn xoá? Thao tác này không hoàn tác được.')){ setProjects(projects.map(p=>p.id===id?{...p,tasks:p.tasks.filter(t=>t.id!==tid)}:p)); } };
   const openVinha=()=>{ if(vinha){ window.open(vinha,'_blank','noreferrer'); } else setLinkOpen(true); };
   const shown=projects.slice().sort((a,b)=>(a.date||'9').localeCompare(b.date||'9'));
   return (
@@ -2983,7 +3020,7 @@ function WeeklyMenu({me}){
           <button className="btn sm" onClick={addFav}>＋</button>
         </div>
         {favs.length>0 && <div style={{margin:'10px 0'}}>{favs.map((f,i)=>(
-          <span key={i} className="pill" style={{margin:'3px 6px 3px 0',padding:'7px 11px',fontSize:12.5}}>{f.t==='canh'?'🥣':'🍖'} {f.n} <span onClick={()=>setFavs(favs.filter(x=>x.n!==f.n))} style={{cursor:'pointer',marginLeft:4}}>✕</span></span>
+          <span key={i} className="pill" style={{margin:'3px 6px 3px 0',padding:'7px 11px',fontSize:12.5}}>{f.t==='canh'?'🥣':'🍖'} {f.n} <span onClick={()=>{ if(confirm('Bỏ món ưa thích này?')) setFavs(favs.filter(x=>x.n!==f.n)); }} style={{cursor:'pointer',marginLeft:4}}>✕</span></span>
         ))}</div>}
         {dislikedNames.length>0 && <><div className="sec-title" style={{marginLeft:0}}>👎 Món đang ẩn (không gợi ý)</div>
           <div>{dislikedNames.map(n=>(<span key={n} className="pill" style={{margin:'3px 6px 3px 0',padding:'7px 11px',fontSize:12.5,background:'var(--chip)'}}>{n} <span onClick={()=>rate(n,-1)} style={{cursor:'pointer',marginLeft:4}}>↩︎</span></span>))}</div></>}
@@ -3091,7 +3128,7 @@ function ChildCare({people,me}){
           <div key={e.id} className="row" style={{padding:'6px 14px',borderBottom:'1px solid var(--line)',fontSize:13}}>
             <span className="muted grow">{fmtDateVN(e.date)}</span>
             <span>{e.w?'⚖️ '+e.w+'kg':''}{e.w&&e.h?'  ':''}{e.h?'📐 '+e.h+'cm':''}</span>
-            <button className="iconbtn" onClick={()=>setGrowth(growth.filter(x=>x.id!==e.id))}>🗑️</button>
+            <button className="iconbtn" onClick={()=>{ if(confirm('Xoá lần đo này?')) setGrowth(growth.filter(x=>x.id!==e.id)); }}>🗑️</button>
           </div>
         ))}
       </div>}
@@ -3109,7 +3146,7 @@ function ChildCare({people,me}){
         {diary.map(d=>(
           <div key={d.id} className="item">
             <div className="row"><span className="muted grow" style={{fontSize:12}}>{fmtDateVN(d.date)}</span>
-              <button className="iconbtn" onClick={()=>setDiary(diary.filter(x=>x.id!==d.id))}>🗑️</button></div>
+              <button className="iconbtn" onClick={()=>{ if(confirm('Xoá ghi chú này?')) setDiary(diary.filter(x=>x.id!==d.id)); }}>🗑️</button></div>
             <div style={{fontSize:14,marginTop:2}}>{d.text}</div>
           </div>
         ))}
@@ -3118,7 +3155,7 @@ function ChildCare({people,me}){
   );
 }
 const US_SEGS=[
-  {k:'child',icon:'👶',label:'Nuôi con'},
+  {k:'wish',icon:'💝',label:'Ước muốn'},
   {k:'projects',icon:'💒',label:'Việc gia đình'},
   {k:'spirit',icon:'🪷',label:'Tâm linh'},
   {k:'period',icon:'🌸',label:'Chu kỳ'},
@@ -3159,7 +3196,7 @@ function UsTab({people,me,flash}){
           </div>}
       <div className="row" style={{margin:'4px 14px 0'}}><span className="grow"></span>
         <button className="muted" style={{fontSize:11.5}} onClick={()=>setEditOrder(v=>!v)}>{editOrder?'✓ Xong':'↕︎ Sắp xếp mục'}</button></div>
-      {seg==='child' && <ChildCare people={people} me={me}/>}
+      {seg==='wish' && <WishTab people={people} me={me} flash={flash}/>}
       {seg==='projects' && <FamilyProjects people={people} me={me}/>}
       {seg==='spirit' && <SpiritualSection/>}
       {seg==='period' && <PeriodTracker people={people}/>}
@@ -3242,10 +3279,10 @@ function Events({people,me}){
     else setEvents([{...e,id:uid(),by:me,todos:[],createdAt:Date.now()},...events]);
     setOpen(false);setEdit(null);
   };
-  const del=(id)=>setEvents(events.filter(x=>x.id!==id));
+  const del=(id)=>{ if(confirm('Bạn có chắc muốn xoá? Thao tác này không hoàn tác được.')){ setEvents(events.filter(x=>x.id!==id)); } };
   const addTodo=(id,text)=> setEvents(events.map(e=>e.id===id?{...e,todos:[...(e.todos||[]),{id:uid(),text,done:false}]}:e));
   const toggleTodo=(id,tid)=> setEvents(events.map(e=>e.id===id?{...e,todos:e.todos.map(t=>t.id===tid?{...t,done:!t.done}:t)}:e));
-  const delTodo=(id,tid)=> setEvents(events.map(e=>e.id===id?{...e,todos:e.todos.filter(t=>t.id!==tid)}:e));
+  const delTodo=(id,tid)=>{ if(confirm('Bạn có chắc muốn xoá? Thao tác này không hoàn tác được.')){ setEvents(events.map(e=>e.id===id?{...e,todos:e.todos.filter(t=>t.id!==tid)}:e)); } };
 
   // Tết: tự gợi ý tạo kế hoạch khi còn ≤30 ngày (ẩn lúc khác)
   const tetISO=nextTetISO(); const tetD=tetISO?daysFromToday(tetISO):null; const tetYr=tetISO?tetISO.slice(0,4):'';
@@ -3263,6 +3300,10 @@ function Events({people,me}){
     todos:['Mua quà','Đặt bàn nhà hàng','Đặt bánh sinh nhật'].map(t=>({id:uid(),text:t,done:false})),createdAt:Date.now()},...p]); celebrate(['🎂','🎁']); };
   const makeRam=(h)=>{ const mk='ram-'+h.date; if(hasAuto(mk)) return; setEvents(p=>[{id:uid(),title:h.icon+' '+h.name+' — sắm đồ thắp hương',date:h.date,note:'Dậy sớm mua hoa quả, vàng hương',by:me,auto:mk,
     todos:['Mua hoa tươi','Mua hoa quả','Mua vàng / hương','Bày mâm thắp hương sáng sớm'].map(t=>({id:uid(),text:t,done:false})),createdAt:Date.now()},...p]); celebrate(['🌸']); };
+  const giftHols=upcomingGiftHolidays(30);
+  const ghTodos=(h)=> h.who==='both'?['Mua hoa','Chọn quà cho nhau','Đặt bàn ăn / hẹn hò']:['Mua hoa','Chọn quà','Đặt bàn nhà hàng'];
+  const makeGiftHol=(h)=>{ const mk='gh-'+h.name+'-'+h.date.slice(0,4); if(hasAuto(mk)) return; setEvents(p=>[{id:uid(),title:h.icon+' '+h.name,date:h.date,note:h.note,by:me,auto:mk,
+    todos:ghTodos(h).map(t=>({id:uid(),text:t,done:false})),createdAt:Date.now()},...p]); celebrate(['🌹','🎁']); };
 
   const shown=events.slice().sort((a,b)=>(a.date||'9').localeCompare(b.date||'9'));
   return (
@@ -3288,6 +3329,13 @@ function Events({people,me}){
             <span className="grow" style={{fontSize:13.5}}>{h.d===0?'Hôm nay':h.d===1?'Ngày mai':'Còn '+h.d+' ngày'} là <b>{h.name}</b> — dậy sớm mua đồ thắp hương.</span></div>
           {made? <div className="muted" style={{fontSize:12,marginTop:6}}>✓ Đã thêm việc sắm lễ bên dưới.</div>
                : <button className="btn" style={{marginTop:8}} onClick={()=>makeRam(h)}>🛒 Tạo việc sắm lễ</button>}
+        </div>; })}
+      {giftHols.map(h=>{ const made=hasAuto('gh-'+h.name+'-'+h.date.slice(0,4));
+        return <div key={h.name} className="card" style={{borderLeft:'4px solid var(--primary)',background:'linear-gradient(135deg,var(--chip),var(--card))'}}>
+          <div className="row" style={{gap:8}}><span style={{fontSize:20}}>{h.icon}</span>
+            <span className="grow" style={{fontSize:13.5}}>{h.d===0?'Hôm nay':h.d===1?'Ngày mai':'Còn '+h.d+' ngày'} là <b>{h.name}</b> — {h.note}.{h.who==='h2w'?' 💑 (chồng → vợ)':h.who==='w2h'?' 💑 (vợ → chồng)':''}</span></div>
+          {made? <div className="muted" style={{fontSize:12,marginTop:6}}>✓ Đã thêm việc chuẩn bị bên dưới.</div>
+               : <button className="btn" style={{marginTop:8}} onClick={()=>makeGiftHol(h)}>🎁 Tạo việc mua hoa & quà</button>}
         </div>; })}
       {showCal && <MiniCalendar/>}
       {shown.length===0 && <div className="empty"><span className="big">📅</span>Sinh nhật, du lịch, kỷ niệm… kèm checklist chuẩn bị.</div>}
@@ -3390,6 +3438,14 @@ const GIFT_IDEAS={
 };
 function giftIdeas(gender,age){ const band=GIFT_IDEAS[bandOf(age)]||GIFT_IDEAS.young;
   const g=gender==='nam'?band.nam:gender==='nu'?band.nu:[]; return [...(g||[]),...band.chung]; }
+function ageOf(d){ if(!d) return null; const today=new Date(todayISO()+'T00:00:00'); const cy=today.getFullYear();
+  const by=d.birthYear?Number(d.birthYear):((!d.lunar&&d.date&&Number(d.date.slice(0,4))<cy)?Number(d.date.slice(0,4)):null);
+  if(!by||by<1900||by>cy) return null;
+  let nextOccYear;
+  if(d.lunar){ const nd=dnextDate(d); if(!nd) return null; nextOccYear=Number(nd.slice(0,4)); }
+  else { const bm=Number(d.date.slice(5,7)), bd=Number(d.date.slice(8,10)); const thisYear=new Date(cy,bm-1,bd);
+    if(thisYear.getTime()===today.getTime()) return cy-by; nextOccYear = thisYear>today? cy : cy+1; }
+  const a=nextOccYear-by-1; return (a>=0&&a<140)?a:null; }
 function DatesCalendar({dates}){
   const now=new Date();
   const [ym,setYm]=useState({y:now.getFullYear(),m:now.getMonth()});
@@ -3444,7 +3500,7 @@ function ImportantDates({people,me}){
     else setDates([{...d,id:uid(),by:me,createdAt:Date.now()},...dates]);
     setOpen(false);setEdit(null);
   };
-  const del=(id)=>setDates(dates.filter(x=>x.id!==id));
+  const del=(id)=>{ if(confirm('Bạn có chắc muốn xoá? Thao tác này không hoàn tác được.')){ setDates(dates.filter(x=>x.id!==id)); } };
   const addBulk=()=>{
     const lines=(bulkText||'').split(/\n+/).map(s=>s.trim()).filter(Boolean);
     const parsed=[];
@@ -3517,6 +3573,7 @@ function ImportantDates({people,me}){
             <div className="row" style={{gap:5,marginTop:3,flexWrap:'wrap'}}>
               <span className="pill" style={{fontSize:10.5,padding:'2px 7px'}}>{(DATE_KINDS.find(k=>k.k===kindOf(d))||{}).icon} {(DATE_KINDS.find(k=>k.k===kindOf(d))||{}).label}</span>
               {sideOf(d)!=='khac' && <span className="pill" style={{fontSize:10.5,padding:'2px 7px'}}>{sideIcon(sideOf(d))} {sideLabel(sideOf(d))}</span>}
+              {kindOf(d)==='birthday' && ageOf(d)!=null && <span className="pill" style={{fontSize:10.5,padding:'2px 7px',background:'var(--chip)'}}>🎈 {ageOf(d)} tuổi</span>}
             </div>
             <div className="muted" style={{fontSize:12,marginTop:3}}>{d.lunar?`${d.lunarDay}/${d.lunarMonth} âm lịch · dương: ${fmtDateVN(dnextDate(d))}`:`${fmtDateVN(d.date)} hằng năm`}{d.remind?` · nhắc trước ${d.remind} ngày`:''}</div>
             <div className="it-meta">
@@ -3543,17 +3600,17 @@ function ImportantDates({people,me}){
         <div className="card" style={{marginTop:12,whiteSpace:'pre-wrap',fontSize:12.5,lineHeight:1.6,maxHeight:230,overflow:'auto'}}>{buildBirthdayText()}</div>
         <div className="muted center" style={{fontSize:11,marginTop:8}}>Giỗ âm lịch xuất theo ngày dương của năm nay (không tự lặp chuẩn theo âm lịch).</div>
       </Sheet>}
-      {giftFor && <Sheet title={'🎁 Quà cho '+giftFor.title} onClose={()=>setGiftFor(null)}>
-        {(!giftFor.gender||!giftFor.age) && <div className="muted" style={{fontSize:12,marginBottom:8}}>💡 Bấm ✏️ sửa để thêm <b>giới tính</b> & <b>tuổi</b> cho gợi ý chính xác hơn.</div>}
-        <div className="muted" style={{fontSize:12.5,marginBottom:10}}>{giftFor.gender==='nam'?'👨 Nam':giftFor.gender==='nu'?'👩 Nữ':'Chưa rõ giới tính'} · {giftFor.age?('≈ '+giftFor.age+' tuổi'):'chưa rõ tuổi'} · {(GIFT_BANDS.find(b=>b.k===bandOf(giftFor.age))||{}).label}</div>
+      {giftFor && (()=>{ const gAge=ageOf(giftFor)!=null?ageOf(giftFor):giftFor.age; return <Sheet title={'🎁 Quà cho '+giftFor.title} onClose={()=>setGiftFor(null)}>
+        {(!giftFor.gender||gAge==null||gAge==='') && <div className="muted" style={{fontSize:12,marginBottom:8}}>💡 Bấm ✏️ sửa để thêm <b>giới tính</b> & <b>năm sinh</b> cho gợi ý chính xác hơn.</div>}
+        <div className="muted" style={{fontSize:12.5,marginBottom:10}}>{giftFor.gender==='nam'?'👨 Nam':giftFor.gender==='nu'?'👩 Nữ':'Chưa rõ giới tính'} · {gAge?('≈ '+gAge+' tuổi'):'chưa rõ tuổi'} · {(GIFT_BANDS.find(b=>b.k===bandOf(gAge))||{}).label}</div>
         <div style={{display:'flex',flexWrap:'wrap',gap:8}}>
-          {giftIdeas(giftFor.gender,giftFor.age).map((g,i)=>(
+          {giftIdeas(giftFor.gender,gAge).map((g,i)=>(
             <a key={i} className="pill" style={{padding:'8px 12px',fontSize:12.5,textDecoration:'none'}}
               href={'https://www.google.com/search?tbm=shop&q='+encodeURIComponent(g)} target="_blank" rel="noreferrer">{g} 🔍</a>
           ))}
         </div>
         <div className="muted center" style={{fontSize:11,marginTop:12}}>Chạm món quà để tìm mua trên mạng.</div>
-      </Sheet>}
+      </Sheet>; })()}
     </div>
   );
 }
@@ -3590,8 +3647,8 @@ function DateForm({init,onClose,onSave}){
         <div className="field grow" style={{margin:0}}><label>Giới tính (gợi ý quà)</label>
           <select className="inp" value={f.gender||''} onChange={e=>setF({...f,gender:e.target.value})}>
             <option value="">— Chọn —</option><option value="nam">Nam</option><option value="nu">Nữ</option></select></div>
-        <div className="field grow" style={{margin:0}}><label>Tuổi (≈)</label>
-          <input className="inp" type="number" value={f.age||''} onChange={e=>setF({...f,age:e.target.value})} placeholder="vd 30"/></div>
+        <div className="field grow" style={{margin:0}}><label>Năm sinh (tự tính tuổi)</label>
+          <input className="inp" type="number" value={f.birthYear||''} onChange={e=>setF({...f,birthYear:e.target.value})} placeholder="vd 1990"/></div>
       </div>
       <div className="field"><label>Biểu tượng</label>
         <div className="emoji-row">{ICONS.map(i=><button key={i} className={f.icon===i?'on':''} onClick={()=>setF({...f,icon:i})}>{i}</button>)}</div></div>
@@ -3613,7 +3670,7 @@ function Fund({people,me}){
     else setGoals([{...g,id:uid(),by:me,contribs:[],createdAt:Date.now()},...goals]);
     setOpen(false);setEdit(null);
   };
-  const del=(id)=>setGoals(goals.filter(x=>x.id!==id));
+  const del=(id)=>{ if(confirm('Bạn có chắc muốn xoá? Thao tác này không hoàn tác được.')){ setGoals(goals.filter(x=>x.id!==id)); } };
   const addContrib=(gid,amount,who)=> setGoals(goals.map(g=>g.id===gid?{...g,contribs:[...(g.contribs||[]),{id:uid(),amount,by:who,date:todayISO()}]}:g));
 
   return (
@@ -3691,8 +3748,8 @@ function Shopping({people,me}){
   const [t,setT]=useState('');
   const add=()=>{ if(!t.trim())return; setItems([{id:uid(),text:t.trim(),by:me,done:false},...items]); setT(''); };
   const toggle=(id)=>setItems(items.map(x=>x.id===id?{...x,done:!x.done}:x));
-  const del=(id)=>setItems(items.filter(x=>x.id!==id));
-  const clearDone=()=>setItems(items.filter(x=>!x.done));
+  const del=(id)=>{ if(confirm('Bạn có chắc muốn xoá? Thao tác này không hoàn tác được.')){ setItems(items.filter(x=>x.id!==id)); } };
+  const clearDone=()=>{ if(confirm('Xoá các việc đã hoàn thành?')){ setItems(items.filter(x=>!x.done)); } };
   const left=items.filter(x=>!x.done);
   const done=items.filter(x=>x.done);
   return (
@@ -3739,7 +3796,7 @@ function Notes({people,me}){
   const endRef=useRef(null);
   const add=()=>{ if(!t.trim())return; setNotes([...notes,{id:uid(),by:me,text:t.trim(),createdAt:Date.now()}]); setT(''); };
   useEffect(()=>{ endRef.current?.scrollIntoView({behavior:'smooth'}); },[notes.length]);
-  const del=(id)=>setNotes(notes.filter(x=>x.id!==id));
+  const del=(id)=>{ if(confirm('Bạn có chắc muốn xoá? Thao tác này không hoàn tác được.')){ setNotes(notes.filter(x=>x.id!==id)); } };
   const heart=(id)=>setNotes(notes.map(n=>{ if(n.id!==id) return n; const r={...(n.reacts||{})}; r[me]=r[me]?null:'❤️'; return {...n,reacts:r}; }));
   return (
     <div>
@@ -4383,9 +4440,9 @@ function PinLock({pin,onOk}){
 
 /* ============ APP ============ */
 const SEARCH_SRC=[
-  {key:'ju.wish',cat:'🎁 Quà',tab:'wish'},{key:'ju.bucket',cat:'🎯 Muốn làm',tab:'wish'},
-  {key:'ju.watch',cat:'🎬 Xem·Đọc·Nghe',tab:'wish'},{key:'ju.links',cat:'🔗 Link',tab:'wish'},
-  {key:'ju.coupons',cat:'🎟️ Phiếu',tab:'wish'},{key:'ju.ideas',cat:'💡 Ý tưởng',tab:'date'},
+  {key:'ju.wish',cat:'🎁 Quà',tab:'us'},{key:'ju.bucket',cat:'🎯 Muốn làm',tab:'us'},
+  {key:'ju.watch',cat:'🎬 Xem·Đọc·Nghe',tab:'us'},{key:'ju.links',cat:'🔗 Link',tab:'us'},
+  {key:'ju.coupons',cat:'🎟️ Phiếu',tab:'us'},{key:'ju.ideas',cat:'💡 Ý tưởng',tab:'date'},
   {key:'ju.food',cat:'🍜 Quán/Món',tab:'date'},{key:'ju.spots',cat:'🗺️ Bản đồ',tab:'date'},
   {key:'ju.events',cat:'📅 Sự kiện',tab:'us'},{key:'ju.timeline',cat:'🕰️ Kỷ niệm',tab:'us'},
   {key:'ju.chores',cat:'🧹 Việc nhà',tab:'us'},{key:'ju.lovejar',cat:'🫙 Lọ yêu thương',tab:'home'},
@@ -4457,14 +4514,14 @@ function App(){
       {showSearch && <GlobalSearch go={setTab} onClose={()=>setShowSearch(false)}/>}
 
       {tab==='home' && <Home setup={setup} people={people} me={me} go={setTab}/>}
-      {tab==='wish' && <WishTab people={people} me={me} flash={flash}/>}
+      {tab==='child' && <ChildCare people={people} me={me}/>}
       {tab==='date' && <DateTab people={people} me={me} flash={flash}/>}
       {tab==='us' && <UsTab people={people} me={me} flash={flash}/>}
       {tab==='talk' && <TalkTab people={people} me={me} flash={flash}/>}
       {tab==='me' && <Profile setup={setup} setSetup={setSetup} people={people} me={me} setMe={setMe} flash={flash}/>}
 
       <div className="nav">
-        {[['home','🏠','Tổ ấm'],['wish','💝','Ước muốn'],['date','🗺️','Hẹn hò'],['us','📅','Tụi mình'],['talk','💬','Nói chuyện'],['me','💞','Hồ sơ']].map(([k,ic,l])=>(
+        {[['home','🏠','Tổ ấm'],['child','👶','Nuôi con'],['date','🗺️','Hẹn hò'],['us','📅','Tụi mình'],['talk','💬','Nói chuyện'],['me','💞','Hồ sơ']].map(([k,ic,l])=>(
           <button key={k} className={tab===k?'on':''} onClick={()=>setTab(k)}>
             <span className="ic">{ic}</span>{l}
           </button>
