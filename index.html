@@ -1295,6 +1295,7 @@ function HanoiCatalog({me,flash}){
   const list=HANOI_SPOTS.filter(s=>(!cat||s.cat===cat)&&(!bud||s.budget===bud));
   const isFood=(s)=>s.cat==='an'||s.cat==='cafe';
   const info=(s)=>[s.h?'🕘 '+s.h:'', s.p?'💵 '+s.p:''].filter(Boolean).join(' · ');
+  const mapsUrl=(s)=> 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(s.n+(/Hà Nội|Gia Lâm|Hưng Yên/i.test(s.area)?', '+s.area:', '+s.area+', Hà Nội'));
   const addIdea=(s)=>{ setIdeas(p=>[{id:uid(),title:s.n,budget:s.budget,note:[s.area,s.note,info(s)].filter(Boolean).join(' · '),by:me,fav:false,done:false,createdAt:Date.now()},...p]); flash('Đã lưu ý tưởng: '+s.n); };
   const addFood=(s)=>{ setFood(p=>[{id:uid(),title:s.n,address:s.area,note:[s.note,info(s)].filter(Boolean).join(' · '),by:me,fav:false,done:false,createdAt:Date.now()},...p]); flash('Đã lưu vào Quán: '+s.n); };
   const pin=(s)=>{ setSpots(p=>[{id:uid(),title:s.n,cat:isFood(s)?'ăn':'chơi',note:[s.area,s.note,info(s)].filter(Boolean).join(' · '),lat:s.lat,lng:s.lng,by:me,done:false,createdAt:Date.now()},...p]); flash('Đã ghim bản đồ: '+s.n); };
@@ -1319,8 +1320,9 @@ function HanoiCatalog({me,flash}){
           {s.note && <div className="it-note">{s.note}</div>}
           <div className="it-meta">
             <span className="pill">{budgetLabel(s.budget)}</span>
+            <a className="pill" href={mapsUrl(s)} target="_blank" rel="noreferrer" style={{textDecoration:'none'}}>🗺️ Chỉ đường</a>
             <span className="grow"></span>
-            <button className="pill" onClick={()=>isFood(s)?addFood(s):addIdea(s)}>{isFood(s)?'🍽️ Lưu Quán':'💡 Lưu ý tưởng'}</button>
+            <button className="pill" onClick={()=>isFood(s)?addFood(s):addIdea(s)}>{isFood(s)?'🍽️ Lưu Quán':'💡 Lưu'}</button>
             {s.lat!=null && <button className="pill" onClick={()=>pin(s)}>📍 Ghim</button>}
           </div>
         </div>
@@ -1522,6 +1524,7 @@ function MapSpots({people,me}){
           {s.note && <div className="it-note">{s.note}</div>}
           <div className="it-meta">
             <span className="av-sm">{people[s.by]?.avatar||'❤️'}</span>
+            {s.lat!=null && <a className="pill" href={'https://www.google.com/maps/dir/?api=1&destination='+s.lat+','+s.lng} target="_blank" rel="noreferrer" style={{textDecoration:'none'}}>🗺️ Chỉ đường</a>}
             <span className="grow"></span>
             <button className="pill" onClick={()=>toggle(s.id)}>{s.done?'↩︎ Chưa đi':'✓ Đã đi'}</button>
             <button className="iconbtn" onClick={()=>del(s.id)}>🗑️</button>
