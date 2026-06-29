@@ -123,6 +123,11 @@ textarea.inp{resize:vertical;min-height:64px}
 .seg{display:flex;gap:6px;background:var(--chip);border-radius:14px;padding:5px;margin:12px 14px;overflow:auto}
 .seg button{flex:0 0 auto;padding:8px 13px;border-radius:10px;font-weight:700;font-size:13px;color:var(--chip-tx);white-space:nowrap}
 .seg button.on{background:var(--card);color:var(--primary);box-shadow:0 3px 10px rgba(0,0,0,.08)}
+.menugrid{display:grid;gap:8px;margin:12px 14px}
+.gtile{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:11px 4px;border-radius:14px;
+  background:var(--card);border:1px solid var(--line);color:var(--muted);font-size:11px;font-weight:700;line-height:1.18;text-align:center;min-height:62px}
+.gtile .gic{font-size:23px;line-height:1}
+.gtile.on{background:var(--primary);color:var(--on-primary);border-color:var(--primary);box-shadow:var(--shadow)}
 
 /* Filter chips */
 .filters{display:flex;gap:7px;margin:10px 14px 0;flex-wrap:wrap}
@@ -249,7 +254,7 @@ const store={
 const SB_URL='https://vvgkjgvzjeklaadusbne.supabase.co';
 const SB_KEY='sb_publishable_DMMPv5L2kGhrHTxeQ72iKw_dIh13iT1';
 // Các key được đồng bộ (KHÔNG gồm ju.me/ju.device/ju.sync — đó là riêng từng máy)
-const SYNC_KEYS=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood','ju.qa','ju.timeline','ju.coupons','ju.chores','ju.lovejar','ju.quiz','ju.city','ju.goals','ju.checkin','ju.challengeDone','ju.homecfg'];
+const SYNC_KEYS=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood','ju.qa','ju.timeline','ju.coupons','ju.chores','ju.lovejar','ju.quiz','ju.city','ju.goals','ju.checkin','ju.challengeDone','ju.homecfg','ju.diary'];
 let _sb=null;
 function sbClient(){
   if(_sb) return _sb;
@@ -686,9 +691,23 @@ function Sheet({title,onClose,children}){
   );
 }
 
+/* ============ Menu lưới biểu tượng (thay seg cuộn ngang) ============ */
+function SegGrid({items, value, onChange, cols=4}){
+  return (
+    <div className="menugrid" style={{gridTemplateColumns:'repeat('+cols+',1fr)'}}>
+      {items.map(it=>(
+        <button key={it.k} className={'gtile'+(value===it.k?' on':'')} onClick={()=>onChange(it.k)}>
+          <span className="gic">{it.icon}</span><span>{it.label}</span>
+        </button>
+      ))}
+    </div>
+  );
+}
+
 /* ============ Generic list (Wishlist, Bucket, Watch, Links, Places, Food, Date ideas) ============ */
-function SimpleList({skey, people, me, addLabel, doneLabel='Xong', fields=[], tagOptions, empty, flash, suggest}){
+function SimpleList({skey, people, me, addLabel, doneLabel='Xong', fields=[], tagOptions, empty, flash, suggest, claimable}){
   const [items,setItems]=useLocal(skey,[]);
+  const claim=(id)=> setItems(items.map(x=>x.id===id?{...x,claimedBy:x.claimedBy?null:me}:x));
   const [filter,setFilter]=useState('all');
   const [q,setQ]=useState('');
   const [open,setOpen]=useState(false);
@@ -748,6 +767,8 @@ function SimpleList({skey, people, me, addLabel, doneLabel='Xong', fields=[], ta
             {it.tag && <span className="pill">{it.tag}</span>}
             {typeof it.rating==='number' && it.rating>0 && <Stars value={it.rating} />}
             <span className="grow"></span>
+            {claimable && it.by!==me && <button className="pill" onClick={()=>claim(it.id)}
+              style={{background:it.claimedBy?'var(--good)':'var(--chip)',color:it.claimedBy?'#fff':'var(--chip-tx)'}}>{it.claimedBy?'🤫 Đã nhận lo':'🤝 Tôi lo'}</button>}
             <button className="pill" onClick={()=>toggle(it.id,'done')}>{it.done?'↩︎ Bỏ':'✓ '+doneLabel}</button>
             <button className="iconbtn" onClick={()=>{setEdit(it);setOpen(true);}}>✏️</button>
             <button className="iconbtn" onClick={()=>del(it.id)}>🗑️</button>
@@ -1296,15 +1317,13 @@ function WishTab({people,me,flash}){
   const [seg,setSeg]=useState('gift');
   return (
     <div>
-      <div className="seg">
-        <button className={seg==='gift'?'on':''} onClick={()=>setSeg('gift')}>🎁 Quà tặng</button>
-        <button className={seg==='bucket'?'on':''} onClick={()=>setSeg('bucket')}>🎯 Muốn làm cùng</button>
-        <button className={seg==='watch'?'on':''} onClick={()=>setSeg('watch')}>🎬 Xem·Đọc·Nghe</button>
-        <button className={seg==='coupon'?'on':''} onClick={()=>setSeg('coupon')}>🎟️ Phiếu yêu thương</button>
-        <button className={seg==='link'?'on':''} onClick={()=>setSeg('link')}>🔗 Link hay</button>
-      </div>
+      <SegGrid value={seg} onChange={setSeg} items={[
+        {k:'gift',icon:'🎁',label:'Quà tặng'},{k:'bucket',icon:'🎯',label:'Muốn làm cùng'},
+        {k:'watch',icon:'🎬',label:'Xem·Đọc·Nghe'},{k:'coupon',icon:'🎟️',label:'Phiếu yêu thương'},
+        {k:'link',icon:'🔗',label:'Link hay'},
+      ]}/>
       {seg==='gift' && <SimpleList skey="ju.wish" people={people} me={me} addLabel="món quà" doneLabel="Đã tặng"
-        fields={['price','link','note']} suggest={GIFT_SUGGEST} empty={{icon:'🎁',text:'Ghi lại món quà bạn mơ ước — để nửa kia biết đường! Bấm 💡 để xem gợi ý.'}} flash={flash}/>}
+        fields={['photo','price','link','note']} suggest={GIFT_SUGGEST} claimable empty={{icon:'🎁',text:'Ghi lại món quà bạn mơ ước — để nửa kia biết đường! Bấm 💡 để xem gợi ý.'}} flash={flash}/>}
       {seg==='bucket' && <SimpleList skey="ju.bucket" people={people} me={me} addLabel="điều muốn làm" doneLabel="Đã làm"
         fields={['note']} suggest={BUCKET_SUGGEST} empty={{icon:'🎯',text:'Những điều hai đứa muốn làm cùng nhau… Bấm 💡 để xem gợi ý!'}} flash={flash}/>}
       {seg==='watch' && <SimpleList skey="ju.watch" people={people} me={me} addLabel="phim/sách/nhạc" doneLabel="Đã xong"
@@ -1400,12 +1419,10 @@ function DateTab({people,me,flash}){
   const [seg,setSeg]=useState('idea');
   return (
     <div>
-      <div className="seg">
-        <button className={seg==='idea'?'on':''} onClick={()=>setSeg('idea')}>💡 Ý tưởng</button>
-        <button className={seg==='hanoi'?'on':''} onClick={()=>setSeg('hanoi')}>📍 Gợi ý HN</button>
-        <button className={seg==='food'?'on':''} onClick={()=>setSeg('food')}>🍜 Quán & Món</button>
-        <button className={seg==='map'?'on':''} onClick={()=>setSeg('map')}>🗺️ Bản đồ</button>
-      </div>
+      <SegGrid value={seg} onChange={setSeg} items={[
+        {k:'idea',icon:'💡',label:'Ý tưởng'},{k:'hanoi',icon:'📍',label:'Gợi ý HN'},
+        {k:'food',icon:'🍜',label:'Quán & Món'},{k:'map',icon:'🗺️',label:'Bản đồ'},
+      ]}/>
       {seg==='idea' && <><WeatherCard/><DateIdeas people={people} me={me}/></>}
       {seg==='hanoi' && <HanoiCatalog me={me} flash={flash}/>}
       {seg==='food' && <SimpleList skey="ju.food" people={people} me={me} addLabel="quán/món" doneLabel="Đã thử"
@@ -1801,13 +1818,11 @@ function TalkTab({people,me,flash}){
   const [seg,setSeg]=useState('notes');
   return (
     <div>
-      <div className="seg">
-        <button className={seg==='notes'?'on':''} onClick={()=>setSeg('notes')}>💌 Nhắn nhau</button>
-        <button className={seg==='question'?'on':''} onClick={()=>setSeg('question')}>❓ Câu hỏi</button>
-        <button className={seg==='quiz'?'on':''} onClick={()=>setSeg('quiz')}>💞 Đố vui</button>
-        <button className={seg==='checkin'?'on':''} onClick={()=>setSeg('checkin')}>📝 Check-in</button>
-        <button className={seg==='topics'?'on':''} onClick={()=>setSeg('topics')}>🗣️ Chủ đề</button>
-      </div>
+      <SegGrid value={seg} onChange={setSeg} items={[
+        {k:'notes',icon:'💌',label:'Nhắn nhau'},{k:'question',icon:'❓',label:'Câu hỏi'},
+        {k:'quiz',icon:'💞',label:'Đố vui'},{k:'checkin',icon:'📝',label:'Check-in'},
+        {k:'topics',icon:'🗣️',label:'Chủ đề'},
+      ]}/>
       {seg==='notes' && <Notes people={people} me={me}/>}
       {seg==='question' && <DailyQuestion people={people} me={me}/>}
       {seg==='quiz' && <CoupleQuiz people={people} me={me}/>}
@@ -1821,15 +1836,12 @@ function UsTab({people,me,flash}){
   const [seg,setSeg]=useState('events');
   return (
     <div>
-      <div className="seg">
-        <button className={seg==='events'?'on':''} onClick={()=>setSeg('events')}>📅 Sự kiện</button>
-        <button className={seg==='dates'?'on':''} onClick={()=>setSeg('dates')}>🎂 Ngày nhớ</button>
-        <button className={seg==='timeline'?'on':''} onClick={()=>setSeg('timeline')}>🕰️ Kỷ niệm</button>
-        <button className={seg==='fund'?'on':''} onClick={()=>setSeg('fund')}>💰 Quỹ chung</button>
-        <button className={seg==='goals'?'on':''} onClick={()=>setSeg('goals')}>🎯 Mục tiêu</button>
-        <button className={seg==='shop'?'on':''} onClick={()=>setSeg('shop')}>🛒 Đi chợ</button>
-        <button className={seg==='chores'?'on':''} onClick={()=>setSeg('chores')}>🧹 Việc nhà</button>
-      </div>
+      <SegGrid value={seg} onChange={setSeg} items={[
+        {k:'events',icon:'📅',label:'Sự kiện'},{k:'dates',icon:'🎂',label:'Ngày nhớ'},
+        {k:'timeline',icon:'🕰️',label:'Kỷ niệm'},{k:'fund',icon:'💰',label:'Quỹ chung'},
+        {k:'goals',icon:'🎯',label:'Mục tiêu'},{k:'shop',icon:'🛒',label:'Đi chợ'},
+        {k:'chores',icon:'🧹',label:'Việc nhà'},
+      ]}/>
       {seg==='events' && <Events people={people} me={me}/>}
       {seg==='dates' && <ImportantDates people={people} me={me}/>}
       {seg==='timeline' && <Timeline people={people} me={me}/>}
