@@ -176,9 +176,9 @@ textarea.inp{resize:vertical;min-height:64px}
 
 /* Bottom nav */
 .nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;z-index:50;
-  background:var(--card);border-top:1px solid var(--line);display:flex;padding:7px 4px 9px}
-.nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--muted);font-size:10.5px;font-weight:700}
-.nav button .ic{font-size:21px;line-height:1}
+  background:var(--card);border-top:1px solid var(--line);display:flex;padding:7px 2px 9px}
+.nav button{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--muted);font-size:9.5px;font-weight:700;white-space:nowrap}
+.nav button .ic{font-size:20px;line-height:1}
 .nav button.on{color:var(--primary)}
 
 /* Modal */
@@ -636,6 +636,13 @@ function quizOfToday(){ return QUIZ_Q[((dayNumber()%QUIZ_Q.length)+QUIZ_Q.length
 const CHALLENGES=['Nói 3 điều bạn thích ở người kia','Ôm nhau thật chặt 20 giây','Cùng nấu hoặc pha một món','Gửi nhau một tin nhắn ngọt ngào','Đi dạo 15 phút, không điện thoại','Cùng nghe trọn một bài hát','Khen người kia một câu thật lòng','Massage vai cho nhau 5 phút','Cùng xem lại ảnh cũ','Lên kế hoạch một chuyến đi nhỏ','Viết 1 điều biết ơn về người kia','Hỏi kỹ về một ngày của nhau','Nắm tay khi ra ngoài','Tắt điện thoại khi ăn cùng nhau','Cùng dọn một góc nhà','Pha cho người kia một ly nước','Nhắc lại một kỷ niệm vui','Cùng tập thể dục 10 phút','Để lại một lời nhắn viết tay','Cùng lên thực đơn tuần này','Ôm từ phía sau khi người kia bận','Cho nhau xem một video buồn cười','Cùng thử một quán/món mới','Nói "cảm ơn" vì một điều nhỏ','Hôn lên trán người kia','Cùng ngắm hoàng hôn hoặc bầu trời','Kể một mong ước cho tương lai chung','Chơi một trò nhỏ cùng nhau (oẳn tù tì…)'];
 function challengeOfToday(){ return CHALLENGES[((dayNumber()%CHALLENGES.length)+CHALLENGES.length)%CHALLENGES.length]; }
 function streakOf(has){ let d=new Date(); d.setHours(0,0,0,0); if(!has(d)) d.setDate(d.getDate()-1); let n=0; while(has(d)){ n++; d.setDate(d.getDate()-1); } return n; }
+const TALK_TOPICS=[
+  {k:'Kỷ niệm',icon:'📷',list:['Lần đầu mình gặp nhau, em/anh đã nghĩ gì?','Kỷ niệm nào khiến bạn cười mỗi khi nhớ lại?','Chuyến đi nào đáng nhớ nhất của hai đứa?','Khoảnh khắc nào bạn thấy mình thật sự thuộc về nhau?','Lần nào hai đứa giận nhau rồi làm hoà đáng nhớ?','Món quà nào từ người kia khiến bạn xúc động nhất?']},
+  {k:'Tương lai',icon:'🌱',list:['5 năm nữa mình muốn sống ở đâu, làm gì?','Mình muốn dạy con điều gì quan trọng nhất?','Một giấc mơ chung mình muốn cùng thực hiện?','Mình muốn về già bên nhau như thế nào?','Có mục tiêu nào năm nay mình muốn cùng cố gắng?','Mình muốn xây dựng truyền thống gia đình nào?']},
+  {k:'Cảm xúc',icon:'💗',list:['Điều gì khiến bạn thấy được yêu thương nhất?','Khi buồn, bạn muốn người kia làm gì cho mình?','Gần đây điều gì khiến bạn lo lắng?','Bạn thấy biết ơn người kia vì điều gì tuần này?','Khi nào bạn thấy hạnh phúc nhất khi ở bên nhau?','Có điều gì bạn cần ở người kia nhiều hơn không?']},
+  {k:'Mối quan hệ',icon:'🤝',list:['Mình có thể làm gì để hiểu nhau hơn?','Có điều gì bạn muốn nói mà chưa nói?','Mình giải quyết bất đồng đã ổn chưa, cải thiện sao?','Điều gì ở mối quan hệ này khiến bạn tự hào?','Mình có đang dành đủ thời gian cho nhau không?','Một thói quen nhỏ nào mình nên cùng giữ?']},
+  {k:'Vu vơ',icon:'🎈',list:['Nếu có một siêu năng lực, bạn chọn gì?','Món ăn nào bạn có thể ăn cả đời không chán?','Bài hát nào khiến bạn nghĩ tới người kia?','Nếu trúng số, việc đầu tiên hai đứa làm là gì?','Bạn muốn nuôi con vật gì cùng nhau?','Kỳ nghỉ trong mơ của hai đứa là ở đâu?']},
+];
 const CITIES=[
   {k:'hanoi',name:'Hà Nội',lat:21.03,lng:105.85},{k:'hcm',name:'TP.HCM',lat:10.78,lng:106.70},
   {k:'danang',name:'Đà Nẵng',lat:16.05,lng:108.22},{k:'haiphong',name:'Hải Phòng',lat:20.86,lng:106.68},
@@ -729,6 +736,7 @@ function SimpleList({skey, people, me, addLabel, doneLabel='Xong', fields=[], ta
             <h4>{it.title}</h4>
             <button className={'heartbtn'+(it.fav?' on':'')} onClick={()=>toggle(it.id,'fav')}>{it.fav?'❤️':'🤍'}</button>
           </div>
+          {it.photo && <PhotoImg photo={it.photo} style={{width:'100%',maxHeight:200,objectFit:'cover',borderRadius:10,margin:'8px 0 0',display:'block'}}/>}
           {it.note && <div className="it-note">{it.note}</div>}
           {it.address && <div className="it-note muted">📍 {it.address}</div>}
           {it.link && <div style={{marginTop:6}}><a className="linkout" href={it.link} target="_blank" rel="noreferrer">🔗 {it.link}</a></div>}
@@ -768,11 +776,23 @@ function ItemForm({title,init,fields,tagOptions,onClose,onSave}){
   const [f,setF]=useState(()=> init? {...init} : {title:''});
   const set=(k,v)=>setF(p=>({...p,[k]:v}));
   const has=(k)=>fields.includes(k);
+  const fileRef=useRef(null); const [busy,setBusy]=useState(false);
+  const onFile=async(e)=>{ const file=e.target.files[0]; if(!file)return; e.target.value=''; setBusy(true);
+    try{ if(Cloud.connected()){ const path=await Cloud.uploadPhoto(file); set('photo',{path}); setBusy(false); }
+      else { const r=new FileReader(); r.onload=()=>{ set('photo',{src:r.result}); setBusy(false); }; r.readAsDataURL(file); } }
+    catch(err){ setBusy(false); } };
   const submit=()=>{ if(!f.title || !f.title.trim()){ return; } onSave(f); };
   return (
     <Sheet title={title} onClose={onClose}>
       <div className="field"><label>Tiêu đề</label>
         <input className="inp" value={f.title||''} onChange={e=>set('title',e.target.value)} placeholder="Nhập…" autoFocus/></div>
+      {has('photo') && <div className="field"><label>Ảnh quán</label>
+        {f.photo
+          ? <div style={{position:'relative'}}>
+              <PhotoImg photo={f.photo} style={{width:'100%',height:160,objectFit:'cover',borderRadius:12,display:'block'}}/>
+              <button className="pill" style={{position:'absolute',top:6,right:6}} onClick={()=>set('photo',null)}>✕ Bỏ ảnh</button></div>
+          : <button className="btn soft" onClick={()=>fileRef.current.click()}>{busy?'Đang tải…':'📷 Thêm ảnh'}</button>}
+        <input ref={fileRef} type="file" accept="image/*" hidden onChange={onFile}/></div>}
       {has('budget') && <div className="field"><label>Ngân sách</label>
         <select className="inp" value={f.budget||''} onChange={e=>set('budget',e.target.value)}>
           <option value="">— chọn —</option>{BUDGETS.map(b=><option key={b.k} value={b.k}>{b.label}</option>)}
@@ -1073,6 +1093,29 @@ function MoodCard({people,me}){
   );
 }
 
+/* ============ Kỷ niệm ngày cưới ============ */
+function WeddingCard({setup,go}){
+  const wd=setup.weddingDate;
+  const toNext=wd?daysToNext(wd):null;
+  const isToday=toNext===0;
+  useEffect(()=>{ if(isToday) celebrate(['💍','🎉','💞','✨']); },[isToday]);
+  if(!wd) return (
+    <div className="card" onClick={()=>go('me')} style={{cursor:'pointer'}}>
+      <div className="row"><b>💍 Ngày cưới</b><span className="grow"></span><span className="pill">＋ Thêm</span></div>
+      <div className="muted" style={{fontSize:12.5,marginTop:6}}>Chưa có ngày cưới. Bấm để thêm ở Hồ sơ → Sửa thông tin cặp đôi.</div>
+    </div>
+  );
+  const days=Math.max(0,(daysFromToday(wd)||0)*-1);
+  const yrs=yearsBetween(wd);
+  return (
+    <div className="card" style={{background:'linear-gradient(135deg,var(--chip),var(--card))'}}>
+      <div className="row"><b>💍 Kỷ niệm ngày cưới</b><span className="grow"></span><span className="muted" style={{fontSize:12}}>{fmtDateVN(wd)}</span></div>
+      <div style={{marginTop:6,fontSize:13.5}}>Cưới nhau <b>{days.toLocaleString('vi-VN')} ngày</b> · <b>{yrs} năm</b></div>
+      <div style={{marginTop:4,fontSize:13.5}}>{isToday?'🎉 Hôm nay là kỷ niệm ngày cưới — chúc mừng hai bạn!':'Còn '+toNext+' ngày tới kỷ niệm '+(yrs+1)+' năm 💞'}</div>
+    </div>
+  );
+}
+
 /* ============ HOME ============ */
 function Home({setup,people,me,go}){
   const [notes]=useLocal('ju.notes',[]);
@@ -1140,17 +1183,14 @@ function Home({setup,people,me,go}){
         );
       })()}
 
+      {/* Kỷ niệm ngày cưới */}
+      {show('wedding') && <WeddingCard setup={setup} go={go}/>}
+
       {/* Ngày này năm xưa */}
       {show('onthisday') && <OnThisDay/>}
 
       {/* Tâm trạng hôm nay */}
       {show('mood') && <MoodCard people={people} me={me}/>}
-
-      {/* Câu hỏi mỗi ngày */}
-      {show('question') && <DailyQuestion people={people} me={me}/>}
-
-      {/* Đố vui hiểu nhau */}
-      {show('quiz') && <CoupleQuiz people={people} me={me}/>}
 
       {/* Thử thách đôi hôm nay */}
       {show('challenge') && <DailyChallenge/>}
@@ -1160,9 +1200,6 @@ function Home({setup,people,me,go}){
 
       {/* Lọ yêu thương */}
       {show('lovejar') && <LoveJar people={people} me={me}/>}
-
-      {/* Check-in tuần */}
-      {show('checkin') && <WeeklyCheckin people={people} me={me}/>}
 
       {/* Sắp tới */}
       <div className="sec-title">⏳ Sắp tới</div>
@@ -1372,7 +1409,7 @@ function DateTab({people,me,flash}){
       {seg==='idea' && <><WeatherCard/><DateIdeas people={people} me={me}/></>}
       {seg==='hanoi' && <HanoiCatalog me={me} flash={flash}/>}
       {seg==='food' && <SimpleList skey="ju.food" people={people} me={me} addLabel="quán/món" doneLabel="Đã thử"
-        fields={['address','rating','link','note']} suggest={FOOD_SUGGEST} empty={{icon:'🍜',text:'Quán ăn, món muốn thử cùng nhau. Bấm 💡 để xem gợi ý!'}} flash={flash}/>}
+        fields={['photo','address','rating','link','note']} suggest={FOOD_SUGGEST} empty={{icon:'🍜',text:'Quán ăn, món muốn thử cùng nhau. Bấm 💡 để xem gợi ý!'}} flash={flash}/>}
       {seg==='map' && <MapSpots people={people} me={me}/>}
     </div>
   );
@@ -1737,6 +1774,49 @@ function BigGoalForm({onClose,onSave}){
   );
 }
 
+/* ============ Tab: Nói chuyện ============ */
+function TalkTopics(){
+  const [cat,setCat]=useState(TALK_TOPICS[0].k);
+  const group=TALK_TOPICS.find(t=>t.k===cat)||TALK_TOPICS[0];
+  const [topic,setTopic]=useState(()=>TALK_TOPICS[0].list[Math.floor(Math.random()*TALK_TOPICS[0].list.length)]);
+  const pick=(g)=>{ const gg=g||group; setTopic(gg.list[Math.floor(Math.random()*gg.list.length)]); };
+  return (
+    <div>
+      <div className="muted center" style={{fontSize:12.5,margin:'10px 14px'}}>🗣️ Chọn chủ đề rồi cùng nhau trò chuyện sâu hơn.</div>
+      <div className="filters">
+        {TALK_TOPICS.map(t=><button key={t.k} className={cat===t.k?'on':''} onClick={()=>{ setCat(t.k); pick(t); }}>{t.icon} {t.k}</button>)}
+      </div>
+      <div className="card center" style={{borderColor:'var(--primary)',borderWidth:2}}>
+        <div style={{fontSize:30}}>{group.icon}</div>
+        <div style={{fontSize:16.5,fontWeight:700,margin:'8px 0',lineHeight:1.4}}>{topic}</div>
+        <button className="btn soft" onClick={()=>pick()}>🔄 Câu khác</button>
+      </div>
+      <div className="sec-title">Tất cả chủ đề · {group.k}</div>
+      {group.list.map((t,i)=><div key={i} className="item" style={{padding:'10px 13px',fontSize:14}}>{group.icon} {t}</div>)}
+      <div style={{height:8}}></div>
+    </div>
+  );
+}
+function TalkTab({people,me,flash}){
+  const [seg,setSeg]=useState('notes');
+  return (
+    <div>
+      <div className="seg">
+        <button className={seg==='notes'?'on':''} onClick={()=>setSeg('notes')}>💌 Nhắn nhau</button>
+        <button className={seg==='question'?'on':''} onClick={()=>setSeg('question')}>❓ Câu hỏi</button>
+        <button className={seg==='quiz'?'on':''} onClick={()=>setSeg('quiz')}>💞 Đố vui</button>
+        <button className={seg==='checkin'?'on':''} onClick={()=>setSeg('checkin')}>📝 Check-in</button>
+        <button className={seg==='topics'?'on':''} onClick={()=>setSeg('topics')}>🗣️ Chủ đề</button>
+      </div>
+      {seg==='notes' && <Notes people={people} me={me}/>}
+      {seg==='question' && <DailyQuestion people={people} me={me}/>}
+      {seg==='quiz' && <CoupleQuiz people={people} me={me}/>}
+      {seg==='checkin' && <WeeklyCheckin people={people} me={me}/>}
+      {seg==='topics' && <TalkTopics/>}
+    </div>
+  );
+}
+
 function UsTab({people,me,flash}){
   const [seg,setSeg]=useState('events');
   return (
@@ -1749,7 +1829,6 @@ function UsTab({people,me,flash}){
         <button className={seg==='goals'?'on':''} onClick={()=>setSeg('goals')}>🎯 Mục tiêu</button>
         <button className={seg==='shop'?'on':''} onClick={()=>setSeg('shop')}>🛒 Đi chợ</button>
         <button className={seg==='chores'?'on':''} onClick={()=>setSeg('chores')}>🧹 Việc nhà</button>
-        <button className={seg==='notes'?'on':''} onClick={()=>setSeg('notes')}>💌 Nhắn nhau</button>
       </div>
       {seg==='events' && <Events people={people} me={me}/>}
       {seg==='dates' && <ImportantDates people={people} me={me}/>}
@@ -1758,7 +1837,6 @@ function UsTab({people,me,flash}){
       {seg==='goals' && <Goals people={people} me={me}/>}
       {seg==='shop' && <Shopping people={people} me={me}/>}
       {seg==='chores' && <Chores people={people} me={me}/>}
-      {seg==='notes' && <Notes people={people} me={me}/>}
     </div>
   );
 }
@@ -2346,9 +2424,9 @@ function PhotoImg({photo,style}){
 }
 
 const HOME_SECTIONS=[
-  ['reminders','🔔 Nhắc nhở hôm nay'],['milestone','🎯 Mốc kỷ niệm'],['onthisday','📆 Ngày này năm xưa'],
-  ['mood','🙂 Tâm trạng'],['question','❓ Câu hỏi mỗi ngày'],['quiz','💞 Đố vui hiểu nhau'],
-  ['challenge','🎯 Thử thách đôi'],['fun','🎲 Ăn gì / Làm gì'],['lovejar','🫙 Lọ yêu thương'],['checkin','📝 Check-in tuần'],
+  ['reminders','🔔 Nhắc nhở hôm nay'],['milestone','🎯 Mốc kỷ niệm'],['wedding','💍 Kỷ niệm ngày cưới'],
+  ['onthisday','📆 Ngày này năm xưa'],['mood','🙂 Tâm trạng'],
+  ['challenge','🎯 Thử thách đôi'],['fun','🎲 Ăn gì / Làm gì'],['lovejar','🫙 Lọ yêu thương'],
 ];
 function HomeSettings(){
   const [cfg,setCfg]=useLocal('ju.homecfg',{hidden:[]});
@@ -2778,10 +2856,11 @@ function App(){
       {tab==='wish' && <WishTab people={people} me={me} flash={flash}/>}
       {tab==='date' && <DateTab people={people} me={me} flash={flash}/>}
       {tab==='us' && <UsTab people={people} me={me} flash={flash}/>}
+      {tab==='talk' && <TalkTab people={people} me={me} flash={flash}/>}
       {tab==='me' && <Profile setup={setup} setSetup={setSetup} people={people} me={me} setMe={setMe} flash={flash}/>}
 
       <div className="nav">
-        {[['home','🏠','Tổ ấm'],['wish','💝','Ước muốn'],['date','🗺️','Hẹn hò'],['us','📅','Tụi mình'],['me','💞','Hồ sơ']].map(([k,ic,l])=>(
+        {[['home','🏠','Tổ ấm'],['wish','💝','Ước muốn'],['date','🗺️','Hẹn hò'],['us','📅','Tụi mình'],['talk','💬','Nói chuyện'],['me','💞','Hồ sơ']].map(([k,ic,l])=>(
           <button key={k} className={tab===k?'on':''} onClick={()=>setTab(k)}>
             <span className="ic">{ic}</span>{l}
           </button>
