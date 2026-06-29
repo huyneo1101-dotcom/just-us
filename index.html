@@ -150,11 +150,11 @@ textarea.inp{resize:vertical;min-height:64px}
 .empty .big{font-size:38px;display:block;margin-bottom:8px}
 
 /* Home */
-.hero{margin:14px;border-radius:24px;overflow:hidden;position:relative;
-  background:linear-gradient(135deg,var(--primary),var(--accent));color:#fff;padding:20px 18px;box-shadow:var(--shadow)}
-.hero .names{font-size:22px;font-weight:800;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.hero .count{font-size:40px;font-weight:900;margin-top:10px;line-height:1}
-.hero .sub{opacity:.92;font-size:13.5px;margin-top:4px}
+.hero{margin:14px;border-radius:22px;overflow:hidden;position:relative;
+  background:linear-gradient(135deg,var(--primary),var(--accent));color:#fff;padding:15px 18px;box-shadow:var(--shadow)}
+.hero .names{font-size:19px;font-weight:800;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.hero .count{font-size:30px;font-weight:900;margin-top:6px;line-height:1}
+.hero .sub{opacity:.92;font-size:12.5px;margin-top:3px}
 .hero .cover{position:absolute;inset:0;background-size:cover;background-position:center;opacity:.28}
 .hero .inner{position:relative;z-index:1}
 .stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:12px 14px}
@@ -254,7 +254,7 @@ const store={
 const SB_URL='https://vvgkjgvzjeklaadusbne.supabase.co';
 const SB_KEY='sb_publishable_DMMPv5L2kGhrHTxeQ72iKw_dIh13iT1';
 // Các key được đồng bộ (KHÔNG gồm ju.me/ju.device/ju.sync — đó là riêng từng máy)
-const SYNC_KEYS=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood','ju.qa','ju.timeline','ju.coupons','ju.chores','ju.lovejar','ju.quiz','ju.city','ju.goals','ju.checkin','ju.challengeDone','ju.homecfg','ju.diary','ju.projects','ju.vinhaUrl','ju.checkins'];
+const SYNC_KEYS=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood','ju.qa','ju.timeline','ju.coupons','ju.chores','ju.lovejar','ju.quiz','ju.city','ju.goals','ju.checkin','ju.challengeDone','ju.homecfg','ju.diary','ju.projects','ju.vinhaUrl','ju.checkins','ju.menu'];
 let _sb=null;
 function sbClient(){
   if(_sb) return _sb;
@@ -487,11 +487,11 @@ const MOODS=['😍','😊','🥰','😌','😎','😴','🤒','😢','😠','�
 
 /* ===== Thư viện gợi ý nội dung (chạm để thêm) ===== */
 const IDEA_SUGGEST={
-  free:['Đi dạo công viên lúc hoàng hôn','Nấu một bữa tối cùng nhau','Xem phim ở nhà + bỏng ngô tự làm','Ngắm sao trên sân thượng','Picnic ở công viên','Đạp xe quanh hồ','Cùng nghe một playlist mới','Chơi board game / cờ','Đi bộ ngắm phố đêm','Tự pha cà phê & tâm sự','Cùng tập thể dục buổi sáng','Cùng dọn nhà rồi thưởng trà'],
-  u100:['Cà phê view đẹp','Ăn kem / chè','Đi nhà sách','Dạo chợ đêm','Ăn vặt vỉa hè','Thuê xe đạp đôi','Ghé tiệm bánh mới mở','Đi siêu thị mua đồ nấu ăn'],
-  u300:['Xem phim rạp + ăn vặt','Ăn lẩu / nướng','Hát karaoke','Đi bảo tàng / triển lãm','Buffet sáng','Lớp học vẽ / gốm','Đi công viên giải trí'],
-  u500:['Ăn nhà hàng lãng mạn','Bowling / patin','Spa thư giãn đôi','Lớp học nấu ăn','Chèo SUP / đạp vịt','Đi vườn dâu / nông trại'],
-  o500:['Đặt khách sạn nghỉ 1 đêm','Đi du lịch ngắn ngày','Concert / show ca nhạc','Nhà hàng fine-dining','Thuê studio chụp ảnh đôi','Học một bộ môn mới (lặn, golf…)'],
+  free:['Đi dạo công viên lúc hoàng hôn','Nấu một bữa tối cùng nhau','Xem phim ở nhà + bỏng ngô tự làm','Ngắm sao trên sân thượng','Picnic ở công viên','Đạp xe quanh hồ','Cùng nghe một playlist mới','Chơi board game / cờ','Đi bộ ngắm phố đêm','Tự pha cà phê & tâm sự','Cùng tập thể dục buổi sáng','Cùng dọn nhà rồi thưởng trà','Cùng vẽ / tô tranh','Tắm nắng sớm + cà phê','Cùng viết nhật ký cho nhau','Massage thư giãn cho nhau','Cùng làm bánh tại nhà','Trồng & chăm cây nhỏ','Karaoke tại nhà','Xem lại ảnh cũ và kể chuyện','Cùng đọc to một cuốn sách','Thử cắt tóc/tạo kiểu cho nhau'],
+  u100:['Cà phê view đẹp','Ăn kem / chè','Đi nhà sách','Dạo chợ đêm','Ăn vặt vỉa hè','Thuê xe đạp đôi','Ghé tiệm bánh mới mở','Đi siêu thị mua đồ nấu ăn','Trà chanh chém gió','Cà phê sách yên tĩnh','Ăn ốc vỉa hè','Đi chợ hoa cuối tuần','Vãn cảnh chùa / nhà thờ','Thuê truyện đọc chung','Ăn trứng nướng / khoai nướng'],
+  u300:['Xem phim rạp + ăn vặt','Ăn lẩu / nướng','Hát karaoke','Đi bảo tàng / triển lãm','Buffet sáng','Lớp học vẽ / gốm','Đi công viên giải trí','Cà phê board game','Xem phim 4DX','Bắn cung / phi tiêu','Workshop nến thơm','Đi thuỷ cung / sở thú','Massage chân thư giãn','Lớp làm bánh'],
+  u500:['Ăn nhà hàng lãng mạn','Bowling / patin','Spa thư giãn đôi','Lớp học nấu ăn','Chèo SUP / đạp vịt','Đi vườn dâu / nông trại','Buffet lẩu / nướng cao cấp','Trượt băng','Chèo kayak','Đi farmstay ngoại thành','Lớp khiêu vũ đôi','Phòng chiếu phim riêng'],
+  o500:['Đặt khách sạn nghỉ 1 đêm','Đi du lịch ngắn ngày','Concert / show ca nhạc','Nhà hàng fine-dining','Thuê studio chụp ảnh đôi','Học một bộ môn mới (lặn, golf…)','Glamping / cắm trại sang','Đi resort cuối tuần','Tour ẩm thực','Vé xem thể thao / bóng đá','Khinh khí cầu / dù lượn','Thuê xe đi phượt 2 ngày'],
 };
 const BUCKET_SUGGEST=['Cùng đi 5 tỉnh thành mới','Xem mặt trời mọc cùng nhau','Tự làm một cuốn album ảnh','Học nấu một món mới mỗi tháng','Chạy bộ 5km cùng nhau','Trồng một cái cây và chăm nó lớn','Cùng đọc xong một cuốn sách','Đi cắm trại qua đêm','Học nhảy một điệu cùng nhau','Viết thư tay cho nhau','Đi xem biển vào mùa đông','Cùng tiết kiệm cho một chuyến đi lớn','Làm thiện nguyện cùng nhau','Thử một môn thể thao mới','Cùng xem trọn một bộ phim hay'];
 const FOOD_SUGGEST=['Lẩu Thái','Bún chả','Pizza','Sushi','Lẩu nướng Hàn Quốc','Bánh xèo','Ốc các loại','Dimsum','Buffet hải sản','Trà sữa quán mới','Kem Tràng Tiền','Cà phê muối','Phở khuya','Bánh tráng nướng'];
@@ -499,6 +499,73 @@ const GIFT_SUGGEST=['Nước hoa','Đồng hồ','Sách người ấy thích','V
 const WATCH_SUGGEST=['Phim: Your Name','Phim: La La Land','Phim: About Time','Phim: Coco','Phim: Up','Phim bộ: Reply 1988','Phim bộ: Hometown Cha-Cha-Cha','Sách: Nhà giả kim','Sách: Tuổi trẻ đáng giá bao nhiêu','Nhạc: playlist acoustic chill'];
 const COUPON_SUGGEST=['1 bữa tối tự nấu','1 lần massage vai 15 phút','1 buổi xem phim do em chọn','1 lần rửa bát thay phiên','1 cái ôm bất cứ lúc nào','1 ngày làm theo ý người kia','1 ly trà sữa','1 lần đấm lưng','1 lời khen mỗi sáng cả tuần','1 chuyến đi chơi bất ngờ'];
 const LOVEJAR_SUGGEST=['Vì luôn lắng nghe mình','Vì nụ cười của em/anh','Vì luôn ở bên lúc mình khó khăn','Vì nấu ăn ngon','Vì kiên nhẫn với mình','Vì làm mình thấy bình yên','Vì luôn cố gắng vì gia đình','Vì những cái ôm ấm áp'];
+const MEAL_SUGGEST={
+  trua:['Cơm văn phòng','Bún chả','Phở bò','Bún đậu mắm tôm','Cơm rang dưa bò','Bánh mì + cà phê','Miến trộn','Cơm tấm sườn','Bún riêu cua','Hủ tiếu','Cơm gà xối mỡ','Bún bò Huế','Xôi + giò','Phở gà','Mì vằn thắn','Cháo sườn','Bún cá','Cơm văn phòng healthy'],
+  toi:['Thịt kho trứng + canh rau','Cá kho tộ','Gà rang gừng','Đậu sốt cà chua','Rau muống xào tỏi + thịt luộc','Canh chua cá','Trứng chiên + rau luộc','Sườn xào chua ngọt','Tôm rang','Thịt luộc + dưa muối','Lẩu nhỏ tại nhà','Mì xào hải sản','Bò xào hành tây','Canh bí nấu xương','Cà ri gà + bánh mì','Cơm chiên dương châu','Salad ức gà','Đậu phụ tẩm hành','Nem rán','Bún chả tự làm'],
+  nhahang:['Lẩu Thái / Tomyum','Buffet nướng Hàn Quốc','Pizza 4P’s','Sushi / sashimi','Beefsteak','Buffet hải sản','Lẩu nướng Nhật','Dimsum','Nhà hàng Ý','Gà rán + bia','Hot pot Đài Loan','Bún đậu nhà hàng','Buffet chay','Hải sản bình dân','Nướng ngói','Nhà hàng view đẹp'],
+};
+const DOW=['Thứ 2','Thứ 3','Thứ 4','Thứ 5','Thứ 6','Thứ 7','Chủ nhật'];
+
+/* ===== Âm lịch → Dương lịch (thuật toán Hồ Ngọc Đức) — cho Tết, Giỗ Tổ, giỗ ===== */
+function jdFromDate(dd,mm,yy){ var a=Math.floor((14-mm)/12); var y=yy+4800-a; var m=mm+12*a-3;
+  var jd=dd+Math.floor((153*m+2)/5)+365*y+Math.floor(y/4)-Math.floor(y/100)+Math.floor(y/400)-32045;
+  if(jd<2299161){ jd=dd+Math.floor((153*m+2)/5)+365*y+Math.floor(y/4)-32083; } return jd; }
+function jdToDate(jd){ var a,b,c; if(jd>2299160){ a=jd+32044; b=Math.floor((4*a+3)/146097); c=a-Math.floor((b*146097)/4); } else { b=0; c=jd+32082; }
+  var d=Math.floor((4*c+3)/1461); var e=c-Math.floor((1461*d)/4); var m=Math.floor((5*e+2)/153);
+  var day=e-Math.floor((153*m+2)/5)+1; var month=m+3-12*Math.floor(m/10); var year=b*100+d-4800+Math.floor(m/10);
+  return [day,month,year]; }
+function _NewMoon(k){ var T=k/1236.85,T2=T*T,T3=T2*T,dr=Math.PI/180;
+  var J1=2415020.75933+29.53058868*k+0.0001178*T2-0.000000155*T3;
+  J1=J1+0.00033*Math.sin((166.56+132.87*T-0.009173*T2)*dr);
+  var M=359.2242+29.10535608*k-0.0000333*T2-0.00000347*T3;
+  var Mpr=306.0253+385.81691806*k+0.0107306*T2+0.00001236*T3;
+  var F=21.2964+390.67050646*k-0.0016528*T2-0.00000239*T3;
+  var C1=(0.1734-0.000393*T)*Math.sin(M*dr)+0.0021*Math.sin(2*dr*M);
+  C1=C1-0.4068*Math.sin(Mpr*dr)+0.0161*Math.sin(dr*2*Mpr)-0.0004*Math.sin(dr*3*Mpr);
+  C1=C1+0.0104*Math.sin(dr*2*F)-0.0051*Math.sin(dr*(M+Mpr))-0.0074*Math.sin(dr*(M-Mpr));
+  C1=C1+0.0004*Math.sin(dr*(2*F+M))-0.0004*Math.sin(dr*(2*F-M))-0.0006*Math.sin(dr*(2*F+Mpr));
+  C1=C1+0.0010*Math.sin(dr*(2*F-Mpr))+0.0005*Math.sin(dr*(2*Mpr+M));
+  var dt; if(T<-11){ dt=0.001+0.000839*T+0.0002261*T2-0.00000845*T3-0.000000081*T*T3; } else { dt=-0.000278+0.000265*T+0.000262*T2; }
+  return J1+C1-dt; }
+function _SunLong(jdn){ var T=(jdn-2451545.0)/36525,T2=T*T,dr=Math.PI/180;
+  var M=357.52910+35999.05030*T-0.0001559*T2-0.00000048*T*T2;
+  var L0=280.46645+36000.76983*T+0.0003032*T2;
+  var DL=(1.914600-0.004817*T-0.000014*T2)*Math.sin(dr*M)+(0.019993-0.000101*T)*Math.sin(dr*2*M)+0.000290*Math.sin(dr*3*M);
+  var L=(L0+DL)*dr; L=L-Math.PI*2*Math.floor(L/(Math.PI*2)); return L; }
+function _sunLongInt(dn,tz){ return Math.floor(_SunLong(dn-0.5-tz/24)/Math.PI*6); }
+function _newMoonDay(k,tz){ return Math.floor(_NewMoon(k)+0.5+tz/24); }
+function _lunarMonth11(yy,tz){ var off=jdFromDate(31,12,yy)-2415021; var k=Math.floor(off/29.530588853);
+  var nm=_newMoonDay(k,tz); if(_sunLongInt(nm,tz)>=9){ nm=_newMoonDay(k-1,tz); } return nm; }
+function _leapOffset(a11,tz){ var k=Math.floor((a11-2415021.076998695)/29.530588853+0.5),last=0,i=1;
+  var arc=_sunLongInt(_newMoonDay(k+i,tz),tz);
+  do{ last=arc; i++; arc=_sunLongInt(_newMoonDay(k+i,tz),tz); }while(arc!==last && i<14); return i-1; }
+function lunar2Solar(lD,lM,lY,leap,tz){ tz=tz==null?7:tz; var a11,b11;
+  if(lM<11){ a11=_lunarMonth11(lY-1,tz); b11=_lunarMonth11(lY,tz); } else { a11=_lunarMonth11(lY,tz); b11=_lunarMonth11(lY+1,tz); }
+  var k=Math.floor(0.5+(a11-2415021.076998695)/29.530588853); var off=lM-11; if(off<0) off+=12;
+  if(b11-a11>365){ var lo=_leapOffset(a11,tz); var lm=lo-2; if(lm<0) lm+=12;
+    if(leap!==0 && lM!==lm){ return [0,0,0]; } else if(leap!==0 || off>=lo){ off+=1; } }
+  var ms=_newMoonDay(k+off,tz); return jdToDate(ms+lD-1); }
+function lunarISO(d,m,y){ var r=lunar2Solar(d,m,y,0,7); if(!r||!r[2]) return null; return r[2]+'-'+pad(r[1])+'-'+pad(r[0]); }
+function nextTetISO(){ var y=new Date().getFullYear(); var iso=lunarISO(1,1,y);
+  if(iso && new Date(iso+'T00:00:00')<new Date(todayISO()+'T00:00:00')) iso=lunarISO(1,1,y+1); return iso; }
+function holidaysForYear(y){
+  var H=[{date:y+'-01-01',name:'Tết Dương lịch',icon:'🎉'}];
+  var tet=lunarISO(1,1,y);
+  if(tet){ var dp=new Date(tet+'T00:00:00'); dp.setDate(dp.getDate()-1);
+    H.push({date:dp.getFullYear()+'-'+pad(dp.getMonth()+1)+'-'+pad(dp.getDate()),name:'Giao thừa (30 Tết)',icon:'🧧'});
+    H.push({date:tet,name:'Tết Nguyên Đán (Mùng 1)',icon:'🧧'}); }
+  var gio=lunarISO(10,3,y); if(gio) H.push({date:gio,name:'Giỗ Tổ Hùng Vương',icon:'🛕'});
+  H.push({date:y+'-04-30',name:'Giải phóng miền Nam 30/4',icon:'🇻🇳'});
+  H.push({date:y+'-05-01',name:'Quốc tế Lao động 1/5',icon:'🛠️'});
+  H.push({date:y+'-09-02',name:'Quốc khánh 2/9',icon:'🇻🇳'});
+  return H;
+}
+function upcomingHolidays(within){
+  var t=new Date(); t.setHours(0,0,0,0); var out=[];
+  [t.getFullYear(),t.getFullYear()+1].forEach(function(y){ holidaysForYear(y).forEach(function(h){
+    var d=Math.round((new Date(h.date+'T00:00:00')-t)/86400000); if(d>=0&&d<=within) out.push({icon:h.icon,name:h.name,d:d}); }); });
+  out.sort(function(a,b){return a.d-b.d;}); return out;
+}
 
 /* ===== Catalog địa điểm hẹn hò THẬT ở Hà Nội (toạ độ gần đúng theo khu vực) ===== */
 const HANOI_CATS=[
@@ -649,12 +716,13 @@ const TALK_TOPICS=[
   {k:'Vu vơ',icon:'🎈',list:['Nếu có một siêu năng lực, bạn chọn gì?','Món ăn nào bạn có thể ăn cả đời không chán?','Bài hát nào khiến bạn nghĩ tới người kia?','Nếu trúng số, việc đầu tiên hai đứa làm là gì?','Bạn muốn nuôi con vật gì cùng nhau?','Kỳ nghỉ trong mơ của hai đứa là ở đâu?']},
 ];
 const PROJ_TYPES=[
-  {k:'wedding',icon:'💒',label:'Đám cưới'},{k:'birthday',icon:'🎂',label:'Sinh nhật'},
+  {k:'tet',icon:'🧧',label:'Tết'},{k:'wedding',icon:'💒',label:'Đám cưới'},{k:'birthday',icon:'🎂',label:'Sinh nhật'},
   {k:'travel',icon:'✈️',label:'Du lịch'},{k:'event',icon:'🎉',label:'Sự kiện'},
   {k:'home',icon:'🏠',label:'Nhà cửa'},{k:'baby',icon:'👶',label:'Em bé'},{k:'other',icon:'📦',label:'Khác'},
 ];
 function projIcon(k){ const t=PROJ_TYPES.find(x=>x.k===k); return t?t.icon:'📦'; }
 const PROJ_TASK_SUGGEST={
+  tet:['Lên lịch về quê / kế hoạch ăn Tết (trước 21 ngày)','Mua vé tàu/xe nếu về quê (trước 21 ngày)','Chuẩn bị quà biếu nội ngoại (trước 10 ngày)','Mua quần áo Tết (trước 10 ngày)','Tổng vệ sinh, dọn nhà (trước 7 ngày)','Mua sắm thực phẩm Tết (trước 7 ngày)','Đổi tiền mới lì xì (trước 7 ngày)','Lên thực đơn cỗ Tết (trước 5 ngày)','Mua bánh chưng / giò chả (trước 5 ngày)','Mua đào/quất/hoa (trước 5 ngày)','Dọn bàn thờ, thay đồ thờ (trước 5 ngày)','Trang trí nhà đón Tết (trước 3 ngày)','Chuẩn bị phong bao lì xì (trước 3 ngày)','Sắm đồ cúng giao thừa (trước 2 ngày)'],
   wedding:['Chốt ngày cưới','Đặt nhà hàng / địa điểm','Chụp ảnh cưới','Thuê váy/vest','Thiệp mời','Trang điểm cô dâu','Xe hoa','Chốt khách mời','Nhẫn cưới','Trang trí'],
   travel:['Chốt điểm đến & ngày','Đặt vé máy bay/tàu','Đặt khách sạn','Lên lịch trình','Đổi tiền / thẻ','Chuẩn bị hành lý','Mua bảo hiểm','Thuê xe'],
   birthday:['Chốt ngày & khách mời','Đặt bánh','Đặt quán/đồ ăn','Mua quà','Trang trí','Chụp ảnh'],
@@ -1008,18 +1076,17 @@ function LoveJar({people,me}){
 
 /* ============ "Ăn gì / Làm gì" random ============ */
 function FunPickers(){
-  const [ideas]=useLocal('ju.ideas',[]);
-  const [food]=useLocal('ju.food',[]);
   const [res,setRes]=useState(null);
-  const allIdeas=[].concat.apply([],Object.keys(IDEA_SUGGEST).map(k=>IDEA_SUGGEST[k]));
-  const pickFood=()=>{ const pool=food.length?food.map(f=>f.title):FOOD_SUGGEST; setRes({label:'Hôm nay ăn',icon:'🍽️',value:pool[Math.floor(Math.random()*pool.length)]}); };
-  const pickDo=()=>{ const pool=ideas.length?ideas.map(i=>i.title):allIdeas; setRes({label:'Hôm nay làm',icon:'💡',value:pool[Math.floor(Math.random()*pool.length)]}); };
+  const flatIdeas=[].concat.apply([],Object.keys(IDEA_SUGGEST).map(k=>IDEA_SUGGEST[k]));
+  const pick=(label,icon,pool)=> setRes({label,icon,value:pool[Math.floor(Math.random()*pool.length)]});
   return (
     <div className="card">
       <b>🎲 Phân vân quá?</b>
-      <div className="row" style={{gap:8,marginTop:8}}>
-        <button className="btn soft grow" onClick={pickFood}>🍽️ Ăn gì?</button>
-        <button className="btn soft grow" onClick={pickDo}>💡 Làm gì?</button>
+      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8,marginTop:8}}>
+        <button className="btn soft" onClick={()=>pick('Ăn trưa ngoài','🍱',MEAL_SUGGEST.trua)}>🍱 Trưa ngoài</button>
+        <button className="btn soft" onClick={()=>pick('Ăn tối ở nhà','🍳',MEAL_SUGGEST.toi)}>🍳 Tối ở nhà</button>
+        <button className="btn soft" onClick={()=>pick('Ăn nhà hàng (cuối tuần)','🍽️',MEAL_SUGGEST.nhahang)}>🍽️ Nhà hàng</button>
+        <button className="btn soft" onClick={()=>pick('Hôm nay làm gì','💡',flatIdeas)}>💡 Làm gì?</button>
       </div>
       {res && <div className="center" style={{marginTop:10}}>
         <div className="muted" style={{fontSize:12}}>{res.label}:</div>
@@ -1164,16 +1231,16 @@ function Home({setup,people,me,go}){
   const weddingDays = setup.weddingDate ? Math.max(0,(daysFromToday(setup.weddingDate)||0)*-1) : null;
   useEffect(()=>{ if(loveDays!=null && loveDays>0 && (loveDays%100===0||loveDays%365===0)) celebrate(['🎉','🎊','💞','✨','💖']); },[]);
 
-  // sự kiện / ngày sắp tới gần nhất
+  // sự kiện / ngày sắp tới trong 30 ngày
   const upcoming=useMemo(()=>{
     const list=[];
-    events.forEach(e=>{ const d=daysFromToday(e.date); if(d!=null&&d>=0) list.push({t:e.title,d,date:e.date,kind:'Sự kiện'}); });
-    dates.forEach(e=>{ const d=daysToNext(e.date); if(d!=null) list.push({t:e.title,d,kind:'Ngày nhớ'}); });
-    // kỷ niệm yêu/cưới
-    if(setup.loveDate){ const d=daysToNext(setup.loveDate); list.push({t:'Kỷ niệm ngày yêu',d,kind:'💗'}); }
-    if(setup.weddingDate){ const d=daysToNext(setup.weddingDate); list.push({t:'Kỷ niệm ngày cưới',d,kind:'💍'}); }
+    events.forEach(e=>{ const d=daysFromToday(e.date); if(d!=null&&d>=0&&d<=30) list.push({t:e.title,d,date:e.date,kind:'Sự kiện'}); });
+    dates.forEach(e=>{ const d=daysToNext(e.date); if(d!=null&&d<=30) list.push({t:(e.icon||'🎂')+' '+e.title,d,kind:'Ngày nhớ'}); });
+    if(setup.loveDate){ const d=daysToNext(setup.loveDate); if(d<=30) list.push({t:'💗 Kỷ niệm ngày yêu',d,kind:''}); }
+    if(setup.weddingDate){ const d=daysToNext(setup.weddingDate); if(d<=30) list.push({t:'💍 Kỷ niệm ngày cưới',d,kind:''}); }
+    upcomingHolidays(30).forEach(h=>list.push({t:h.icon+' '+h.name,d:h.d,kind:'Ngày lễ'}));
     list.sort((a,b)=>a.d-b.d);
-    return list.slice(0,3);
+    return list.slice(0,8);
   },[events,dates,setup]);
 
   const lastNote=notes.slice().sort((a,b)=>b.createdAt-a.createdAt)[0];
@@ -1193,33 +1260,19 @@ function Home({setup,people,me,go}){
           <div className="names">{people.a.avatar} {people.a.name} <span style={{opacity:.85}}>＋</span> {people.b.name} {people.b.avatar}</div>
           {loveDays!=null
             ? <><div className="count">{loveDays.toLocaleString('vi-VN')} ngày</div>
-                <div className="sub">bên nhau từ {fmtDateVN(setup.loveDate)} · {yearsBetween(setup.loveDate)} năm 💗</div></>
-            : <div className="sub" style={{marginTop:10}}>Thêm ngày yêu nhau trong Hồ sơ để bắt đầu đếm nhé ✨</div>}
-          {weddingDays!=null && <div className="sub" style={{marginTop:6}}>💍 Cưới nhau {weddingDays.toLocaleString('vi-VN')} ngày · {yearsBetween(setup.weddingDate)} năm</div>}
+                <div className="sub">bên nhau · {yearsBetween(setup.loveDate)} năm 💗{(()=>{ const ms=nextMilestone(loveDays); return ms?`  ·  🎯 mốc ${ms.mark.toLocaleString('vi-VN')} còn ${ms.inDays}n`:''; })()}</div></>
+            : <div className="sub" style={{marginTop:10}}>Thêm ngày yêu nhau trong Hồ sơ để bắt đầu đếm ✨</div>}
+          {weddingDays!=null
+            ? <div className="sub" style={{marginTop:4}}>💍 Cưới {weddingDays.toLocaleString('vi-VN')} ngày · {yearsBetween(setup.weddingDate)} năm{(()=>{ const tn=daysToNext(setup.weddingDate); return tn!=null?`  ·  kỷ niệm còn ${tn}n`:''; })()}</div>
+            : <div className="sub" style={{marginTop:4,opacity:.9,cursor:'pointer'}} onClick={()=>go('me')}>💍 ＋ Thêm ngày cưới</div>}
         </div>
       </div>
 
+      {/* Phân vân: ăn gì / làm gì — ngay dưới khu đếm ngày */}
+      {show('fun') && <FunPickers/>}
+
       {/* Nhắc nhở hôm nay */}
       {show('reminders') && <Reminders setup={setup} go={go}/>}
-
-      {/* Mốc kỷ niệm sắp tới */}
-      {show('milestone') && loveDays!=null && (()=>{
-        const todayMilestone = loveDays>0 && (loveDays%100===0 || loveDays%365===0);
-        const ms=nextMilestone(loveDays);
-        return (
-          <div className="card" style={{background:'linear-gradient(135deg,var(--chip),var(--card))'}}>
-            {todayMilestone
-              ? <div className="center"><div style={{fontSize:28}}>🎉</div><b style={{fontSize:15}}>Hôm nay tròn {loveDays.toLocaleString('vi-VN')} ngày bên nhau!</b></div>
-              : ms && <div className="row" style={{gap:10,alignItems:'center'}}>
-                  <div style={{fontSize:24}}>🎯</div>
-                  <div className="grow" style={{fontSize:13.5}}>Còn <b>{ms.inDays} ngày</b> nữa tới mốc <b>{ms.mark.toLocaleString('vi-VN')} ngày</b> bên nhau{ms.isYear?` (${ms.years} năm)`:''} 💞</div>
-                </div>}
-          </div>
-        );
-      })()}
-
-      {/* Kỷ niệm ngày cưới */}
-      {show('wedding') && <WeddingCard setup={setup} go={go}/>}
 
       {/* Ngày này năm xưa */}
       {show('onthisday') && <OnThisDay/>}
@@ -1229,9 +1282,6 @@ function Home({setup,people,me,go}){
 
       {/* Thử thách đôi hôm nay */}
       {show('challenge') && <DailyChallenge/>}
-
-      {/* Phân vân: ăn gì / làm gì */}
-      {show('fun') && <FunPickers/>}
 
       {/* Lọ yêu thương */}
       {show('lovejar') && <LoveJar people={people} me={me}/>}
@@ -1569,7 +1619,14 @@ function DateIdeas({people,me}){
 
   const pool=bFilter?items.filter(x=>x.budget===bFilter):items;
   const shown=pool.slice().sort((a,b)=>(b.fav?1:0)-(a.fav?1:0)||b.createdAt-a.createdAt);
-  const random=()=>{ if(pool.length===0) return; setPick(pool[Math.floor(Math.random()*pool.length)]); };
+  const random=()=>{
+    let arr;
+    if(pool.length) arr=pool;
+    else if(bFilter) arr=(IDEA_SUGGEST[bFilter]||[]).map(t=>({title:t,budget:bFilter}));
+    else arr=[].concat.apply([],Object.keys(IDEA_SUGGEST).map(k=>IDEA_SUGGEST[k].map(t=>({title:t,budget:k}))));
+    if(!arr.length) return;
+    setPick(arr[Math.floor(Math.random()*arr.length)]);
+  };
 
   return (
     <div>
@@ -1960,14 +2017,21 @@ function FamilyProjects({people,me}){
   const toggleTask=(id,tid)=>setProjects(projects.map(p=>p.id===id?{...p,tasks:p.tasks.map(t=>t.id===tid?{...t,done:!t.done}:t)}:p));
   const delTask=(id,tid)=>setProjects(projects.map(p=>p.id===id?{...p,tasks:p.tasks.filter(t=>t.id!==tid)}:p));
   const openVinha=()=>{ if(vinha){ window.open(vinha,'_blank','noreferrer'); } else setLinkOpen(true); };
+  const planTet=()=>{ const date=nextTetISO(); const yr=date?date.slice(0,4):'';
+    if(projects.some(p=>p.type==='tet'&&p.date===date)){ alert('Đã có kế hoạch Tết '+yr+' rồi.'); return; }
+    setProjects(prev=>[{id:uid(),title:'Chuẩn bị Tết '+yr,type:'tet',date,note:'',by:me,createdAt:Date.now(),
+      tasks:(PROJ_TASK_SUGGEST.tet||[]).map(t=>({id:uid(),text:t,done:false}))},...prev]);
+    celebrate(['🧧','🎉','✨']);
+  };
   const shown=projects.slice().sort((a,b)=>(a.date||'9').localeCompare(b.date||'9'));
   return (
     <div>
       <div className="muted center" style={{fontSize:12.5,margin:'10px 14px 0'}}>💒 Dự án lớn của gia đình: việc cần làm + ngày mục tiêu. Tiền nong để VíNhà lo 💰</div>
       <div className="row" style={{margin:'10px 14px',gap:8}}>
-        <button className="btn soft grow" onClick={openVinha}>💰 Mở VíNhà</button>
+        <button className="btn soft grow" onClick={planTet}>🧧 Kế hoạch Tết</button>
+        <button className="btn soft grow" onClick={openVinha}>💰 VíNhà</button>
         <button className="iconbtn" onClick={()=>setLinkOpen(true)} title="Liên kết VíNhà">🔗</button>
-        <button className="btn sm" onClick={()=>{setEdit(null);setOpen(true);}}>＋ Dự án</button>
+        <button className="btn sm" onClick={()=>{setEdit(null);setOpen(true);}}>＋</button>
       </div>
       {shown.length===0 && <div className="empty"><span className="big">💒</span>Lên kế hoạch đám cưới, sinh nhật, chuyến du lịch… mỗi việc một dự án.</div>}
       {shown.map(p=>{
@@ -2029,17 +2093,46 @@ function ProjectForm({init,onClose,onSave}){
   );
 }
 
+function WeeklyMenu(){
+  const [menu,setMenu]=useLocal('ju.menu',{});
+  const [pickDay,setPickDay]=useState(null);
+  const set=(i,v)=>setMenu({...menu,[i]:v});
+  const randomWeek=()=>{ const pool=MEAL_SUGGEST.toi, m={}, used=[];
+    for(let i=0;i<7;i++){ let p,t=0; do{ p=pool[Math.floor(Math.random()*pool.length)]; t++; }while(used.indexOf(p)>=0&&t<25); used.push(p); m[i]=p; }
+    setMenu(m); celebrate(['🍳','😋','✨']); };
+  return (
+    <div>
+      <div className="row" style={{margin:'10px 14px'}}><span className="grow muted" style={{fontSize:13}}>Thực đơn bữa tối tuần này</span>
+        <button className="btn sm" onClick={randomWeek}>🎲 Gợi ý cả tuần</button></div>
+      <div className="card" style={{padding:'2px 13px'}}>
+        {DOW.map((d,i)=>(
+          <div key={i} className="row" style={{padding:'7px 0',borderBottom:i<6?'1px solid var(--line)':'none',gap:8}}>
+            <b style={{width:58,fontSize:12.5,flex:'0 0 auto'}}>{d}</b>
+            <input className="inp grow" style={{padding:'7px 10px',fontSize:13.5}} value={menu[i]||''} onChange={e=>set(i,e.target.value)} placeholder="Món tối…"/>
+            <button className="iconbtn" onClick={()=>setPickDay(i)}>💡</button>
+          </div>
+        ))}
+      </div>
+      <div className="muted center" style={{fontSize:11.5,margin:'6px 14px'}}>Bấm 💡 để chọn nhanh món gợi ý cho từng ngày.</div>
+      {pickDay!=null && <Sheet title={'💡 Món tối — '+DOW[pickDay]} onClose={()=>setPickDay(null)}>
+        <div>{MEAL_SUGGEST.toi.map(s=><button key={s} className="pill" style={{margin:'3px 6px 3px 0',padding:'7px 11px',fontSize:12.5}} onClick={()=>{ set(pickDay,s); setPickDay(null); }}>＋ {s}</button>)}</div>
+      </Sheet>}
+    </div>
+  );
+}
 function UsTab({people,me,flash}){
   const [seg,setSeg]=useState('events');
   return (
     <div>
       <SegGrid value={seg} onChange={setSeg} items={[
-        {k:'projects',icon:'💒',label:'Việc gia đình'},{k:'events',icon:'📅',label:'Sự kiện'},
-        {k:'dates',icon:'🎂',label:'Ngày nhớ'},{k:'timeline',icon:'🕰️',label:'Kỷ niệm'},
-        {k:'fund',icon:'💰',label:'Quỹ chung'},{k:'goals',icon:'🎯',label:'Mục tiêu'},
-        {k:'shop',icon:'🛒',label:'Đi chợ'},{k:'chores',icon:'🧹',label:'Việc nhà'},
+        {k:'projects',icon:'💒',label:'Việc gia đình'},{k:'menu',icon:'🍳',label:'Thực đơn'},
+        {k:'events',icon:'📅',label:'Sự kiện'},{k:'dates',icon:'🎂',label:'Ngày nhớ'},
+        {k:'timeline',icon:'🕰️',label:'Kỷ niệm'},{k:'fund',icon:'💰',label:'Quỹ chung'},
+        {k:'goals',icon:'🎯',label:'Mục tiêu'},{k:'shop',icon:'🛒',label:'Đi chợ'},
+        {k:'chores',icon:'🧹',label:'Việc nhà'},
       ]}/>
       {seg==='projects' && <FamilyProjects people={people} me={me}/>}
+      {seg==='menu' && <WeeklyMenu/>}
       {seg==='events' && <Events people={people} me={me}/>}
       {seg==='dates' && <ImportantDates people={people} me={me}/>}
       {seg==='timeline' && <Timeline people={people} me={me}/>}
@@ -2073,6 +2166,7 @@ function MiniCalendar(){
   events.forEach(e=>{ if(!e.date)return; const [y,m,d]=e.date.split('-').map(Number); if(y===ym.y&&m-1===ym.m) addMark(d,e.title,'📅'); });
   dates.forEach(e=>{ if(!e.date)return; const p=e.date.split('-').map(Number); if(p[1]-1===ym.m) addMark(p[2],e.title,e.icon||'🎂'); });
   [['loveDate','Kỷ niệm ngày yêu'],['weddingDate','Kỷ niệm ngày cưới']].forEach(([k,label])=>{ if(setup[k]){ const p=setup[k].split('-').map(Number); if(p[1]-1===ym.m) addMark(p[2],label,'💞'); } });
+  holidaysForYear(ym.y).forEach(h=>{ const p=h.date.split('-').map(Number); if(p[1]-1===ym.m) addMark(p[2],h.name,h.icon); });
   const startDow=(new Date(ym.y,ym.m,1).getDay()+6)%7;
   const daysIn=new Date(ym.y,ym.m+1,0).getDate();
   const cells=[]; for(let i=0;i<startDow;i++) cells.push(null); for(let d=1;d<=daysIn;d++) cells.push(d);
@@ -2665,9 +2759,9 @@ function PhotoImg({photo,style}){
 }
 
 const HOME_SECTIONS=[
-  ['reminders','🔔 Nhắc nhở hôm nay'],['milestone','🎯 Mốc kỷ niệm'],['wedding','💍 Kỷ niệm ngày cưới'],
+  ['fun','🎲 Phân vân (ăn gì/làm gì)'],['reminders','🔔 Nhắc nhở hôm nay'],
   ['onthisday','📆 Ngày này năm xưa'],['mood','🙂 Tâm trạng'],
-  ['challenge','🎯 Thử thách đôi'],['fun','🎲 Ăn gì / Làm gì'],['lovejar','🫙 Lọ yêu thương'],
+  ['challenge','🎯 Thử thách đôi'],['lovejar','🫙 Lọ yêu thương'],
 ];
 function HomeSettings(){
   const [cfg,setCfg]=useLocal('ju.homecfg',{hidden:[]});
