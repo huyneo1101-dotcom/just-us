@@ -2090,16 +2090,39 @@ function ImportantDates({people,me}){
   const [dates,setDates]=useLocal('ju.dates',[]);
   const [open,setOpen]=useState(false);
   const [edit,setEdit]=useState(null);
+  const [bulkOpen,setBulkOpen]=useState(false);
+  const [bulkText,setBulkText]=useState('');
+  const [bulkMsg,setBulkMsg]=useState('');
   const save=(d)=>{
     if(d.id) setDates(dates.map(x=>x.id===d.id?d:x));
     else setDates([{...d,id:uid(),by:me,createdAt:Date.now()},...dates]);
     setOpen(false);setEdit(null);
   };
   const del=(id)=>setDates(dates.filter(x=>x.id!==id));
+  const addBulk=()=>{
+    const lines=(bulkText||'').split(/\n+/).map(s=>s.trim()).filter(Boolean);
+    const parsed=[];
+    lines.forEach(line=>{
+      const m=line.match(/(\d{1,2})\s*[\/\-.]\s*(\d{1,2})(?:\s*[\/\-.]\s*(\d{2,4}))?/);
+      if(!m) return;
+      const dd=String(Math.min(31,Math.max(1,parseInt(m[1],10)))).padStart(2,'0');
+      const mm=String(Math.min(12,Math.max(1,parseInt(m[2],10)))).padStart(2,'0');
+      let yy=m[3]?parseInt(m[3],10):2026; if(yy<100) yy+=2000;
+      const name=line.replace(m[0],'').replace(/^[\s,;\-|–]+|[\s,;\-|–]+$/g,'').trim()||'Ngày nhớ';
+      parsed.push({title:name,date:yy+'-'+mm+'-'+dd,icon:'🎂',remind:3});
+    });
+    const key=(t,d)=>(t||'').toLowerCase()+'|'+(d||'').slice(5);
+    const seen=new Set(dates.map(x=>key(x.title,x.date)));
+    const fresh=parsed.filter(a=>{ const k=key(a.title,a.date); if(seen.has(k)) return false; seen.add(k); return true; });
+    setDates([...fresh.map(a=>({...a,id:uid(),by:me,createdAt:Date.now()})),...dates]);
+    setBulkMsg('Đã thêm '+fresh.length+'/'+parsed.length+' ngày'+(parsed.length-fresh.length>0?' ('+(parsed.length-fresh.length)+' đã có sẵn)':'')+'.');
+    setBulkText('');
+  };
   const shown=dates.slice().sort((a,b)=>(daysToNext(a.date)??999)-(daysToNext(b.date)??999));
   return (
     <div>
-      <div className="row" style={{margin:'10px 14px'}}><span className="grow muted" style={{fontSize:13}}>Ngày lặp lại mỗi năm — nhắc trước</span>
+      <div className="row" style={{margin:'10px 14px',gap:6}}><span className="grow muted" style={{fontSize:13}}>Ngày lặp lại mỗi năm — nhắc trước</span>
+        <button className="btn sm soft" onClick={()=>{setBulkMsg('');setBulkOpen(true);}}>📋 Nhập nhiều</button>
         <button className="btn sm" onClick={()=>{setEdit(null);setOpen(true);}}>＋ Thêm</button></div>
       {shown.length===0 && <div className="empty"><span className="big">🎂</span>Sinh nhật, kỷ niệm, giỗ chạp 2 bên nội ngoại…</div>}
       {shown.map(d=>{
@@ -2118,6 +2141,14 @@ function ImportantDates({people,me}){
         );
       })}
       {open && <DateForm init={edit} onClose={()=>{setOpen(false);setEdit(null);}} onSave={save}/>}
+      {bulkOpen && <Sheet title="📋 Nhập nhiều ngày một lúc" onClose={()=>{setBulkOpen(false);setBulkText('');}}>
+        <div className="muted" style={{fontSize:12.5,marginBottom:8}}>Mỗi dòng một người. Cú pháp: <b>Tên · ngày/tháng</b> (vd: <i>Mẹ Hương, 20/11</i>). Trùng tên+ngày sẽ tự bỏ qua.</div>
+        <div className="field"><textarea className="inp" style={{minHeight:170}} value={bulkText}
+          onChange={e=>setBulkText(e.target.value)} placeholder={'Mẹ Hương, 20/11\nHuy, 11/01\nPhương Anh, 18/01'} autoFocus/></div>
+        {bulkMsg && <div className="pill" style={{marginBottom:8}}>{bulkMsg}</div>}
+        <button className="btn" onClick={addBulk}>🎂 Thêm vào Ngày nhớ</button>
+        <button className="btn soft" style={{marginTop:8}} onClick={()=>{setBulkOpen(false);setBulkText('');}}>Đóng</button>
+      </Sheet>}
     </div>
   );
 }
