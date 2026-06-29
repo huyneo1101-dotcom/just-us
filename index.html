@@ -1097,23 +1097,25 @@ function MoodCard({people,me}){
   const saveNote=()=> setMood({...mood,[key]:{...(mood[key]||{}),[me+'n']:note.trim()}});
   const days=[];
   for(let i=13;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i); const k=d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); days.push({k,day:d.getDate(),m:mood[k]||{}}); }
+  const [showHist,setShowHist]=useState(false);
   return (
     <div className="card">
-      <div className="row"><b>Tâm trạng hôm nay</b><span className="grow"></span><span className="muted" style={{fontSize:12}}>{fmtDateVN(key)}</span></div>
-      <div className="row" style={{marginTop:8,gap:14}}>
-        <div className="grow"><div className="muted" style={{fontSize:12,marginBottom:4}}>{people.a.name} {me==='a'?'(bạn)':''}</div>
-          <div style={{fontSize:30}}>{today.a||'—'}</div>{today.an && <div className="muted" style={{fontSize:11}}>“{today.an}”</div>}</div>
-        <div className="grow"><div className="muted" style={{fontSize:12,marginBottom:4}}>{people.b.name} {me==='b'?'(bạn)':''}</div>
-          <div style={{fontSize:30}}>{today.b||'—'}</div>{today.bn && <div className="muted" style={{fontSize:11}}>“{today.bn}”</div>}</div>
+      <div className="row" style={{gap:8}}>
+        <b style={{fontSize:14}}>🙂 Tâm trạng</b>
+        <span className="muted" style={{fontSize:12}}>{people.a.name} <b style={{fontSize:16}}>{today.a||'—'}</b>{today.an?' · '+today.an:''}</span>
+        <span className="muted" style={{fontSize:12}}>{people.b.name} <b style={{fontSize:16}}>{today.b||'—'}</b>{today.bn?' · '+today.bn:''}</span>
+        <span className="grow"></span>
+        <button className="muted" style={{fontSize:11.5}} onClick={()=>setShowHist(v=>!v)}>📅 14 ngày</button>
       </div>
-      <div className="muted" style={{fontSize:12,marginTop:10}}>Chọn tâm trạng của bạn:</div>
-      <div className="mood-pick">{MOODS.map(m=><button key={m} className={today[me]===m?'on':''} onClick={()=>setMyMood(m)}>{m}</button>)}</div>
-      {today[me] && <div className="row" style={{gap:8,marginTop:8}}>
-        <input className="inp grow" placeholder="Vì sao? (tuỳ chọn)" value={note}
-          onChange={e=>setNote(e.target.value)} onBlur={saveNote} onKeyDown={e=>{ if(e.key==='Enter') saveNote(); }}/>
-      </div>}
-      <div className="muted" style={{fontSize:12,marginTop:12,marginBottom:4}}>📅 14 ngày qua</div>
-      <div style={{display:'flex',gap:4,overflowX:'auto',paddingBottom:4}}>
+      <div style={{display:'flex',flexWrap:'wrap',gap:5,marginTop:8}}>
+        {MOODS.map(m=><button key={m} onClick={()=>setMyMood(m)}
+          style={{fontSize:18,width:33,height:33,borderRadius:9,lineHeight:1,
+            background:today[me]===m?'var(--chip)':'var(--bg)',
+            border:today[me]===m?'1.5px solid var(--primary)':'1px solid var(--line)'}}>{m}</button>)}
+      </div>
+      {today[me] && <input className="inp" style={{marginTop:7,padding:'7px 11px',fontSize:13}} placeholder="Vì sao? (tuỳ chọn)" value={note}
+        onChange={e=>setNote(e.target.value)} onBlur={saveNote} onKeyDown={e=>{ if(e.key==='Enter') saveNote(); }}/>}
+      {showHist && <div style={{display:'flex',gap:4,overflowX:'auto',paddingBottom:4,marginTop:10}}>
         {days.map(d=>(
           <div key={d.k} style={{flex:'0 0 auto',textAlign:'center',minWidth:24,background:d.k===key?'var(--chip)':'transparent',borderRadius:8,padding:'3px 1px'}}>
             <div style={{fontSize:15,lineHeight:1.15}}>{d.m.a||'·'}</div>
@@ -1121,7 +1123,7 @@ function MoodCard({people,me}){
             <div className="muted" style={{fontSize:9}}>{d.day}</div>
           </div>
         ))}
-      </div>
+      </div>}
     </div>
   );
 }
