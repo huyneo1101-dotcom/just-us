@@ -254,7 +254,7 @@ const store={
 const SB_URL='https://vvgkjgvzjeklaadusbne.supabase.co';
 const SB_KEY='sb_publishable_DMMPv5L2kGhrHTxeQ72iKw_dIh13iT1';
 // Các key được đồng bộ (KHÔNG gồm ju.me/ju.device/ju.sync — đó là riêng từng máy)
-const SYNC_KEYS=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood','ju.qa','ju.timeline','ju.coupons','ju.chores','ju.lovejar','ju.quiz','ju.city','ju.goals','ju.checkin','ju.challengeDone','ju.homecfg','ju.diary','ju.projects','ju.vinhaUrl','ju.checkins','ju.menu'];
+const SYNC_KEYS=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood','ju.qa','ju.timeline','ju.coupons','ju.chores','ju.lovejar','ju.quiz','ju.city','ju.goals','ju.checkin','ju.challengeDone','ju.homecfg','ju.diary','ju.projects','ju.vinhaUrl','ju.checkins','ju.menu','ju.period','ju.menuPlan'];
 let _sb=null;
 function sbClient(){
   if(_sb) return _sb;
@@ -505,6 +505,40 @@ const MEAL_SUGGEST={
   nhahang:['Lẩu Thái / Tomyum','Buffet nướng Hàn Quốc','Pizza 4P’s','Sushi / sashimi','Beefsteak','Buffet hải sản','Lẩu nướng Nhật','Dimsum','Nhà hàng Ý','Gà rán + bia','Hot pot Đài Loan','Bún đậu nhà hàng','Buffet chay','Hải sản bình dân','Nướng ngói','Nhà hàng view đẹp'],
 };
 const DOW=['Thứ 2','Thứ 3','Thứ 4','Thứ 5','Thứ 6','Thứ 7','Chủ nhật'];
+const MENU_GOALS=[
+  {k:'cb',label:'Đủ chất / cân bằng',icon:'🍱'},{k:'gc',label:'Giảm cân',icon:'🥗'},
+  {k:'dd',label:'Dịu dạ dày',icon:'🤍'},{k:'bm',label:'Bổ máu (đèn đỏ)',icon:'🌸'},{k:'tc',label:'Tăng cơ',icon:'💪'},
+];
+const DISHES=[
+  {n:'Thịt bò xào cải ngọt',t:'man',g:['cb','bm','tc'],ing:['200g thăn bò','1 bó cải ngọt','3 tép tỏi','Dầu hào, nước mắm'],r:'Ướp bò với tỏi + dầu hào 10 phút. Xào bò lửa to ~1 phút rồi để riêng. Xào cải gần chín, cho bò vào đảo nhanh, nêm vừa.'},
+  {n:'Cá hồi áp chảo',t:'man',g:['cb','bm','gc','tc'],ing:['2 lát cá hồi (~250g)','1 quả chanh','Thì là','Muối tiêu','Chút bơ/dầu olive'],r:'Ướp cá muối tiêu. Áp chảo da úp xuống 3 phút, lật 2 phút. Vắt chanh, rắc thì là.'},
+  {n:'Ức gà nướng mật ong',t:'man',g:['gc','tc','cb'],ing:['300g ức gà','2 thìa mật ong','Tỏi băm','Nước tương'],r:'Ướp gà với mật ong + tỏi + nước tương 20 phút. Áp chảo/nướng 6–7 phút mỗi mặt tới chín vàng.'},
+  {n:'Đậu phụ sốt cà chua',t:'man',g:['cb','gc','dd'],ing:['2 bìa đậu phụ','3 quả cà chua','Hành lá'],r:'Rán sơ đậu cho vàng. Phi hành, cho cà chua nấu nhừ thành sốt, thả đậu om 5 phút.'},
+  {n:'Thịt kho trứng',t:'man',g:['cb'],ing:['300g ba chỉ','4 trứng luộc','Nước dừa','Hành tỏi, nước hàng'],r:'Ướp thịt, kho với nước hàng + nước dừa lửa nhỏ. Cho trứng vào kho thêm 25–30 phút.'},
+  {n:'Tôm rang',t:'man',g:['cb','bm','tc'],ing:['250g tôm','Tỏi băm','Nước mắm, đường'],r:'Rang tôm với tỏi tới đỏ, nêm mắm + chút đường, rang tới khi cạn và bóng.'},
+  {n:'Trứng chiên rau củ',t:'man',g:['cb','gc','dd'],ing:['3 trứng','Cà rốt + hành tây băm nhỏ'],r:'Đánh trứng với rau củ băm, nêm nhẹ, chiên vàng đều 2 mặt.'},
+  {n:'Gà rang gừng',t:'man',g:['cb','bm'],ing:['300g đùi gà chặt miếng','Gừng thái sợi','Nước mắm, đường'],r:'Rang gà cho săn, cho gừng + mắm đường, rang tới thấm và ráo.'},
+  {n:'Thịt nạc luộc',t:'man',g:['gc','dd'],ing:['300g nạc vai','Gừng, hành','Nước mắm chấm'],r:'Luộc thịt với gừng + hành tới chín, thái mỏng, chấm nước mắm gừng.'},
+  {n:'Cá basa kho tộ',t:'man',g:['cb'],ing:['400g cá basa','Nước hàng','Tiêu, hành'],r:'Kho cá với nước hàng + tiêu lửa nhỏ ~25 phút cho thấm.'},
+  {n:'Bò xào hành tây',t:'man',g:['cb','bm','tc'],ing:['200g bò','1 củ hành tây','Dầu hào'],r:'Xào bò tái để riêng, xào hành tây, cho bò vào đảo nhanh, nêm dầu hào.'},
+  {n:'Đậu que xào thịt bằm',t:'man',g:['cb','gc'],ing:['200g đậu que','100g thịt bằm','Tỏi'],r:'Xào thịt bằm chín, cho đậu que (đã chần) vào xào, nêm vừa.'},
+  {n:'Rau muống xào tỏi',t:'man',g:['cb','gc'],ing:['1 bó rau muống','Tỏi'],r:'Chần sơ rau, xào nhanh lửa to với tỏi, nêm chút mắm.'},
+  {n:'Salad ức gà',t:'man',g:['gc','tc'],ing:['200g ức gà luộc xé','Xà lách, cà chua, dưa chuột','Sốt dầu giấm'],r:'Trộn gà xé với rau củ, rưới sốt dầu giấm, ăn mát và nhẹ.'},
+  {n:'Cá thu sốt cà',t:'man',g:['cb','bm'],ing:['2 khúc cá thu','Cà chua','Hành, thì là'],r:'Rán sơ cá, làm sốt cà chua, om cá 10 phút cho ngấm.'},
+  {n:'Thịt gà hấp gừng (dịu bụng)',t:'man',g:['dd','bm'],ing:['300g gà','Gừng, hành','Chút muối'],r:'Hấp gà với gừng + hành, nêm nhạt — mềm, dễ tiêu.'},
+  {n:'Canh bí đỏ nấu xương',t:'canh',g:['cb','bm'],ing:['300g bí đỏ','200g xương'],r:'Hầm xương lấy nước ngọt, cho bí đỏ nấu nhừ, nêm vừa.'},
+  {n:'Canh rau ngót thịt bằm',t:'canh',g:['cb','gc','dd'],ing:['1 bó rau ngót','80g thịt bằm'],r:'Nấu thịt bằm sôi, cho rau ngót vò, sôi lại là được.'},
+  {n:'Canh bầu nấu tôm',t:'canh',g:['cb','gc'],ing:['1/2 quả bầu','100g tôm'],r:'Nấu tôm cho ngọt, cho bầu thái mỏng, sôi 3 phút.'},
+  {n:'Canh cải nấu gừng (ấm bụng)',t:'canh',g:['bm','dd'],ing:['1 bó cải xanh','Gừng','60g thịt bằm'],r:'Nấu gừng + thịt, cho cải, ấm bụng — hợp ngày đèn đỏ.'},
+  {n:'Canh khoai tây cà rốt',t:'canh',g:['cb','dd'],ing:['1 khoai tây','1 cà rốt','Xương/thịt'],r:'Hầm mềm khoai + cà rốt, nêm nhạt — dịu cho dạ dày.'},
+  {n:'Canh đương quy táo đỏ (bổ máu)',t:'canh',g:['bm'],ing:['Đương quy lát','5 táo đỏ','200g gà/xương'],r:'Hầm gà với đương quy + táo đỏ ~40 phút — bổ máu cho kỳ kinh.'},
+  {n:'Canh rong biển đậu phụ',t:'canh',g:['gc','cb'],ing:['Rong biển khô','1 bìa đậu phụ'],r:'Ngâm rong biển, nấu cùng đậu phụ, nêm nhạt.'},
+  {n:'Canh mướp mồng tơi',t:'canh',g:['gc','dd'],ing:['1 quả mướp','1 bó mồng tơi','Tôm/thịt'],r:'Nấu tôm/thịt, cho mướp + mồng tơi, sôi nhẹ.'},
+  {n:'Canh trứng cà chua',t:'canh',g:['cb','gc','dd'],ing:['2 trứng','2 cà chua','Hành lá'],r:'Xào cà chua, thêm nước sôi, đổ trứng đánh tan, rắc hành.'},
+  {n:'Canh bí xanh nấu xương',t:'canh',g:['gc','cb'],ing:['Bí xanh','200g xương'],r:'Hầm xương, cho bí xanh nấu mềm, nêm vừa.'},
+  {n:'Canh gà hầm thuốc bắc',t:'canh',g:['bm','tc'],ing:['250g gà','Gói thuốc bắc','Táo đỏ, kỷ tử'],r:'Hầm gà với thuốc bắc ~45 phút — bồi bổ.'},
+  {n:'Canh cá nấu chua (nhẹ)',t:'canh',g:['cb'],ing:['200g cá','Cà chua, dứa','Thì là'],r:'Nấu cá với cà chua + dứa, chua dịu, rắc thì là.'},
+];
 
 /* ===== Âm lịch → Dương lịch (thuật toán Hồ Ngọc Đức) — cho Tết, Giỗ Tổ, giỗ ===== */
 function jdFromDate(dd,mm,yy){ var a=Math.floor((14-mm)/12); var y=yy+4800-a; var m=mm+12*a-3;
@@ -566,6 +600,86 @@ function upcomingHolidays(within){
     var d=Math.round((new Date(h.date+'T00:00:00')-t)/86400000); if(d>=0&&d<=within) out.push({icon:h.icon,name:h.name,d:d}); }); });
   out.sort(function(a,b){return a.d-b.d;}); return out;
 }
+function solar2Lunar(dd,mm,yy,tz){ tz=tz==null?7:tz;
+  var dn=jdFromDate(dd,mm,yy);
+  var k=Math.floor((dn-2415021.076998695)/29.530588853);
+  var monthStart=_newMoonDay(k+1,tz); if(monthStart>dn){ monthStart=_newMoonDay(k,tz); }
+  var a11=_lunarMonth11(yy,tz), b11; var lunarYear;
+  if(a11>=monthStart){ lunarYear=yy; a11=_lunarMonth11(yy-1,tz); b11=_lunarMonth11(yy,tz); } else { lunarYear=yy+1; b11=_lunarMonth11(yy+1,tz); }
+  var lunarDay=dn-monthStart+1; var diff=Math.floor((monthStart-a11)/29);
+  var lunarLeap=0, lunarMonth=diff+11;
+  if(b11-a11>365){ var lo=_leapOffset(a11,tz); if(diff>=lo){ lunarMonth=diff+10; if(diff===lo) lunarLeap=1; } }
+  if(lunarMonth>12) lunarMonth-=12; if(lunarMonth>=11 && diff<4) lunarYear-=1;
+  return [lunarDay,lunarMonth,lunarYear,lunarLeap]; }
+const SPIRIT_FESTIVALS=[
+  {d:1,m:1,name:'Mùng 1 Tết Nguyên Đán',icon:'🧧'},{d:15,m:1,name:'Rằm tháng Giêng (Thượng Nguyên)',icon:'🏮'},
+  {d:3,m:3,name:'Tết Hàn thực',icon:'🍡'},{d:10,m:3,name:'Giỗ Tổ Hùng Vương',icon:'🛕'},
+  {d:15,m:4,name:'Lễ Phật Đản',icon:'🪷'},{d:5,m:5,name:'Tết Đoan Ngọ',icon:'🌿'},
+  {d:15,m:7,name:'Lễ Vu Lan (Rằm tháng Bảy)',icon:'🪷'},{d:15,m:8,name:'Tết Trung Thu',icon:'🥮'},
+  {d:15,m:10,name:'Rằm tháng Mười (Hạ Nguyên)',icon:'🌾'},{d:23,m:12,name:'Ông Công Ông Táo',icon:'🐟'},
+];
+function upcomingSpiritual(within){
+  var t=new Date(); t.setHours(0,0,0,0); var out=[];
+  for(var i=0;i<=within;i++){ var d=new Date(t); d.setDate(d.getDate()+i);
+    var lr=solar2Lunar(d.getDate(),d.getMonth()+1,d.getFullYear(),7); var ld=lr[0],lm=lr[1];
+    var label=null,icon='🪷';
+    var fest=SPIRIT_FESTIVALS.find(function(f){return f.d===ld&&f.m===lm;});
+    if(fest){ label=fest.name; icon=fest.icon; }
+    else if(ld===1){ label='Mùng 1 (âm lịch)'; icon='🙏'; }
+    else if(ld===15){ label='Ngày Rằm (âm lịch)'; icon='🌕'; }
+    if(label) out.push({d:i,name:label,icon:icon,date:d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()),lunar:ld+'/'+lm}); }
+  return out;
+}
+const VAN_KHAN=[
+  {title:'🙏 Văn khấn mùng 1 & ngày Rằm',text:`Nam mô A Di Đà Phật! (3 lần)
+
+Con lạy chín phương Trời, mười phương Chư Phật, Chư Phật mười phương.
+Con kính lạy Hoàng Thiên Hậu Thổ chư vị Tôn thần.
+Con kính lạy ngài Bản cảnh Thành Hoàng, ngài Bản xứ Thổ địa, ngài Bản gia Táo Quân cùng chư vị Tôn thần.
+Con kính lạy Tổ tiên, Hiển khảo, Hiển tỷ, chư vị Hương linh nội ngoại gia tiên.
+
+Tín chủ con là: …………… Ngụ tại: ……………
+Hôm nay là ngày … tháng … năm … (âm lịch), tín chủ con thành tâm sửa biện hương hoa lễ vật, kính dâng trước án.
+Cúi xin các ngài thương xót tín chủ, giáng lâm trước án, chứng giám lòng thành, thụ hưởng lễ vật, phù trì cho gia đình chúng con mạnh khoẻ, bình an, vạn sự tốt lành, gia đạo hưng thịnh.
+
+Chúng con lễ bạc tâm thành, cúi xin được phù hộ độ trì.
+Nam mô A Di Đà Phật! (3 lần)`},
+  {title:'🧧 Văn khấn Tân niên (Mùng 1 Tết)',text:`Nam mô A Di Đà Phật! (3 lần)
+
+Con kính lạy chín phương Trời, mười phương Chư Phật.
+Con kính lạy Đức Đương lai hạ sinh Di Lặc Tôn Phật.
+Con kính lạy các cụ Tổ khảo, Tổ tỷ, chư vị Hương linh gia tiên nội ngoại.
+
+Nay theo tuế luật, âm dương vận hành, năm cũ qua đi, năm mới đến.
+Tín chủ con là: …………… Ngụ tại: ……………
+Nhân tiết đầu xuân, chúng con thành tâm sửa biện hương hoa, lễ vật, kính dâng trước án, cúi xin tổ tiên và chư vị Tôn thần giáng lâm chứng giám.
+Nguyện cầu một năm mới an khang thịnh vượng, gia đạo hoà thuận, công việc hanh thông, mọi sự như ý.
+
+Chúng con lễ bạc tâm thành, cúi xin chứng giám.
+Nam mô A Di Đà Phật! (3 lần)`},
+  {title:'🐟 Văn khấn ông Công ông Táo (23 tháng Chạp)',text:`Nam mô A Di Đà Phật! (3 lần)
+
+Con kính lạy ngài Đông Trù Tư Mệnh Táo Phủ Thần Quân.
+Tín chủ con là: …………… Ngụ tại: ……………
+Hôm nay ngày 23 tháng Chạp, tín chủ chúng con thành tâm sắm sửa hương hoa phẩm vật, cá chép, xiêm áo, kính dâng Tôn thần.
+Kính mong Táo Quân gia ân xá tội cho mọi lỗi lầm trong năm qua của gia đình. Khi chầu Trời, xin Ngài tâu những điều tốt đẹp, bớt nói điều không hay, phù hộ cho gia đình chúng con sang năm mới an lành, sung túc.
+
+Chúng con lễ bạc tâm thành, cúi xin chứng giám.
+Nam mô A Di Đà Phật! (3 lần)`},
+  {title:'🕯️ Văn khấn Giao thừa (ngoài trời)',text:`Nam mô A Di Đà Phật! (3 lần)
+
+Con kính lạy chín phương Trời, mười phương Chư Phật.
+Con kính lạy Đức Đương niên Hành khiển, các ngài Ngũ phương Ngũ thổ, Long mạch Tôn thần.
+Giờ phút giao thừa năm cũ … sang năm mới …, tín chủ con là: …………… Ngụ tại: ……………
+Phút thiêng liêng giao thừa vừa tới, chúng con thành tâm sửa biện hương hoa lễ vật kính dâng trước án, cung thỉnh các ngài cựu vương Hành khiển lưu phúc, tân vương Hành khiển giáng lâm trước án thụ hưởng lễ vật.
+Nguyện cho tín chủ một năm mới bình an mạnh khoẻ, tài lộc dồi dào, vạn sự cát tường.
+
+Chúng con lễ bạc tâm thành, cúi xin chứng giám.
+Nam mô A Di Đà Phật! (3 lần)`},
+];
+const PERIOD_PREP=['Băng vệ sinh / tampon','Thuốc giảm đau (nếu cần)','Túi/chai chườm ấm','Quần lót dự phòng','Khăn ướt, giấy','Nước ấm để uống','Sô-cô-la đen','Sạc dự phòng cho ngày mệt'];
+const PERIOD_FOOD=['Canh gừng ấm','Thịt bò xào (bổ sắt)','Cá hồi','Rau bina / cải bó xôi','Trà gừng mật ong','Chuối','Sô-cô-la đen','Súp gà ấm','Canh đương quy táo đỏ','Yến mạch','Hạt bí, hạnh nhân','Sữa ấm nghệ'];
+const PERIOD_AVOID=['Đồ uống lạnh/đá','Đồ cay nóng nhiều','Cà phê / trà đặc','Đồ chiên rán dầu mỡ','Đồ quá mặn','Rượu bia'];
 
 /* ===== Catalog địa điểm hẹn hò THẬT ở Hà Nội (toạ độ gần đúng theo khu vực) ===== */
 const HANOI_CATS=[
@@ -1102,11 +1216,14 @@ function Reminders({setup,go}){
   const [dates]=useLocal('ju.dates',[]);
   const [chores]=useLocal('ju.chores',[]);
   const [shop]=useLocal('ju.shop',[]);
+  const [period]=useLocal('ju.period',null);
   const list=[];
   events.forEach(e=>{ const d=daysFromToday(e.date); const lead=e.remind!=null?e.remind:3; if(d!=null && d>=0 && d<=lead) list.push({icon:'📅',text:e.title,d}); });
   dates.forEach(e=>{ const d=daysToNext(e.date); const lead=e.remind!=null?e.remind:3; if(d!=null && d<=lead) list.push({icon:e.icon||'🎂',text:e.title,d}); });
   if(setup.loveDate){ const d=daysToNext(setup.loveDate); if(d<=3) list.push({icon:'💗',text:'Kỷ niệm ngày yêu',d}); }
   if(setup.weddingDate){ const d=daysToNext(setup.weddingDate); if(d<=3) list.push({icon:'💍',text:'Kỷ niệm ngày cưới',d}); }
+  const pn=periodNext();
+  if(pn){ if(pn.onPeriod) list.push({icon:'🌸',text:'Đang kỳ đèn đỏ (ngày '+pn.dayOfPeriod+') — giữ ấm nhé',d:0}); else if(pn.days<=3) list.push({icon:'🌸',text:'Kỳ kinh dự kiến — chuẩn bị',d:pn.days}); }
   list.sort((a,b)=>a.d-b.d);
   const choreLeft=chores.filter(c=>!c.done).length;
   const shopLeft=shop.filter(s=>!s.done).length;
@@ -1239,6 +1356,7 @@ function Home({setup,people,me,go}){
     if(setup.loveDate){ const d=daysToNext(setup.loveDate); if(d<=30) list.push({t:'💗 Kỷ niệm ngày yêu',d,kind:''}); }
     if(setup.weddingDate){ const d=daysToNext(setup.weddingDate); if(d<=30) list.push({t:'💍 Kỷ niệm ngày cưới',d,kind:''}); }
     upcomingHolidays(30).forEach(h=>list.push({t:h.icon+' '+h.name,d:h.d,kind:'Ngày lễ'}));
+    const pn=periodNext(); if(pn&&!pn.onPeriod&&pn.days<=30) list.push({t:'🌸 Kỳ kinh dự kiến',d:pn.days,kind:'Chu kỳ'});
     list.sort((a,b)=>a.d-b.d);
     return list.slice(0,8);
   },[events,dates,setup]);
@@ -2093,29 +2211,132 @@ function ProjectForm({init,onClose,onSave}){
   );
 }
 
-function WeeklyMenu(){
-  const [menu,setMenu]=useLocal('ju.menu',{});
-  const [pickDay,setPickDay]=useState(null);
-  const set=(i,v)=>setMenu({...menu,[i]:v});
-  const randomWeek=()=>{ const pool=MEAL_SUGGEST.toi, m={}, used=[];
-    for(let i=0;i<7;i++){ let p,t=0; do{ p=pool[Math.floor(Math.random()*pool.length)]; t++; }while(used.indexOf(p)>=0&&t<25); used.push(p); m[i]=p; }
-    setMenu(m); celebrate(['🍳','😋','✨']); };
+function periodNext(){
+  const p=store.get('ju.period',null); if(!p) return null;
+  const cycle=p.cycle||28, length=p.length||5;
+  const start=(p.history&&p.history.length)?p.history.slice().sort().slice(-1)[0]:p.start;
+  if(!start) return null;
+  const s=new Date(start+'T00:00:00'), today=new Date(todayISO()+'T00:00:00');
+  let next=new Date(s); while(next<today){ next.setDate(next.getDate()+cycle); }
+  const days=Math.round((next-today)/86400000);
+  const sinceLast=Math.round((today-s)/86400000);
+  return {date:next.getFullYear()+'-'+pad(next.getMonth()+1)+'-'+pad(next.getDate()),days,onPeriod:sinceLast>=0&&sinceLast<length,dayOfPeriod:sinceLast+1,length,start};
+}
+function PeriodTracker({people}){
+  const [pRaw,setP]=useLocal('ju.period',{cycle:28,length:5,history:[],prep:[],note:''});
+  const p=pRaw||{cycle:28,length:5,history:[],prep:[],note:''};
+  const [showSet,setShowSet]=useState(false);
+  const info=periodNext();
+  const logToday=()=>{ const h=(p.history||[]).slice(); if(h.indexOf(todayISO())<0) h.push(todayISO()); setP({...p,history:h,start:todayISO()}); };
+  const togglePrep=(item)=>{ const pr=(p.prep||[]); setP({...p,prep: pr.indexOf(item)>=0? pr.filter(x=>x!==item):[...pr,item]}); };
+  const name=(people&&people.b&&people.b.name)||'vợ';
   return (
     <div>
-      <div className="row" style={{margin:'10px 14px'}}><span className="grow muted" style={{fontSize:13}}>Thực đơn bữa tối tuần này</span>
-        <button className="btn sm" onClick={randomWeek}>🎲 Gợi ý cả tuần</button></div>
-      <div className="card" style={{padding:'2px 13px'}}>
-        {DOW.map((d,i)=>(
-          <div key={i} className="row" style={{padding:'7px 0',borderBottom:i<6?'1px solid var(--line)':'none',gap:8}}>
-            <b style={{width:58,fontSize:12.5,flex:'0 0 auto'}}>{d}</b>
-            <input className="inp grow" style={{padding:'7px 10px',fontSize:13.5}} value={menu[i]||''} onChange={e=>set(i,e.target.value)} placeholder="Món tối…"/>
-            <button className="iconbtn" onClick={()=>setPickDay(i)}>💡</button>
-          </div>
-        ))}
+      <div className="card" style={{background:'linear-gradient(135deg,var(--chip),var(--card))'}}>
+        <div className="row"><b>🌸 Chu kỳ của {name}</b><span className="grow"></span>
+          <button className="muted" style={{fontSize:11.5}} onClick={()=>setShowSet(v=>!v)}>⚙️ chu kỳ {p.cycle||28}n</button></div>
+        {!info ? <div className="muted" style={{fontSize:12.5,margin:'8px 0'}}>Chưa có dữ liệu. Bấm “Bắt đầu kỳ hôm nay” vào ngày đầu của kỳ để theo dõi.</div>
+          : info.onPeriod
+            ? <div style={{margin:'8px 0',fontSize:14}}>🌸 <b>Đang trong kỳ</b> — ngày thứ {info.dayOfPeriod}/{info.length}. Nhớ giữ ấm & nghỉ ngơi nhé 💗</div>
+            : <div style={{margin:'8px 0',fontSize:14}}>Kỳ tiếp theo: <b>{fmtDateVN(info.date)}</b> · còn <b>{info.days} ngày</b>{info.days<=3?<span className="pill" style={{marginLeft:6,background:'var(--primary)',color:'#fff'}}>Sắp đến!</span>:null}</div>}
+        <button className="btn" onClick={logToday}>🌸 Bắt đầu kỳ hôm nay</button>
+        {showSet && <div className="row" style={{gap:8,marginTop:8}}>
+          <div className="field grow" style={{margin:0}}><label>Chu kỳ (ngày)</label><input className="inp" type="number" value={p.cycle||28} onChange={e=>setP({...p,cycle:Number(e.target.value)||28})}/></div>
+          <div className="field grow" style={{margin:0}}><label>Số ngày hành kinh</label><input className="inp" type="number" value={p.length||5} onChange={e=>setP({...p,length:Number(e.target.value)||5})}/></div>
+        </div>}
       </div>
-      <div className="muted center" style={{fontSize:11.5,margin:'6px 14px'}}>Bấm 💡 để chọn nhanh món gợi ý cho từng ngày.</div>
-      {pickDay!=null && <Sheet title={'💡 Món tối — '+DOW[pickDay]} onClose={()=>setPickDay(null)}>
-        <div>{MEAL_SUGGEST.toi.map(s=><button key={s} className="pill" style={{margin:'3px 6px 3px 0',padding:'7px 11px',fontSize:12.5}} onClick={()=>{ set(pickDay,s); setPickDay(null); }}>＋ {s}</button>)}</div>
+      <div className="sec-title">🧺 Cần chuẩn bị</div>
+      <div className="card"><div>{PERIOD_PREP.map(it=>(
+        <button key={it} className="pill" style={{margin:'3px 6px 3px 0',padding:'7px 11px',fontSize:12.5,background:(p.prep||[]).indexOf(it)>=0?'var(--good)':'var(--chip)',color:(p.prep||[]).indexOf(it)>=0?'#fff':'var(--chip-tx)'}}
+          onClick={()=>togglePrep(it)}>{(p.prep||[]).indexOf(it)>=0?'✓ ':''}{it}</button>
+      ))}</div></div>
+      <div className="sec-title">🍲 Nên ăn (ấm bụng, bổ máu)</div>
+      <div className="card"><div className="muted" style={{fontSize:13.5,lineHeight:1.7}}>{PERIOD_FOOD.join(' · ')}</div>
+        <div className="muted" style={{fontSize:12,marginTop:8}}><b>Hạn chế:</b> {PERIOD_AVOID.join(', ')}.</div>
+        <div className="muted" style={{fontSize:12,marginTop:6}}>👉 Vào <b>Thực đơn</b> chọn mục tiêu <b>🌸 Bổ máu (đèn đỏ)</b> để tạo thực đơn hợp ngày này.</div>
+      </div>
+      <div className="muted center" style={{fontSize:11,margin:'8px 14px'}}>Chỉ là ước tính theo chu kỳ — không thay thế tư vấn y tế.</div>
+    </div>
+  );
+}
+function SpiritualSection(){
+  const [readKhan,setReadKhan]=useState(null);
+  const days=upcomingSpiritual(75);
+  return (
+    <div>
+      <div className="sec-title">🪷 Ngày lễ / mùng 1 · rằm sắp tới</div>
+      {days.length===0 && <div className="empty">Không có ngày lễ trong 75 ngày tới.</div>}
+      {days.slice(0,12).map((h,i)=>(
+        <div key={i} className="item" style={{padding:'9px 13px'}}>
+          <div className="row"><span style={{fontSize:18}}>{h.icon}</span>
+            <span className="grow" style={{fontSize:14}}>{h.name}</span>
+            <span className="pill">{h.d===0?'Hôm nay':h.d===1?'Mai':'còn '+h.d+'n'}</span></div>
+          <div className="muted" style={{fontSize:11.5,marginTop:2}}>{fmtDateVN(h.date)} · {h.lunar} âm lịch</div>
+        </div>
+      ))}
+      <div className="sec-title">📜 Bài khấn tham khảo</div>
+      {VAN_KHAN.map((v,i)=>(
+        <div key={i} className="item" style={{cursor:'pointer'}} onClick={()=>setReadKhan(v)}>
+          <div className="row"><b className="grow" style={{fontSize:14}}>{v.title}</b><span className="muted">đọc ›</span></div>
+        </div>
+      ))}
+      <div className="muted center" style={{fontSize:11,margin:'6px 14px'}}>Văn khấn theo phong tục dân gian — thay “……” bằng tên & địa chỉ gia chủ.</div>
+      {readKhan && <Sheet title={readKhan.title} onClose={()=>setReadKhan(null)}>
+        <div style={{whiteSpace:'pre-wrap',fontSize:14,lineHeight:1.65}}>{readKhan.text}</div>
+      </Sheet>}
+    </div>
+  );
+}
+function WeeklyMenu({me}){
+  const [plan,setPlan]=useLocal('ju.menuPlan',null);
+  const [shop,setShop]=useLocal('ju.shop',[]);
+  const [goal,setGoal]=useState((plan&&plan.goal)||'cb');
+  const [recipe,setRecipe]=useState(null);
+  const dishByName=(n)=>DISHES.find(d=>d.n===n);
+  const matchG=(d)=> goal==='cb'? true : d.g.indexOf(goal)>=0;
+  const gen=()=>{
+    const mans=DISHES.filter(d=>d.t==='man'&&matchG(d)), canhs=DISHES.filter(d=>d.t==='canh'&&matchG(d));
+    const shuffle=(a)=>a.slice().sort(()=>Math.random()-0.5);
+    let mP=shuffle(mans), cP=shuffle(canhs); const days=[];
+    for(let i=0;i<7;i++){ if(mP.length<2) mP=shuffle(mans); if(cP.length<1) cP=shuffle(canhs);
+      const m1=mP.pop(), m2=mP.pop(), c=cP.pop();
+      days.push({man:[m1&&m1.n,m2&&m2.n].filter(Boolean),canh:c?c.n:''}); }
+    setPlan({goal,days}); celebrate(['🍳','😋','✨']);
+  };
+  const toShop=()=>{ if(!plan) return; const ings=new Set();
+    plan.days.forEach(d=>{ (d.man||[]).concat([d.canh]).forEach(n=>{ const dish=dishByName(n); if(dish) dish.ing.forEach(x=>ings.add(x)); }); });
+    const have=new Set(shop.map(s=>s.text)); const add=[...ings].filter(x=>!have.has(x)).map(x=>({id:uid(),text:x,by:me||'a',done:false}));
+    setShop([...add,...shop]); celebrate(['🛒']); alert('Đã thêm '+add.length+' nguyên liệu vào mục Đi chợ.'); };
+  const goalLabel=(k)=>(MENU_GOALS.find(x=>x.k===k)||{}).label||'';
+  return (
+    <div>
+      <div className="muted center" style={{fontSize:12.5,margin:'10px 14px 4px'}}>🍳 Thực đơn tối cả tuần — mỗi ngày 2 món mặn + 1 canh. Chọn mục tiêu rồi tạo.</div>
+      <div className="filters">{MENU_GOALS.map(g=><button key={g.k} className={goal===g.k?'on':''} onClick={()=>setGoal(g.k)}>{g.icon} {g.label}</button>)}</div>
+      <div className="row" style={{margin:'10px 14px',gap:8}}>
+        <button className="btn grow" onClick={gen}>🎲 Tạo thực đơn tuần</button>
+        {plan && <button className="btn sm soft" onClick={toShop}>🛒 Ra chợ</button>}
+      </div>
+      {!plan && <div className="empty"><span className="big">🍳</span>Bấm “Tạo thực đơn tuần” để có 7 ngày đủ chất, kèm công thức & danh sách mua.</div>}
+      {plan && <div className="muted center" style={{fontSize:11.5,marginBottom:4}}>Mục tiêu: {goalLabel(plan.goal)} · chạm món để xem công thức 📖</div>}
+      {plan && plan.days.map((d,i)=>(
+        <div key={i} className="item">
+          <div className="it-top"><h4>{DOW[i]}</h4></div>
+          {(d.man||[]).map((n,j)=>(
+            <div key={j} className="row" style={{padding:'3px 0',cursor:'pointer'}} onClick={()=>setRecipe(dishByName(n))}>
+              <span className="muted" style={{width:48,fontSize:11,flex:'0 0 auto'}}>Mặn {j+1}</span>
+              <span className="grow" style={{fontSize:14}}>🍖 {n}</span><span className="muted">📖</span></div>
+          ))}
+          <div className="row" style={{padding:'3px 0',cursor:'pointer'}} onClick={()=>setRecipe(dishByName(d.canh))}>
+            <span className="muted" style={{width:48,fontSize:11,flex:'0 0 auto'}}>Canh</span>
+            <span className="grow" style={{fontSize:14}}>🥣 {d.canh}</span><span className="muted">📖</span></div>
+        </div>
+      ))}
+      {recipe && <Sheet title={recipe.n} onClose={()=>setRecipe(null)}>
+        <div className="muted" style={{fontSize:12,marginBottom:8}}>{recipe.t==='canh'?'🥣 Món canh':'🍖 Món mặn'} · {recipe.g.map(g=>goalLabel(g)).filter(Boolean).join(', ')}</div>
+        <b style={{fontSize:13.5}}>Nguyên liệu (2 người):</b>
+        <ul style={{margin:'6px 0 12px',paddingLeft:18,fontSize:13.5,lineHeight:1.6}}>{recipe.ing.map((x,i)=><li key={i}>{x}</li>)}</ul>
+        <b style={{fontSize:13.5}}>Cách làm:</b>
+        <div style={{fontSize:13.5,marginTop:6,lineHeight:1.55}}>{recipe.r}</div>
       </Sheet>}
     </div>
   );
@@ -2125,14 +2346,17 @@ function UsTab({people,me,flash}){
   return (
     <div>
       <SegGrid value={seg} onChange={setSeg} items={[
-        {k:'projects',icon:'💒',label:'Việc gia đình'},{k:'menu',icon:'🍳',label:'Thực đơn'},
+        {k:'projects',icon:'💒',label:'Việc gia đình'},{k:'spirit',icon:'🪷',label:'Tâm linh'},
+        {k:'period',icon:'🌸',label:'Chu kỳ'},{k:'menu',icon:'🍳',label:'Thực đơn'},
         {k:'events',icon:'📅',label:'Sự kiện'},{k:'dates',icon:'🎂',label:'Ngày nhớ'},
         {k:'timeline',icon:'🕰️',label:'Kỷ niệm'},{k:'fund',icon:'💰',label:'Quỹ chung'},
         {k:'goals',icon:'🎯',label:'Mục tiêu'},{k:'shop',icon:'🛒',label:'Đi chợ'},
         {k:'chores',icon:'🧹',label:'Việc nhà'},
       ]}/>
       {seg==='projects' && <FamilyProjects people={people} me={me}/>}
-      {seg==='menu' && <WeeklyMenu/>}
+      {seg==='spirit' && <SpiritualSection/>}
+      {seg==='period' && <PeriodTracker people={people}/>}
+      {seg==='menu' && <WeeklyMenu me={me}/>}
       {seg==='events' && <Events people={people} me={me}/>}
       {seg==='dates' && <ImportantDates people={people} me={me}/>}
       {seg==='timeline' && <Timeline people={people} me={me}/>}
