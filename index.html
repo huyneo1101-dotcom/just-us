@@ -494,6 +494,68 @@ const GIFT_SUGGEST=['Nước hoa','Đồng hồ','Sách người ấy thích','V
 const WATCH_SUGGEST=['Phim: Your Name','Phim: La La Land','Phim: About Time','Phim: Coco','Phim: Up','Phim bộ: Reply 1988','Phim bộ: Hometown Cha-Cha-Cha','Sách: Nhà giả kim','Sách: Tuổi trẻ đáng giá bao nhiêu','Nhạc: playlist acoustic chill'];
 const COUPON_SUGGEST=['1 bữa tối tự nấu','1 lần massage vai 15 phút','1 buổi xem phim do em chọn','1 lần rửa bát thay phiên','1 cái ôm bất cứ lúc nào','1 ngày làm theo ý người kia','1 ly trà sữa','1 lần đấm lưng','1 lời khen mỗi sáng cả tuần','1 chuyến đi chơi bất ngờ'];
 const LOVEJAR_SUGGEST=['Vì luôn lắng nghe mình','Vì nụ cười của em/anh','Vì luôn ở bên lúc mình khó khăn','Vì nấu ăn ngon','Vì kiên nhẫn với mình','Vì làm mình thấy bình yên','Vì luôn cố gắng vì gia đình','Vì những cái ôm ấm áp'];
+
+/* ===== Catalog địa điểm hẹn hò THẬT ở Hà Nội (toạ độ gần đúng theo khu vực) ===== */
+const HANOI_CATS=[
+  {k:'cafe',name:'Cafe / View',icon:'☕'},{k:'an',name:'Ăn uống',icon:'🍜'},
+  {k:'ngoaitroi',name:'Ngoài trời',icon:'🌳'},{k:'vanhoa',name:'Văn hoá · Vui chơi',icon:'🎭'},
+];
+const HANOI_SPOTS=[
+  // ☕ Cafe / View
+  {n:'Cafe Đinh',cat:'cafe',area:'Đinh Tiên Hoàng, Hoàn Kiếm',budget:'u100',note:'Cà phê trứng trứ danh, view Hồ Gươm',lat:21.0299,lng:105.8528},
+  {n:'Giảng Café',cat:'cafe',area:'Nguyễn Hữu Huân, Hoàn Kiếm',budget:'u100',note:'Ông tổ cà phê trứng Hà Nội',lat:21.0345,lng:105.8543},
+  {n:'Cafe Phố Cổ',cat:'cafe',area:'Hàng Gai, Hoàn Kiếm',budget:'u100',note:'Sân thượng nhìn thẳng Hồ Gươm',lat:21.0303,lng:105.8523},
+  {n:'The Note Coffee',cat:'cafe',area:'Lương Văn Can, Hoàn Kiếm',budget:'u100',note:'Phủ kín giấy nhắn yêu thương',lat:21.0309,lng:105.8516},
+  {n:'6 Degrees Rooftop',cat:'cafe',area:'Nghi Tàm, Tây Hồ',budget:'u300',note:'Rooftop view Hồ Tây, hoàng hôn đẹp',lat:21.0668,lng:105.8345},
+  {n:'Serein Cafe & Lounge',cat:'cafe',area:'Quảng An, Tây Hồ',budget:'u300',note:'View hồ rộng, không gian sang',lat:21.0712,lng:105.8230},
+  {n:'Maison de Tet Decor',cat:'cafe',area:'Từ Hoa, Tây Hồ',budget:'u500',note:'Brunch & view Hồ Tây cực chill',lat:21.0726,lng:105.8235},
+  {n:'Xofa Café & Bistro',cat:'cafe',area:'Tống Duy Tân, Hoàn Kiếm',budget:'u100',note:'Cổ điển châu Âu, mở khuya',lat:21.0290,lng:105.8420},
+  {n:'Tranquil Books & Coffee',cat:'cafe',area:'Nguyễn Quang Bích, Hoàn Kiếm',budget:'u100',note:'Yên tĩnh, nhiều sách',lat:21.0349,lng:105.8470},
+  {n:'Hidden Gem Coffee',cat:'cafe',area:'Hàng Bún, Ba Đình',budget:'u100',note:'Decor tái chế độc đáo, sống ảo',lat:21.0420,lng:105.8440},
+  {n:'Lofita Tea & Coffee',cat:'cafe',area:'nhiều chi nhánh',budget:'u100',note:'Decor xinh, đồ uống hợp giới trẻ'},
+  {n:'Top of Hanoi (Lotte)',cat:'cafe',area:'Liễu Giai, Ba Đình',budget:'o500',note:'Bar tầng 67, toàn cảnh thành phố',lat:21.0317,lng:105.8117},
+  // 🍜 Ăn uống
+  {n:'Bún chả Hương Liên',cat:'an',area:'Lê Văn Hưu, Hai Bà Trưng',budget:'u100',note:'"Combo Obama" nổi tiếng',lat:21.0166,lng:105.8533},
+  {n:'Bún chả Đắc Kim',cat:'an',area:'Hàng Mành, Hoàn Kiếm',budget:'u100',note:'Gần 60 năm, lúc nào cũng đông',lat:21.0322,lng:105.8497},
+  {n:'Chả cá Lã Vọng',cat:'an',area:'Phố Chả Cá, Hoàn Kiếm',budget:'u300',note:'Hơn 100 năm tuổi',lat:21.0345,lng:105.8505},
+  {n:'Phở Bát Đàn',cat:'an',area:'Bát Đàn, Hoàn Kiếm',budget:'u100',note:'Phở bò xếp hàng tự bê',lat:21.0340,lng:105.8487},
+  {n:'Phở Thìn Lò Đúc',cat:'an',area:'Lò Đúc, Hai Bà Trưng',budget:'u100',note:'Phở tái lăn đậm vị',lat:21.0156,lng:105.8557},
+  {n:'Phở cuốn Hương Mai',cat:'an',area:'Ngũ Xã, Trúc Bạch',budget:'u100',note:'Phở cuốn đặc sản Ngũ Xã',lat:21.0444,lng:105.8407},
+  {n:'Bánh tôm Hồ Tây',cat:'an',area:'Thanh Niên, Tây Hồ',budget:'u100',note:'Bánh tôm giòn bên hồ',lat:21.0445,lng:105.8370},
+  {n:'Bún đậu Phất Lộc',cat:'an',area:'ngõ Phất Lộc, Hoàn Kiếm',budget:'u100',note:'Bún đậu mắm tôm phố cổ',lat:21.0339,lng:105.8540},
+  {n:'Kem Tràng Tiền',cat:'an',area:'Tràng Tiền, Hoàn Kiếm',budget:'free',note:'Ăn kem dạo Hồ Gươm',lat:21.0249,lng:105.8553},
+  {n:'Bia hơi Tạ Hiện',cat:'an',area:'Tạ Hiện, Hoàn Kiếm',budget:'u100',note:'"Ngã tư quốc tế" phố cổ',lat:21.0345,lng:105.8517},
+  {n:'Pizza 4P’s',cat:'an',area:'nhiều chi nhánh',budget:'u300',note:'Pizza phô mai burrata nổi tiếng'},
+  {n:'Le Beaulieu - Metropole',cat:'an',area:'Ngô Quyền, Hoàn Kiếm',budget:'o500',note:'Pháp đương đại, Michelin',lat:21.0258,lng:105.8556},
+  {n:'Grill 63 (Lotte)',cat:'an',area:'Liễu Giai, Ba Đình',budget:'o500',note:'Bít tết tầng 63, view triệu đô',lat:21.0317,lng:105.8117},
+  {n:'Lighthouse Sky Bar',cat:'an',area:'gần sông Hồng',budget:'o500',note:'Nhà hàng "con thuyền" 3 tầng thượng'},
+  // 🌳 Ngoài trời
+  {n:'Hồ Gươm',cat:'ngoaitroi',area:'Hoàn Kiếm',budget:'free',note:'Dạo bộ, ngắm Tháp Rùa',lat:21.0287,lng:105.8525},
+  {n:'Phố đi bộ Hồ Gươm',cat:'ngoaitroi',area:'Hoàn Kiếm (cuối tuần)',budget:'free',note:'Nhạc đường phố, trò chơi dân gian',lat:21.0288,lng:105.8523},
+  {n:'Hồ Tây',cat:'ngoaitroi',area:'Tây Hồ',budget:'free',note:'Đạp xe, ngắm hoàng hôn',lat:21.0600,lng:105.8200},
+  {n:'Phố đi bộ Trịnh Công Sơn',cat:'ngoaitroi',area:'Tây Hồ (cuối tuần)',budget:'free',note:'Phố đi bộ ven hồ yên bình',lat:21.0700,lng:105.8270},
+  {n:'Đường Thanh Niên',cat:'ngoaitroi',area:'giữa Hồ Tây & Trúc Bạch',budget:'free',note:'Con đường tình yêu kinh điển',lat:21.0450,lng:105.8370},
+  {n:'Cầu Long Biên',cat:'ngoaitroi',area:'Long Biên',budget:'free',note:'Đi bộ ngắm sông Hồng, check-in',lat:21.0436,lng:105.8530},
+  {n:'Bãi đá sông Hồng',cat:'ngoaitroi',area:'Nhật Tân, Tây Hồ',budget:'u100',note:'Vườn hoa, phim trường chụp ảnh',lat:21.0850,lng:105.8390},
+  {n:'Thung lũng hoa Hồ Tây',cat:'ngoaitroi',area:'Nhật Tân, Tây Hồ',budget:'u100',note:'Vườn hoa 4 mùa rực rỡ',lat:21.0820,lng:105.8230},
+  {n:'Công viên Thống Nhất',cat:'ngoaitroi',area:'Hai Bà Trưng',budget:'free',note:'Đạp vịt, dạo mát hồ Bảy Mẫu',lat:21.0110,lng:105.8420},
+  {n:'Vườn Bách Thảo',cat:'ngoaitroi',area:'Ba Đình',budget:'free',note:'Nhiều cây xanh, yên tĩnh',lat:21.0420,lng:105.8330},
+  {n:'Làng gốm Bát Tràng',cat:'ngoaitroi',area:'Gia Lâm',budget:'free',note:'Dạo làng nghề, chợ gốm',lat:20.9750,lng:105.9130},
+  {n:'Vườn thú Thủ Lệ',cat:'ngoaitroi',area:'Ba Đình',budget:'u100',note:'Công viên Thủ Lệ, đạp vịt',lat:21.0330,lng:105.8120},
+  // 🎭 Văn hoá · Vui chơi
+  {n:'Văn Miếu – Quốc Tử Giám',cat:'vanhoa',area:'Đống Đa',budget:'u100',note:'Di tích, áo dài chụp ảnh',lat:21.0294,lng:105.8355},
+  {n:'Hoàng thành Thăng Long',cat:'vanhoa',area:'Ba Đình',budget:'u100',note:'Di sản thế giới',lat:21.0353,lng:105.8400},
+  {n:'Bảo tàng Dân tộc học',cat:'vanhoa',area:'Cầu Giấy',budget:'u100',note:'Nhà dài, kiến trúc các dân tộc',lat:21.0408,lng:105.7990},
+  {n:'Bảo tàng Mỹ thuật VN',cat:'vanhoa',area:'Ba Đình',budget:'u100',note:'Tranh tượng nghệ thuật',lat:21.0309,lng:105.8340},
+  {n:'Nhà tù Hỏa Lò',cat:'vanhoa',area:'Hoàn Kiếm',budget:'u100',note:'Tour đêm "Đêm thiêng liêng"',lat:21.0246,lng:105.8466},
+  {n:'Bảo tàng gốm Bát Tràng',cat:'vanhoa',area:'Gia Lâm',budget:'u300',note:'Workshop nặn gốm cho 2 người',lat:20.9760,lng:105.9150},
+  {n:'Múa rối nước Thăng Long',cat:'vanhoa',area:'Đinh Tiên Hoàng, Hoàn Kiếm',budget:'u300',note:'Đặc sản văn hoá đồng bằng Bắc Bộ',lat:21.0314,lng:105.8536},
+  {n:'Nhà hát Lớn Hà Nội',cat:'vanhoa',area:'Hoàn Kiếm',budget:'o500',note:'Xem nhạc kịch, hoà nhạc',lat:21.0245,lng:105.8573},
+  {n:'Manzi Art Space',cat:'vanhoa',area:'Phan Huy Ích, Ba Đình',budget:'u100',note:'Triển lãm & workshop nghệ thuật',lat:21.0405,lng:105.8470},
+  {n:'VinKE & Thuỷ cung Times City',cat:'vanhoa',area:'Hai Bà Trưng',budget:'u500',note:'Thuỷ cung, trải nghiệm trong nhà',lat:20.9950,lng:105.8680},
+  {n:'Rạp phim (CGV/Lotte/Beta)',cat:'vanhoa',area:'nhiều TTTM',budget:'u300',note:'Xem phim, ghế đôi'},
+  {n:'Bowling Royal City',cat:'vanhoa',area:'Thanh Xuân',budget:'u300',note:'Bowling, game dưới lòng đất'},
+];
 const QUESTIONS=[
  'Kỷ niệm nào với nhau khiến bạn nhớ nhất?',
  'Điều gì ở đối phương khiến bạn biết ơn nhất tuần này?',
@@ -1189,6 +1251,49 @@ function WeatherCard(){
   );
 }
 
+/* ============ Catalog "Gợi ý Hà Nội" ============ */
+function HanoiCatalog({me,flash}){
+  const [,setIdeas]=useLocal('ju.ideas',[]);
+  const [,setFood]=useLocal('ju.food',[]);
+  const [,setSpots]=useLocal('ju.spots',[]);
+  const [cat,setCat]=useState('');
+  const [bud,setBud]=useState('');
+  const list=HANOI_SPOTS.filter(s=>(!cat||s.cat===cat)&&(!bud||s.budget===bud));
+  const isFood=(s)=>s.cat==='an'||s.cat==='cafe';
+  const addIdea=(s)=>{ setIdeas(p=>[{id:uid(),title:s.n,budget:s.budget,note:s.area+(s.note?' · '+s.note:''),by:me,fav:false,done:false,createdAt:Date.now()},...p]); flash('Đã lưu ý tưởng: '+s.n); };
+  const addFood=(s)=>{ setFood(p=>[{id:uid(),title:s.n,address:s.area,note:s.note||'',by:me,fav:false,done:false,createdAt:Date.now()},...p]); flash('Đã lưu vào Quán: '+s.n); };
+  const pin=(s)=>{ setSpots(p=>[{id:uid(),title:s.n,cat:isFood(s)?'ăn':'chơi',note:s.area+(s.note?' · '+s.note:''),lat:s.lat,lng:s.lng,by:me,done:false,createdAt:Date.now()},...p]); flash('Đã ghim bản đồ: '+s.n); };
+  const catIcon=(k)=>(HANOI_CATS.find(c=>c.k===k)||{}).icon||'📍';
+  return (
+    <div>
+      <div className="muted center" style={{fontSize:12,margin:'10px 14px 4px'}}>📍 Gợi ý địa điểm thật ở Hà Nội — chạm để lưu vào danh sách hoặc ghim bản đồ.</div>
+      <div className="filters">
+        <button className={cat===''?'on':''} onClick={()=>setCat('')}>Tất cả</button>
+        {HANOI_CATS.map(c=><button key={c.k} className={cat===c.k?'on':''} onClick={()=>setCat(c.k)}>{c.icon} {c.name}</button>)}
+      </div>
+      <div className="filters">
+        <button className={bud===''?'on':''} onClick={()=>setBud('')}>Mọi mức</button>
+        {BUDGETS.map(b=><button key={b.k} className={bud===b.k?'on':''} onClick={()=>setBud(b.k)}>{b.label}</button>)}
+      </div>
+      <div className="muted" style={{fontSize:11.5,margin:'8px 14px 0'}}>{list.length} địa điểm</div>
+      {list.map((s,i)=>(
+        <div key={i} className="item">
+          <div className="it-top"><h4>{catIcon(s.cat)} {s.n}</h4></div>
+          <div className="muted" style={{fontSize:12,marginTop:2}}>📍 {s.area}</div>
+          {s.note && <div className="it-note">{s.note}</div>}
+          <div className="it-meta">
+            <span className="pill">{budgetLabel(s.budget)}</span>
+            <span className="grow"></span>
+            <button className="pill" onClick={()=>isFood(s)?addFood(s):addIdea(s)}>{isFood(s)?'🍽️ Lưu Quán':'💡 Lưu ý tưởng'}</button>
+            {s.lat!=null && <button className="pill" onClick={()=>pin(s)}>📍 Ghim</button>}
+          </div>
+        </div>
+      ))}
+      <div style={{height:8}}></div>
+    </div>
+  );
+}
+
 /* ============ Tab: Hẹn hò ============ */
 function DateTab({people,me,flash}){
   const [seg,setSeg]=useState('idea');
@@ -1196,10 +1301,12 @@ function DateTab({people,me,flash}){
     <div>
       <div className="seg">
         <button className={seg==='idea'?'on':''} onClick={()=>setSeg('idea')}>💡 Ý tưởng</button>
+        <button className={seg==='hanoi'?'on':''} onClick={()=>setSeg('hanoi')}>📍 Gợi ý HN</button>
         <button className={seg==='food'?'on':''} onClick={()=>setSeg('food')}>🍜 Quán & Món</button>
         <button className={seg==='map'?'on':''} onClick={()=>setSeg('map')}>🗺️ Bản đồ</button>
       </div>
       {seg==='idea' && <><WeatherCard/><DateIdeas people={people} me={me}/></>}
+      {seg==='hanoi' && <HanoiCatalog me={me} flash={flash}/>}
       {seg==='food' && <SimpleList skey="ju.food" people={people} me={me} addLabel="quán/món" doneLabel="Đã thử"
         fields={['address','rating','link','note']} suggest={FOOD_SUGGEST} empty={{icon:'🍜',text:'Quán ăn, món muốn thử cùng nhau. Bấm 💡 để xem gợi ý!'}} flash={flash}/>}
       {seg==='map' && <MapSpots people={people} me={me}/>}
