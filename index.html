@@ -825,6 +825,16 @@ const HANOI_SPOTS=[
   {n:'Phố sách 19/12',cat:'ngoaitroi',area:'Hoàn Kiếm',budget:'free',note:'Phố sách dạo chơi, cafe sách',h:'8:00–21:00',p:'Miễn phí',lat:21.0250,lng:105.8460},
   {n:'Đảo Ngọc – Ngũ Xã',cat:'ngoaitroi',area:'Trúc Bạch, Ba Đình',budget:'u100',note:'Phố ẩm thực đảo nhỏ, lẩu & phở cuốn',h:'10:00–24:00',p:'Tuỳ quán',lat:21.0444,lng:105.8400},
   {n:'Bún ốc Phủ Tây Hồ',cat:'an',area:'Quảng An, Tây Hồ',budget:'u100',note:'Bún ốc nóng đặc sản ven hồ',h:'8:00–18:00',p:'30–60k',lat:21.0730,lng:105.8232},
+  {n:'The Coffee House Nhà Thờ',cat:'cafe',area:'Nhà Chung, Hoàn Kiếm',budget:'u100',note:'View Nhà thờ Lớn, không gian rộng',h:'7:00–22:30',p:'40–70k',lat:21.0289,lng:105.8490},
+  {n:'Cộng Cà Phê Hồ Gươm',cat:'cafe',area:'Đinh Tiên Hoàng, Hoàn Kiếm',budget:'u100',note:'View hồ, decor hoài niệm',h:'7:00–23:00',p:'35–60k',lat:21.0295,lng:105.8525},
+  {n:'Nhà Nội Train Street',cat:'cafe',area:'Phùng Hưng, Hoàn Kiếm',budget:'u100',note:'Cà phê đường tàu, độc đáo',h:'9:00–22:00',p:'40–70k',lat:21.0335,lng:105.8460},
+  {n:'Lẩu nướng Kichi/Gogi',cat:'an',area:'nhiều TTTM',budget:'u300',note:'Buffet lẩu/nướng đa dạng',h:'10:00–22:00',p:'Buffet 250–400k'},
+  {n:'Nhà hàng Chả Cá Thăng Long',cat:'an',area:'Đường Thành, Hoàn Kiếm',budget:'u300',note:'Chả cá trứ danh, ấm cúng',h:'10:00–22:00',p:'150–200k',lat:21.0333,lng:105.8470},
+  {n:'Lotte Observation Deck',cat:'vanhoa',area:'Liễu Giai, Ba Đình',budget:'u300',note:'Đài quan sát tầng 65, sàn kính',h:'9:30–23:00',p:'Vé ~230k',lat:21.0317,lng:105.8117},
+  {n:'Công viên Cầu Giấy',cat:'ngoaitroi',area:'Cầu Giấy',budget:'free',note:'Công viên rộng, hồ, đường dạo',h:'Cả ngày',p:'Miễn phí',lat:21.0290,lng:105.7900},
+  {n:'Vincom Mega Mall Royal City',cat:'vanhoa',area:'Thanh Xuân',budget:'free',note:'TTTM ngầm: phim, băng, ăn uống',h:'9:30–22:00',p:'Miễn phí vào',lat:20.9960,lng:105.8150},
+  {n:'Bãi giữa sông Hồng',cat:'ngoaitroi',area:'Long Biên',budget:'free',note:'Cắm trại, đốt lửa, hoang sơ',h:'Ban ngày',p:'Miễn phí',lat:21.0470,lng:105.8650},
+  {n:'Hồ Hoàn Kiếm về đêm',cat:'ngoaitroi',area:'Hoàn Kiếm',budget:'free',note:'Dạo đêm, kem, tào phớ',h:'Tối',p:'Miễn phí',lat:21.0287,lng:105.8525},
 ];
 const QUESTIONS=[
  'Kỷ niệm nào với nhau khiến bạn nhớ nhất?',
@@ -1398,6 +1408,8 @@ function MoodCard({people,me}){
   const days=[];
   for(let i=13;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i); const k=d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); days.push({k,day:d.getDate(),m:mood[k]||{}}); }
   const [showHist,setShowHist]=useState(false);
+  const mode7=(who)=>{ const c={}; days.slice(-7).forEach(d=>{ const m=d.m[who]; if(m) c[m]=(c[m]||0)+1; }); const e=Object.entries(c).sort((a,b)=>b[1]-a[1])[0]; return e?{m:e[0],n:e[1]}:null; };
+  const ia=mode7('a'), ib=mode7('b');
   return (
     <div className="card">
       <div className="row" style={{gap:8}}>
@@ -1415,6 +1427,7 @@ function MoodCard({people,me}){
       </div>
       {today[me] && <input className="inp" style={{marginTop:7,padding:'7px 11px',fontSize:13}} placeholder="Vì sao? (tuỳ chọn)" value={note}
         onChange={e=>setNote(e.target.value)} onBlur={saveNote} onKeyDown={e=>{ if(e.key==='Enter') saveNote(); }}/>}
+      {showHist && (ia||ib) && <div className="muted" style={{fontSize:11.5,marginTop:9}}>📊 Tuần này: {ia?`${people.a.name} hay ${ia.m} (${ia.n}/7)`:''}{ia&&ib?' · ':''}{ib?`${people.b.name} hay ${ib.m} (${ib.n}/7)`:''}</div>}
       {showHist && <div style={{display:'flex',gap:4,overflowX:'auto',paddingBottom:4,marginTop:10}}>
         {days.map(d=>(
           <div key={d.k} style={{flex:'0 0 auto',textAlign:'center',minWidth:24,background:d.k===key?'var(--chip)':'transparent',borderRadius:8,padding:'3px 1px'}}>
@@ -2022,6 +2035,8 @@ function DateIdeas({people,me}){
 /* ============ Map spots ============ */
 function MapSpots({people,me}){
   const [spots,setSpots]=useLocal('ju.spots',[]);
+  const [checkins]=useLocal('ju.checkins',[]);
+  const [showCk,setShowCk]=useState(true);
   const mapRef=useRef(null), elRef=useRef(null), layerRef=useRef(null);
   const [picking,setPicking]=useState(false);
   const [draft,setDraft]=useState(null); // {lat,lng}
@@ -2057,7 +2072,13 @@ function MapSpots({people,me}){
       const m=L.marker([s.lat,s.lng]).addTo(lg);
       m.bindPopup('<b>'+(s.cat==='ăn'?'🍜 ':'📍 ')+(s.title||'')+'</b>'+(s.done?' ✅':'')+(s.note?'<br>'+s.note:''));
     });
-  },[spots]);
+    if(showCk) checkins.forEach(c=>{
+      if(c.lat==null||c.lng==null) return;
+      const icon=L.divIcon({className:'',html:'<div style="font-size:22px;line-height:1;filter:drop-shadow(0 1px 2px rgba(0,0,0,.4))">💗</div>',iconSize:[22,22],iconAnchor:[11,11]});
+      const m=L.marker([c.lat,c.lng],{icon}).addTo(lg);
+      m.bindPopup('<b>💗 '+(c.name||'')+'</b>'+(c.rating?'<br>'+'⭐'.repeat(c.rating):'')+(c.address?'<br>'+c.address:'')+(c.comment?'<br><i>'+c.comment+'</i>':''));
+    });
+  },[spots,checkins,showCk]);
 
   const addSpot=()=>{
     if(!form.title.trim()){ return; }
@@ -2073,7 +2094,10 @@ function MapSpots({people,me}){
         <button className={'btn grow'+(picking?'':' soft')} onClick={()=>setPicking(!picking)}>
           {picking?'👆 Chạm lên bản đồ để ghim…':'📍 Ghim chỗ mới'}</button>
       </div>
-      <div className="muted center" style={{fontSize:12,margin:'6px 14px'}}>Lưu những chỗ hai đứa muốn đi / đã đi.</div>
+      <div className="row" style={{margin:'6px 14px',gap:8,justifyContent:'center'}}>
+        <span className="muted" style={{fontSize:12}}>Lưu những chỗ hai đứa muốn đi / đã đi.</span>
+        {checkins.some(c=>c.lat!=null) && <button className="muted" style={{fontSize:11.5}} onClick={()=>setShowCk(v=>!v)}>{showCk?'💗 Ẩn check-in':'💗 Hiện check-in'}</button>}
+      </div>
       <div className="row" style={{margin:'0 14px 6px',gap:8}}>
         <input className="inp grow" placeholder="🔎 Tìm địa điểm theo tên…" value={search}
           onChange={e=>setSearch(e.target.value)} onKeyDown={e=>{ if(e.key==='Enter') doSearch(); }}/>
@@ -2431,8 +2455,13 @@ function PeriodTracker({people}){
   const [pRaw,setP]=useLocal('ju.period',{cycle:28,length:5,history:[],prep:[],note:''});
   const p=pRaw||{cycle:28,length:5,history:[],prep:[],note:''};
   const [showSet,setShowSet]=useState(false);
+  const [showHist,setShowHist]=useState(false);
   const info=periodNext();
+  const hist=(p.history||[]).slice().sort();
+  const gaps=[]; for(let i=1;i<hist.length;i++){ gaps.push(Math.round((new Date(hist[i]+'T00:00:00')-new Date(hist[i-1]+'T00:00:00'))/86400000)); }
+  const avg=gaps.length? Math.round(gaps.reduce((a,b)=>a+b,0)/gaps.length):null;
   const logToday=()=>{ const h=(p.history||[]).slice(); if(h.indexOf(todayISO())<0) h.push(todayISO()); setP({...p,history:h,start:todayISO()}); };
+  const undoLast=()=>{ const h=hist.slice(0,-1); setP({...p,history:h,start:h[h.length-1]}); };
   const togglePrep=(item)=>{ const pr=(p.prep||[]); setP({...p,prep: pr.indexOf(item)>=0? pr.filter(x=>x!==item):[...pr,item]}); };
   const name=(people&&people.b&&people.b.name)||'vợ';
   return (
@@ -2448,6 +2477,16 @@ function PeriodTracker({people}){
         {showSet && <div className="row" style={{gap:8,marginTop:8}}>
           <div className="field grow" style={{margin:0}}><label>Chu kỳ (ngày)</label><input className="inp" type="number" value={p.cycle||28} onChange={e=>setP({...p,cycle:Number(e.target.value)||28})}/></div>
           <div className="field grow" style={{margin:0}}><label>Số ngày hành kinh</label><input className="inp" type="number" value={p.length||5} onChange={e=>setP({...p,length:Number(e.target.value)||5})}/></div>
+        </div>}
+        {(avg||hist.length>0) && <div className="row" style={{marginTop:8}}>
+          {avg && <span className="muted" style={{fontSize:11.5}}>📊 Chu kỳ TB: <b>{avg} ngày</b> · {hist.length} kỳ đã ghi</span>}
+          <span className="grow"></span>
+          {hist.length>0 && <button className="muted" style={{fontSize:11.5}} onClick={()=>setShowHist(v=>!v)}>📜 lịch sử</button>}
+        </div>}
+        {showHist && hist.length>0 && <div style={{marginTop:6}}>
+          {hist.slice().reverse().slice(0,8).map((d,i,arr)=>{ const gap= i<arr.length-1? Math.round((new Date(d+'T00:00:00')-new Date(arr[i+1]+'T00:00:00'))/86400000):null;
+            return <div key={d} className="muted" style={{fontSize:12,padding:'3px 0'}}>🌸 {fmtDateVN(d)}{gap?` · cách kỳ trước ${gap} ngày`:''}</div>; })}
+          <button className="muted" style={{fontSize:11.5,marginTop:4}} onClick={undoLast}>↩︎ Xoá kỳ gần nhất (nếu ghi nhầm)</button>
         </div>}
       </div>
       <div className="sec-title">🧺 Cần chuẩn bị</div>
@@ -3157,6 +3196,11 @@ function Achievements({setup}){
   const timeline=g('ju.timeline',[]).length, jar=g('ju.lovejar',[]).length;
   const streak=answerStreak(g('ju.qa',{}));
   const chDays=Object.keys(g('ju.challengeDone',{})).length;
+  const checkins=g('ju.checkins',[]).length;
+  const habits=g('ju.habits',[]);
+  const habitStreak=habits.reduce((m,h)=>Math.max(m,streakOf(d=>!!(h.log||{})[d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())])),0);
+  const menuMade=(g('ju.menuPlan',null)?1:0)+(g('ju.menu',[]).length?1:0);
+  const gifts=g('ju.wish',[]).length;
   const list=[
     {i:'💗',n:'Khởi đầu',ok:!!setup.loveDate,h:'Đặt ngày yêu'},
     {i:'💯',n:'100 ngày',ok:loveDays>=100,h:'Bên nhau 100 ngày'},
@@ -3172,6 +3216,10 @@ function Achievements({setup}){
     {i:'🔥',n:'Bền bỉ',ok:streak>=7,h:'Streak ≥7 ngày'},
     {i:'💪',n:'Cùng cố',ok:chDays>=7,h:'≥7 thử thách'},
     {i:'🫙',n:'Đầy lọ',ok:jar>=5,h:'≥5 điều yêu thương'},
+    {i:'📸',n:'Check-in',ok:checkins>=3,h:'≥3 lần check-in'},
+    {i:'✅',n:'Kỷ luật',ok:habitStreak>=7,h:'Thói quen 7 ngày'},
+    {i:'🍳',n:'Đầu bếp',ok:menuMade>=1,h:'Lên thực đơn tuần'},
+    {i:'🎁',n:'Mơ ước',ok:gifts>=3,h:'≥3 món trong wishlist'},
   ];
   const got=list.filter(b=>b.ok).length;
   return (
