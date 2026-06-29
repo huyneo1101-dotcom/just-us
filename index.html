@@ -150,12 +150,15 @@ textarea.inp{resize:vertical;min-height:64px}
 .empty .big{font-size:38px;display:block;margin-bottom:8px}
 
 /* Home */
-.hero{margin:14px;border-radius:22px;overflow:hidden;position:relative;
+.hero{margin:14px;border-radius:22px;overflow:hidden;position:relative;min-height:188px;display:flex;flex-direction:column;justify-content:flex-end;
   background:linear-gradient(135deg,var(--primary),var(--accent));color:#fff;padding:15px 18px;box-shadow:var(--shadow)}
-.hero .names{font-size:19px;font-weight:800;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.hero .count{font-size:30px;font-weight:900;margin-top:6px;line-height:1}
-.hero .sub{opacity:.92;font-size:12.5px;margin-top:3px}
-.hero .cover{position:absolute;inset:0;background-size:cover;background-position:center;opacity:.28}
+.hero .names{font-size:15px;font-weight:700;display:flex;align-items:center;gap:6px;flex-wrap:wrap;text-shadow:0 1px 5px rgba(0,0,0,.4)}
+.hero .count{font-size:36px;font-weight:900;margin-top:2px;line-height:1.04;text-shadow:0 1px 7px rgba(0,0,0,.45)}
+.hero .sub{opacity:.96;font-size:12.5px;margin-top:3px;text-shadow:0 1px 5px rgba(0,0,0,.45)}
+.hero .cover{position:absolute;inset:0;background-size:cover;background-position:center;opacity:1;z-index:0}
+.hero .scrim{position:absolute;inset:0;z-index:0;background:linear-gradient(to top,rgba(35,8,35,.66),rgba(35,8,35,.10) 58%,rgba(35,8,35,.30))}
+.hero .badges{position:absolute;top:12px;right:12px;z-index:1;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;max-width:62%}
+.hero .badges .b{background:rgba(255,255,255,.92);color:#993556;font-size:11px;font-weight:700;padding:4px 9px;border-radius:20px;white-space:nowrap}
 .hero .inner{position:relative;z-index:1}
 .stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:12px 14px}
 .stat{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px;box-shadow:var(--shadow)}
@@ -1704,17 +1707,23 @@ function Home({setup,people,me,go}){
     <div>
       <div className="hero">
         {cover && <div className="cover" style={{backgroundImage:`url(${cover})`}}></div>}
+        {cover && <div className="scrim"></div>}
+        <div className="badges">
+          {loveDays!=null && (()=>{ const ms=nextMilestone(loveDays); return ms? <span className="b">🎯 mốc {ms.mark.toLocaleString('vi-VN')} · {ms.inDays}n</span> : null; })()}
+          {weddingDays!=null
+            ? (()=>{ const tn=daysToNext(setup.weddingDate); return tn!=null? <span className="b">💍 kỷ niệm {tn}n</span> : null; })()
+            : (loveDays!=null && (()=>{ const tn=daysToNext(setup.loveDate); return tn!=null? <span className="b">💗 kỷ niệm {tn}n</span> : null; })())}
+        </div>
         <div className="inner">
           <div className="names">{people.a.avatar} {people.a.name} <span style={{opacity:.85}}>＋</span> {people.b.name} {people.b.avatar}</div>
           {loveDays!=null
             ? <><div className="count">{loveDays.toLocaleString('vi-VN')} ngày</div>
-                <div className="sub">bên nhau · {yearsBetween(setup.loveDate)} năm 💗{(()=>{ const ms=nextMilestone(loveDays); return ms?`  ·  🎯 mốc ${ms.mark.toLocaleString('vi-VN')} còn ${ms.inDays}n`:''; })()}</div></>
+                <div className="sub">bên nhau · {yearsBetween(setup.loveDate)} năm 💗{weddingDays!=null?`  ·  💍 cưới ${weddingDays.toLocaleString('vi-VN')} ngày`:''}</div></>
             : <div className="sub" style={{marginTop:10}}>Thêm ngày yêu nhau trong Hồ sơ để bắt đầu đếm ✨</div>}
-          {weddingDays!=null
-            ? <div className="sub" style={{marginTop:4}}>💍 Cưới {weddingDays.toLocaleString('vi-VN')} ngày · {yearsBetween(setup.weddingDate)} năm{(()=>{ const tn=daysToNext(setup.weddingDate); return tn!=null?`  ·  kỷ niệm còn ${tn}n`:''; })()}</div>
-            : <div className="sub" style={{marginTop:4,opacity:.9,cursor:'pointer'}} onClick={()=>go('me')}>💍 ＋ Thêm ngày cưới</div>}
+          {weddingDays==null && loveDays!=null && <div className="sub" style={{marginTop:3,opacity:.92,cursor:'pointer'}} onClick={()=>go('me')}>💍 ＋ Thêm ngày cưới</div>}
         </div>
       </div>
+      {!cover && <div className="muted center" style={{fontSize:11,margin:'-6px 14px 6px',cursor:'pointer'}} onClick={()=>go('me')}>📷 Đặt ảnh bìa của hai đứa để trang chủ đẹp hơn ›</div>}
 
       <InstallShare/>
       {keys.filter(show).map(k=> cardEls[k] ? <div key={k}>{cardEls[k]}</div> : null)}
