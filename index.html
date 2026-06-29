@@ -649,6 +649,9 @@ const SPIRIT_FESTIVALS=[
   {d:15,m:4,name:'Lễ Phật Đản',icon:'🪷'},{d:5,m:5,name:'Tết Đoan Ngọ',icon:'🌿'},
   {d:15,m:7,name:'Lễ Vu Lan (Rằm tháng Bảy)',icon:'🪷'},{d:15,m:8,name:'Tết Trung Thu',icon:'🥮'},
   {d:15,m:10,name:'Rằm tháng Mười (Hạ Nguyên)',icon:'🌾'},{d:23,m:12,name:'Ông Công Ông Táo',icon:'🐟'},
+  {d:10,m:1,name:'Vía Thần Tài',icon:'💰'},{d:19,m:2,name:'Vía Quan Âm (Đản sinh)',icon:'🪷'},
+  {d:19,m:6,name:'Vía Quan Âm (Thành đạo)',icon:'🪷'},{d:19,m:9,name:'Vía Quan Âm (Xuất gia)',icon:'🪷'},
+  {d:30,m:7,name:'Vía Địa Tạng Vương',icon:'🙏'},{d:17,m:11,name:'Vía Phật A Di Đà',icon:'🙏'},
 ];
 function upcomingSpiritual(within){
   var t=new Date(); t.setHours(0,0,0,0); var out=[];
@@ -1002,6 +1005,7 @@ function ideaOutdoor(title){ const s=(title||'').toLowerCase();
   if(/(xem phim|rạp|cà phê|cafe|bảo tàng|nhà hàng|karaoke|board game|spa|nấu|ở nhà|workshop|lớp học|bowling|trượt băng|thuỷ cung|thủy cung|nướng|lẩu|buffet|đọc sách|nhà sách|massage|gốm|vẽ|phòng chiếu|hát|trà chiều)/.test(s)) return false;
   return null; }
 const CALM_ANGRY=['Hít thở sâu kiểu 4–7–8 trong 1 phút','Ra ngoài đi bộ nhanh 5 phút cho hạ nhiệt','Uống một cốc nước mát từ từ','Viết ra điều khiến bạn bực rồi… xé tờ giấy đi','Đếm ngược thật chậm từ 20 về 0','Rửa mặt / rửa tay bằng nước mát','Tạm rời khỏi tình huống 10 phút rồi quay lại','Vận động mạnh 2 phút (chống đẩy, nhảy dây) để xả','Nghe một bài nhạc bạn thích','Tự hỏi: “Việc này 1 tuần nữa còn quan trọng không?”','Nói ra cảm xúc bằng câu “Anh/em đang thấy…” thay vì trách','Bóp một quả bóng/khăn cho xả lực','Nhắm mắt, thả lỏng vai và hàm trong 30 giây','Uống ngụm nước, nhẩm “mình chọn bình tĩnh”','Ra ban công hít thở khí trời','Tưởng tượng điều khiến mình bực sẽ ra sao nếu cười xoà','Viết 1 câu cảm ơn người kia để đổi góc nhìn','Vỗ nước lạnh lên cổ tay'];
+const SWEET_NOTES=['Cảm ơn em/anh vì hôm nay nhé 💗','Nhớ em/anh quá đi mất 🥰','Hôm nay làm tốt lắm, tự hào về em/anh!','Về nhà an toàn nha, có anh/em đợi 🏠','Yêu em/anh nhiều hơn hôm qua một chút 💞','Tối nay mình ăn gì ngon ngon nhé?','Cười lên nào, mọi chuyện sẽ ổn thôi 🌈','Có gì mệt cứ kể anh/em nghe nhé','Cảm ơn vì luôn ở bên cạnh 🤍','Mai mình đi chơi đâu đó đi 🚲','Em/anh là điều tuyệt nhất của ngày hôm nay ✨','Ôm một cái cho có động lực nào 🤗','Uống đủ nước và nghỉ ngơi nhé!','Dù xa hay gần, tim vẫn hướng về nhau 💕','Cứ là chính mình, anh/em yêu em/anh như thế'];
 const CALM_ANXIOUS=['Thở ra dài hơn hít vào, lặp lại 1 phút','Kỹ thuật 5-4-3-2-1: gọi tên 5 thứ nhìn thấy, 4 nghe được, 3 chạm được…','Viết ra điều lo + tách “việc mình kiểm soát được” và “không”','Uống một tách trà ấm','Đi bộ chậm, chú ý từng bước chân','Nhắn cho người ấy điều đang khiến bạn lo','Tắm nước ấm thư giãn','Nghe nhạc thiền / lo-fi 10 phút','Ghi ra 3 điều bạn biết ơn hôm nay','Đặt điện thoại xuống 15 phút','Ôm người ấy 20 giây cho dịu lại','Tự nhủ: “Mình đã vượt qua những lúc khó hơn thế này.”','Đặt tay lên ngực, cảm nhận nhịp thở chậm lại','Chia việc đang lo thành 1 bước nhỏ làm ngay','Pha một ly nước ấm mật ong','Ra ngoài nhìn cây xanh / bầu trời 2 phút','Viết thư cho chính mình của tuần sau','Vươn vai, xoay cổ nhẹ nhàng'];
 
 /* ============ small components ============ */
@@ -1513,6 +1517,25 @@ function HabitTracker(){
   );
 }
 
+/* ============ Cài app + chia sẻ link ============ */
+function InstallShare(){
+  const [pe,setPe]=useState(null); const [done,setDone]=useState(false);
+  useEffect(()=>{ const h=(e)=>{ e.preventDefault(); setPe(e); }; window.addEventListener('beforeinstallprompt',h); return ()=>window.removeEventListener('beforeinstallprompt',h); },[]);
+  const standalone = window.matchMedia && window.matchMedia('(display-mode: standalone)').matches;
+  if(standalone||done) return null;
+  const install=async()=>{ if(pe){ pe.prompt(); try{ await pe.userChoice; }catch(e){} setPe(null); } else alert('Trên điện thoại: mở menu trình duyệt → “Thêm vào màn hình chính” để cài Just Us như một app 💗'); };
+  const share=async()=>{ const url=location.href.split('#')[0]; try{ if(navigator.share){ await navigator.share({title:'Just Us — Của riêng hai đứa',text:'Không gian riêng của hai đứa mình 💗',url}); } else { await navigator.clipboard.writeText(url); alert('Đã copy link — gửi cho nửa kia nhé!'); } }catch(e){} };
+  return (
+    <div className="card" style={{display:'flex',gap:8,alignItems:'center'}}>
+      <span style={{fontSize:20}}>📲</span>
+      <span className="grow" style={{fontSize:13}}>Cài app & gửi link cho nửa kia</span>
+      <button className="btn sm soft" onClick={share}>🔗 Link</button>
+      <button className="btn sm" onClick={install}>Cài app</button>
+      <button className="muted" onClick={()=>setDone(true)} style={{marginLeft:2}}>✕</button>
+    </div>
+  );
+}
+
 /* ============ Đang cáu / lo lắng ============ */
 function AngerHelper(){
   const [res,setRes]=useState(null);
@@ -1584,6 +1607,8 @@ function Home({setup,people,me,go}){
             : <div className="sub" style={{marginTop:4,opacity:.9,cursor:'pointer'}} onClick={()=>go('me')}>💍 ＋ Thêm ngày cưới</div>}
         </div>
       </div>
+
+      <InstallShare/>
 
       {/* Phân vân: ăn gì / làm gì — ngay dưới khu đếm ngày */}
       {show('fun') && <FunPickers/>}
@@ -2480,6 +2505,9 @@ function PeriodTracker({people}){
   const hist=(p.history||[]).slice().sort();
   const gaps=[]; for(let i=1;i<hist.length;i++){ gaps.push(Math.round((new Date(hist[i]+'T00:00:00')-new Date(hist[i-1]+'T00:00:00'))/86400000)); }
   const avg=gaps.length? Math.round(gaps.reduce((a,b)=>a+b,0)/gaps.length):null;
+  const fertile=(()=>{ if(!info||info.onPeriod) return null; const ov=new Date(info.date+'T00:00:00'); ov.setDate(ov.getDate()-14);
+    const a=new Date(ov); a.setDate(a.getDate()-3); const b=new Date(ov); b.setDate(b.getDate()+1);
+    const f=x=>x.getDate()+'/'+(x.getMonth()+1); return {a:f(a),b:f(b),ov:f(ov)}; })();
   const logToday=()=>{ const h=(p.history||[]).slice(); if(h.indexOf(todayISO())<0) h.push(todayISO()); setP({...p,history:h,start:todayISO()}); };
   const undoLast=()=>{ const h=hist.slice(0,-1); setP({...p,history:h,start:h[h.length-1]}); };
   const togglePrep=(item)=>{ const pr=(p.prep||[]); setP({...p,prep: pr.indexOf(item)>=0? pr.filter(x=>x!==item):[...pr,item]}); };
@@ -2493,6 +2521,7 @@ function PeriodTracker({people}){
           : info.onPeriod
             ? <div style={{margin:'8px 0',fontSize:14}}>🌸 <b>Đang trong kỳ</b> — ngày thứ {info.dayOfPeriod}/{info.length}. Nhớ giữ ấm & nghỉ ngơi nhé 💗</div>
             : <div style={{margin:'8px 0',fontSize:14}}>Kỳ tiếp theo: <b>{fmtDateVN(info.date)}</b> · còn <b>{info.days} ngày</b>{info.days<=3?<span className="pill" style={{marginLeft:6,background:'var(--primary)',color:'#fff'}}>Sắp đến!</span>:null}</div>}
+        {fertile && <div className="muted" style={{fontSize:12,margin:'2px 0 8px'}}>🌱 Ngày dễ thụ thai (ước tính): <b>{fertile.a}–{fertile.b}</b> · rụng trứng ~{fertile.ov}</div>}
         <button className="btn" onClick={logToday}>🌸 Bắt đầu kỳ hôm nay</button>
         {showSet && <div className="row" style={{gap:8,marginTop:8}}>
           <div className="field grow" style={{margin:0}}><label>Chu kỳ (ngày)</label><input className="inp" type="number" value={p.cycle||28} onChange={e=>setP({...p,cycle:Number(e.target.value)||28})}/></div>
@@ -2791,15 +2820,19 @@ function ImportantDates({people,me}){
     lines.forEach(line=>{
       const m=line.match(/(\d{1,2})\s*[\/\-.]\s*(\d{1,2})(?:\s*[\/\-.]\s*(\d{2,4}))?/);
       if(!m) return;
-      const dd=String(Math.min(31,Math.max(1,parseInt(m[1],10)))).padStart(2,'0');
-      const mm=String(Math.min(12,Math.max(1,parseInt(m[2],10)))).padStart(2,'0');
+      const toks=line.toLowerCase().split(/[\s,;|]+/);
+      const isLunar=toks.includes('âm')||toks.includes('âl')||toks.includes('al')||/âm\s*lịch/i.test(line);
+      const dnum=Math.min(31,Math.max(1,parseInt(m[1],10)));
+      const mnum=Math.min(12,Math.max(1,parseInt(m[2],10)));
+      const dd=String(dnum).padStart(2,'0'), mm=String(mnum).padStart(2,'0');
       let yy=m[3]?parseInt(m[3],10):2026; if(yy<100) yy+=2000;
-      const name=line.replace(m[0],'').replace(/^[\s,;\-|–]+|[\s,;\-|–]+$/g,'').trim()||'Ngày nhớ';
-      parsed.push({title:name,date:yy+'-'+mm+'-'+dd,icon:'🎂',remind:3});
+      let name=line.replace(m[0],'').replace(/[\s,;|–-]*(âm\s*lịch|âm|âl|al)\s*$/i,'').replace(/^[\s,;\-|–]+|[\s,;\-|–]+$/g,'').trim()||'Ngày nhớ';
+      if(isLunar) parsed.push({title:name,lunar:true,lunarDay:dnum,lunarMonth:mnum,icon:'🕯️',remind:3});
+      else parsed.push({title:name,date:yy+'-'+mm+'-'+dd,icon:'🎂',remind:3});
     });
-    const key=(t,d)=>(t||'').toLowerCase()+'|'+(d||'').slice(5);
-    const seen=new Set(dates.map(x=>key(x.title,x.date)));
-    const fresh=parsed.filter(a=>{ const k=key(a.title,a.date); if(seen.has(k)) return false; seen.add(k); return true; });
+    const key=(t,d)=>(t||'').toLowerCase()+'|'+(d.lunar?('L'+d.lunarDay+'/'+d.lunarMonth):((d.date||'').slice(5)));
+    const seen=new Set(dates.map(x=>key(x.title,x)));
+    const fresh=parsed.filter(a=>{ const k=key(a.title,a); if(seen.has(k)) return false; seen.add(k); return true; });
     setDates([...fresh.map(a=>({...a,id:uid(),by:me,createdAt:Date.now()})),...dates]);
     setBulkMsg('Đã thêm '+fresh.length+'/'+parsed.length+' ngày'+(parsed.length-fresh.length>0?' ('+(parsed.length-fresh.length)+' đã có sẵn)':'')+'.');
     setBulkText('');
@@ -2828,9 +2861,9 @@ function ImportantDates({people,me}){
       })}
       {open && <DateForm init={edit} onClose={()=>{setOpen(false);setEdit(null);}} onSave={save}/>}
       {bulkOpen && <Sheet title="📋 Nhập nhiều ngày một lúc" onClose={()=>{setBulkOpen(false);setBulkText('');}}>
-        <div className="muted" style={{fontSize:12.5,marginBottom:8}}>Mỗi dòng một người. Cú pháp: <b>Tên · ngày/tháng</b> (vd: <i>Mẹ Hương, 20/11</i>). Trùng tên+ngày sẽ tự bỏ qua.</div>
+        <div className="muted" style={{fontSize:12.5,marginBottom:8}}>Mỗi dòng một người. <b>Dương lịch:</b> <i>Mẹ Hương, 20/11</i>. <b>Giỗ (âm lịch):</b> thêm chữ <b>âm</b> — vd <i>Giỗ ông nội, 10/3 âm</i>. Trùng sẽ tự bỏ qua.</div>
         <div className="field"><textarea className="inp" style={{minHeight:170}} value={bulkText}
-          onChange={e=>setBulkText(e.target.value)} placeholder={'Mẹ Hương, 20/11\nHuy, 11/01\nPhương Anh, 18/01'} autoFocus/></div>
+          onChange={e=>setBulkText(e.target.value)} placeholder={'Mẹ Hương, 20/11\nHuy, 11/01\nGiỗ ông nội, 10/3 âm\nGiỗ bà ngoại, 25/8 âm'} autoFocus/></div>
         {bulkMsg && <div className="pill" style={{marginBottom:8}}>{bulkMsg}</div>}
         <button className="btn" onClick={addBulk}>🎂 Thêm vào Ngày nhớ</button>
         <button className="btn soft" style={{marginTop:8}} onClick={()=>{setBulkOpen(false);setBulkText('');}}>Đóng</button>
@@ -3033,6 +3066,7 @@ function Notes({people,me}){
         <div ref={endRef}></div>
       </div>
       <div className="row" style={{position:'sticky',bottom:0,background:'var(--card)',padding:'10px 14px',borderTop:'1px solid var(--line)',gap:8,margin:'10px 0 0'}}>
+        <button className="btn sm soft" title="Gợi ý lời ngọt" onClick={()=>setT(SWEET_NOTES[Math.floor(Math.random()*SWEET_NOTES.length)])}>💡</button>
         <input className="inp grow" placeholder="Nhắn gì đó ngọt ngào…" value={t}
           onChange={e=>setT(e.target.value)} onKeyDown={e=>{ if(e.key==='Enter') add(); }}/>
         <button className="btn sm" onClick={add}>💕</button>
