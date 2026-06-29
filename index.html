@@ -254,7 +254,7 @@ const store={
 const SB_URL='https://vvgkjgvzjeklaadusbne.supabase.co';
 const SB_KEY='sb_publishable_DMMPv5L2kGhrHTxeQ72iKw_dIh13iT1';
 // Các key được đồng bộ (KHÔNG gồm ju.me/ju.device/ju.sync — đó là riêng từng máy)
-const SYNC_KEYS=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood','ju.qa','ju.timeline','ju.coupons','ju.chores','ju.lovejar','ju.quiz','ju.city','ju.goals','ju.checkin','ju.challengeDone','ju.homecfg','ju.diary'];
+const SYNC_KEYS=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood','ju.qa','ju.timeline','ju.coupons','ju.chores','ju.lovejar','ju.quiz','ju.city','ju.goals','ju.checkin','ju.challengeDone','ju.homecfg','ju.diary','ju.projects','ju.vinhaUrl'];
 let _sb=null;
 function sbClient(){
   if(_sb) return _sb;
@@ -648,6 +648,18 @@ const TALK_TOPICS=[
   {k:'Mối quan hệ',icon:'🤝',list:['Mình có thể làm gì để hiểu nhau hơn?','Có điều gì bạn muốn nói mà chưa nói?','Mình giải quyết bất đồng đã ổn chưa, cải thiện sao?','Điều gì ở mối quan hệ này khiến bạn tự hào?','Mình có đang dành đủ thời gian cho nhau không?','Một thói quen nhỏ nào mình nên cùng giữ?']},
   {k:'Vu vơ',icon:'🎈',list:['Nếu có một siêu năng lực, bạn chọn gì?','Món ăn nào bạn có thể ăn cả đời không chán?','Bài hát nào khiến bạn nghĩ tới người kia?','Nếu trúng số, việc đầu tiên hai đứa làm là gì?','Bạn muốn nuôi con vật gì cùng nhau?','Kỳ nghỉ trong mơ của hai đứa là ở đâu?']},
 ];
+const PROJ_TYPES=[
+  {k:'wedding',icon:'💒',label:'Đám cưới'},{k:'birthday',icon:'🎂',label:'Sinh nhật'},
+  {k:'travel',icon:'✈️',label:'Du lịch'},{k:'event',icon:'🎉',label:'Sự kiện'},
+  {k:'home',icon:'🏠',label:'Nhà cửa'},{k:'baby',icon:'👶',label:'Em bé'},{k:'other',icon:'📦',label:'Khác'},
+];
+function projIcon(k){ const t=PROJ_TYPES.find(x=>x.k===k); return t?t.icon:'📦'; }
+const PROJ_TASK_SUGGEST={
+  wedding:['Chốt ngày cưới','Đặt nhà hàng / địa điểm','Chụp ảnh cưới','Thuê váy/vest','Thiệp mời','Trang điểm cô dâu','Xe hoa','Chốt khách mời','Nhẫn cưới','Trang trí'],
+  travel:['Chốt điểm đến & ngày','Đặt vé máy bay/tàu','Đặt khách sạn','Lên lịch trình','Đổi tiền / thẻ','Chuẩn bị hành lý','Mua bảo hiểm','Thuê xe'],
+  birthday:['Chốt ngày & khách mời','Đặt bánh','Đặt quán/đồ ăn','Mua quà','Trang trí','Chụp ảnh'],
+  baby:['Khám thai định kỳ','Mua đồ sơ sinh','Chuẩn bị phòng cho bé','Chọn tên','Đặt lịch sinh','Học lớp tiền sản'],
+};
 const CITIES=[
   {k:'hanoi',name:'Hà Nội',lat:21.03,lng:105.85},{k:'hcm',name:'TP.HCM',lat:10.78,lng:106.70},
   {k:'danang',name:'Đà Nẵng',lat:16.05,lng:108.22},{k:'haiphong',name:'Hải Phòng',lat:20.86,lng:106.68},
@@ -1832,16 +1844,100 @@ function TalkTab({people,me,flash}){
   );
 }
 
+/* ============ Việc gia đình (dự án) ============ */
+function FamilyProjects({people,me}){
+  const [projects,setProjects]=useLocal('ju.projects',[]);
+  const [vinha,setVinha]=useLocal('ju.vinhaUrl','');
+  const [open,setOpen]=useState(false);
+  const [edit,setEdit]=useState(null);
+  const [linkOpen,setLinkOpen]=useState(false);
+  const save=(p)=>{ if(p.id) setProjects(projects.map(x=>x.id===p.id?p:x)); else setProjects([{...p,id:uid(),by:me,tasks:[],createdAt:Date.now()},...projects]); setOpen(false);setEdit(null); };
+  const del=(id)=>{ if(confirm('Xoá dự án này?')) setProjects(projects.filter(x=>x.id!==id)); };
+  const addTask=(id,text)=>setProjects(projects.map(p=>p.id===id?{...p,tasks:[...(p.tasks||[]),{id:uid(),text,done:false}]}:p));
+  const addTasks=(id,arr)=>setProjects(projects.map(p=>p.id===id?{...p,tasks:[...(p.tasks||[]),...arr.filter(tx=>!(p.tasks||[]).some(t=>t.text===tx)).map(tx=>({id:uid(),text:tx,done:false}))]}:p));
+  const toggleTask=(id,tid)=>setProjects(projects.map(p=>p.id===id?{...p,tasks:p.tasks.map(t=>t.id===tid?{...t,done:!t.done}:t)}:p));
+  const delTask=(id,tid)=>setProjects(projects.map(p=>p.id===id?{...p,tasks:p.tasks.filter(t=>t.id!==tid)}:p));
+  const openVinha=()=>{ if(vinha){ window.open(vinha,'_blank','noreferrer'); } else setLinkOpen(true); };
+  const shown=projects.slice().sort((a,b)=>(a.date||'9').localeCompare(b.date||'9'));
+  return (
+    <div>
+      <div className="muted center" style={{fontSize:12.5,margin:'10px 14px 0'}}>💒 Dự án lớn của gia đình: việc cần làm + ngày mục tiêu. Tiền nong để VíNhà lo 💰</div>
+      <div className="row" style={{margin:'10px 14px',gap:8}}>
+        <button className="btn soft grow" onClick={openVinha}>💰 Mở VíNhà</button>
+        <button className="iconbtn" onClick={()=>setLinkOpen(true)} title="Liên kết VíNhà">🔗</button>
+        <button className="btn sm" onClick={()=>{setEdit(null);setOpen(true);}}>＋ Dự án</button>
+      </div>
+      {shown.length===0 && <div className="empty"><span className="big">💒</span>Lên kế hoạch đám cưới, sinh nhật, chuyến du lịch… mỗi việc một dự án.</div>}
+      {shown.map(p=>{
+        const d=daysFromToday(p.date);
+        const done=(p.tasks||[]).filter(t=>t.done).length, total=(p.tasks||[]).length;
+        const sug=PROJ_TASK_SUGGEST[p.type];
+        return (
+          <div key={p.id} className="item">
+            <div className="it-top"><h4>{projIcon(p.type)} {p.title}</h4>
+              {d!=null && <span className="pill">{d<0?'đã qua':d===0?'Hôm nay!':d===1?'Ngày mai':'còn '+d+' ngày'}</span>}</div>
+            <div className="muted" style={{fontSize:12,marginTop:3}}>{p.date?fmtDateVN(p.date):'chưa đặt ngày'}{p.note?' · '+p.note:''}</div>
+            {total>0 && <div className="prog"><i style={{width:(done/total*100)+'%'}}></i></div>}
+            {total>0 && <div className="muted" style={{fontSize:11.5,marginTop:3}}>{done}/{total} việc xong</div>}
+            <div style={{marginTop:8}}>
+              {(p.tasks||[]).map(t=>(
+                <div key={t.id} className="row" style={{padding:'3px 0'}}>
+                  <button onClick={()=>toggleTask(p.id,t.id)} style={{fontSize:17}}>{t.done?'✅':'⬜'}</button>
+                  <span className={'grow'+(t.done?' dim':'')} style={{fontSize:14,textDecoration:t.done?'line-through':'none'}}>{t.text}</span>
+                  <button className="muted" onClick={()=>delTask(p.id,t.id)}>✕</button>
+                </div>
+              ))}
+              <TodoAdd onAdd={(t)=>addTask(p.id,t)}/>
+              {sug && total===0 && <button className="pill" style={{marginTop:6}} onClick={()=>addTasks(p.id,sug)}>💡 Thêm việc gợi ý sẵn</button>}
+            </div>
+            <div className="it-meta">
+              {vinha && <a className="pill" href={vinha} target="_blank" rel="noreferrer" style={{textDecoration:'none'}}>💰 VíNhà</a>}
+              {p.date && <button className="pill" onClick={()=>icsDownload(p.title,p.date,p.note)}>📆 Lịch</button>}
+              <span className="grow"></span>
+              <button className="iconbtn" onClick={()=>{setEdit(p);setOpen(true);}}>✏️</button>
+              <button className="iconbtn" onClick={()=>del(p.id)}>🗑️</button>
+            </div>
+          </div>
+        );
+      })}
+      {open && <ProjectForm init={edit} onClose={()=>{setOpen(false);setEdit(null);}} onSave={save}/>}
+      {linkOpen && <Sheet title="🔗 Liên kết VíNhà" onClose={()=>setLinkOpen(false)}>
+        <div className="muted" style={{fontSize:12.5,marginBottom:10}}>Dán đường link VíNhà (khi bạn đã đăng VíNhà lên web) để mở nhanh phần tiền nong từ đây.</div>
+        <div className="field"><label>Link VíNhà</label>
+          <input className="inp" autoFocus value={vinha} onChange={e=>setVinha(e.target.value)} placeholder="https://…"/></div>
+        <button className="btn" onClick={()=>setLinkOpen(false)}>💾 Lưu</button>
+      </Sheet>}
+    </div>
+  );
+}
+function ProjectForm({init,onClose,onSave}){
+  const [f,setF]=useState(()=>init?{...init}:{title:'',type:'wedding',date:'',note:''});
+  return (
+    <Sheet title={(init?'Sửa ':'Thêm ')+'dự án gia đình'} onClose={onClose}>
+      <div className="field"><label>Tên dự án</label>
+        <input className="inp" autoFocus value={f.title} onChange={e=>setF({...f,title:e.target.value})} placeholder="VD: Đám cưới của chúng mình"/></div>
+      <div className="field"><label>Loại</label>
+        <div className="emoji-row">{PROJ_TYPES.map(t=><button key={t.k} className={f.type===t.k?'on':''} onClick={()=>setF({...f,type:t.k})} style={{width:'auto',padding:'8px 11px',fontSize:13}}>{t.icon} {t.label}</button>)}</div></div>
+      <div className="field"><label>Ngày mục tiêu</label>
+        <input className="inp" type="date" value={f.date||''} onChange={e=>setF({...f,date:e.target.value})}/></div>
+      <div className="field"><label>Ghi chú</label>
+        <textarea className="inp" value={f.note||''} onChange={e=>setF({...f,note:e.target.value})} placeholder="Ngân sách, ý tưởng…"/></div>
+      <button className="btn" onClick={()=>{ if(f.title.trim()) onSave(f); }}>💾 Lưu</button>
+    </Sheet>
+  );
+}
+
 function UsTab({people,me,flash}){
   const [seg,setSeg]=useState('events');
   return (
     <div>
       <SegGrid value={seg} onChange={setSeg} items={[
-        {k:'events',icon:'📅',label:'Sự kiện'},{k:'dates',icon:'🎂',label:'Ngày nhớ'},
-        {k:'timeline',icon:'🕰️',label:'Kỷ niệm'},{k:'fund',icon:'💰',label:'Quỹ chung'},
-        {k:'goals',icon:'🎯',label:'Mục tiêu'},{k:'shop',icon:'🛒',label:'Đi chợ'},
-        {k:'chores',icon:'🧹',label:'Việc nhà'},
+        {k:'projects',icon:'💒',label:'Việc gia đình'},{k:'events',icon:'📅',label:'Sự kiện'},
+        {k:'dates',icon:'🎂',label:'Ngày nhớ'},{k:'timeline',icon:'🕰️',label:'Kỷ niệm'},
+        {k:'fund',icon:'💰',label:'Quỹ chung'},{k:'goals',icon:'🎯',label:'Mục tiêu'},
+        {k:'shop',icon:'🛒',label:'Đi chợ'},{k:'chores',icon:'🧹',label:'Việc nhà'},
       ]}/>
+      {seg==='projects' && <FamilyProjects people={people} me={me}/>}
       {seg==='events' && <Events people={people} me={me}/>}
       {seg==='dates' && <ImportantDates people={people} me={me}/>}
       {seg==='timeline' && <Timeline people={people} me={me}/>}
