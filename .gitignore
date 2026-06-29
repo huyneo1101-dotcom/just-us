@@ -1,5 +1,6 @@
 # File phụ trợ dev cục bộ — không cần đăng
 .preview-server.js
+.preview-4189.js
 
 # Hệ điều hành / editor
 .DS_Store
