@@ -2727,18 +2727,173 @@ function WeeklyMenu({me}){
     </div>
   );
 }
-function UsTab({people,me,flash}){
-  const [seg,setSeg]=useState('events');
+const CHILD_VACCINES=[
+  {age:'Sơ sinh',items:['Lao (BCG)','Viêm gan B (trong 24h)']},
+  {age:'2 tháng',items:['6in1 mũi 1','Rota mũi 1','Phế cầu mũi 1']},
+  {age:'3 tháng',items:['6in1 mũi 2','Rota mũi 2','Phế cầu mũi 2']},
+  {age:'4 tháng',items:['6in1 mũi 3','Rota mũi 3','Phế cầu mũi 3']},
+  {age:'6 tháng',items:['Cúm mùa mũi 1','Não mô cầu B mũi 1']},
+  {age:'9 tháng',items:['Sởi mũi 1','Não mô cầu A+C','Viêm não NB (Imojev)']},
+  {age:'12 tháng',items:['Sởi–Quai bị–Rubella (MMR)','Thuỷ đậu mũi 1','Viêm gan A mũi 1','Phế cầu nhắc']},
+  {age:'18 tháng',items:['6in1/DPT mũi 4 (nhắc)','Sởi mũi 2','Viêm gan A mũi 2']},
+  {age:'24 tháng',items:['Viêm não NB nhắc','Thương hàn','Não mô cầu nhắc']},
+];
+const CHILD_MILESTONES=[
+  {band:'0–6 tháng',lo:0,hi:6,items:['Cười, hóng chuyện','Lẫy, giữ đầu vững','Với & nắm đồ vật','Phát âm ê a']},
+  {band:'6–12 tháng',lo:6,hi:12,items:['Ngồi vững, bò','Cầm nắm chuyền tay','Bập bẹ ba–ma','Vịn đứng lên']},
+  {band:'12–18 tháng',lo:12,hi:18,items:['Đi vững','Nói vài từ đơn','Chỉ tay đòi đồ','Cầm thìa, uống cốc']},
+  {band:'18–24 tháng',lo:18,hi:24,items:['Chạy, leo cầu thang có vịn','Nói 10–25 từ, ghép 2 từ','Chỉ được bộ phận cơ thể','Tự xúc ăn, xếp 3–4 khối','Bắt chước việc nhà','Đá được bóng']},
+  {band:'24–36 tháng',lo:24,hi:36,items:['Nói câu 3–4 từ','Chạy nhảy tốt','Tự cởi/mặc đồ đơn giản','Vẽ nguệch ngoạc','Chơi giả vờ']},
+];
+const CHILD_TIPS=[
+  '🍽️ Mỗi ngày: 3 bữa chính + 2 bữa phụ + khoảng 500–600ml sữa.',
+  '🥦 Đủ 4 nhóm: tinh bột, đạm (thịt/cá/trứng/đậu), rau củ, dầu mỡ.',
+  '🥄 Tập tự xúc thìa, ăn cùng gia đình để học nhai & bắt chước.',
+  '🚫 Hạn chế đồ ngọt, nước có ga, đồ chiên mặn; tránh hạt cứng nguyên (dễ hóc).',
+  '📚 Đọc sách, gọi tên đồ vật mỗi ngày để kích thích ngôn ngữ.',
+  '😴 Ngủ 11–14h/ngày (gồm 1 giấc trưa); vận động ngoài trời mỗi ngày.',
+  '🦷 Đánh răng 2 lần/ngày, kem fluor lượng bằng hạt gạo.',
+];
+const vacAgeMonths=(label)=>{ if(/sơ sinh/i.test(label)) return 0; const m=label.match(/\d+/); return m?Number(m[0]):0; };
+function ChildCare({people,me}){
+  const [child,setChild]=useLocal('ju.child',{name:'',dob:'',gender:''});
+  const [growth,setGrowth]=useLocal('ju.childGrowth',[]);
+  const [vac,setVac]=useLocal('ju.childVaccines',{});
+  const [mile,setMile]=useLocal('ju.childMilestones',{});
+  const [diary,setDiary]=useLocal('ju.childDiary',[]);
+  const [tab,setTab]=useState('mile');
+  const [gw,setGw]=useState(''); const [gh,setGh]=useState('');
+  const [dtext,setDtext]=useState('');
+  const months=child.dob? Math.max(0, Math.round((new Date(todayISO()+'T00:00:00')-new Date(child.dob+'T00:00:00'))/(30.44*86400000))) : null;
+  const ageLabel = months==null?'chưa đặt ngày sinh' : months<24? months+' tháng tuổi' : Math.floor(months/12)+' tuổi'+(months%12?(' '+(months%12)+' th'):'');
+  const tg=(obj,set,key)=>{ const n={...obj}; if(n[key]) delete n[key]; else n[key]=true; set(n); };
+  const addGrowth=()=>{ const w=parseFloat(gw), h=parseFloat(gh); if(!w&&!h) return; setGrowth([{id:uid(),date:todayISO(),w:w||null,h:h||null},...growth]); setGw('');setGh(''); celebrate(['📏']); };
+  const addDiary=()=>{ if(!dtext.trim()) return; setDiary([{id:uid(),date:todayISO(),text:dtext.trim()},...diary]); setDtext(''); celebrate(['📔','💞']); };
+  const last=growth[0];
   return (
     <div>
-      <SegGrid value={seg} onChange={setSeg} items={[
-        {k:'projects',icon:'💒',label:'Việc gia đình'},{k:'spirit',icon:'🪷',label:'Tâm linh'},
-        {k:'period',icon:'🌸',label:'Chu kỳ'},{k:'menu',icon:'🍱',label:'Thực đơn'},
-        {k:'events',icon:'📅',label:'Sự kiện'},{k:'dates',icon:'🎂',label:'Ngày nhớ'},
-        {k:'timeline',icon:'🕰️',label:'Kỷ niệm'},{k:'fund',icon:'💰',label:'Quỹ chung'},
-        {k:'goals',icon:'🎯',label:'Mục tiêu'},{k:'shop',icon:'🛒',label:'Đi chợ'},
-        {k:'chores',icon:'🧹',label:'Việc nhà'},
-      ]}/>
+      <div className="card" style={{background:'linear-gradient(135deg,var(--chip),var(--card))'}}>
+        <div className="row"><span style={{fontSize:24}}>👶</span>
+          <div className="grow"><b style={{fontSize:15}}>{child.name||'Bé yêu'}</b>
+            <div className="muted" style={{fontSize:12}}>{ageLabel}{child.gender?(' · '+(child.gender==='nam'?'bé trai':'bé gái')):''}</div></div>
+        </div>
+        <div className="row" style={{gap:8,marginTop:8}}>
+          <input className="inp grow" placeholder="Tên bé" value={child.name||''} onChange={e=>setChild({...child,name:e.target.value})} style={{padding:'7px 10px',fontSize:13}}/>
+          <select className="inp" value={child.gender||''} onChange={e=>setChild({...child,gender:e.target.value})} style={{width:90,padding:'7px',fontSize:13}}>
+            <option value="">—</option><option value="nam">Trai</option><option value="nu">Gái</option></select>
+        </div>
+        <div className="field" style={{margin:'8px 0 0'}}><label>Ngày sinh</label>
+          <input className="inp" type="date" max={todayISO()} value={child.dob||''} onChange={e=>setChild({...child,dob:e.target.value})}/></div>
+      </div>
+      <div className="filters">
+        <button className={tab==='mile'?'on':''} onClick={()=>setTab('mile')}>🎯 Mốc</button>
+        <button className={tab==='vac'?'on':''} onClick={()=>setTab('vac')}>💉 Tiêm</button>
+        <button className={tab==='grow'?'on':''} onClick={()=>setTab('grow')}>📏 Cao/nặng</button>
+        <button className={tab==='food'?'on':''} onClick={()=>setTab('food')}>🍎 Ăn & chăm</button>
+        <button className={tab==='diary'?'on':''} onClick={()=>setTab('diary')}>📔 Nhật ký</button>
+      </div>
+      {tab==='mile' && <div>
+        <div className="muted center" style={{fontSize:11.5,margin:'8px 14px'}}>Tích mốc bé đã làm được. Khung <b>tô đậm</b> là độ tuổi hiện tại.</div>
+        {CHILD_MILESTONES.map(b=>{ const cur=months!=null&&months>=b.lo&&months<b.hi;
+          return <div key={b.band} className="item" style={cur?{borderLeft:'4px solid var(--primary)'}:null}>
+            <div className="it-top"><h4>{cur?'⭐ ':''}{b.band}</h4></div>
+            <div>{b.items.map(it=>{ const k=b.band+'|'+it; const on=!!mile[k];
+              return <button key={it} className="pill" style={{margin:'3px 6px 3px 0',padding:'7px 11px',fontSize:12.5,background:on?'var(--good)':'var(--chip)',color:on?'#fff':'var(--chip-tx)'}} onClick={()=>tg(mile,setMile,k)}>{on?'✓ ':''}{it}</button>; })}</div>
+          </div>; })}
+        <div className="muted center" style={{fontSize:11,margin:'4px 14px'}}>Mỗi bé một nhịp riêng — chỉ để tham khảo, không phải để lo lắng 💗</div>
+      </div>}
+      {tab==='vac' && <div>
+        <div className="muted center" style={{fontSize:11.5,margin:'8px 14px'}}>Lịch tiêm tham khảo (TCMR + dịch vụ). Tích mũi đã tiêm.</div>
+        {CHILD_VACCINES.map(v=>{ const due=months!=null&&vacAgeMonths(v.age)<=months;
+          const allDone=v.items.every(it=>vac[v.age+'|'+it]);
+          return <div key={v.age} className="item" style={due&&!allDone?{borderLeft:'4px solid var(--primary)'}:null}>
+            <div className="it-top"><h4>{v.age}{due&&!allDone?' · đến hạn':''}{allDone?' ✅':''}</h4></div>
+            <div>{v.items.map(it=>{ const k=v.age+'|'+it; const on=!!vac[k];
+              return <button key={it} className="pill" style={{margin:'3px 6px 3px 0',padding:'7px 11px',fontSize:12.5,background:on?'var(--good)':'var(--chip)',color:on?'#fff':'var(--chip-tx)'}} onClick={()=>tg(vac,setVac,k)}>{on?'✓ ':''}{it}</button>; })}</div>
+          </div>; })}
+        <div className="muted center" style={{fontSize:11,margin:'4px 14px'}}>Theo tư vấn của bác sĩ/cơ sở tiêm chủng là chính xác nhất.</div>
+      </div>}
+      {tab==='grow' && <div>
+        <div className="card">
+          <div className="row" style={{gap:8}}>
+            <div className="field grow" style={{margin:0}}><label>Cân nặng (kg)</label><input className="inp" type="number" value={gw} onChange={e=>setGw(e.target.value)} placeholder="vd 11.5"/></div>
+            <div className="field grow" style={{margin:0}}><label>Chiều cao (cm)</label><input className="inp" type="number" value={gh} onChange={e=>setGh(e.target.value)} placeholder="vd 82"/></div>
+          </div>
+          <button className="btn" style={{marginTop:8}} onClick={addGrowth}>📏 Ghi hôm nay</button>
+          {last && <div className="muted" style={{fontSize:12,marginTop:8}}>Gần nhất ({fmtDateVN(last.date)}): {last.w?last.w+'kg':''}{last.w&&last.h?' · ':''}{last.h?last.h+'cm':''}</div>}
+        </div>
+        {months!=null && months>=18 && months<=24 && <div className="muted center" style={{fontSize:11.5,margin:'2px 14px 8px'}}>Tham khảo ~20 tháng (WHO): bé trai ~10.5–12.5kg / 81–86cm; bé gái ~10–12kg / 80–85cm.</div>}
+        {growth.map(e=>(
+          <div key={e.id} className="row" style={{padding:'6px 14px',borderBottom:'1px solid var(--line)',fontSize:13}}>
+            <span className="muted grow">{fmtDateVN(e.date)}</span>
+            <span>{e.w?'⚖️ '+e.w+'kg':''}{e.w&&e.h?'  ':''}{e.h?'📐 '+e.h+'cm':''}</span>
+            <button className="iconbtn" onClick={()=>setGrowth(growth.filter(x=>x.id!==e.id))}>🗑️</button>
+          </div>
+        ))}
+      </div>}
+      {tab==='food' && <div>
+        <div className="sec-title">🍎 Ăn uống & chăm sóc {months!=null?`(~${months} tháng)`:''}</div>
+        <div className="card"><div className="muted" style={{fontSize:13.5,lineHeight:1.8}}>{CHILD_TIPS.map((t,i)=><div key={i}>{t}</div>)}</div></div>
+        <div className="muted center" style={{fontSize:11,margin:'4px 14px'}}>👉 Gợi ý món cho bé sẽ phong phú hơn theo từng giai đoạn.</div>
+      </div>}
+      {tab==='diary' && <div>
+        <div className="row" style={{margin:'10px 14px',gap:8}}>
+          <input className="inp grow" placeholder="Hôm nay bé… (lần đầu nói, bước đi…)" value={dtext} onChange={e=>setDtext(e.target.value)} onKeyDown={e=>{ if(e.key==='Enter') addDiary(); }}/>
+          <button className="btn sm" onClick={addDiary}>＋</button>
+        </div>
+        {diary.length===0 && <div className="empty"><span className="big">📔</span>Ghi lại những điều đầu tiên đáng nhớ của bé.</div>}
+        {diary.map(d=>(
+          <div key={d.id} className="item">
+            <div className="row"><span className="muted grow" style={{fontSize:12}}>{fmtDateVN(d.date)}</span>
+              <button className="iconbtn" onClick={()=>setDiary(diary.filter(x=>x.id!==d.id))}>🗑️</button></div>
+            <div style={{fontSize:14,marginTop:2}}>{d.text}</div>
+          </div>
+        ))}
+      </div>}
+    </div>
+  );
+}
+const US_SEGS=[
+  {k:'child',icon:'👶',label:'Nuôi con'},
+  {k:'projects',icon:'💒',label:'Việc gia đình'},
+  {k:'spirit',icon:'🪷',label:'Tâm linh'},
+  {k:'period',icon:'🌸',label:'Chu kỳ'},
+  {k:'menu',icon:'🍱',label:'Thực đơn'},
+  {k:'events',icon:'📅',label:'Sự kiện'},
+  {k:'dates',icon:'🎂',label:'Ngày nhớ'},
+  {k:'timeline',icon:'🕰️',label:'Kỷ niệm'},
+  {k:'fund',icon:'💰',label:'Quỹ chung'},
+  {k:'goals',icon:'🎯',label:'Mục tiêu'},
+  {k:'shop',icon:'🛒',label:'Đi chợ'},
+  {k:'chores',icon:'🧹',label:'Việc nhà'},
+];
+function UsTab({people,me,flash}){
+  const [seg,setSeg]=useState('events');
+  const [order,setOrder]=useLocal('ju.usOrder',[]);
+  const [editOrder,setEditOrder]=useState(false);
+  const map=Object.fromEntries(US_SEGS.map(s=>[s.k,s]));
+  const seen={}; const items=[];
+  (order||[]).forEach(k=>{ if(map[k]&&!seen[k]){ items.push(map[k]); seen[k]=1; } });
+  US_SEGS.forEach(s=>{ if(!seen[s.k]) items.push(s); });
+  const move=(k,dir)=>{ const ks=items.map(s=>s.k); const i=ks.indexOf(k); const j=i+dir; if(j<0||j>=ks.length) return; const t=ks[i]; ks[i]=ks[j]; ks[j]=t; setOrder(ks); };
+  return (
+    <div>
+      {!editOrder
+        ? <SegGrid value={seg} onChange={setSeg} items={items}/>
+        : <div className="card">
+            <div className="muted" style={{fontSize:12,marginBottom:6}}>Đổi thứ tự các mục bằng nút ▲▼:</div>
+            {items.map((s,i)=>(
+              <div key={s.k} className="row" style={{padding:'5px 0',borderBottom:'1px solid var(--line)'}}>
+                <span style={{width:26,fontSize:17}}>{s.icon}</span><span className="grow" style={{fontSize:14}}>{s.label}</span>
+                <button className="iconbtn" style={{opacity:i===0?.3:1}} onClick={()=>move(s.k,-1)}>▲</button>
+                <button className="iconbtn" style={{opacity:i===items.length-1?.3:1}} onClick={()=>move(s.k,1)}>▼</button>
+              </div>
+            ))}
+            {(order||[]).length>0 && <button className="muted" style={{fontSize:11.5,marginTop:8}} onClick={()=>setOrder([])}>↩︎ Về mặc định</button>}
+          </div>}
+      <div className="row" style={{margin:'4px 14px 0'}}><span className="grow"></span>
+        <button className="muted" style={{fontSize:11.5}} onClick={()=>setEditOrder(v=>!v)}>{editOrder?'✓ Xong':'↕︎ Sắp xếp mục'}</button></div>
+      {seg==='child' && <ChildCare people={people} me={me}/>}
       {seg==='projects' && <FamilyProjects people={people} me={me}/>}
       {seg==='spirit' && <SpiritualSection/>}
       {seg==='period' && <PeriodTracker people={people}/>}
