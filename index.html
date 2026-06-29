@@ -254,7 +254,7 @@ const store={
 const SB_URL='https://vvgkjgvzjeklaadusbne.supabase.co';
 const SB_KEY='sb_publishable_DMMPv5L2kGhrHTxeQ72iKw_dIh13iT1';
 // Các key được đồng bộ (KHÔNG gồm ju.me/ju.device/ju.sync — đó là riêng từng máy)
-const SYNC_KEYS=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood','ju.qa','ju.timeline','ju.coupons','ju.chores','ju.lovejar','ju.quiz','ju.city','ju.goals','ju.checkin','ju.challengeDone','ju.homecfg','ju.diary','ju.projects','ju.vinhaUrl','ju.checkins','ju.menu','ju.period','ju.menuPlan','ju.accuKey','ju.habits','ju.hiddenSpots','ju.usOrder','ju.eventPrefs','ju.child','ju.childGrowth','ju.childVaccines','ju.childMilestones','ju.childDiary'];
+const SYNC_KEYS=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood','ju.qa','ju.timeline','ju.coupons','ju.chores','ju.lovejar','ju.quiz','ju.city','ju.goals','ju.checkin','ju.challengeDone','ju.homecfg','ju.diary','ju.projects','ju.vinhaUrl','ju.checkins','ju.menu','ju.period','ju.menuPlan','ju.accuKey','ju.habits','ju.hiddenSpots','ju.usOrder','ju.eventPrefs','ju.child','ju.childGrowth','ju.childVaccines','ju.childMilestones','ju.childDiary','ju.partnerWishes','ju.todos','ju.spotify','ju.dishPrefs','ju.favDishes'];
 let _sb=null;
 function sbClient(){
   if(_sb) return _sb;
@@ -1641,6 +1641,7 @@ function Home({setup,people,me,go}){
       </div>
 
       <InstallShare/>
+      <PartnerWishCard people={people} me={me}/>
 
       {/* Phân vân: ăn gì / làm gì — ngay dưới khu đếm ngày */}
       {show('fun') && <FunPickers/>}
@@ -2466,17 +2467,173 @@ function TalkTopics(){
     </div>
   );
 }
+/* ============ Mong nhau một chút (điều mong ở nửa kia) ============ */
+function PartnerWishes({people,me}){
+  const [items,setItems]=useLocal('ju.partnerWishes',[]);
+  const [t,setT]=useState('');
+  const partner=me==='a'?'b':'a';
+  const add=()=>{ if(!t.trim())return; setItems([{id:uid(),by:me,text:t.trim(),done:false,createdAt:Date.now()},...items]); setT(''); celebrate(['💛']); };
+  const toggle=(id)=>setItems(items.map(x=>x.id===id?{...x,done:!x.done}:x));
+  const del=(id)=>setItems(items.filter(x=>x.id!==id));
+  const mine=items.filter(x=>x.by===me);
+  const forMe=items.filter(x=>x.by===partner);
+  return (
+    <div>
+      <div className="muted center" style={{fontSize:12,margin:'10px 14px'}}>💛 Mỗi người viết thật nhẹ một điều mong ở nửa kia — để cùng nhau tốt hơn mỗi ngày. Nửa kia sẽ thấy lời nhắc dễ thương này ở Trang chủ.</div>
+      <div className="row" style={{margin:'0 14px',gap:6}}>
+        <input className="inp grow" placeholder={'Mình mong '+(people[partner].name||'nửa kia')+'…'} value={t} onChange={e=>setT(e.target.value)} onKeyDown={e=>{ if(e.key==='Enter') add(); }}/>
+        <button className="btn sm" onClick={add}>＋</button>
+      </div>
+      <div className="sec-title">💛 Mình mong ở {people[partner].name}</div>
+      {mine.length===0 && <div className="empty muted">Chưa có điều nào — viết nhẹ nhàng & cụ thể nhé.</div>}
+      {mine.map(x=>(
+        <div key={x.id} className="item"><div className="row"><span className="grow" style={{fontSize:14,textDecoration:x.done?'line-through':'none',opacity:x.done?.6:1}}>{x.text}</span>
+          {x.done && <span className="pill" style={{background:'var(--good)',color:'#fff'}}>đã cố ✓</span>}
+          <button className="muted" onClick={()=>del(x.id)} style={{marginLeft:6}}>✕</button></div></div>
+      ))}
+      <div className="sec-title">🌷 {people[partner].name} mong ở mình</div>
+      {forMe.length===0 && <div className="empty muted">Chưa có gì — nửa kia chưa viết điều nào.</div>}
+      {forMe.map(x=>(
+        <div key={x.id} className="item"><div className="row"><span style={{fontSize:16}}>{x.done?'✅':'🌱'}</span>
+          <span className="grow" style={{fontSize:14,textDecoration:x.done?'line-through':'none'}}>{x.text}</span>
+          <button className="pill" onClick={()=>toggle(x.id)}>{x.done?'↩︎':'Mình sẽ cố 💪'}</button></div></div>
+      ))}
+    </div>
+  );
+}
+function PartnerWishCard({people,me}){
+  const [items]=useLocal('ju.partnerWishes',[]);
+  const partner=me==='a'?'b':'a';
+  const forMe=items.filter(x=>x.by===partner&&!x.done);
+  if(!forMe.length) return null;
+  const w=forMe[dayNumber()%forMe.length];
+  return (
+    <div className="card" style={{borderLeft:'4px solid var(--primary)',background:'linear-gradient(135deg,var(--chip),var(--card))'}}>
+      <div className="row" style={{gap:8}}><span style={{fontSize:22}}>💛</span>
+        <div className="grow"><div className="muted" style={{fontSize:11.5}}>{people[partner].name} mong ở bạn một chút 🌷</div>
+          <div style={{fontSize:14,fontWeight:600,marginTop:2}}>{w.text}</div></div></div>
+    </div>
+  );
+}
+/* ============ Hướng dẫn giao tiếp vợ chồng ============ */
+const COMM_TIPS=[
+  {icon:'👂',title:'Lắng nghe thật sự',text:'Khi nửa kia nói, hãy gác điện thoại, nhìn vào mắt và lắng nghe để HIỂU — đừng vội phản bác hay đưa giải pháp. Nhiều khi người ấy chỉ cần được lắng nghe.'},
+  {icon:'💬',title:'Nói “mình” thay vì “bạn”',text:'Thay vì “Anh lúc nào cũng…”, hãy nói “Em thấy buồn khi…”. Nói về cảm xúc của mình giúp tránh đổ lỗi, đối phương dễ tiếp nhận hơn.'},
+  {icon:'⏳',title:'Chọn đúng thời điểm',text:'Đừng bàn chuyện căng khi một trong hai đang đói, mệt hay đang giận. Hẹn lúc cả hai bình tĩnh để nói cho rõ.'},
+  {icon:'🤝',title:'Tìm giải pháp, không tìm người thắng',text:'Mâu thuẫn không phải cuộc thi. Hỏi “mình cùng làm gì để tốt hơn?” thay vì cố chứng minh ai đúng ai sai.'},
+  {icon:'🙏',title:'Xin lỗi & tha thứ',text:'Một lời xin lỗi chân thành và sự bao dung hàn gắn nhanh hơn mọi lý lẽ. Không ai hoàn hảo cả.'},
+  {icon:'❤️',title:'Khen nhiều hơn chê',text:'Nói cảm ơn và khen những điều nhỏ mỗi ngày. Càng nhiều lời tích cực, tình cảm càng bền.'},
+  {icon:'⏸️',title:'Biết tạm dừng',text:'Khi quá nóng, hãy xin “mình tạm dừng 15 phút” rồi quay lại. Tạm dừng để bình tĩnh, không phải để bỏ đi.'},
+  {icon:'🎯',title:'Một chuyện một lần',text:'Đang nói chuyện này thì đừng lôi chuyện cũ ra. Giải quyết gọn từng việc, đừng dồn cục.'},
+  {icon:'🫶',title:'Chạm & gần gũi',text:'Một cái ôm, nắm tay, vỗ vai đúng lúc nói được nhiều hơn lời. Giữ kết nối thể chất mỗi ngày.'},
+  {icon:'📅',title:'Hẹn “họp gia đình” nhẹ',text:'Mỗi tuần dành 15 phút nói về điều vui, điều cần cải thiện. Đều đặn giúp vấn đề không dồn lại.'},
+];
+function CommGuide(){
+  const [open,setOpen]=useState(0);
+  return (
+    <div>
+      <div className="muted center" style={{fontSize:12,margin:'10px 14px'}}>🕊️ Vài nguyên tắc nhỏ giúp hai vợ chồng nói chuyện êm đẹp hơn — chạm để mở.</div>
+      {COMM_TIPS.map((t,i)=>(
+        <div key={i} className="item" style={{cursor:'pointer'}} onClick={()=>setOpen(open===i?-1:i)}>
+          <div className="row"><span style={{fontSize:18}}>{t.icon}</span><b className="grow" style={{fontSize:14}}>{t.title}</b><span className="muted">{open===i?'▾':'▸'}</span></div>
+          {open===i && <div className="muted" style={{fontSize:13,marginTop:6,lineHeight:1.65}}>{t.text}</div>}
+        </div>
+      ))}
+    </div>
+  );
+}
+/* ============ To-do việc gia đình (người làm + ưu tiên) ============ */
+const TODO_PRIO=[{k:'cao',label:'Gấp',color:'#e25b5b'},{k:'vua',label:'Vừa',color:'#e0a341'},{k:'thap',label:'Thong thả',color:'#5bb36a'}];
+function FamilyTodos({people,me}){
+  const [items,setItems]=useLocal('ju.todos',[]);
+  const [t,setT]=useState(''); const [who,setWho]=useState('both'); const [prio,setPrio]=useState('vua'); const [due,setDue]=useState('');
+  const [showDone,setShowDone]=useState(false);
+  const add=()=>{ if(!t.trim())return; setItems([{id:uid(),title:t.trim(),who,priority:prio,due:due||'',done:false,by:me,createdAt:Date.now()},...items]); setT('');setDue(''); celebrate(['📝']); };
+  const toggle=(id)=>setItems(items.map(x=>x.id===id?{...x,done:!x.done}:x));
+  const del=(id)=>setItems(items.filter(x=>x.id!==id));
+  const prioOf=(k)=>TODO_PRIO.find(p=>p.k===k)||TODO_PRIO[1];
+  const prioRank=(k)=>({cao:0,vua:1,thap:2}[k]!=null?{cao:0,vua:1,thap:2}[k]:1);
+  const whoLabel=(w)=> w==='a'?people.a.name : w==='b'?people.b.name : 'Cả hai';
+  const whoAv=(w)=> w==='a'?people.a.avatar : w==='b'?people.b.avatar : '👫';
+  const active=items.filter(x=>!x.done).sort((a,b)=> prioRank(a.priority)-prioRank(b.priority) || (a.due||'9').localeCompare(b.due||'9'));
+  const done=items.filter(x=>x.done);
+  return (
+    <div>
+      <div className="muted center" style={{fontSize:12.5,margin:'10px 14px'}}>✅ Việc gia đình cần làm — ai làm, mức ưu tiên, hạn chót.</div>
+      <div className="card">
+        <input className="inp" placeholder="Thêm việc cần làm…" value={t} onChange={e=>setT(e.target.value)} onKeyDown={e=>{ if(e.key==='Enter') add(); }}/>
+        <div className="row" style={{gap:6,marginTop:8}}>
+          <select className="inp grow" value={who} onChange={e=>setWho(e.target.value)} style={{fontSize:13}}><option value="both">👫 Cả hai</option><option value="a">{people.a.name}</option><option value="b">{people.b.name}</option></select>
+          <select className="inp grow" value={prio} onChange={e=>setPrio(e.target.value)} style={{fontSize:13}}>{TODO_PRIO.map(p=><option key={p.k} value={p.k}>{p.label}</option>)}</select>
+          <input className="inp" type="date" value={due} onChange={e=>setDue(e.target.value)} style={{width:130,fontSize:13}}/>
+        </div>
+        <button className="btn" style={{marginTop:8}} onClick={add}>＋ Thêm việc</button>
+      </div>
+      {active.length===0 && <div className="empty"><span className="big">🎉</span>Hết việc cần làm rồi!</div>}
+      {active.map(x=>{ const p=prioOf(x.priority); const dd=x.due?daysFromToday(x.due):null;
+        return <div key={x.id} className="item" style={{borderLeft:'4px solid '+p.color}}>
+          <div className="row"><button onClick={()=>toggle(x.id)} style={{fontSize:19}}>⬜</button>
+            <span className="grow" style={{fontSize:14}}>{x.title}</span>
+            <button className="muted" onClick={()=>del(x.id)}>✕</button></div>
+          <div className="row" style={{marginTop:5,gap:6,flexWrap:'wrap'}}>
+            <span className="pill" style={{background:p.color,color:'#fff'}}>{p.label}</span>
+            <span className="pill">{whoAv(x.who)} {whoLabel(x.who)}</span>
+            {x.due && <span className="pill" style={dd!=null&&dd<0?{background:'#e25b5b',color:'#fff'}:null}>📅 {fmtDateVN(x.due)}{dd!=null?(dd<0?' · trễ':dd===0?' · hôm nay':' · còn '+dd+'n'):''}</span>}
+          </div>
+        </div>; })}
+      {done.length>0 && <div className="row" style={{margin:'10px 14px 0'}}><span className="grow"></span><button className="muted" style={{fontSize:11.5}} onClick={()=>setShowDone(v=>!v)}>{showDone?'Ẩn':'Xem'} {done.length} việc đã xong</button></div>}
+      {showDone && done.map(x=>(
+        <div key={x.id} className="item" style={{opacity:.6}}><div className="row"><button onClick={()=>toggle(x.id)} style={{fontSize:19}}>✅</button>
+          <span className="grow" style={{textDecoration:'line-through',fontSize:14}}>{x.title}</span>
+          <button className="muted" onClick={()=>del(x.id)}>✕</button></div></div>
+      ))}
+    </div>
+  );
+}
+/* ============ Playlist Spotify của hai đứa ============ */
+function spotifyEmbed(url){ const m=(url||'').match(/open\.spotify\.com\/(?:intl-\w+\/)?(playlist|track|album|artist|episode|show)\/([A-Za-z0-9]+)/); return m? {src:'https://open.spotify.com/embed/'+m[1]+'/'+m[2],type:m[1]} : null; }
+function MusicPlaylists({people,me}){
+  const [items,setItems]=useLocal('ju.spotify',[]);
+  const [url,setUrl]=useState(''); const [title,setTitle]=useState('');
+  const add=()=>{ const emb=spotifyEmbed(url); if(!emb){ alert('Dán link Spotify hợp lệ (playlist, bài hát hoặc album).'); return; } setItems([{id:uid(),title:title.trim()||'Playlist của tụi mình',url:url.trim(),by:me,createdAt:Date.now()},...items]); setUrl('');setTitle(''); celebrate(['🎵','💞']); };
+  const del=(id)=>{ if(confirm('Xoá playlist này?')) setItems(items.filter(x=>x.id!==id)); };
+  return (
+    <div>
+      <div className="muted center" style={{fontSize:12,margin:'10px 14px'}}>🎵 Playlist Spotify của hai vợ chồng — dán link để nghe ngay tại đây.</div>
+      <div className="card">
+        <input className="inp" placeholder="Tên playlist (tuỳ chọn)" value={title} onChange={e=>setTitle(e.target.value)}/>
+        <div className="row" style={{gap:6,marginTop:8}}>
+          <input className="inp grow" placeholder="Dán link Spotify…" value={url} onChange={e=>setUrl(e.target.value)} onKeyDown={e=>{ if(e.key==='Enter') add(); }}/>
+          <button className="btn sm" onClick={add}>＋</button>
+        </div>
+        <div className="muted" style={{fontSize:11,marginTop:6}}>Trên Spotify: bài hát/playlist → Chia sẻ → Sao chép liên kết, rồi dán vào đây.</div>
+      </div>
+      {items.length===0 && <div className="empty"><span className="big">🎵</span>Thêm playlist / bài hát yêu thích của hai đứa.</div>}
+      {items.map(x=>{ const emb=spotifyEmbed(x.url); const h=emb&&(emb.type==='track'||emb.type==='episode')?152:352;
+        return <div key={x.id} className="item">
+          <div className="it-top"><h4>🎵 {x.title}</h4><button className="muted" onClick={()=>del(x.id)}>✕</button></div>
+          {emb
+            ? <iframe title={x.title} src={emb.src} width="100%" height={h} loading="lazy" allow="encrypted-media" style={{borderRadius:12,marginTop:6,border:0}}></iframe>
+            : <a className="pill" href={x.url} target="_blank" rel="noreferrer" style={{textDecoration:'none'}}>▶︎ Mở Spotify</a>}
+          <div className="muted" style={{fontSize:11,marginTop:4}}>{people[x.by]?.avatar} thêm</div>
+        </div>; })}
+    </div>
+  );
+}
 function TalkTab({people,me,flash}){
   const [seg,setSeg]=useState('notes');
   return (
     <div>
       <SegGrid value={seg} onChange={setSeg} items={[
         {k:'notes',icon:'💌',label:'Nhắn nhau'},{k:'question',icon:'❓',label:'Câu hỏi'},
+        {k:'wishes',icon:'💛',label:'Mong nhau'},{k:'guide',icon:'🕊️',label:'Giao tiếp'},
         {k:'quiz',icon:'💞',label:'Đố vui'},{k:'checkin',icon:'📝',label:'Check-in'},
         {k:'topics',icon:'🗣️',label:'Chủ đề'},
       ]}/>
       {seg==='notes' && <Notes people={people} me={me}/>}
       {seg==='question' && <DailyQuestion people={people} me={me}/>}
+      {seg==='wishes' && <PartnerWishes people={people} me={me}/>}
+      {seg==='guide' && <CommGuide/>}
       {seg==='quiz' && <CoupleQuiz people={people} me={me}/>}
       {seg==='checkin' && <WeeklyCheckin people={people} me={me}/>}
       {seg==='topics' && <TalkTopics/>}
@@ -2916,9 +3073,11 @@ const US_SEGS=[
   {k:'dates',icon:'🎂',label:'Ngày nhớ'},
   {k:'timeline',icon:'🕰️',label:'Kỷ niệm'},
   {k:'fund',icon:'💰',label:'Quỹ chung'},
+  {k:'todos',icon:'✅',label:'Việc cần làm'},
   {k:'goals',icon:'🎯',label:'Mục tiêu'},
   {k:'shop',icon:'🛒',label:'Đi chợ'},
   {k:'chores',icon:'🧹',label:'Việc nhà'},
+  {k:'music',icon:'🎵',label:'Nhạc đôi'},
 ];
 function UsTab({people,me,flash}){
   const [seg,setSeg]=useState('events');
@@ -2955,9 +3114,11 @@ function UsTab({people,me,flash}){
       {seg==='dates' && <ImportantDates people={people} me={me}/>}
       {seg==='timeline' && <Timeline people={people} me={me}/>}
       {seg==='fund' && <Fund people={people} me={me}/>}
+      {seg==='todos' && <FamilyTodos people={people} me={me}/>}
       {seg==='goals' && <Goals people={people} me={me}/>}
       {seg==='shop' && <Shopping people={people} me={me}/>}
       {seg==='chores' && <Chores people={people} me={me}/>}
+      {seg==='music' && <MusicPlaylists people={people} me={me}/>}
     </div>
   );
 }
