@@ -1879,6 +1879,57 @@ function HanoiCatalog({me,flash}){
   );
 }
 
+/* ============ Sự kiện ở Hà Nội + học sở thích ============ */
+const EVENT_TAGS={nhac:'🎵 Nhạc',trienlam:'🖼️ Triển lãm',lehoi:'🎉 Lễ hội',amthuc:'🍜 Ẩm thực',ngoaitroi:'🌳 Ngoài trời',workshop:'🛠️ Workshop',thethao:'⚽ Thể thao',vanhoa:'🎭 Văn hoá',chodem:'🛍️ Chợ đêm'};
+// Cập nhật định kỳ (xem ju.* lịch tự cập nhật). when = thời gian; nhiều mục là sự kiện lặp lại / theo mùa.
+const HN_EVENTS=[
+  {id:'pdb-hg',title:'Phố đi bộ Hồ Gươm',when:'Tối T6 → CN hằng tuần',where:'Hồ Hoàn Kiếm',tags:['ngoaitroi','vanhoa','nhac'],note:'Biểu diễn đường phố, trò chơi dân gian — miễn phí.'},
+  {id:'pdb-tcs',title:'Phố đi bộ Trịnh Công Sơn',when:'Cuối tuần',where:'Tây Hồ',tags:['ngoaitroi','amthuc','nhac'],note:'Ẩm thực + nhạc acoustic ven hồ.'},
+  {id:'cho-dong-xuan',title:'Chợ đêm Đồng Xuân',when:'Tối T6–CN',where:'Phố cổ Hoàn Kiếm',tags:['chodem','amthuc'],note:'Mua sắm, ăn vặt, hát xẩm chợ đêm.'},
+  {id:'am-thuc-ngu-xa',title:'Phố ẩm thực Đảo Ngọc – Ngũ Xã',when:'Cuối tuần, buổi tối',where:'Trúc Bạch, Ba Đình',tags:['amthuc','ngoaitroi'],note:'Khu ẩm thực đi bộ ven hồ Trúc Bạch.'},
+  {id:'btdt-hoc',title:'Sự kiện Bảo tàng Dân tộc học',when:'Dịp lễ / Trung thu / cuối tuần',where:'Nguyễn Văn Huyên, Cầu Giấy',tags:['vanhoa','workshop'],note:'Trò chơi dân gian, workshop thủ công cho gia đình.'},
+  {id:'hoi-sach',title:'Hội sách Hà Nội',when:'Khoảng tháng 10 hằng năm',where:'Phố sách 19/12 / Hoàng thành',tags:['vanhoa','workshop'],note:'Hội sách, giao lưu tác giả, giảm giá.'},
+  {id:'trung-thu-hang-ma',title:'Trung thu phố Hàng Mã',when:'Rằm tháng 8 âm lịch',where:'Hàng Mã, Hoàn Kiếm',tags:['lehoi','ngoaitroi'],note:'Phố lồng đèn rực rỡ, đông vui.'},
+  {id:'countdown',title:'Countdown đón năm mới',when:'Đêm 31/12',where:'Hồ Gươm / Quảng trường',tags:['nhac','lehoi','ngoaitroi'],note:'Đại nhạc hội + pháo hoa giao thừa.'},
+  {id:'hoi-chua-huong',title:'Lễ hội Chùa Hương',when:'Mùng 6 Tết → hết tháng 3 âm',where:'Mỹ Đức, Hà Nội',tags:['lehoi','vanhoa','ngoaitroi'],note:'Trẩy hội, đi đò suối Yến, vãn cảnh chùa.'},
+  {id:'hoi-go-dong-da',title:'Lễ hội Gò Đống Đa',when:'Mùng 5 Tết',where:'Đống Đa, Hà Nội',tags:['lehoi','vanhoa'],note:'Kỷ niệm chiến thắng Ngọc Hồi – Đống Đa.'},
+  {id:'trienlam-vcca',title:'Triển lãm nghệ thuật (VCCA, Manzi, Complex 01)',when:'Theo lịch từng triển lãm',where:'Royal City / Phan Huy Ích / Tây Sơn',tags:['trienlam','vanhoa'],note:'Tranh, sắp đặt, nghệ thuật đương đại.'},
+  {id:'concert-mydinh',title:'Concert / liveshow lớn',when:'Theo lịch — xem vé',where:'SVĐ Mỹ Đình / TT Hội nghị QG',tags:['nhac'],note:'Các đêm nhạc, liveshow ca sĩ trong & ngoài nước.'},
+  {id:'workshop-gom',title:'Workshop gốm / nến / tranh',when:'Đặt lịch theo studio',where:'Nhiều studio nội thành',tags:['workshop'],note:'Tự tay làm đồ thủ công cùng nhau.'},
+  {id:'giai-chay',title:'Giải chạy / sự kiện thể thao',when:'Theo mùa (xuân–thu)',where:'Hồ Tây / Hồ Gươm',tags:['thethao','ngoaitroi'],note:'Giải chạy phong trào quanh hồ, đăng ký trước.'},
+];
+function EventsSuggest({me,flash}){
+  const [prefs,setPrefs]=useLocal('ju.eventPrefs',{});
+  const [,setEvents]=useLocal('ju.events',[]);
+  const rate=(id,v)=>{ const n={...prefs}; n[id]= n[id]===v? 0 : v; if(!n[id]) delete n[id]; setPrefs(n); };
+  const tagScore={};
+  HN_EVENTS.forEach(e=>{ const r=prefs[e.id]; if(r) e.tags.forEach(t=>tagScore[t]=(tagScore[t]||0)+r); });
+  const score=(e)=> e.tags.reduce((s,t)=>s+(tagScore[t]||0),0) + (prefs[e.id]||0)*0.1;
+  const sorted=HN_EVENTS.slice().sort((a,b)=>score(b)-score(a));
+  const topTags=Object.entries(tagScore).filter(([,v])=>v>0).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([t])=>EVENT_TAGS[t]);
+  const addToCal=(e)=>{ setEvents(p=>[{id:uid(),title:'🎪 '+e.title,date:'',note:e.where+' · '+e.when,by:me,todos:[],createdAt:Date.now()},...p]); flash('Đã thêm vào Sự kiện: '+e.title); };
+  return (
+    <div>
+      <div className="muted center" style={{fontSize:12,margin:'10px 14px'}}>🎪 Sự kiện ở Hà Nội — bấm 👍/👎 để app hiểu gu hai đứa, lần sau gợi ý hợp hơn.</div>
+      {topTags.length>0 && <div className="card" style={{background:'linear-gradient(135deg,var(--chip),var(--card))'}}><b style={{fontSize:13.5}}>💖 Gu của hai đứa:</b> <span style={{fontSize:13.5}}>{topTags.join(' · ')}</span></div>}
+      {sorted.map(e=>(
+        <div key={e.id} className="item">
+          <div className="it-top"><h4>🎪 {e.title}</h4></div>
+          <div className="muted" style={{fontSize:12,marginTop:2}}>📅 {e.when} · 📍 {e.where}</div>
+          <div className="muted" style={{fontSize:11.5,marginTop:3}}>{e.tags.map(t=>EVENT_TAGS[t]).filter(Boolean).join(' · ')}</div>
+          {e.note && <div className="it-note">{e.note}</div>}
+          <div className="it-meta">
+            <button className="pill" style={{background:prefs[e.id]===1?'var(--good)':'var(--chip)',color:prefs[e.id]===1?'#fff':'var(--chip-tx)'}} onClick={()=>rate(e.id,1)}>👍 Thích</button>
+            <button className="pill" style={{background:prefs[e.id]===-1?'#b06b6b':'var(--chip)',color:prefs[e.id]===-1?'#fff':'var(--chip-tx)'}} onClick={()=>rate(e.id,-1)}>👎 Không</button>
+            <span className="grow"></span>
+            <button className="pill" onClick={()=>addToCal(e)}>📅 Thêm lịch</button>
+          </div>
+        </div>
+      ))}
+      <div className="muted center" style={{fontSize:11,margin:'6px 14px'}}>Danh sách được cập nhật định kỳ. Sự kiện theo mùa/âm lịch ghi rõ thời gian.</div>
+    </div>
+  );
+}
 /* ============ Tab: Hẹn hò ============ */
 function DateTab({people,me,flash}){
   const [seg,setSeg]=useState('idea');
@@ -1886,11 +1937,13 @@ function DateTab({people,me,flash}){
     <div>
       <SegGrid value={seg} onChange={setSeg} items={[
         {k:'idea',icon:'💡',label:'Ý tưởng'},{k:'hanoi',icon:'📍',label:'Gợi ý HN'},
+        {k:'events',icon:'🎪',label:'Sự kiện HN'},
         {k:'food',icon:'🍜',label:'Quán & Món'},{k:'checkin',icon:'📸',label:'Check-in'},
         {k:'map',icon:'🗺️',label:'Bản đồ'},
       ]}/>
       {seg==='idea' && <><WeatherCard/><DateIdeas people={people} me={me}/></>}
       {seg==='hanoi' && <HanoiCatalog me={me} flash={flash}/>}
+      {seg==='events' && <EventsSuggest me={me} flash={flash}/>}
       {seg==='food' && <SimpleList skey="ju.food" people={people} me={me} addLabel="quán/món" doneLabel="Đã thử"
         fields={['photo','address','rating','link','note']} suggest={FOOD_SUGGEST} empty={{icon:'🍜',text:'Quán ăn, món muốn thử cùng nhau. Bấm 💡 để xem gợi ý!'}} flash={flash}/>}
       {seg==='checkin' && <CheckIns people={people} me={me}/>}
