@@ -104,6 +104,11 @@ body.theme-night .topbar{background:linear-gradient(180deg,rgba(36,27,51,.9),rgb
   box-shadow:var(--shadow);padding:14px;margin:12px 14px}
 .sec-title{font-weight:800;font-size:15px;margin:18px 16px 6px;display:flex;align-items:center;gap:8px}
 .muted{color:var(--muted)}
+/* Đồng bộ định dạng text các thẻ Trang chủ: tiêu đề (.hc-title) + nội dung (.hc-lead nổi bật / .hc-body phụ) */
+.hc-title{font-size:14px;font-weight:800;color:var(--text);line-height:1.3}
+.hc-act{font-size:11.5px;color:var(--muted);font-weight:600;flex:0 0 auto;white-space:nowrap}
+.hc-lead{font-size:14.5px;font-weight:700;color:var(--text);line-height:1.42;margin:6px 0 9px}
+.hc-body{font-size:12.5px;color:var(--muted);line-height:1.55}
 .row{display:flex;gap:10px;align-items:center}
 .pill{display:inline-flex;align-items:center;gap:5px;background:var(--chip);color:var(--chip-tx);
   border-radius:999px;padding:3px 10px;font-size:12px;font-weight:700}
@@ -1420,8 +1425,8 @@ function CoupleQuiz({people,me}){
   const score=(iRight?1:0)+(theyRight?1:0);
   return (
     <div className="card">
-      <div className="row"><b>💞 Hiểu nhau đến đâu?</b><span className="grow"></span><span className="muted" style={{fontSize:12}}>đố vui mỗi ngày</span></div>
-      <div style={{fontWeight:700,margin:'8px 0 10px'}}>{q}</div>
+      <div className="row"><span className="hc-title">💞 Hiểu nhau đến đâu?</span><span className="grow"></span><span className="hc-act">đố vui mỗi ngày</span></div>
+      <div className="hc-lead">{q}</div>
       {!done ? (
         <div>
           <div className="field"><label>Câu trả lời thật của bạn</label>
@@ -1456,8 +1461,8 @@ function DailyChallenge(){
   const toggle=()=>{ const nv={...log}; if(done){ delete nv[key]; } else { nv[key]=true; celebrate(['💞','🎉','✨','💪']); } setLog(nv); };
   return (
     <div className="card">
-      <div className="row"><b>🎯 Thử thách đôi hôm nay</b>{streak>1 && <span className="pill" style={{marginLeft:8}}>🔥 {streak} ngày</span>}<span className="grow"></span></div>
-      <div style={{fontWeight:700,fontSize:15,margin:'8px 0 10px',lineHeight:1.35}}>{ch}</div>
+      <div className="row"><span className="hc-title">🎯 Thử thách đôi hôm nay</span>{streak>1 && <span className="pill" style={{marginLeft:8}}>🔥 {streak} ngày</span>}<span className="grow"></span></div>
+      <div className="hc-lead">{ch}</div>
       <button className={'btn'+(done?' soft':'')} onClick={toggle}>{done?'✓ Đã làm cùng nhau 💞 (bỏ đánh dấu)':'Đánh dấu đã làm cùng nhau'}</button>
     </div>
   );
@@ -1474,8 +1479,8 @@ function WeeklyCheckin({people,me}){
   const save=()=>{ if(!rating)return; setData({...data,[wk]:{...(data[wk]||{}),[me]:{rating,note:note.trim()}}}); };
   return (
     <div className="card">
-      <div className="row"><b>📝 Check-in tuần này</b><span className="grow"></span><span className="muted" style={{fontSize:12}}>tuần {fmtDateVN(wk)}</span></div>
-      <div className="muted" style={{fontSize:12.5,margin:'6px 0'}}>Tuần qua của hai đứa thế nào?</div>
+      <div className="row"><span className="hc-title">📝 Check-in tuần này</span><span className="grow"></span><span className="hc-act">tuần {fmtDateVN(wk)}</span></div>
+      <div className="hc-body" style={{margin:'6px 0'}}>Tuần qua của hai đứa thế nào?</div>
       <div className="row" style={{gap:2}}>{[1,2,3,4,5].map(i=><button key={i} onClick={()=>setRating(i)} style={{fontSize:24,lineHeight:1}}>{i<=rating?'❤️':'🤍'}</button>)}</div>
       <input className="inp" style={{marginTop:8}} placeholder="Điều gì đáng nhớ tuần này? (tuỳ chọn)" value={note} onChange={e=>setNote(e.target.value)} onKeyDown={e=>{ if(e.key==='Enter') save(); }}/>
       <button className="btn" style={{marginTop:8}} onClick={save}>{mine.rating?'Cập nhật check-in':'Gửi check-in'}</button>
@@ -1497,7 +1502,7 @@ function LoveJar({people,me}){
   const draw=()=>{ if(jar.length===0)return; setDrawn(jar[Math.floor(Math.random()*jar.length)]); };
   return (
     <div className="card">
-      <div className="row"><b>🫙 Lọ yêu thương</b><span className="grow"></span><span className="muted" style={{fontSize:12}}>{jar.length} điều</span></div>
+      <div className="row"><span className="hc-title">🫙 Lọ yêu thương</span><span className="grow"></span><span className="hc-act">{jar.length} điều</span></div>
       {drawn
         ? <div className="center" style={{margin:'10px 0'}}>
             <div style={{fontSize:16,fontWeight:700,lineHeight:1.4}}>“{drawn.text}”</div>
@@ -1564,7 +1569,7 @@ function FunPickers(){
   const pickPlace=(label,icon,pool)=>{ const arr=pool.length?pool:lunch; if(!arr.length) return; const s=arr[Math.floor(Math.random()*arr.length)]; setRes({label,icon,value:s.n,place:s,food:true}); };
   return (
     <div className="card">
-      <b>🎲 Phân vân quá?</b>
+      <div className="hc-title">🎲 Phân vân quá?</div>
       <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8,marginTop:8}}>
         <button className="btn soft" onClick={()=>pickPlace('Ăn trưa ngoài (dưới 150k)','🍱',lunch)}>🍱 Trưa ngoài</button>
         <button className="btn soft" onClick={()=>pickDish('Ăn tối ở nhà','🍳',toiDishes,{food:true,cook:true})}>🍳 Tối ở nhà</button>
@@ -1619,7 +1624,7 @@ function Reminders({setup,go}){
   if(list.length===0 && choreLeft===0 && shopLeft===0) return null;
   return (
     <div className="card" style={{borderLeft:'4px solid var(--primary)'}}>
-      <b>🔔 Hôm nay cần nhớ</b>
+      <div className="hc-title">🔔 Hôm nay cần nhớ</div>
       {list.map((r,i)=>(
         <div key={i} className="row" onClick={()=>go('us')} style={{cursor:'pointer',marginTop:6,fontSize:13.5}}>
           <span>{r.icon}</span><span className="grow">{r.text}</span>
@@ -1648,7 +1653,7 @@ function OnThisDay(){
   if(items.length===0) return null;
   return (
     <div className="card" style={{background:'linear-gradient(135deg,var(--chip),var(--card))'}}>
-      <b>📆 Ngày này năm xưa</b>
+      <div className="hc-title">📆 Ngày này năm xưa</div>
       {items.slice(0,4).map((it,i)=>(
         <div key={i} className="row" style={{marginTop:8,gap:8,alignItems:'flex-start'}}>
           <span style={{fontSize:18}}>{it.icon}</span>
@@ -1676,7 +1681,7 @@ function MoodCard({people,me}){
   return (
     <div className="card">
       <div className="row" style={{gap:8}}>
-        <b style={{fontSize:14}}>🙂 Tâm trạng</b>
+        <span className="hc-title">🙂 Tâm trạng</span>
         <span className="muted" style={{fontSize:12}}>{people.a.name} <b style={{fontSize:16}}>{today.a||'—'}</b>{today.an?' · '+today.an:''}</span>
         <span className="muted" style={{fontSize:12}}>{people.b.name} <b style={{fontSize:16}}>{today.b||'—'}</b>{today.bn?' · '+today.bn:''}</span>
         <span className="grow"></span>
@@ -1712,7 +1717,7 @@ function WeddingCard({setup,go}){
   useEffect(()=>{ if(isToday) celebrate(['💍','🎉','💞','✨']); },[isToday]);
   if(!wd) return (
     <div className="card" onClick={()=>go('me')} style={{cursor:'pointer'}}>
-      <div className="row"><b>💍 Ngày cưới</b><span className="grow"></span><span className="pill">＋ Thêm</span></div>
+      <div className="row"><span className="hc-title">💍 Ngày cưới</span><span className="grow"></span><span className="pill">＋ Thêm</span></div>
       <div className="muted" style={{fontSize:12.5,marginTop:6}}>Chưa có ngày cưới. Bấm để thêm ở Hồ sơ → Sửa thông tin cặp đôi.</div>
     </div>
   );
@@ -1720,7 +1725,7 @@ function WeddingCard({setup,go}){
   const yrs=yearsBetween(wd);
   return (
     <div className="card" style={{background:'linear-gradient(135deg,var(--chip),var(--card))'}}>
-      <div className="row"><b>💍 Kỷ niệm ngày cưới</b><span className="grow"></span><span className="muted" style={{fontSize:12}}>{fmtDateVN(wd)}</span></div>
+      <div className="row"><span className="hc-title">💍 Kỷ niệm ngày cưới</span><span className="grow"></span><span className="hc-act">{fmtDateVN(wd)}</span></div>
       <div style={{marginTop:6,fontSize:13.5}}>Cưới nhau <b>{days.toLocaleString('vi-VN')} ngày</b> · <b>{yrs} năm</b></div>
       <div style={{marginTop:4,fontSize:13.5}}>{isToday?'🎉 Hôm nay là kỷ niệm ngày cưới — chúc mừng hai bạn!':'Còn '+toNext+' ngày tới kỷ niệm '+(yrs+1)+' năm 💞'}</div>
     </div>
@@ -1738,7 +1743,7 @@ function HabitTracker(){
   const streak=(h)=>streakOf(d=>!!(h.log||{})[d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())]);
   return (
     <div className="card">
-      <div className="row"><b>✅ Thói quen chung</b><span className="grow"></span><span className="muted" style={{fontSize:12}}>{fmtDateVN(key)}</span></div>
+      <div className="row"><span className="hc-title">✅ Thói quen chung</span><span className="grow"></span><span className="hc-act">{fmtDateVN(key)}</span></div>
       {habits.length===0 && <div className="muted" style={{fontSize:12.5,margin:'8px 0'}}>Thêm thói quen cả hai cùng giữ: uống đủ nước, tập thể dục, đọc sách, đi ngủ sớm…</div>}
       {habits.map(h=>{ const done=!!(h.log||{})[key]; const st=streak(h); return (
         <div key={h.id} className="row" style={{padding:'6px 0',borderBottom:'1px solid var(--line)'}}>
@@ -1781,8 +1786,8 @@ function AngerHelper(){
   const pick=(label,icon,pool)=> setRes({label,icon,pool,value:pool[Math.floor(Math.random()*pool.length)]});
   return (
     <div className="card">
-      <div className="row"><b>😤 Đang cáu / lo lắng?</b></div>
-      <div className="muted" style={{fontSize:12,marginTop:2}}>Thử một việc nhỏ để dịu lại 💗</div>
+      <div className="row"><span className="hc-title">😤 Đang cáu / lo lắng?</span></div>
+      <div className="hc-body" style={{marginTop:3}}>Thử một việc nhỏ để dịu lại 💗</div>
       <div className="row" style={{gap:8,marginTop:8}}>
         <button className="btn soft grow" onClick={()=>pick('Để hạ hoả','🧯',CALM_ANGRY)}>😤 Bực mình</button>
         <button className="btn soft grow" onClick={()=>pick('Để bớt lo','🌿',CALM_ANXIOUS)}>😟 Lo lắng</button>
@@ -1847,7 +1852,7 @@ function Home({setup,setSetup,people,me,go}){
     anger:<AngerHelper/>,
     reminders:<Reminders setup={setup} go={go}/>,
     upcoming:(<div>
-      <div className="sec-title">⏳ Sắp tới <span className="muted" style={{fontSize:11,fontWeight:400}}>(2 tuần)</span></div>
+      <div className="hc-title" style={{margin:'16px 16px 8px'}}>⏳ Sắp tới <span className="hc-act" style={{marginLeft:4}}>2 tuần</span></div>
       {upcoming.length===0 && <div className="empty">Chưa có sự kiện nào sắp tới.</div>}
       {upcoming.map((u,i)=>(
         <div key={i} className="item" onClick={()=>go('us')} style={{cursor:'pointer'}}>
@@ -1866,7 +1871,7 @@ function Home({setup,setSetup,people,me,go}){
     lovejar:<LoveJar people={people} me={me}/>,
     lastnote: lastNote ? (
       <div className="card" onClick={()=>go('us')} style={{cursor:'pointer'}}>
-        <div className="row"><b>💌 Lời nhắn mới</b><span className="grow"></span><span className="muted" style={{fontSize:12}}>{people[lastNote.by]?.name}</span></div>
+        <div className="row"><span className="hc-title">💌 Lời nhắn mới</span><span className="grow"></span><span className="hc-act">{people[lastNote.by]?.name}</span></div>
         <div className="it-note" style={{marginTop:6}}>{lastNote.text}</div>
       </div>) : null,
     stats:(
@@ -2780,9 +2785,8 @@ function PartnerWishCard({people,me}){
   const w=forMe[dayNumber()%forMe.length];
   return (
     <div className="card" style={{borderLeft:'4px solid var(--primary)',background:'linear-gradient(135deg,var(--chip),var(--card))'}}>
-      <div className="row" style={{gap:8}}><span style={{fontSize:22}}>💛</span>
-        <div className="grow"><div className="muted" style={{fontSize:11.5}}>{people[partner].name} mong ở bạn một chút 🌷</div>
-          <div style={{fontSize:14,fontWeight:600,marginTop:2}}>{w.text}</div></div></div>
+      <div className="row"><span className="hc-title">💛 {people[partner].name} mong ở bạn 🌷</span></div>
+      <div className="hc-lead" style={{margin:'6px 0 0'}}>{w.text}</div>
     </div>
   );
 }
@@ -4650,12 +4654,10 @@ function DailySutra(){
   const s=SUTRAS[dayNumber()%SUTRAS.length];
   return (
     <div className="card">
-      <div className="row" style={{gap:8,cursor:'pointer'}} onClick={()=>setRead(true)}>
-        <span style={{fontSize:20}}>📿</span>
-        <div className="grow"><div className="muted" style={{fontSize:11.5}}>Đọc kinh hôm nay</div>
-          <div style={{fontSize:14,fontWeight:600}}>{s.title}</div>
-          {s.sub && <div className="muted" style={{fontSize:11.5,marginTop:1}}>{s.sub}</div>}</div>
-        <span className="muted">đọc ›</span>
+      <div style={{cursor:'pointer'}} onClick={()=>setRead(true)}>
+        <div className="row"><span className="hc-title">📿 Đọc kinh hôm nay</span><span className="grow"></span><span className="hc-act">đọc ›</span></div>
+        <div className="hc-lead" style={{margin:'6px 0 0'}}>{s.title}</div>
+        {s.sub && <div className="hc-body" style={{marginTop:3}}>{s.sub}</div>}
       </div>
       {read && <Sheet title={s.title} onClose={()=>setRead(false)}>
         {s.sub && <div className="muted" style={{fontSize:12,marginBottom:8}}>{s.sub}</div>}
@@ -4673,11 +4675,9 @@ function ChildPlayCard(){
   const next=()=>{ let n=i; if(PLAY_LIB.length>1){ while(n===i) n=Math.floor(Math.random()*PLAY_LIB.length); } setI(n); };
   return (
     <div className="card">
-      <div className="row" style={{gap:8}}><span style={{fontSize:20}}>🧸</span>
-        <div className="grow"><div className="muted" style={{fontSize:11.5}}>Chơi với con hôm nay</div>
-          <div style={{fontSize:14,fontWeight:600}}>{p.c} {p.n}</div></div>
-        <button className="btn sm soft" onClick={next}>🎲 Đổi</button></div>
-      <div className="muted" style={{fontSize:12.5,marginTop:6,lineHeight:1.5}}>{p.d}</div>
+      <div className="row"><span className="hc-title">🧸 Chơi với con hôm nay</span><span className="grow"></span><button className="btn sm soft" onClick={next}>🎲 Đổi</button></div>
+      <div className="hc-lead" style={{margin:'6px 0 4px'}}>{p.c} {p.n}</div>
+      <div className="hc-body">{p.d}</div>
     </div>
   );
 }
@@ -4690,7 +4690,7 @@ function TodayMenuCard({people,me,go}){
   const hasChild=child&&(child.name||child.dob);
   return (
     <div className="card">
-      <div className="row"><b>🍱 Thực đơn hôm nay</b><span className="grow"></span><span className="muted" style={{fontSize:11.5}}>{DOW[idx]}</span></div>
+      <div className="row"><span className="hc-title">🍱 Thực đơn hôm nay</span><span className="grow"></span><span className="hc-act">{DOW[idx]}</span></div>
       <div style={{marginTop:6}}>
         <div className="muted" style={{fontSize:11.5}}>🍽️ Hai vợ chồng — bữa tối:</div>
         {day
@@ -4711,7 +4711,7 @@ function TodosCard({go}){
   const active=items.filter(x=>!x.done).sort((a,b)=>rank(a.priority)-rank(b.priority)||(a.due||'9').localeCompare(b.due||'9'));
   return (
     <div className="card">
-      <div className="row" style={{cursor:'pointer'}} onClick={()=>go('us')}><b>✅ Việc cần làm</b><span className="grow"></span><span className="muted" style={{fontSize:12}}>{active.length} việc ›</span></div>
+      <div className="row" style={{cursor:'pointer'}} onClick={()=>go('us')}><span className="hc-title">✅ Việc cần làm</span><span className="grow"></span><span className="hc-act">{active.length} việc ›</span></div>
       {active.length===0 && <div className="muted" style={{fontSize:12.5,marginTop:6}}>🎉 Hết việc cần làm!</div>}
       {active.slice(0,4).map(x=>{ const dd=x.due?daysFromToday(x.due):null;
         return <div key={x.id} className="row" style={{padding:'4px 0',gap:8,cursor:'pointer'}} onClick={()=>go('us')}>
@@ -4729,7 +4729,7 @@ function SavingsMini({go}){
   const all=SAVE_TIPS.concat(custom||[]); const done=all.filter(t=>tips[t]).length;
   return (
     <div className="card" onClick={()=>go('us')} style={{cursor:'pointer'}}>
-      <div className="row"><b>🐷 Tiết kiệm</b><span className="grow"></span><span className="muted" style={{fontSize:12}}>đang áp dụng {done}/{all.length}</span></div>
+      <div className="row"><span className="hc-title">🐷 Tiết kiệm</span><span className="grow"></span><span className="hc-act">đang áp dụng {done}/{all.length}</span></div>
       <div className="prog" style={{marginTop:6}}><i style={{width:(all.length?done/all.length*100:0)+'%'}}></i></div>
     </div>
   );
