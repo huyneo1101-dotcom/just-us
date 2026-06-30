@@ -2,6 +2,11 @@
 .preview-server.js
 .preview-4189.js
 
+# Sao lưu dữ liệu cá nhân (KHÔNG đăng lên repo công khai)
+justus-backup-*.json
+*-backup-*.json
+ju-backup*.json
+
 # Hệ điều hành / editor
 .DS_Store
 Thumbs.db
