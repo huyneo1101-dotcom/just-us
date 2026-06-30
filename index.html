@@ -1147,20 +1147,26 @@ const IDEA_PLACES=[
   {re:/phố đi bộ/i, p:[{n:'Phố đi bộ Hồ Gươm',a:'Hồ Hoàn Kiếm (cuối tuần)'},{n:'Phố đi bộ Trịnh Công Sơn',a:'Tây Hồ'}]},
   {re:/đạp xe/i, p:[{n:'Thuê xe đạp quanh Hồ Tây',a:'đường ven Hồ Tây'},{n:'Đạp xe quanh Hồ Gươm sáng sớm',a:'Hoàn Kiếm'}]},
   {re:/picnic|dã ngoại|cắm trại/i, p:[{n:'Bãi đá sông Hồng',a:'Ngõ 264 Âu Cơ, Tây Hồ'},{n:'Công viên Yên Sở',a:'Hoàng Mai'},{n:'Vườn nhãn Long Biên',a:'Bồ Đề, Long Biên'}]},
+  {re:/làm bánh|lớp bánh|bánh trung thu|bánh quy|baking|lớp.*bánh/i, p:[{n:'Hanoi Cooking Centre (lớp làm bánh)',a:'44 Châu Long, Ba Đình'},{n:'Savor Cake Studio (lớp bánh)',a:'Hà Nội'},{n:'Beautiful Mind Baking Class',a:'Hà Nội'}]},
   {re:/lớp học nấu ăn|học nấu ăn/i, p:[{n:'Hanoi Cooking Centre',a:'44 Châu Long, Ba Đình'},{n:'Lớp nấu ăn Blue Butterfly',a:'69 Mã Mây, Hoàn Kiếm'}]},
+  {re:/làm gốm|nặn gốm|lớp gốm|tô tượng|tô gốm/i, p:[{n:'Làng gốm Bát Tràng (workshop)',a:'Bát Tràng, Gia Lâm'},{n:'Xưởng gốm Authentic Hanoi',a:'Bát Tràng'},{n:'Studio gốm nội thành',a:'Hà Nội'}]},
+  {re:/vẽ tranh|lớp vẽ|workshop vẽ|color me/i, p:[{n:'Tiny Art Studio (lớp vẽ)',a:'Hà Nội'},{n:'Toong Art / Workshop vẽ',a:'Hà Nội'}]},
+  {re:/workshop|làm nến|làm xà phòng|làm son|cắm hoa/i, p:[{n:'Workshop thủ công (nến/son/hoa)',a:'tìm studio gần Núi Trúc'},{n:'Complex 01 (hay có workshop)',a:'Ngõ 31 Tây Sơn, Đống Đa'}]},
 ];
 function ideaPlace(title,budget){
   const raw=title||'';
   const hiddenC=store.get('ju.hiddenSpots',[])||[];
   for(const r of IDEA_PLACES){ if(r.re.test(raw)){ const ps=r.p.filter(x=>hiddenC.indexOf(x.n)<0); const arr=ps.length?ps:r.p; const c=arr[Math.floor(Math.random()*arr.length)]; return {n:c.n,area:c.a,p:c.p||'',curated:true}; } }
   const s=(title||'').toLowerCase(); let cat=null, vibe=null;
-  if(/cà phê|cafe|cà-phê|trà chanh|trà sữa|board game|sách|bakery|brunch|chè|kem/.test(s)){ cat='cafe';
-    if(/board game/.test(s)) vibe='boardgame'; else if(/sách/.test(s)) vibe='sach';
-    else if(/view|đẹp|hoàng hôn|sống ảo|rooftop|sang|chill/.test(s)) vibe='songao'; else if(/bakery|bánh|brunch/.test(s)) vibe='bakery'; }
-  else if(/ăn|lẩu|nướng|buffet|hải sản|ốc|bún|phở|miến|cháo|quán|nhà hàng|món|hàng|cơm|bánh/.test(s)){ cat='an';
+  // Ý tưởng dạng HOẠT ĐỘNG (lớp học, workshop, tự làm, thể thao…) thì KHÔNG suy ra quán ăn/cafe
+  const isActivity=/lớp|học|workshop|khoá|tự tay|tự làm|làm bánh|làm gốm|nặn|vẽ|tô tượng|thử thách|chèo|kayak|sup|đạp xe|leo|cắm trại|glamping|chụp ảnh|đọc|viết|hát|nhảy|khiêu vũ|tập|trồng|may|đan|móc|massage|spa|xông|thiền|yoga/.test(s);
+  if(!isActivity && /cà phê|cafe|cà-phê|trà chanh|trà sữa|trà đá|board game/.test(s)){ cat='cafe';
+    if(/board game/.test(s)) vibe='boardgame';
+    else if(/view|hoàng hôn|sống ảo|rooftop|sang/.test(s)) vibe='songao'; }
+  else if(!isActivity && /(^|\s)ăn lẩu|(^|\s)lẩu|nướng|buffet|hải sản|ăn ốc|(^|\s)ốc|(^|\s)bún |(^|\s)phở|miến |cháo |(^|\s)cơm |đi ăn|quán ăn|nhà hàng|ăn vặt|vịt quay|chả cá/.test(s)){ cat='an';
     if(/lẩu/.test(s)) vibe='lau'; else if(/nướng/.test(s)) vibe='nuong'; else if(/hải sản|ốc/.test(s)) vibe='haisan'; else if(/buffet/.test(s)) vibe='buffet'; else if(/chay/.test(s)) vibe='chay'; }
-  else if(/bảo tàng|triển lãm|kịch|nhà hát|xem phim|rạp|văn ho|vui chơi|sở thú|thuỷ cung|thủy cung|patin|bowling/.test(s)) cat='vanhoa';
-  else if(/công viên|dạo|đi bộ|picnic|hồ|ngoài trời|đạp xe|vườn|cắm trại|chèo|sup|kayak|chợ/.test(s)) cat='ngoaitroi';
+  else if(/bảo tàng|triển lãm|kịch|nhà hát|xem phim|rạp|sở thú|thuỷ cung|thủy cung|patin|bowling/.test(s)) cat='vanhoa';
+  else if(/công viên|dạo|đi bộ|picnic|ngoài trời|đạp xe|vườn|cắm trại|chợ đêm|chợ hoa|ven hồ/.test(s)) cat='ngoaitroi';
   if(!cat) return null;
   const hidden=store.get('ju.hiddenSpots',[])||[];
   let arr=HANOI_SPOTS.filter(x=>x.cat===cat && hidden.indexOf(x.n)<0);
@@ -1779,7 +1785,14 @@ function AngerHelper(){
 }
 
 /* ============ HOME ============ */
-function Home({setup,people,me,go}){
+function Home({setup,setSetup,people,me,go}){
+  const coverRef=useRef(null);
+  const [coverBusy,setCoverBusy]=useState(false);
+  const onCoverFile=async(e)=>{ const file=e.target.files&&e.target.files[0]; if(!file) return; setCoverBusy(true);
+    try{ if(Cloud.connected()){ const path=await Cloud.uploadPhoto(file); setSetup({...setup,cover:{path}}); setCoverBusy(false); celebrate(['🖼️','💞']); }
+      else { const r=new FileReader(); r.onload=()=>{ setSetup({...setup,cover:{src:r.result}}); setCoverBusy(false); celebrate(['🖼️','💞']); }; r.readAsDataURL(file); }
+    }catch(err){ setCoverBusy(false); alert('Không tải được ảnh, thử ảnh khác nhé.'); }
+    e.target.value=''; };
   const [notes]=useLocal('ju.notes',[]);
   const [events]=useLocal('ju.events',[]);
   const [dates]=useLocal('ju.dates',[]);
@@ -1863,6 +1876,9 @@ function Home({setup,people,me,go}){
       <div className="hero">
         {cover && <div className="cover" style={{backgroundImage:`url(${cover})`}}></div>}
         {cover && <div className="scrim"></div>}
+        <input ref={coverRef} type="file" accept="image/*" hidden onChange={onCoverFile}/>
+        <button onClick={()=>coverRef.current&&coverRef.current.click()} title="Đổi ảnh bìa hai đứa"
+          style={{position:'absolute',top:12,left:12,zIndex:2,background:'rgba(255,255,255,.92)',color:'#993556',border:'none',borderRadius:20,fontSize:11,fontWeight:700,padding:'4px 10px',cursor:'pointer'}}>{coverBusy?'⏳ đang tải…':'📷 Ảnh bìa'}</button>
         <div className="badges">
           {loveDays!=null && (()=>{ const ms=nextMilestone(loveDays); return ms? <span className="b">🎯 mốc {ms.mark.toLocaleString('vi-VN')} · {ms.inDays}n</span> : null; })()}
           {weddingDays!=null
@@ -1878,7 +1894,7 @@ function Home({setup,people,me,go}){
           {weddingDays==null && loveDays!=null && <div className="sub" style={{marginTop:3,opacity:.92,cursor:'pointer'}} onClick={()=>go('me')}>💍 ＋ Thêm ngày cưới</div>}
         </div>
       </div>
-      {!cover && <div className="muted center" style={{fontSize:11,margin:'-6px 14px 6px',cursor:'pointer'}} onClick={()=>go('me')}>📷 Đặt ảnh bìa của hai đứa để trang chủ đẹp hơn ›</div>}
+      {!cover && <div className="muted center" style={{fontSize:11,margin:'-6px 14px 6px',cursor:'pointer'}} onClick={()=>coverRef.current&&coverRef.current.click()}>📷 Chọn ảnh hai đứa làm ảnh bìa — số ngày sẽ hiện đè lên ảnh ›</div>}
 
       <InstallShare/>
       {keys.filter(show).map(k=> cardEls[k] ? <div key={k}>{cardEls[k]}</div> : null)}
@@ -5087,7 +5103,7 @@ function App(){
       </div>
       {showSearch && <GlobalSearch go={setTab} onClose={()=>setShowSearch(false)}/>}
 
-      {tab==='home' && <Home setup={setup} people={people} me={me} go={setTab}/>}
+      {tab==='home' && <Home setup={setup} setSetup={setSetup} people={people} me={me} go={setTab}/>}
       {tab==='child' && <ChildCare people={people} me={me}/>}
       {tab==='date' && <DateTab people={people} me={me} flash={flash}/>}
       {tab==='us' && <UsTab people={people} me={me} flash={flash}/>}
