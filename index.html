@@ -1102,11 +1102,23 @@ async function getWeather(lat,lng){
       const x=cur&&cur[0]; if(x){ const txt=x.WeatherText||''; v={src:'AccuWeather',temp:Math.round(x.Temperature.Metric.Value),text:txt,icon:accuIcon(x.WeatherIcon),rain:!!x.HasPrecipitation,storm:/dông|giông|bão|sấm|thunder|storm/i.test(txt)}; } }
   }catch(e){} }
   if(!v){ try{
-    const d=await fetch('https://api.open-meteo.com/v1/forecast?latitude='+lat+'&longitude='+lng+'&current=temperature_2m,weather_code,precipitation,wind_speed_10m&timezone=auto').then(r=>r.json());
+    // Dự báo THEO GIỜ (open-meteo, miễn phí) -> chính xác cho đúng thời điểm mở app + cảnh báo mưa sắp tới
+    const d=await fetch('https://api.open-meteo.com/v1/forecast?latitude='+lat+'&longitude='+lng+'&current=temperature_2m,weather_code,precipitation,wind_speed_10m&hourly=precipitation,precipitation_probability,weather_code&forecast_days=1&timezone=auto').then(r=>r.json());
     const w=d.current, code=w.weather_code, wm=wmo(code);
-    v={src:'open-meteo',temp:Math.round(w.temperature_2m),text:wm.text,icon:wm.icon,
+    let rainSoon=false, rainSoonP=0, soonHrs=0;
+    try{ const H=d.hourly, now=(w.time||'').slice(0,13);
+      let idx=H&&H.time?H.time.findIndex(t=>t.slice(0,13)===now):-1; if(idx<0) idx=0;
+      for(let k=idx;k<Math.min(idx+3,H.time.length);k++){
+        const p=H.precipitation_probability?H.precipitation_probability[k]:0;
+        const pr=H.precipitation?H.precipitation[k]:0;
+        if((p>=55||pr>0.2) && !rainSoon){ rainSoon=true; soonHrs=k-idx; }
+        if(p>rainSoonP) rainSoonP=p;
+      }
+    }catch(e2){}
+    v={src:'open-meteo (theo giờ)',temp:Math.round(w.temperature_2m),text:wm.text,icon:wm.icon,
       rain:(w.precipitation>0)||[51,53,55,61,63,65,80,81,82].indexOf(code)>=0,
-      storm:[95,96,99].indexOf(code)>=0||(w.wind_speed_10m>40)};
+      storm:[95,96,99].indexOf(code)>=0||(w.wind_speed_10m>40),
+      rainSoon,rainSoonP,soonHrs};
   }catch(e){ v=null; } }
   if(v) _wcache[key]={t:Date.now(),v}; return v;
 }
@@ -2001,7 +2013,7 @@ function WeatherCard(){
   );
   if(err) return <div className="card row" style={{gap:8}}><span className="muted grow" style={{fontSize:12.5}}>⛅ Không lấy được thời tiết (cần mạng).</span>{sel}</div>;
   if(!w) return <div className="card row" style={{gap:8}}><span className="muted grow" style={{fontSize:12.5}}>⛅ Đang xem thời tiết…</span>{sel}</div>;
-  const rainy=w.rain||w.storm;
+  const rainy=w.rain||w.storm||w.rainSoon;
   return <WeatherCardInner w={w} rainy={rainy} sel={sel} city={city}/>;
 }
 function WeatherCardInner({w,rainy,sel,city}){
@@ -2013,9 +2025,10 @@ function WeatherCardInner({w,rainy,sel,city}){
       <div className="row" style={{gap:12,alignItems:'center'}}>
         <div style={{fontSize:34}}>{w.icon}</div>
         <div className="grow"><b>{w.temp}°C · {w.text}</b>
-          <div className="muted" style={{fontSize:12}}>{w.storm?'Giông/gió mạnh — nên ở trong nhà ☕🎬':rainy?'Trời ẩm ướt — hợp hẹn hò trong nhà ☕🎬':'Thời tiết đẹp — ra ngoài thôi 🌳🚲'}</div></div>
+          <div className="muted" style={{fontSize:12}}>{w.storm?'Giông/gió mạnh — nên ở trong nhà ☕🎬':(w.rain?'Trời đang mưa — hợp hẹn hò trong nhà ☕🎬':(w.rainSoon?'Sắp mưa trong vài giờ tới — nên chọn chỗ trong nhà ☕🎬':'Thời tiết đẹp — ra ngoài thôi 🌳🚲'))}</div></div>
         {sel}
       </div>
+      {w.rainSoon && !w.rain && !w.storm && <div style={{fontSize:11.5,marginTop:6,background:'var(--bg)',borderRadius:8,padding:'6px 9px'}}>☔ Hiện đang khô nhưng khả năng mưa tới <b>{w.rainSoonP}%</b> trong ~{(w.soonHrs||0)+1}–3h tới — gợi ý đang ưu tiên chỗ trong nhà.</div>}
       <div className="row" style={{marginTop:6}}>
         <button className="muted" style={{fontSize:11.5}} onClick={showFc}>📅 {open?'Ẩn':'Xem'} 3 ngày tới</button>
         <span className="grow"></span><span className="muted" style={{fontSize:10.5}}>nguồn: {w.src}</span>
@@ -2190,7 +2203,6 @@ function DateTab({people,me,flash}){
         {k:'idea',icon:'💡',label:'Ý tưởng'},{k:'hanoi',icon:'📍',label:'Gợi ý HN'},
         {k:'events',icon:'🎪',label:'Sự kiện HN'},
         {k:'food',icon:'🍜',label:'Quán & Món'},{k:'checkin',icon:'📸',label:'Check-in'},
-        {k:'map',icon:'🗺️',label:'Bản đồ'},
       ]}/>
       {seg==='idea' && <><WeatherCard/><DateIdeas people={people} me={me}/></>}
       {seg==='hanoi' && <HanoiCatalog me={me} flash={flash}/>}
@@ -2198,7 +2210,6 @@ function DateTab({people,me,flash}){
       {seg==='food' && <SimpleList skey="ju.food" people={people} me={me} addLabel="quán/món" doneLabel="Đã thử"
         fields={['photo','address','rating','link','note']} suggest={FOOD_SUGGEST} empty={{icon:'🍜',text:'Quán ăn, món muốn thử cùng nhau. Bấm 💡 để xem gợi ý!'}} flash={flash}/>}
       {seg==='checkin' && <CheckIns people={people} me={me}/>}
-      {seg==='map' && <MapSpots people={people} me={me}/>}
     </div>
   );
 }
@@ -2339,6 +2350,7 @@ function DateIdeas({people,me}){
     if(w){
       if(w.storm){ filtered=arr.filter(x=>ideaOutdoor(x.title)===false); note='⛈️ '+w.text+' '+w.temp+'° — chỉ gợi ý trong nhà'; }
       else if(w.rain){ filtered=arr.filter(x=>ideaOutdoor(x.title)!==true); note='🌧️ '+w.text+' '+w.temp+'° — ưu tiên trong nhà'; }
+      else if(w.rainSoon){ filtered=arr.filter(x=>ideaOutdoor(x.title)!==true); note='☔ Sắp mưa ('+w.rainSoonP+'% trong vài giờ) '+w.temp+'° — ưu tiên trong nhà'; }
       else if(w.temp>=35){ filtered=arr.filter(x=>ideaOutdoor(x.title)!==true); note='🥵 Nắng nóng '+w.temp+'° — ưu tiên trong nhà/có điều hoà'; }
       else { note=w.icon+' '+w.text+' '+w.temp+'° — thời tiết đẹp, thoải mái ra ngoài'; }
       if(!filtered.length) filtered=arr;
@@ -2790,17 +2802,103 @@ const COMM_TIPS=[
   {icon:'🌡️',title:'Gọi tên cảm xúc',text:'Thay vì im lặng hờn dỗi, hãy nói rõ “mình đang thấy hơi tủi thân”. Khi cảm xúc được gọi tên, cả hai dễ tìm cách xử lý hơn là đoán mò.'},
   {icon:'🎁',title:'Hiểu “ngôn ngữ yêu thương”',text:'Có người cần lời khen, người cần hành động, người cần thời gian bên nhau. Hỏi xem điều gì khiến nửa kia thấy được yêu nhất rồi làm đúng điều đó.'},
 ];
+const COMM_SAY=[
+  {x:'Anh/em lúc nào cũng như thế!', y:'Em/anh thấy buồn khi chuyện này lặp lại. Mình cùng nghĩ cách nhé?'},
+  {x:'Sao em/anh không bao giờ giúp gì cả?', y:'Em/anh sẽ vui lắm nếu thỉnh thoảng mình cùng làm việc này.'},
+  {x:'Em/anh sai rồi!', y:'Mình đang nhìn chuyện này khác nhau, kể anh/em nghe góc của em/anh với.'},
+  {x:'Tùy em/anh.', y:'Em/anh thật sự muốn nghe ý anh/em, mình quyết cùng nhau nhé.'},
+  {x:'Có gì đâu mà phải nói.', y:'Em/anh đang hơi rối, cho em/anh chút thời gian rồi mình nói nhé.'},
+  {x:'Đáng lẽ em/anh phải tự biết chứ!', y:'Lần sau mình nói rõ mong muốn để cả hai đỡ phải đoán nhau nha.'},
+  {x:'Em/anh chẳng quan tâm gì cả.', y:'Dạo này em/anh thấy thiếu sự quan tâm, mình dành thời gian cho nhau hơn nhé.'},
+  {x:'Im đi, anh/em mệt rồi!', y:'Anh/em đang mệt quá, cho anh/em nghỉ chút rồi mình nói tiếp được không?'},
+  {x:'Lúc nào cũng tại em/anh.', y:'Chuyện này cả hai đều có phần, mình cùng sửa cho lần sau nhé.'},
+];
+const LOVE_LANG=[
+  {icon:'🗣️',name:'Lời khẳng định',desc:'Được nghe lời khen, động viên, cảm ơn.',how:'Mỗi ngày nói một lời khen/cảm ơn thật cụ thể.'},
+  {icon:'⏰',name:'Thời gian chất lượng',desc:'Được ở bên nhau trọn vẹn, không xao nhãng.',how:'Mỗi tối tắt điện thoại 20–30 phút, chỉ hai đứa.'},
+  {icon:'🎁',name:'Quà tặng',desc:'Cảm nhận yêu thương qua những món quà nhỏ.',how:'Thỉnh thoảng tặng món nhỏ “thấy là nghĩ tới em/anh”.'},
+  {icon:'🤲',name:'Hành động giúp đỡ',desc:'Được san sẻ việc, giúp đỡ thiết thực.',how:'Chủ động làm giúp một việc mà người kia ngại làm.'},
+  {icon:'🫂',name:'Cử chỉ âu yếm',desc:'Ôm, nắm tay, gần gũi thể chất.',how:'Ôm nhau khi gặp & trước khi ngủ, nắm tay khi đi cùng.'},
+];
+const FIGHT_RULES=[
+  'Công kích vấn đề, không công kích con người.',
+  'Mỗi lần chỉ giải quyết một chuyện — không lôi chuyện cũ ra.',
+  'Tránh từ “luôn luôn”, “không bao giờ”, “lúc nào cũng”.',
+  'Không to tiếng, không nói lời tổn thương hay doạ chia tay.',
+  'Khi quá nóng, xin tạm dừng 15–20 phút rồi quay lại.',
+  'Không lôi người thân / gia đình hai bên vào cuộc cãi.',
+  'Tìm điểm chung & giải pháp, không cố thắng cho bằng được.',
+  'Cãi xong thì làm hoà — một cái ôm, một lời xin lỗi.',
+  'Cố gắng không “chiến tranh lạnh” để qua đêm.',
+];
+const CONNECT_QS=[
+  'Hôm nay điều gì làm em/anh vui nhất?',
+  'Gần đây em/anh có điều gì lo lắng mà chưa kịp kể?',
+  'Anh/em làm điều gì khiến em/anh thấy được yêu tuần này?',
+  'Có điều nhỏ nào anh/em làm được để em/anh thấy thoải mái hơn?',
+  'Mình đang mơ ước điều gì cho gia đình nhỏ năm nay?',
+  'Kỷ niệm nào của hai đứa em/anh muốn được lặp lại?',
+  'Điều gì ở anh/em khiến em/anh biết ơn nhất?',
+  'Tuần này mình cùng thử một điều mới gì nhé?',
+  'Có điều gì em/anh muốn anh/em hiểu hơn về mình không?',
+  'Khi buồn, em/anh muốn được an ủi kiểu nào nhất?',
+];
 function CommGuide(){
+  const [tab,setTab]=useState('principles');
   const [open,setOpen]=useState(0);
+  const [qi,setQi]=useState(()=>Math.floor(Math.random()*CONNECT_QS.length));
   return (
     <div>
-      <div className="muted center" style={{fontSize:12,margin:'10px 14px'}}>🕊️ Vài nguyên tắc nhỏ giúp hai vợ chồng nói chuyện êm đẹp hơn — chạm để mở.</div>
-      {COMM_TIPS.map((t,i)=>(
-        <div key={i} className="item" style={{cursor:'pointer'}} onClick={()=>setOpen(open===i?-1:i)}>
-          <div className="row"><span style={{fontSize:18}}>{t.icon}</span><b className="grow" style={{fontSize:14}}>{t.title}</b><span className="muted">{open===i?'▾':'▸'}</span></div>
-          {open===i && <div className="muted" style={{fontSize:13,marginTop:6,lineHeight:1.65}}>{t.text}</div>}
+      <div className="filters">
+        <button className={tab==='principles'?'on':''} onClick={()=>setTab('principles')}>🕊️ Nguyên tắc</button>
+        <button className={tab==='say'?'on':''} onClick={()=>setTab('say')}>💬 Nói khéo</button>
+        <button className={tab==='love'?'on':''} onClick={()=>setTab('love')}>💖 NN yêu thương</button>
+        <button className={tab==='fight'?'on':''} onClick={()=>setTab('fight')}>⚖️ Cãi lành mạnh</button>
+        <button className={tab==='connect'?'on':''} onClick={()=>setTab('connect')}>🔗 Câu hỏi kết nối</button>
+      </div>
+      {tab==='principles' && <div>
+        <div className="muted center" style={{fontSize:12,margin:'8px 14px'}}>🕊️ Nguyên tắc giúp hai vợ chồng nói chuyện êm đẹp — chạm để mở.</div>
+        {COMM_TIPS.map((t,i)=>(
+          <div key={i} className="item" style={{cursor:'pointer'}} onClick={()=>setOpen(open===i?-1:i)}>
+            <div className="row"><span style={{fontSize:18}}>{t.icon}</span><b className="grow" style={{fontSize:14}}>{t.title}</b><span className="muted">{open===i?'▾':'▸'}</span></div>
+            {open===i && <div className="muted" style={{fontSize:13,marginTop:6,lineHeight:1.65}}>{t.text}</div>}
+          </div>
+        ))}
+      </div>}
+      {tab==='say' && <div>
+        <div className="muted center" style={{fontSize:11.5,margin:'8px 14px'}}>Cùng một ý, nói khác đi sẽ dịu hơn nhiều: 🔴 tránh nói → 🟢 hãy thử.</div>
+        {COMM_SAY.map((s,i)=>(
+          <div key={i} className="item">
+            <div style={{fontSize:13,color:'#b06b6b'}}>🔴 “{s.x}”</div>
+            <div style={{fontSize:13.5,marginTop:5,color:'var(--good)',fontWeight:500}}>🟢 “{s.y}”</div>
+          </div>
+        ))}
+      </div>}
+      {tab==='love' && <div>
+        <div className="muted center" style={{fontSize:11.5,margin:'8px 14px'}}>5 “ngôn ngữ yêu thương” — mỗi người cảm nhận yêu theo cách khác nhau. Biết “gu” của nửa kia để yêu đúng cách.</div>
+        {LOVE_LANG.map((l,i)=>(
+          <div key={i} className="item">
+            <div className="it-top"><h4>{l.icon} {l.name}</h4></div>
+            <div className="muted" style={{fontSize:12.5,marginTop:2}}>{l.desc}</div>
+            <div style={{fontSize:12.5,marginTop:4}}>👉 {l.how}</div>
+          </div>
+        ))}
+        <div className="muted center" style={{fontSize:11,margin:'4px 14px 8px'}}>💡 Hỏi nửa kia: trong 5 điều trên, điều nào khiến em/anh thấy được yêu nhất?</div>
+      </div>}
+      {tab==='fight' && <div>
+        <div className="muted center" style={{fontSize:11.5,margin:'8px 14px'}}>Cãi nhau là bình thường — cãi sao cho không tổn thương mới là điều quan trọng.</div>
+        <div className="card">{FIGHT_RULES.map((r,i)=>(
+          <div key={i} style={{fontSize:13.5,padding:'7px 0',borderBottom:i<FIGHT_RULES.length-1?'1px solid var(--line)':'none'}}>✅ {r}</div>
+        ))}</div>
+      </div>}
+      {tab==='connect' && <div>
+        <div className="card center">
+          <div className="muted" style={{fontSize:12}}>🔗 Câu hỏi kết nối hôm nay</div>
+          <div style={{fontSize:15,fontWeight:600,margin:'8px 0',lineHeight:1.4}}>{CONNECT_QS[qi]}</div>
+          <button className="btn sm soft" onClick={()=>setQi(p=>{ let n=p; while(n===p&&CONNECT_QS.length>1) n=Math.floor(Math.random()*CONNECT_QS.length); return n; })}>🎲 Câu khác</button>
         </div>
-      ))}
+        <div className="muted center" style={{fontSize:11,margin:'4px 14px'}}>Hỏi nhau mỗi tối một câu để ngày càng hiểu nhau hơn 💞</div>
+      </div>}
     </div>
   );
 }
@@ -3401,6 +3499,7 @@ function ChildCare({people,me}){
       </div>
       <div className="filters">
         <button className={tab==='develop'?'on':''} onClick={()=>setTab('develop')}>🌱 Phát triển</button>
+        <button className={tab==='play'?'on':''} onClick={()=>setTab('play')}>🎲 Chơi với con</button>
         <button className={tab==='health'?'on':''} onClick={()=>setTab('health')}>🏥 Sức khoẻ</button>
         <button className={tab==='eat'?'on':''} onClick={()=>setTab('eat')}>🍎 Ăn uống</button>
         <button className={tab==='school'?'on':''} onClick={()=>setTab('school')}>🎒 Đi học</button>
@@ -3429,13 +3528,22 @@ function ChildCare({people,me}){
             <span key={w.id} className="pill" style={{margin:'3px 6px 3px 0',padding:'6px 10px',fontSize:12.5}}>{w.word} <span onClick={()=>{ if(confirm('Xoá từ này?')) setWords(words.filter(x=>x.id!==w.id)); }} style={{cursor:'pointer',marginLeft:3,opacity:.6}}>✕</span></span>
           ))}</div>}
         </div>
-        <div className="sec-title">🎲 Trò chơi gợi ý (20–24 tháng)</div>
-        {PLAY_LIB.map((p,i)=>(
-          <div key={i} className="item" style={{padding:'9px 13px'}}>
-            <div className="row"><b style={{fontSize:13.5}} className="grow">{p.c.split(' ')[0]} {p.n}</b><span className="muted" style={{fontSize:11}}>{p.c.split(' ').slice(1).join(' ')}</span></div>
-            <div className="muted" style={{fontSize:12.5,marginTop:3,lineHeight:1.5}}>{p.d}</div>
+      </div>}
+
+      {tab==='play' && <div>
+        <div className="muted center" style={{fontSize:11.5,margin:'10px 14px'}}>🎲 Trò chơi giúp bé phát triển (~20–24 tháng), chia theo nhóm kỹ năng. Trang chủ có thẻ <b>Chơi với con hôm nay</b> để gợi ý ngẫu nhiên.</div>
+        {['🤸 Vận động','🧩 Tư duy','🗣️ Ngôn ngữ','🎨 Khéo tay'].map(cat=>(
+          <div key={cat}>
+            <div className="sec-title">{cat}</div>
+            {PLAY_LIB.filter(p=>p.c===cat).map((p,i)=>(
+              <div key={i} className="item" style={{padding:'9px 13px'}}>
+                <div className="it-top"><h4 style={{fontSize:13.5}}>{p.n}</h4></div>
+                <div className="muted" style={{fontSize:12.5,marginTop:2,lineHeight:1.5}}>{p.d}</div>
+              </div>
+            ))}
           </div>
         ))}
+        <div className="muted center" style={{fontSize:11,margin:'6px 14px 8px'}}>Chơi cùng con 15–20 phút mỗi ngày giúp bé gắn kết & phát triển toàn diện 💛</div>
       </div>}
 
       {tab==='health' && <div>
@@ -5111,7 +5219,7 @@ function App(){
       {tab==='me' && <Profile setup={setup} setSetup={setSetup} people={people} me={me} setMe={setMe} flash={flash}/>}
 
       <div className="nav">
-        {[['home','🏠','Tổ ấm'],['child','👶','Nuôi con'],['date','🗺️','Hẹn hò'],['us','📅','Tụi mình'],['talk','💬','Nói chuyện'],['me','💞','Hồ sơ']].map(([k,ic,l])=>(
+        {[['home','🏠','Tổ ấm'],['child','🐿️','Sóc'],['date','🗺️','Hẹn hò'],['us','📅','Tụi mình'],['talk','💬','Nói chuyện'],['me','💞','Hồ sơ']].map(([k,ic,l])=>(
           <button key={k} className={tab===k?'on':''} onClick={()=>setTab(k)}>
             <span className="ic">{ic}</span>{l}
           </button>
