@@ -3756,6 +3756,24 @@ function RoutineTab({people,me}){
   );
 }
 /* ============ Thông báo điện thoại ============ */
+const VAPID_PUBLIC='BBGZe7N9CydCcQhvky9O2oVqzHPnV5Xbhcn7QBGGEFykxsDCoTI1nFpCJtaXkaG3wTH0xQM98RSaJlQNky795EM';
+function urlB64ToU8(s){ const pad='='.repeat((4-s.length%4)%4); const b=(s+pad).replace(/-/g,'+').replace(/_/g,'/'); const raw=atob(b); const arr=new Uint8Array(raw.length); for(let i=0;i<raw.length;i++)arr[i]=raw.charCodeAt(i); return arr; }
+// Đăng ký web-push để nhận thông báo CẢ KHI ĐÓNG APP (cần đã đăng nhập + ghép đôi)
+async function subscribePush(){
+  try{
+    if(!('serviceWorker' in navigator)||!('PushManager' in window)) return {ok:false,reason:'unsupported'};
+    if(!Cloud.connected||!Cloud.connected()) return {ok:false,reason:'notconnected'};
+    const reg=await navigator.serviceWorker.ready;
+    let sub=await reg.pushManager.getSubscription();
+    if(!sub){ sub=await reg.pushManager.subscribe({userVisibleOnly:true, applicationServerKey:urlB64ToU8(VAPID_PUBLIC)}); }
+    const j=sub.toJSON(); const c=sbClient(); const cp=Cloud.couple&&Cloud.couple();
+    const {data:ud}=await c.auth.getUser(); const user=ud&&ud.user;
+    if(!user||!cp||!cp.id||!j.keys) return {ok:false,reason:'notconnected'};
+    const {error}=await c.from('justus_push_subs').upsert({couple_id:cp.id,user_id:user.id,endpoint:j.endpoint,p256dh:j.keys.p256dh,auth:j.keys.auth,ua:navigator.userAgent},{onConflict:'endpoint'});
+    if(error) return {ok:false,reason:error.message||'db'};
+    return {ok:true};
+  }catch(e){ return {ok:false,reason:String((e&&e.message)||e)}; }
+}
 function computeDueNotis(noti){
   const cats=(noti&&noti.cats)||{};
   const out=[];
@@ -3802,6 +3820,8 @@ function NotiSettings({flash}){
   const [noti,setNoti]=useLocal('ju.noti',{on:false,cats:{sukien:true,viec:true,chuky:true},time:'08:00'});
   const supported=(typeof Notification!=='undefined')&&('serviceWorker' in navigator);
   const [perm,setPerm]=useState(supported?Notification.permission:'unsupported');
+  const [pushMsg,setPushMsg]=useState('');
+  useEffect(()=>{ let on=true; (async()=>{ try{ if(noti.on&&supported&&'PushManager' in window){ const reg=await navigator.serviceWorker.ready; const s=await reg.pushManager.getSubscription(); if(on) setPushMsg(s?'push-on':(Cloud.connected&&Cloud.connected()?'':'foreground')); } }catch(_){} })(); return ()=>{on=false;}; },[noti.on]);
   const enable=async()=>{
     if(!supported){ flash&&flash('Máy/trình duyệt không hỗ trợ thông báo'); return; }
     let p=Notification.permission;
@@ -3811,6 +3831,7 @@ function NotiSettings({flash}){
         reg.showNotification('Just Us 💗',{body:'Đã bật thông báo! Tụi mình sẽ nhắc bạn những dịp quan trọng.',icon:'icon.svg',badge:'icon.svg'});
         if('periodicSync' in reg){ try{ const st=await navigator.permissions.query({name:'periodic-background-sync'}); if(st.state==='granted') await reg.periodicSync.register('ju-daily',{minInterval:12*60*60*1000}); }catch(_){} }
       }catch(_){}
+      const ps=await subscribePush(); setPushMsg(ps.ok?'push-on':(ps.reason==='notconnected'?'foreground':(ps.reason==='unsupported'?'foreground':'error')));
     } else { setPerm(p); flash&&flash('Thông báo đang bị chặn — mở lại trong cài đặt trình duyệt'); }
   };
   const test=async()=>{ if(!supported){ flash&&flash('Máy không hỗ trợ thông báo'); return; } try{ const reg=await navigator.serviceWorker.ready; reg.showNotification('Thử thông báo 🔔',{body:'Đây là thông báo thử từ Just Us 💗',icon:'icon.svg',badge:'icon.svg'}); }catch(e){ flash&&flash('Không gửi được — kiểm tra quyền thông báo'); } };
@@ -3839,7 +3860,10 @@ function NotiSettings({flash}){
               <button className="btn soft" onClick={()=>{ setNoti({...noti,on:false}); flash&&flash('Đã tắt thông báo'); }}>Tắt</button>
             </div>
             {perm==='denied' && <div className="muted" style={{fontSize:11.5,marginTop:8}}>⚠️ Trình duyệt đang chặn thông báo. Vào cài đặt trang → cho phép Thông báo.</div>}
-            <div className="muted" style={{fontSize:11,marginTop:8,lineHeight:1.5}}>Mẹo: cài app vào màn hình chính (menu trình duyệt → "Thêm vào màn hình chính") để nhận thông báo tốt nhất. Thông báo hiện khi bạn mở app; máy Android đã cài app có thể nhận cả khi đóng.</div>
+            {pushMsg==='push-on' && <div style={{fontSize:11.5,marginTop:8,color:'var(--good)',fontWeight:600}}>✅ Đã bật đẩy thông báo — nhận cả khi đóng app.</div>}
+            {pushMsg==='foreground' && <div className="muted" style={{fontSize:11.5,marginTop:8}}>ℹ️ Hiện chỉ nhắc khi mở app. Đăng nhập + ghép đôi (mục ☁️ Đám mây) để nhận cả khi đóng app. <span style={{color:'var(--primary)',cursor:'pointer',textDecoration:'underline'}} onClick={async()=>{ const ps=await subscribePush(); setPushMsg(ps.ok?'push-on':(ps.reason==='notconnected'?'foreground':'error')); if(flash)flash(ps.ok?'Đã bật đẩy thông báo ✓':'Cần đăng nhập + ghép đôi trước'); }}>Thử bật đẩy</span></div>}
+            {pushMsg==='error' && <div className="muted" style={{fontSize:11.5,marginTop:8}}>⚠️ Chưa bật được đẩy nền (vẫn nhắc khi mở app). Thử lại sau khi đã đăng nhập + ghép đôi.</div>}
+            <div className="muted" style={{fontSize:11,marginTop:8,lineHeight:1.5}}>Mẹo: cài app vào màn hình chính (menu trình duyệt → "Thêm vào màn hình chính") để nhận thông báo tốt nhất. Thông báo đẩy hoạt động cả khi đóng app khi bạn đã đăng nhập + ghép đôi.</div>
           </React.Fragment>}
     </div>
   );
