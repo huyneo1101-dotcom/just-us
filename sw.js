@@ -5,14 +5,15 @@
    - Thư viện CDN (jsdelivr) cố định theo version: CACHE-FIRST.
    - Supabase: KHÔNG cache (luôn ra mạng).
 */
-const CACHE = 'justus-v1';
+const CACHE = 'justus-v2';
+const NOTI_CACHE = 'justus-noti';
 const CDN = ['https://cdn.jsdelivr.net'];
 
 self.addEventListener('install', (e) => { self.skipWaiting(); });
 
 self.addEventListener('activate', (e) => {
   e.waitUntil(
-    caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))
+    caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE && k !== NOTI_CACHE).map(k => caches.delete(k))))
       .then(() => self.clients.claim())
   );
 });
@@ -49,3 +50,44 @@ self.addEventListener('fetch', (e) => {
   }
   // Còn lại (vd tile bản đồ): để mặc định ra mạng
 });
+
+/* ===== Thông báo (notifications) ===== */
+// Bấm vào thông báo → mở/đưa app lên trước
+self.addEventListener('notificationclick', (e) => {
+  e.notification.close();
+  const url = (e.notification.data && e.notification.data.url) || './';
+  e.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(cls => {
+      for (const c of cls) { if ('focus' in c) return c.focus(); }
+      if (self.clients.openWindow) return self.clients.openWindow(url);
+    })
+  );
+});
+
+// Push từ server (nếu sau này có backend web-push)
+self.addEventListener('push', (e) => {
+  let d = {};
+  try { d = e.data ? e.data.json() : {}; } catch (_) {}
+  e.waitUntil(self.registration.showNotification(d.title || 'Just Us 💗', {
+    body: d.body || '', icon: 'icon.svg', badge: 'icon.svg', tag: d.tag || 'ju-push', data: d
+  }));
+});
+
+// Nền định kỳ (Android/Chrome, best-effort): đọc "digest" trang đã lưu rồi nhắc
+self.addEventListener('periodicsync', (e) => {
+  if (e.tag === 'ju-daily') e.waitUntil(showDailyDigest());
+});
+async function showDailyDigest() {
+  try {
+    const c = await caches.open(NOTI_CACHE);
+    const r = await c.match('/__digest');
+    if (!r) return;
+    const d = await r.json();
+    const today = new Date().toISOString().slice(0, 10);
+    if (!d || d.date !== today || !d.items || !d.items.length) return;
+    await self.registration.showNotification('Hôm nay của tụi mình 💗', {
+      body: d.items.slice(0, 5).map(x => x.title).join('\n'),
+      icon: 'icon.svg', badge: 'icon.svg', tag: 'ju-daily-' + today, data: { url: './' }
+    });
+  } catch (_) {}
+}
