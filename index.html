@@ -5982,11 +5982,49 @@ ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
 
 <!-- Đăng ký service worker (PWA). Dùng đường dẫn tương đối để chạy cả localhost lẫn /just-us/ -->
 <script>
-if('serviceWorker' in navigator){
-  window.addEventListener('load',function(){
-    navigator.serviceWorker.register('sw.js').catch(function(){});
-  });
-}
+(function(){
+  // 1) Đăng ký service worker + kiểm tra cập nhật SW định kỳ
+  if('serviceWorker' in navigator){
+    window.addEventListener('load',function(){
+      navigator.serviceWorker.register('sw.js').then(function(reg){
+        setInterval(function(){ try{ reg.update(); }catch(e){} }, 5*60*1000);
+      }).catch(function(){});
+    });
+  }
+  // 2) Tự phát hiện bản MỚI của app (so ETag/Last-Modified của index.html) -> hiện nút cập nhật
+  if(location.protocol==='file:') return;
+  var pageUrl = location.href.split('#')[0].split('?')[0];
+  var baseTag = null, shown = false;
+  function getTag(cb){
+    fetch(pageUrl, {method:'HEAD', cache:'no-store'}).then(function(r){
+      cb(r.headers.get('etag') || r.headers.get('last-modified') || null);
+    }).catch(function(){ cb(null); });
+  }
+  function showBanner(){
+    if(shown || !document.body) return; shown = true;
+    var b = document.createElement('div');
+    b.textContent = '🔄 Có bản Just Us mới — chạm để cập nhật';
+    b.style.cssText = 'position:fixed;left:12px;right:12px;bottom:78px;z-index:2147483647;background:#e85d8a;color:#fff;padding:12px 16px;border-radius:14px;text-align:center;font-family:system-ui,-apple-system,sans-serif;font-size:14px;font-weight:700;box-shadow:0 8px 24px rgba(0,0,0,.28);cursor:pointer';
+    b.onclick = function(){
+      b.textContent = 'Đang cập nhật…';
+      try{
+        if(navigator.serviceWorker && navigator.serviceWorker.getRegistration){
+          navigator.serviceWorker.getRegistration().then(function(reg){ try{ if(reg) reg.update(); }catch(e){} setTimeout(function(){ location.reload(); }, 500); });
+          return;
+        }
+      }catch(e){}
+      location.reload();
+    };
+    document.body.appendChild(b);
+  }
+  getTag(function(t){ baseTag = t; });
+  function check(){
+    if(baseTag == null){ getTag(function(t){ baseTag = t; }); return; }
+    getTag(function(t){ if(t && t !== baseTag) showBanner(); });
+  }
+  setInterval(check, 3*60*1000);
+  document.addEventListener('visibilitychange', function(){ if(document.visibilityState === 'visible') check(); });
+})();
 </script>
 </body>
 </html>

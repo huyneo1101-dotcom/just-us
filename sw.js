@@ -5,7 +5,7 @@
    - Thư viện CDN (jsdelivr) cố định theo version: CACHE-FIRST.
    - Supabase: KHÔNG cache (luôn ra mạng).
 */
-const CACHE = 'justus-v2';
+const CACHE = 'justus-v3';
 const NOTI_CACHE = 'justus-noti';
 const CDN = ['https://cdn.jsdelivr.net'];
 
@@ -37,10 +37,13 @@ self.addEventListener('fetch', (e) => {
     return;
   }
 
-  // Cùng origin (index.html, manifest, icon…): network-first
+  // Cùng origin (index.html, manifest, icon…): network-first.
+  // HTML/điều hướng: BỎ QUA HTTP cache (cache:'reload') để luôn lấy bản mới nhất khi có mạng.
   if (url.origin === location.origin) {
+    const isHtml = req.mode === 'navigate' || url.pathname === '/' || url.pathname.endsWith('/') || url.pathname.endsWith('.html');
+    const netFetch = isHtml ? fetch(url.href, { cache: 'reload' }) : fetch(req);
     e.respondWith(
-      fetch(req).then(resp => {
+      netFetch.then(resp => {
         const copy = resp.clone();
         caches.open(CACHE).then(c => c.put(req, copy)).catch(() => {});
         return resp;
