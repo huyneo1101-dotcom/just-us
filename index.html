@@ -3230,6 +3230,7 @@ function WeeklyMenu({me}){
   const [shop,setShop]=useLocal('ju.shop',[]);
   const [prefs,setPrefs]=useLocal('ju.dishPrefs',{});
   const [favs,setFavs]=useLocal('ju.favDishes',[]);
+  const [health]=useLocal('ju.health',{});
   const [goal,setGoal]=useState((plan&&plan.goal)||'cb');
   const [recipe,setRecipe]=useState(null);
   const [favOpen,setFavOpen]=useState(false);
@@ -3247,11 +3248,12 @@ function WeeklyMenu({me}){
     const liked=a.filter(d=>prefs[d.n]===1); return liked.concat(liked).concat(a); }; // ưu tiên món thích
   const gen=()=>{
     const mRef={a:shuffle(mkPool('man'))}, cRef={a:shuffle(mkPool('canh'))};
+    const bpool=shuffle(BREAKFAST_IDEAS.slice());
     const popNot=(ref,ex)=>{ for(let k=ref.a.length-1;k>=0;k--){ if(!ex.has(ref.a[k].n)) return ref.a.splice(k,1)[0]; } return ref.a.pop(); };
     const days=[];
     for(let i=0;i<7;i++){ if(mRef.a.length<2) mRef.a=shuffle(mkPool('man')); if(cRef.a.length<1) cRef.a=shuffle(mkPool('canh'));
       const ex=new Set(); const m1=popNot(mRef,ex); if(m1)ex.add(m1.n); const m2=popNot(mRef,ex); const c=cRef.a.pop();
-      days.push({man:[m1&&m1.n,m2&&m2.n].filter(Boolean),canh:c?c.n:''}); }
+      days.push({sang:(bpool[i%bpool.length]||{}).n||'',man:[m1&&m1.n,m2&&m2.n].filter(Boolean),canh:c?c.n:''}); }
     setPlan({goal,days}); celebrate(['🍱','😋','✨']);
   };
   const toShop=()=>{ if(!plan) return; const ings=new Set();
@@ -3260,9 +3262,17 @@ function WeeklyMenu({me}){
     setShop([...add,...shop]); celebrate(['🛒']); alert('Đã thêm '+add.length+' nguyên liệu vào mục Đi chợ.'); };
   const goalLabel=(k)=>(MENU_GOALS.find(x=>x.k===k)||{}).label||'';
   const dislikedNames=Object.keys(prefs).filter(k=>prefs[k]===-1);
+  const healthConds=(()=>{ const ks={}; ['a','b','child'].forEach(m=>(((health||{})[m]||{}).conds||[]).forEach(k=>{ks[k]=1;})); return HEALTH_CONDITIONS.filter(c=>ks[c.k]); })();
+  const hAgg=(f)=>{ const s=[]; healthConds.forEach(c=>(c[f]||[]).forEach(x=>{ if(s.indexOf(x)<0)s.push(x); })); return s; };
   return (
     <div>
-      <div className="muted center" style={{fontSize:12.5,margin:'10px 14px 4px'}}>🍱 Thực đơn tối cả tuần — mỗi ngày 2 món mặn + 1 canh, đủ chất. Đánh dấu 👍/👎 để lần sau gợi ý hợp khẩu vị hơn.</div>
+      <div className="muted center" style={{fontSize:12.5,margin:'10px 14px 4px'}}>🍱 Thực đơn cả tuần — mỗi ngày bữa <b>sáng</b> + bữa tối (2 mặn + 1 canh). Đánh dấu 👍/👎 để lần sau hợp khẩu vị hơn.</div>
+      {healthConds.length>0 && <div className="card" style={{margin:'6px 14px'}}>
+        <div className="hc-title">🩺 Hợp sức khỏe cả nhà</div>
+        <div className="muted" style={{fontSize:11,margin:'3px 0 6px'}}>Theo vấn đề đã chọn ở mục 🩺 Sức khỏe — cân nhắc khi lên món.</div>
+        {hAgg('eat').length>0 && <div style={{fontSize:12.5,lineHeight:1.5}}><b style={{color:'var(--good)'}}>🟢 Nên tăng:</b> {hAgg('eat').join(' · ')}</div>}
+        {hAgg('avoid').length>0 && <div style={{fontSize:12.5,marginTop:4,lineHeight:1.5}}><b style={{color:'#d9534f'}}>🔴 Nên hạn chế:</b> {hAgg('avoid').join(' · ')}</div>}
+      </div>}
       <div className="filters">{MENU_GOALS.map(g=><button key={g.k} className={goal===g.k?'on':''} onClick={()=>setGoal(g.k)}>{g.icon} {g.label}</button>)}</div>
       <div className="row" style={{margin:'10px 14px',gap:8}}>
         <button className="btn grow" onClick={gen}>🎲 Tạo thực đơn tuần</button>
@@ -3274,6 +3284,9 @@ function WeeklyMenu({me}){
       {plan && plan.days.map((d,i)=>(
         <div key={i} className="item">
           <div className="it-top"><h4>{DOW[i]}</h4></div>
+          {d.sang && <div className="row" style={{padding:'3px 0'}}>
+            <span className="muted" style={{width:42,fontSize:11,flex:'0 0 auto'}}>Sáng</span>
+            <span className="grow" style={{fontSize:13.5}}>🥣 {d.sang}</span></div>}
           {(d.man||[]).map((n,j)=>(
             <div key={j} className="row" style={{padding:'3px 0'}}>
               <span className="muted" style={{width:42,fontSize:11,flex:'0 0 auto'}}>Mặn {j+1}</span>
@@ -3288,6 +3301,15 @@ function WeeklyMenu({me}){
             <button onClick={()=>rate(d.canh,-1)} style={{fontSize:14,opacity:prefs[d.canh]===-1?1:.4}}>👎</button></div>
         </div>
       ))}
+      <div className="sec-title">🥣 Gợi ý bữa sáng đủ chất</div>
+      <div className="card">
+        {BREAKFAST_IDEAS.map((b,i)=>(
+          <div key={i} style={{padding:'5px 0',borderBottom:i<BREAKFAST_IDEAS.length-1?'1px solid var(--line)':'none'}}>
+            <div style={{fontSize:13,fontWeight:600}}>{b.n}</div>
+            <div className="muted" style={{fontSize:11.5,lineHeight:1.4}}>{b.d}</div>
+          </div>
+        ))}
+      </div>
       {recipe && <Sheet title={recipe.n} onClose={()=>setRecipe(null)}>
         <div className="row" style={{marginBottom:8}}>
           <span className="muted grow" style={{fontSize:12}}>{recipe.t==='canh'?'🥣 Món canh':'🍖 Món mặn'} · {(recipe.g||[]).map(g=>goalLabel(g)).filter(Boolean).join(', ')}</span>
@@ -4161,14 +4183,7 @@ function FamilyHealth({people,me}){
           </div>}
         </div>;
       })}
-      <div className="sec-title">🥣 Bữa sáng đủ chất</div>
-      <div className="muted center" style={{fontSize:11.5,margin:'0 14px 4px'}}>Gợi ý bữa sáng cân bằng (tinh bột + đạm + rau/quả) cho cả nhà.</div>
-      {BREAKFAST_IDEAS.map((b,i)=>(
-        <div key={i} className="item" style={{padding:'9px 13px'}}>
-          <div className="it-top"><h4 style={{fontSize:13.5}}>{b.n}</h4></div>
-          <div className="muted" style={{fontSize:12.5,marginTop:2,lineHeight:1.5}}>{b.d}</div>
-        </div>
-      ))}
+      <div className="muted center" style={{fontSize:11,margin:'10px 14px'}}>🥣 Gợi ý bữa sáng đủ chất & thực đơn hợp sức khỏe đã chuyển sang mục 🍱 Thực đơn.</div>
     </div>
   );
 }
@@ -4956,6 +4971,8 @@ function AccountPanel({flash}){
   const doLeave=async()=>{ if(confirm('Rời cặp đôi? Bạn sẽ không còn đồng bộ với người kia (dữ liệu trên máy này vẫn giữ).')){ try{ await Cloud.leaveCouple(); }catch(e){ flash(authErrVN(e)); } } };
   const doLogout=async()=>{ if(confirm('Đăng xuất khỏi tài khoản này trên máy?')){ await Cloud.signOut(); } };
   const copy=()=>{ const cp=Cloud.couple(); try{ navigator.clipboard.writeText(cp.invite_code); flash('Đã chép mã 📋'); }catch(e){} };
+  const [pwOpen,setPwOpen]=useState(false); const [npw,setNpw]=useState(''); const [npw2,setNpw2]=useState('');
+  const changePw=async()=>{ if(npw.length<6){ setNote('Mật khẩu mới cần ≥6 ký tự.'); return; } if(npw!==npw2){ setNote('Hai ô mật khẩu chưa khớp.'); return; } setBusy(true); setNote(''); try{ const c=sbClient(); const {error}=await c.auth.updateUser({password:npw}); if(error) throw error; flash('Đã đổi mật khẩu ✓'); setNpw('');setNpw2('');setPwOpen(false); }catch(e){ setNote(authErrVN(e)); } setBusy(false); };
 
   const loggedIn=Cloud.loggedIn(), connected=Cloud.connected(), couple=Cloud.couple();
   const synced=store.get('ju.synced',null);
@@ -5025,6 +5042,22 @@ function AccountPanel({flash}){
           </div>
         )}
 
+        {loggedIn && <div style={{marginTop:12,borderTop:'1px solid var(--line)',paddingTop:10}}>
+          {!pwOpen
+            ? <button className="pill" onClick={()=>{ setPwOpen(true); setNote(''); }}>🔑 Đổi mật khẩu</button>
+            : <div>
+                <b style={{fontSize:13.5}}>🔑 Đổi mật khẩu</b>
+                <div className="field" style={{marginTop:6}}><label>Mật khẩu mới (≥6 ký tự)</label>
+                  <input className="inp" type="password" value={npw} onChange={e=>setNpw(e.target.value)} placeholder="Mật khẩu mới"/></div>
+                <div className="field"><label>Nhập lại mật khẩu mới</label>
+                  <input className="inp" type="password" value={npw2} onChange={e=>setNpw2(e.target.value)} placeholder="Nhập lại"/></div>
+                <div className="row" style={{gap:8}}>
+                  <button className="btn grow" disabled={busy} onClick={changePw}>{busy?'…':'Lưu mật khẩu mới'}</button>
+                  <button className="btn soft" onClick={()=>{ setPwOpen(false); setNpw('');setNpw2(''); setNote(''); }}>Huỷ</button>
+                </div>
+                <div className="muted" style={{fontSize:11,marginTop:6}}>Đổi ngay, không cần xác nhận qua email. Nhớ lưu lại mật khẩu mới.</div>
+              </div>}
+        </div>}
         {note && <div className="danger" style={{fontSize:12.5,marginTop:10}}>{note}</div>}
       </div>
     </div>
@@ -5177,9 +5210,9 @@ function TodayMenuCard({people,me,go}){
     <div className="card">
       <div className="row"><span className="hc-title">🍱 Thực đơn hôm nay</span><span className="grow"></span><span className="hc-act">{DOW[idx]}</span></div>
       <div style={{marginTop:6}}>
-        <div className="muted" style={{fontSize:11.5}}>🍽️ Hai vợ chồng — bữa tối:</div>
+        <div className="muted" style={{fontSize:11.5}}>🍽️ Hai vợ chồng:</div>
         {day
-          ? <div style={{fontSize:13.5,lineHeight:1.6,marginTop:1}}>{(day.man||[]).map((m,i)=><div key={i}>🍖 {m}</div>)}<div>🥣 {day.canh}</div></div>
+          ? <div style={{fontSize:13.5,lineHeight:1.6,marginTop:1}}>{day.sang && <div>🌅 Sáng: {day.sang}</div>}{(day.man||[]).map((m,i)=><div key={i}>🍖 {m}</div>)}<div>🥣 {day.canh}</div></div>
           : <div className="muted" style={{fontSize:12.5,marginTop:2}}>Chưa có thực đơn tuần — <span style={{color:'var(--primary)',cursor:'pointer'}} onClick={()=>go('us')}>tạo ngay ›</span></div>}
       </div>
       {hasChild && wean && <div style={{marginTop:8}}>
