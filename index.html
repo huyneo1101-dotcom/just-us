@@ -5166,18 +5166,32 @@ function normVinha(tx,cats){
     return {id:t.id||uid(),type:t.type||'expense',amount:Number(t.amount)||0,date:t.date,note:t.note||'',ci:m.i,cn:m.n}; })
     .sort((a,b)=> a.date<b.date?1:(a.date>b.date?-1:0)).slice(0,800);
 }
+const VN_SB_URL='https://ltmlueqkajqmduoqghdf.supabase.co';
+const VN_SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx0bWx1ZXFrYWpxbWR1b3FnaGRmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4NTA2NjcsImV4cCI6MjA5NzQyNjY2N30.rvwZsQiaD8a7fFLwBFk5sgSe6o9t9NqbPfVh1hJvxa0';
+let _vnsb=null;
+function vnSb(){ if(_vnsb) return _vnsb; if(window.supabase&&window.supabase.createClient){ try{ _vnsb=window.supabase.createClient(VN_SB_URL,VN_SB_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}}); }catch(e){ _vnsb=null; } } return _vnsb; }
+async function pullVinhaCloud(){ try{ const c=vnSb(); if(!c) return null; const u=await c.auth.getUser(); if(!(u&&u.data&&u.data.user)) return null;
+  const r=await c.from('vinha_state').select('data').maybeSingle(); if(r.error||!r.data||!r.data.data) return null; const blob=r.data.data;
+  return {tx:blob['vn.tx']||[], cats:catsArrToMap(blob['vn.cats'])}; }catch(e){ return null; } }
 function MoneyLover(){
   const [sync,setSync]=useLocal('ju.vinhaSync',null);
   const [ym,setYm]=useState(thisYM());
   const [msg,setMsg]=useState('');
   const fileRef=useRef(null);
-  const apply=(tx,cats,src)=>{ const rows=normVinha(tx,cats); const sig=rows.length+':'+(rows[0]?rows[0].date+rows[0].id:''); setSync({at:Date.now(),src,sig,rows}); setMsg('Đã đồng bộ '+rows.length+' giao dịch từ VíNhà.'); celebrate(['💵']); };
-  const syncLocal=()=>{ const d=readVinhaLocal(); if(!d){ setMsg('Không thấy dữ liệu VíNhà trên trình duyệt này. Hãy mở VíNhà cùng thiết bị rồi thử lại, hoặc nhập file sao lưu.'); return; } apply(d.tx,d.cats,'local'); };
+  const [busy,setBusy]=useState(false);
+  const applyRows=(tx,cats,src,manual)=>{ const rows=normVinha(tx,cats); const sig=rows.length+':'+(rows[0]?rows[0].date+rows[0].id:'');
+    setSync(s=>{ if(!manual && s && s.sig===sig) return s; return {at:Date.now(),src,sig,rows}; });
+    if(manual){ setMsg('Đã đồng bộ '+rows.length+' giao dịch từ VíNhà'+(src==='cloud'?' (đám mây)':(src==='file'?' (file)':''))+'.'); celebrate(['💵']); } };
+  const refresh=async(manual)=>{ if(manual) setBusy(true);
+    let d=await pullVinhaCloud(); let src='cloud';
+    if(!d||!d.tx||!d.tx.length){ const l=readVinhaLocal(); if(l){ d=l; src='local'; } }
+    if(manual) setBusy(false);
+    if(!d||!d.tx||!d.tx.length){ if(manual) setMsg('Chưa lấy được dữ liệu VíNhà. Hãy đăng nhập VíNhà (vinha-web) trên trình duyệt này, hoặc nhập file sao lưu.'); return; }
+    applyRows(d.tx,d.cats,src,manual); };
   const onFile=(e)=>{ const f=e.target.files&&e.target.files[0]; if(!f) return; const rd=new FileReader();
-    rd.onload=()=>{ try{ const j=JSON.parse(rd.result); const data=(j&&j.data)?j.data:j; apply(data.tx||[],catsArrToMap(data.cats),'file'); }catch(err){ setMsg('File không đọc được — cần đúng file JSON sao lưu từ VíNhà.'); } };
+    rd.onload=()=>{ try{ const j=JSON.parse(rd.result); const data=(j&&j.data)?j.data:j; applyRows(data.tx||[],catsArrToMap(data.cats),'file',true); }catch(err){ setMsg('File không đọc được — cần đúng file JSON sao lưu từ VíNhà.'); } };
     rd.readAsText(f); e.target.value=''; };
-  useEffect(()=>{ const d=readVinhaLocal(); if(!d) return; const rows=normVinha(d.tx,d.cats); const sig=rows.length+':'+(rows[0]?rows[0].date+rows[0].id:'');
-    setSync(s=>{ if(s&&s.src==='file') return s; if(s&&s.sig===sig) return s; return {at:Date.now(),src:'local',sig,rows}; }); },[]);
+  useEffect(()=>{ refresh(false); },[]);
   const rows=(sync&&sync.rows)||[];
   const monthRows=rows.filter(x=>x.type==='expense'&&ymOf(x.date)===ym);
   const total=monthRows.reduce((s,x)=>s+x.amount,0);
@@ -5186,14 +5200,14 @@ function MoneyLover(){
   const syncDate=sync&&sync.at? fmtDateVN(new Date(sync.at).toISOString().slice(0,10)) : '';
   return (
     <div>
-      <div className="muted center" style={{fontSize:11.5,margin:'10px 14px 6px'}}>💵 Chi tiêu lấy từ app <b>VíNhà</b>. {sync?('Đồng bộ '+syncDate+(sync.src==='file'?' · từ file':'')):'Chưa đồng bộ lần nào.'}</div>
+      <div className="muted center" style={{fontSize:11.5,margin:'10px 14px 6px'}}>💵 Chi tiêu lấy từ app <b>VíNhà</b>. {sync?('Đồng bộ '+syncDate+(sync.src==='file'?' · từ file':(sync.src==='cloud'?' · từ đám mây':''))):'Chưa đồng bộ lần nào.'}</div>
       <div className="row" style={{gap:8,margin:'0 14px 6px'}}>
-        <button className="btn soft grow" onClick={syncLocal}>🔄 Đồng bộ ngay</button>
+        <button className="btn soft grow" onClick={()=>refresh(true)} disabled={busy}>{busy?'⏳ Đang lấy…':'🔄 Đồng bộ ngay'}</button>
         <button className="btn soft grow" onClick={()=>fileRef.current&&fileRef.current.click()}>📁 Nhập file VíNhà</button>
         <input ref={fileRef} type="file" accept="application/json,.json" style={{display:'none'}} onChange={onFile}/>
       </div>
       {msg && <div className="center" style={{fontSize:11.5,margin:'0 14px 8px',color:'var(--primary)'}}>{msg}</div>}
-      {!rows.length && <div className="empty"><span className="big">💵</span>Chưa có dữ liệu VíNhà.<br/>Mở VíNhà cùng thiết bị rồi bấm “Đồng bộ ngay”, hoặc nhập file sao lưu JSON của VíNhà.</div>}
+      {!rows.length && <div className="empty"><span className="big">💵</span>Chưa có dữ liệu VíNhà.<br/>Đăng nhập VíNhà (vinha-web) trên trình duyệt này rồi bấm “Đồng bộ ngay”, hoặc nhập file sao lưu JSON của VíNhà.</div>}
       {rows.length>0 && <div>
         <div className="row" style={{margin:'4px 14px'}}>
           <b style={{fontSize:14}}>🧾 Chi tiêu VíNhà</b><span className="grow"></span>
