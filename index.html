@@ -4163,16 +4163,21 @@ async function subscribePush(){
   }catch(e){ return {ok:false,reason:String((e&&e.message)||e)}; }
 }
 function computeDueNotis(noti){
-  const cats=(noti&&noti.cats)||{};
-  const out=[];
-  if(cats.sukien!==false){
-    (store.get('ju.events',[])||[]).forEach(e=>{ const d=daysFromToday(e.date); const lead=e.remind!=null?e.remind:1; if(d!=null&&d>=0&&d<=lead) out.push({id:'ev'+(e.id||e.title),title:'📅 '+e.title+(d===0?' — hôm nay':' — còn '+d+' ngày')}); });
-    (store.get('ju.dates',[])||[]).forEach(e=>{ const d=dnext(e); const lead=e.remind!=null?e.remind:1; if(d!=null&&d>=0&&d<=lead) out.push({id:'dt'+(e.id||e.title),title:(e.icon||'🎂')+' '+e.title+(d===0?' — hôm nay!':' — còn '+d+' ngày')}); });
+  const cats=(noti&&noti.cats)||{}; const on=(k)=>cats[k]!==false;
+  const out=[]; const setup=store.get('ju.setup',{})||{};
+  if(on('kyNiem') && setup.loveDate){
+    const dn=daysToNext(setup.loveDate);
+    if(dn!=null && dn<=2) out.push({id:'anniv',title:'💞 '+(dn===0?'Hôm nay kỷ niệm ngày yêu nhau! 🥰':'Còn '+dn+' ngày tới kỷ niệm ngày yêu')});
+    else { try{ const lov=new Date(setup.loveDate+'T00:00:00'), t=new Date(todayISO()+'T00:00:00'); if(lov.getDate()===t.getDate()){ const months=(t.getFullYear()-lov.getFullYear())*12+(t.getMonth()-lov.getMonth()); if(months>0) out.push({id:'lovemonth'+months,title:'💞 Hôm nay tròn '+months+' tháng bên nhau 🥰'}); } }catch(_){} }
   }
-  if(cats.viec!==false){
-    (store.get('ju.todos',[])||[]).forEach(t=>{ if(!t.done&&t.due){ const d=daysFromToday(t.due); if(d!=null&&d<=0) out.push({id:'td'+(t.id||t.title),title:'✅ '+t.title+(d===0?' — hạn hôm nay':' — đã quá hạn')}); } });
-  }
-  if(cats.chuky!==false){ const p=periodNext(); if(p&&!p.onPeriod&&p.days!=null&&p.days<=2) out.push({id:'period',title:'🌸 Kỳ kinh dự kiến — còn '+p.days+' ngày'}); }
+  if(on('sukien')) (store.get('ju.events',[])||[]).forEach(e=>{ const d=daysFromToday(e.date); const lead=e.remind!=null?e.remind:1; if(d!=null&&d>=0&&d<=lead) out.push({id:'ev'+(e.id||e.title),title:'📅 '+e.title+(d===0?' — hôm nay':' — còn '+d+' ngày')}); });
+  if(on('ngayNho')) (store.get('ju.dates',[])||[]).forEach(e=>{ const d=dnext(e); const lead=e.remind!=null?e.remind:1; if(d!=null&&d>=0&&d<=lead) out.push({id:'dt'+(e.id||e.title),title:(e.icon||'🎂')+' '+e.title+(d===0?' — hôm nay!':' — còn '+d+' ngày')}); });
+  if(on('viec')) (store.get('ju.todos',[])||[]).forEach(t=>{ if(t.done) return; if(t.due){ const d=daysFromToday(t.due); if(d!=null&&d<=0) out.push({id:'td'+(t.id||t.title),title:'✅ '+t.title+(d===0?' — hạn hôm nay':' — đã quá hạn')}); } else if(t.prio==='cao'){ out.push({id:'tdp'+(t.id||t.title),title:'✅ '+t.title+' — ưu tiên cao'}); } });
+  if(on('thucDon')){ const plan=store.get('ju.menuPlan',null); const idx=(new Date().getDay()+6)%7; if(plan&&plan[idx]) out.push({id:'menu',title:'🍱 Nhắc chuẩn bị bữa ăn hôm nay'}); const shop=(store.get('ju.shop',[])||[]).filter(s=>s&&!s.done&&!s.bought); if(shop.length) out.push({id:'shop',title:'🛒 Đi chợ: còn '+shop.length+' món trong danh sách'}); }
+  if(on('nganSach')){ const vs=store.get('ju.vinhaSync',null); if(vs&&vs.budgets&&vs.budgets.length){ const ym=todayISO().slice(0,7); const sp={}; (vs.rows||[]).filter(x=>x.type==='expense'&&(x.date||'').slice(0,7)===ym).forEach(x=>{ if(x.catId) sp[x.catId]=(sp[x.catId]||0)+x.amount; }); const over=vs.budgets.filter(b=>(sp[b.catId]||0)>b.amount); const near=vs.budgets.filter(b=>{ const s=sp[b.catId]||0; return s<=b.amount&&s>=b.amount*0.8; }); if(over.length) out.push({id:'budover',title:'💰 Vượt ngân sách: '+over.slice(0,3).map(b=>b.cn).join(', ')}); else if(near.length) out.push({id:'budnear',title:'💰 Sắp hết ngân sách: '+near.slice(0,3).map(b=>b.cn).join(', ')}); } }
+  if(on('yeuThuong')) out.push({id:'love',title:'💌 Gửi nửa kia một lời yêu thương hôm nay nhé 💞'});
+  if(on('tamLinh')) (upcomingSpiritual(2)||[]).slice(0,2).forEach((h,i)=>{ if(h.d!=null&&h.d>=0&&h.d<=2) out.push({id:'sp'+(h.name||i),title:'🪷 '+h.name+(h.d===0?' — hôm nay':' — còn '+h.d+' ngày')}); });
+  if(on('chuky')){ const p=periodNext(); if(p&&!p.onPeriod&&p.days!=null&&p.days<=2) out.push({id:'period',title:'🌸 Kỳ kinh dự kiến — còn '+p.days+' ngày'}); }
   return out;
 }
 function NotiRunner(){
@@ -4205,7 +4210,7 @@ function NotiRunner(){
   return null;
 }
 function NotiSettings({flash}){
-  const [noti,setNoti]=useLocal('ju.noti',{on:false,cats:{sukien:true,viec:true,chuky:true},time:'08:00'});
+  const [noti,setNoti]=useLocal('ju.noti',{on:false,cats:{kyNiem:true,sukien:true,viec:true,thucDon:true,nganSach:true,yeuThuong:true,tamLinh:true,ngayNho:false,chuky:false},time:'08:00'});
   const supported=(typeof Notification!=='undefined')&&('serviceWorker' in navigator);
   const [perm,setPerm]=useState(supported?Notification.permission:'unsupported');
   const [pushMsg,setPushMsg]=useState('');
@@ -4225,7 +4230,7 @@ function NotiSettings({flash}){
   const test=async()=>{ if(!supported){ flash&&flash('Máy không hỗ trợ thông báo'); return; } try{ const reg=await navigator.serviceWorker.ready; reg.showNotification('Thử thông báo 🔔',{body:'Đây là thông báo thử từ Just Us 💗',icon:'icon.svg',badge:'icon.svg'}); }catch(e){ flash&&flash('Không gửi được — kiểm tra quyền thông báo'); } };
   const tog=(k)=>setNoti({...noti,cats:{...(noti.cats||{}),[k]:!((noti.cats||{})[k]!==false)}});
   const cats=noti.cats||{};
-  const CATS=[['sukien','📅 Sự kiện & Ngày nhớ sắp tới'],['viec','✅ Việc cần làm tới hạn'],['chuky','🌸 Chu kỳ sắp đến']];
+  const CATS=[['kyNiem','💞 Ngày yêu nhau · cột mốc'],['sukien','📅 Sự kiện gia đình'],['viec','✅ Việc tới hạn · ưu tiên cao'],['thucDon','🍱 Món nấu hôm nay · đi chợ'],['nganSach','💰 Cảnh báo ngân sách tháng'],['yeuThuong','💌 Nhắc gửi lời yêu thương'],['tamLinh','🪷 Mùng 1 · rằm · lễ'],['ngayNho','🎂 Sinh nhật · giỗ · lễ cần quà'],['chuky','🌸 Chu kỳ sắp đến']];
   return (
     <div className="card">
       <div className="row"><span className="hc-title">🔔 Thông báo điện thoại</span><span className="grow"></span>
