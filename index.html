@@ -146,6 +146,9 @@ textarea.inp{resize:vertical;min-height:64px}
 .usm4-tab{display:inline-flex;align-items:center;gap:5px;background:none;border:0;border-bottom:2px solid transparent;color:var(--muted);font-weight:700;font-size:12.5px;line-height:1;padding:2px 1px 6px;cursor:pointer}
 .usm4-tab .segic{font-size:14px;line-height:1}
 .usm4-tab.on{color:var(--primary);border-bottom-color:var(--primary)}
+/* Mục gập gọn (Collapse) */
+.col-h{cursor:pointer;user-select:none;display:inline-flex;align-items:center;gap:5px}
+.col-chev{font-size:11px;color:var(--muted);width:11px;display:inline-block;text-align:center}
 
 /* Filter chips */
 .filters{display:flex;gap:7px;margin:10px 14px 0;flex-wrap:wrap}
@@ -1392,6 +1395,20 @@ const SWEET_NOTES=['Cảm ơn em/anh vì hôm nay nhé 💗','Nhớ em/anh quá 
 const CALM_ANXIOUS=['Thở ra dài hơn hít vào, lặp lại 1 phút','Kỹ thuật 5-4-3-2-1: gọi tên 5 thứ nhìn thấy, 4 nghe được, 3 chạm được…','Viết ra điều lo + tách “việc mình kiểm soát được” và “không”','Uống một tách trà ấm','Đi bộ chậm, chú ý từng bước chân','Nhắn cho người ấy điều đang khiến bạn lo','Tắm nước ấm thư giãn','Nghe nhạc thiền / lo-fi 10 phút','Ghi ra 3 điều bạn biết ơn hôm nay','Đặt điện thoại xuống 15 phút','Ôm người ấy 20 giây cho dịu lại','Tự nhủ: “Mình đã vượt qua những lúc khó hơn thế này.”','Đặt tay lên ngực, cảm nhận nhịp thở chậm lại','Chia việc đang lo thành 1 bước nhỏ làm ngay','Pha một ly nước ấm mật ong','Ra ngoài nhìn cây xanh / bầu trời 2 phút','Viết thư cho chính mình của tuần sau','Vươn vai, xoay cổ nhẹ nhàng','Gọi tên 5 thứ đang nhìn thấy quanh mình','Đặt tay lên ngực, cảm nhận hơi thở vào ra','Viết ra điều lo lắng và một việc nhỏ có thể làm ngay','Pha một ly trà ấm và uống thật chậm','Nhắn cho người mình tin một câu cho nhẹ lòng','Co duỗi vai gáy nhẹ nhàng vài phút','Nhắc mình: phần lớn điều lo chưa chắc xảy ra','Ra chỗ có nắng / cây xanh đứng vài phút'];
 
 /* ============ small components ============ */
+function Collapse({id,title,defaultOpen=true,right,children}){
+  const k='ju.col.'+id;
+  const [open,setOpen]=useState(()=>{ const v=store.get(k,null); return v==null?defaultOpen:!!v; });
+  const toggle=()=>setOpen(o=>{ store.set(k,!o); return !o; });
+  return (
+    <div className="collapse">
+      <div className="sec-title">
+        <span className="col-h" onClick={toggle}><span className="col-chev">{open?'▾':'▸'}</span> {title}</span>
+        <span className="grow"></span>{right}
+      </div>
+      {open && <div className="col-body">{children}</div>}
+    </div>
+  );
+}
 function Stars({value=0,onChange}){
   return <span className="stars">{[1,2,3,4,5].map(i=>(
     <span key={i} onClick={onChange?()=>onChange(i===value?0:i):undefined} style={{cursor:onChange?'pointer':'default'}}>
@@ -3248,7 +3265,7 @@ function PeriodTracker({people}){
           <button className="muted" style={{fontSize:11.5,marginTop:4}} onClick={undoLast}>↩︎ Xoá kỳ gần nhất (nếu ghi nhầm)</button>
         </div>}
       </div>
-      <div className="sec-title">🧺 Cần chuẩn bị</div>
+      <Collapse id="period-prep" defaultOpen={false} title="🧺 Cần chuẩn bị">
       {(()=>{ const groups=[],other=[]; PERIOD_PREP.forEach(x=>{ if(x&&typeof x==='object'&&x.items) groups.push(x); else if(typeof x==='string') other.push(x); }); if(other.length) groups.push({cat:'🧷 Khác',items:other});
         return groups.map(grp=>(
           <div key={grp.cat} className="card" style={{marginBottom:8,padding:'10px 13px'}}>
@@ -3259,11 +3276,13 @@ function PeriodTracker({people}){
             ))}</div>
           </div>
         )); })()}
-      <div className="sec-title">🍲 Nên ăn (ấm bụng, bổ máu)</div>
+      </Collapse>
+      <Collapse id="period-food" defaultOpen={false} title="🍲 Nên ăn (ấm bụng, bổ máu)">
       <div className="card"><div className="muted" style={{fontSize:13.5,lineHeight:1.7}}>{PERIOD_FOOD.join(' · ')}</div>
         <div className="muted" style={{fontSize:12,marginTop:8}}><b>Hạn chế:</b> {PERIOD_AVOID.join(', ')}.</div>
         <div className="muted" style={{fontSize:12,marginTop:6}}>👉 Vào <b>Thực đơn</b> chọn mục tiêu <b>🌸 Bổ máu (đèn đỏ)</b> để tạo thực đơn hợp ngày này.</div>
       </div>
+      </Collapse>
       <div className="muted center" style={{fontSize:11,margin:'8px 14px'}}>Chỉ là ước tính theo chu kỳ — không thay thế tư vấn y tế.</div>
     </div>
   );
@@ -3388,18 +3407,20 @@ function SpiritualSection(){
       </div>}
       {tab==='co' && <div>
         <div className="muted center" style={{fontSize:11.5,margin:'10px 14px'}}>Gợi ý mâm cỗ cúng truyền thống (Bắc Bộ) — chạm từng món để xem <b>công thức</b> & video.</div>
-        <div className="sec-title">🕯️ Mâm cỗ ngày giỗ</div>
+        <Collapse id="co-gio" defaultOpen={false} title="🕯️ Mâm cỗ ngày giỗ">
         {CO_GIO.map((d,i)=>(
           <div key={i} className="item" style={{cursor:'pointer',padding:'9px 13px'}} onClick={()=>setRead({title:d.n,sub:'Mâm cỗ ngày giỗ',text:d.r,yt:d.n})}>
             <div className="row"><span className="grow" style={{fontSize:14}}>{d.n}</span><span className="muted" style={{fontSize:12}}>công thức ›</span></div>
           </div>
         ))}
-        <div className="sec-title">🎋 Mâm cỗ Tết</div>
+        </Collapse>
+        <Collapse id="co-tet" defaultOpen={false} title="🎋 Mâm cỗ Tết">
         {CO_TET.map((d,i)=>(
           <div key={i} className="item" style={{cursor:'pointer',padding:'9px 13px'}} onClick={()=>setRead({title:d.n,sub:'Mâm cỗ Tết',text:d.r,yt:d.n})}>
             <div className="row"><span className="grow" style={{fontSize:14}}>{d.n}</span><span className="muted" style={{fontSize:12}}>công thức ›</span></div>
           </div>
         ))}
+        </Collapse>
       </div>}
       {read && <Sheet title={read.title} onClose={()=>setRead(null)}>
         {read.sub && <div className="muted" style={{fontSize:12,marginBottom:8}}>{read.sub}</div>}
@@ -5157,12 +5178,16 @@ function catsArrToMap(arr){ const m={}; (Array.isArray(arr)?arr:[]).forEach(x=>{
 function readVinhaLocal(){
   try{ const raw=localStorage.getItem('vn.tx'); if(!raw) return null; const tx=JSON.parse(raw); if(!Array.isArray(tx)) return null;
     let cats={}; try{ cats=catsArrToMap(JSON.parse(localStorage.getItem('vn.cats')||'[]')); }catch(e){}
-    return {tx,cats};
+    let wallets=[]; try{ wallets=JSON.parse(localStorage.getItem('vn.wallets')||'[]'); }catch(e){}
+    return {tx,cats,wallets};
   }catch(e){ return null; }
 }
-function normVinha(tx,cats){
+// Chỉ lấy chi tiêu CHUNG của gia đình (m_gd) + của Sóc (m_soc); BỎ ví cá nhân (m_cn / w_cn)
+function vinhaIsPersonal(wid,wmap){ const mem=wmap[wid]; return mem? mem==='m_cn' : wid==='w_cn'; }
+function normVinha(tx,cats,wallets){
   const catMap=Object.assign({},VINHA_CATS,cats||{});
-  return (tx||[]).filter(t=>t&&t.type!=='transfer'&&t.date).map(t=>{ const m=catMap[t.categoryId]||{i:'📦',n:'Khác'};
+  const wmap={}; (Array.isArray(wallets)?wallets:[]).forEach(w=>{ if(w&&w.id) wmap[w.id]=w.memberId; });
+  return (tx||[]).filter(t=>t&&t.type!=='transfer'&&t.date&&!vinhaIsPersonal(t.walletId,wmap)).map(t=>{ const m=catMap[t.categoryId]||{i:'📦',n:'Khác'};
     return {id:t.id||uid(),type:t.type||'expense',amount:Number(t.amount)||0,date:t.date,note:t.note||'',ci:m.i,cn:m.n}; })
     .sort((a,b)=> a.date<b.date?1:(a.date>b.date?-1:0)).slice(0,800);
 }
@@ -5172,14 +5197,14 @@ let _vnsb=null;
 function vnSb(){ if(_vnsb) return _vnsb; if(window.supabase&&window.supabase.createClient){ try{ _vnsb=window.supabase.createClient(VN_SB_URL,VN_SB_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}}); }catch(e){ _vnsb=null; } } return _vnsb; }
 async function pullVinhaCloud(){ try{ const c=vnSb(); if(!c) return null; const u=await c.auth.getUser(); if(!(u&&u.data&&u.data.user)) return null;
   const r=await c.from('vinha_state').select('data').maybeSingle(); if(r.error||!r.data||!r.data.data) return null; const blob=r.data.data;
-  return {tx:blob['vn.tx']||[], cats:catsArrToMap(blob['vn.cats'])}; }catch(e){ return null; } }
+  return {tx:blob['vn.tx']||[], cats:catsArrToMap(blob['vn.cats']), wallets:blob['vn.wallets']||[]}; }catch(e){ return null; } }
 function MoneyLover(){
   const [sync,setSync]=useLocal('ju.vinhaSync',null);
   const [ym,setYm]=useState(thisYM());
   const [msg,setMsg]=useState('');
   const fileRef=useRef(null);
   const [busy,setBusy]=useState(false);
-  const applyRows=(tx,cats,src,manual)=>{ const rows=normVinha(tx,cats); const sig=rows.length+':'+(rows[0]?rows[0].date+rows[0].id:'');
+  const applyRows=(data,src,manual)=>{ const rows=normVinha(data.tx,data.cats,data.wallets); const sig=rows.length+':'+(rows[0]?rows[0].date+rows[0].id:'');
     setSync(s=>{ if(!manual && s && s.sig===sig) return s; return {at:Date.now(),src,sig,rows}; });
     if(manual){ setMsg('Đã đồng bộ '+rows.length+' giao dịch từ VíNhà'+(src==='cloud'?' (đám mây)':(src==='file'?' (file)':''))+'.'); celebrate(['💵']); } };
   const refresh=async(manual)=>{ if(manual) setBusy(true);
@@ -5187,9 +5212,9 @@ function MoneyLover(){
     if(!d||!d.tx||!d.tx.length){ const l=readVinhaLocal(); if(l){ d=l; src='local'; } }
     if(manual) setBusy(false);
     if(!d||!d.tx||!d.tx.length){ if(manual) setMsg('Chưa lấy được dữ liệu VíNhà. Hãy đăng nhập VíNhà (vinha-web) trên trình duyệt này, hoặc nhập file sao lưu.'); return; }
-    applyRows(d.tx,d.cats,src,manual); };
+    applyRows(d,src,manual); };
   const onFile=(e)=>{ const f=e.target.files&&e.target.files[0]; if(!f) return; const rd=new FileReader();
-    rd.onload=()=>{ try{ const j=JSON.parse(rd.result); const data=(j&&j.data)?j.data:j; applyRows(data.tx||[],catsArrToMap(data.cats),'file',true); }catch(err){ setMsg('File không đọc được — cần đúng file JSON sao lưu từ VíNhà.'); } };
+    rd.onload=()=>{ try{ const j=JSON.parse(rd.result); const data=(j&&j.data)?j.data:j; applyRows({tx:data.tx||[],cats:catsArrToMap(data.cats),wallets:data.wallets||[]},'file',true); }catch(err){ setMsg('File không đọc được — cần đúng file JSON sao lưu từ VíNhà.'); } };
     rd.readAsText(f); e.target.value=''; };
   useEffect(()=>{ refresh(false); },[]);
   const rows=(sync&&sync.rows)||[];
@@ -5200,7 +5225,7 @@ function MoneyLover(){
   const syncDate=sync&&sync.at? fmtDateVN(new Date(sync.at).toISOString().slice(0,10)) : '';
   return (
     <div>
-      <div className="muted center" style={{fontSize:11.5,margin:'10px 14px 6px'}}>💵 Chi tiêu lấy từ app <b>VíNhà</b>. {sync?('Đồng bộ '+syncDate+(sync.src==='file'?' · từ file':(sync.src==='cloud'?' · từ đám mây':''))):'Chưa đồng bộ lần nào.'}</div>
+      <div className="muted center" style={{fontSize:11.5,margin:'10px 14px 6px'}}>💵 Chi tiêu chung của nhà + Sóc, lấy từ <b>VíNhà</b> (không gồm chi tiêu cá nhân). {sync?('Đồng bộ '+syncDate+(sync.src==='file'?' · từ file':(sync.src==='cloud'?' · từ đám mây':''))):'Chưa đồng bộ lần nào.'}</div>
       <div className="row" style={{gap:8,margin:'0 14px 6px'}}>
         <button className="btn soft grow" onClick={()=>refresh(true)} disabled={busy}>{busy?'⏳ Đang lấy…':'🔄 Đồng bộ ngay'}</button>
         <button className="btn soft grow" onClick={()=>fileRef.current&&fileRef.current.click()}>📁 Nhập file VíNhà</button>
@@ -5315,7 +5340,7 @@ function Fund({people,me}){
         </div>
       ))}
       {txOpen && <Sheet title="💸 Ghi chuyển khoản" onClose={()=>setTxOpen(false)}><TransferForm people={people} me={me} onSave={(from,amt,date,note)=>{ addTransfer(from,amt,date,note); setTxOpen(false); }}/></Sheet>}
-      <div className="sec-title">💡 Mẹo sống tiết kiệm <span className="grow"></span><span className="muted" style={{fontSize:12}}>đang áp dụng {doneTips}/{allTips.length}</span></div>
+      <Collapse id="fund-tips" defaultOpen={false} title="💡 Mẹo sống tiết kiệm" right={<span className="muted" style={{fontSize:12}}>đang áp dụng {doneTips}/{allTips.length}</span>}>
       <div className="muted center" style={{fontSize:11.5,margin:'0 14px 4px'}}>Tích mẹo hai đứa đang làm — theo dõi mình đã tiết kiệm hơn thế nào.</div>
       <div className="prog" style={{margin:'0 14px'}}><i style={{width:(allTips.length?doneTips/allTips.length*100:0)+'%'}}></i></div>
       <div className="card" style={{padding:'4px 13px',marginTop:8}}>
@@ -5331,6 +5356,7 @@ function Fund({people,me}){
           <button className="btn sm" onClick={addTip}>＋</button>
         </div>
       </div>
+      </Collapse>
       {open && (
         <Sheet title={(edit?'Sửa ':'Thêm ')+'mục tiêu'} onClose={()=>{setOpen(false);setEdit(null);}}>
           <GoalForm init={edit} onSave={save}/>
