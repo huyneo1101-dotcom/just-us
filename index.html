@@ -143,6 +143,7 @@ textarea.inp{resize:vertical;min-height:64px}
 .usm4-tab .segic{font-size:14px;line-height:1}
 .usm4-tab.on{color:var(--primary);border-bottom-color:var(--primary)}
 .segpill.seg-ro{color:var(--muted);border-style:dashed;font-weight:600}
+.filters .flt-ro{border-style:dashed;color:var(--muted)}
 .usm4-dot.usm4-ro{border-style:dashed;color:var(--muted);font-size:16px}
 .usm4-tab.usm4-ro{color:var(--muted)}
 /* Mục gập gọn (Collapse) */
@@ -1461,6 +1462,17 @@ function ReorderSheet({items, menuId, onClose}){
       <button className="btn soft" onClick={reset}>↺ Mặc định</button>
     </div>
   </div>);
+}
+function FilterBar({items, value, onChange, menuId}){
+  const [ro,setRo]=useState(false);
+  const shown=menuId?orderItems(items,menuId):items;
+  return (
+    <div className="filters">
+      {shown.map(it=>(<button key={it.k} className={value===it.k?'on':''} onClick={()=>onChange(it.k)}>{it.icon?it.icon+' ':''}{it.label}</button>))}
+      {menuId && <button className="flt-ro" onClick={()=>setRo(true)} title="Sắp xếp thứ tự">↕︎</button>}
+      {ro && <Sheet title="↕︎ Sắp xếp menu" onClose={()=>setRo(false)}><ReorderSheet items={items} menuId={menuId} onClose={()=>setRo(false)}/></Sheet>}
+    </div>
+  );
 }
 function SegGrid({items, value, onChange, sub, menuId}){
   const [ro,setRo]=useState(false);
@@ -2988,13 +3000,11 @@ function CommGuide(){
   const [qi,setQi]=useState(()=>Math.floor(Math.random()*CONNECT_QS.length));
   return (
     <div>
-      <div className="filters">
-        <button className={tab==='principles'?'on':''} onClick={()=>setTab('principles')}>🕊️ Nguyên tắc</button>
-        <button className={tab==='say'?'on':''} onClick={()=>setTab('say')}>💬 Nói khéo</button>
-        <button className={tab==='love'?'on':''} onClick={()=>setTab('love')}>💖 NN yêu thương</button>
-        <button className={tab==='fight'?'on':''} onClick={()=>setTab('fight')}>⚖️ Cãi lành mạnh</button>
-        <button className={tab==='connect'?'on':''} onClick={()=>setTab('connect')}>🔗 Câu hỏi kết nối</button>
-      </div>
+      <FilterBar value={tab} onChange={setTab} menuId="comm" items={[
+        {k:'principles',icon:'🕊️',label:'Nguyên tắc'},{k:'say',icon:'💬',label:'Nói khéo'},
+        {k:'love',icon:'💖',label:'NN yêu thương'},{k:'fight',icon:'⚖️',label:'Cãi lành mạnh'},
+        {k:'connect',icon:'🔗',label:'Câu hỏi kết nối'},
+      ]}/>
       {tab==='principles' && <div>
         <div className="muted center" style={{fontSize:12,margin:'8px 14px'}}>🕊️ Nguyên tắc giúp hai vợ chồng nói chuyện êm đẹp — chạm để mở.</div>
         {COMM_TIPS.map((t,i)=>(
@@ -3396,13 +3406,10 @@ function SpiritualSection(){
   const mapUrl=(n,a)=>'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(n+' '+a+' Hà Nội');
   return (
     <div>
-      <div className="filters">
-        <button className={tab==='le'?'on':''} onClick={()=>setTab('le')}>📅 Ngày lễ</button>
-        <button className={tab==='kinh'?'on':''} onClick={()=>setTab('kinh')}>📿 Kinh Phật</button>
-        <button className={tab==='khan'?'on':''} onClick={()=>setTab('khan')}>📜 Văn khấn</button>
-        <button className={tab==='chay'?'on':''} onClick={()=>setTab('chay')}>🍃 Quán chay</button>
-        <button className={tab==='co'?'on':''} onClick={()=>setTab('co')}>🍲 Mâm cỗ</button>
-      </div>
+      <FilterBar value={tab} onChange={setTab} menuId="spirit" items={[
+        {k:'le',icon:'📅',label:'Ngày lễ'},{k:'kinh',icon:'📿',label:'Kinh Phật'},{k:'khan',icon:'📜',label:'Văn khấn'},
+        {k:'chay',icon:'🍃',label:'Quán chay'},{k:'co',icon:'🍲',label:'Mâm cỗ'},
+      ]}/>
       {tab==='le' && <div>
         <div className="sec-title">🪷 Mùng 1 · rằm · lễ trong 30 ngày tới</div>
         {days.length===0 && <div className="empty">Không có ngày lễ nào trong 30 ngày tới.</div>}
@@ -3817,14 +3824,10 @@ function ChildCare({people,me}){
           {editChild && child.name && child.dob && <button className="btn sm" style={{marginTop:8}} onClick={()=>setEditChild(false)}>✓ Xong</button>}
         </>}
       </div>
-      <div className="filters">
-        <button className={tab==='develop'?'on':''} onClick={()=>setTab('develop')}>🌱 Phát triển</button>
-        <button className={tab==='play'?'on':''} onClick={()=>setTab('play')}>🎲 Chơi với con</button>
-        <button className={tab==='health'?'on':''} onClick={()=>setTab('health')}>🏥 Sức khoẻ</button>
-        <button className={tab==='eat'?'on':''} onClick={()=>setTab('eat')}>🍎 Ăn uống</button>
-        <button className={tab==='school'?'on':''} onClick={()=>setTab('school')}>🎒 Đi học</button>
-        <button className={tab==='parent'?'on':''} onClick={()=>setTab('parent')}>💞 Nuôi dạy</button>
-      </div>
+      <FilterBar value={tab} onChange={setTab} menuId="child" items={[
+        {k:'develop',icon:'🌱',label:'Phát triển'},{k:'play',icon:'🎲',label:'Chơi với con'},{k:'health',icon:'🏥',label:'Sức khoẻ'},
+        {k:'eat',icon:'🍎',label:'Ăn uống'},{k:'school',icon:'🎒',label:'Đi học'},{k:'parent',icon:'💞',label:'Nuôi dạy'},
+      ]}/>
 
       {tab==='develop' && <div>
         <div className="sec-title">🎯 Mốc phát triển</div>
