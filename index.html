@@ -3816,6 +3816,7 @@ function ChildCare({people,me}){
 
       {tab==='play' && <div>
         <div className="muted center" style={{fontSize:11.5,margin:'10px 14px'}}>🎲 Trò chơi giúp bé phát triển (~20–24 tháng), chia theo nhóm kỹ năng. Trang chủ có thẻ <b>Chơi với con hôm nay</b> để gợi ý ngẫu nhiên.</div>
+        <Collapse id="child-play" defaultOpen={false} title="🎲 Trò chơi theo nhóm kỹ năng">
         {['🤸 Vận động','🧩 Tư duy','🗣️ Ngôn ngữ','🎨 Khéo tay'].map(cat=>(
           <div key={cat}>
             <div className="sec-title">{cat}</div>
@@ -3827,6 +3828,7 @@ function ChildCare({people,me}){
             ))}
           </div>
         ))}
+        </Collapse>
         <div className="muted center" style={{fontSize:11,margin:'6px 14px 8px'}}>Chơi cùng con 15–20 phút mỗi ngày giúp bé gắn kết & phát triển toàn diện 💛</div>
         <Collapse id="child-cafe" defaultOpen={false} title="☕ Cafe / khu vui chơi cho bé ở Hà Nội">
         <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>Gần → xa tính từ nhà (Núi Trúc). Giá & taxi khứ hồi là ước tính (taxi ~13.5k/km, 2 chiều).</div>
@@ -3843,7 +3845,7 @@ function ChildCare({people,me}){
       </div>}
 
       {tab==='health' && <div>
-        <div className="sec-title">💉 Lịch tiêm chủng <span className="grow"></span>{months!=null && <button className="muted" style={{fontSize:11.5}} onClick={()=>setShowAllVac(v=>!v)}>{showAllVac?'Theo tuổi bé':'Xem tất cả'}</button>}</div>
+        <Collapse id="child-vac" defaultOpen={false} title="💉 Lịch tiêm chủng" right={months!=null && <button className="muted" style={{fontSize:11.5}} onClick={()=>setShowAllVac(v=>!v)}>{showAllVac?'Theo tuổi bé':'Xem tất cả'}</button>}>
         <div className="muted center" style={{fontSize:11.5,margin:'0 14px 4px'}}>{months!=null&&!showAllVac?`Chỉ hiện mốc hợp tuổi ${child.name||'bé'} (~${months} tháng) — tích mũi đã tiêm.`:'Tham khảo (TCMR + dịch vụ) — tích mũi đã tiêm.'}</div>
         {(()=>{ const vacList=CHILD_VACCINES.filter(v=> showAllVac||months==null||(vacAgeMonths(v.age)>=months-3&&vacAgeMonths(v.age)<=months+12));
           if(!vacList.length) return <div className="empty muted">Không có mốc tiêm nào quanh tuổi này — bấm “Xem tất cả”.</div>;
@@ -3853,6 +3855,7 @@ function ChildCare({people,me}){
             <div>{v.items.map(it=>{ const k=v.age+'|'+it; const on=!!vac[k];
               return <button key={it} className="pill" style={{margin:'3px 6px 3px 0',padding:'7px 11px',fontSize:12.5,background:on?'var(--good)':'var(--chip)',color:on?'#fff':'var(--chip-tx)'}} onClick={()=>tg(vac,setVac,k)}>{on?'✓ ':''}{it}</button>; })}</div>
           </div>; }); })()}
+        </Collapse>
         <div className="sec-title">📏 Chiều cao & cân nặng</div>
         <div className="card">
           <div className="row" style={{gap:8}}>
@@ -3929,7 +3932,7 @@ function ChildCare({people,me}){
               : <div className="muted">Bé đã đi học được {Math.abs(schoolDays)} ngày 💪</div>}
           </div>}
         </div>
-        <div className="sec-title">🎒 Đồ mang đi lớp <span className="grow"></span><span className="muted" style={{fontSize:12}}>{packDone}/{CHILD_PACK.length}</span></div>
+        <Collapse id="child-pack" defaultOpen={false} title="🎒 Đồ mang đi lớp" right={<span className="muted" style={{fontSize:12}}>{packDone}/{CHILD_PACK.length}</span>}>
         <div className="card" style={{padding:'4px 13px'}}>
           {CHILD_PACK.map(it=>(
             <div key={it} className="row" style={{padding:'8px 0',borderBottom:'1px solid var(--line)'}}>
@@ -3939,7 +3942,8 @@ function ChildCare({people,me}){
           ))}
           <button className="muted" style={{fontSize:11.5,margin:'8px 0'}} onClick={()=>{ if(confirm('Bỏ đánh dấu tất cả để chuẩn bị cho hôm sau?')) setPack({}); }}>↻ Đặt lại cho hôm sau</button>
         </div>
-        <div className="sec-title">🌟 Kỹ năng tự lập <span className="grow"></span><span className="muted" style={{fontSize:12}}>{skillDone}/{CHILD_SKILLS.length}</span></div>
+        </Collapse>
+        <Collapse id="child-skills" defaultOpen={false} title="🌟 Kỹ năng tự lập" right={<span className="muted" style={{fontSize:12}}>{skillDone}/{CHILD_SKILLS.length}</span>}>
         <div className="prog" style={{margin:'0 14px'}}><i style={{width:(skillDone/CHILD_SKILLS.length*100)+'%'}}></i></div>
         <div className="card" style={{padding:'4px 13px',marginTop:8}}>
           {CHILD_SKILLS.map(it=>(
@@ -3949,14 +3953,16 @@ function ChildCare({people,me}){
             </div>
           ))}
         </div>
+        </Collapse>
       </div>}
 
       {tab==='parent' && <div>
-        <div className="sec-title">🌱 Dạy kỹ năng tự túc đầu tiên</div>
+        <Collapse id="child-skillguides" defaultOpen={false} title="🌱 Dạy kỹ năng tự túc đầu tiên">
         <div className="muted center" style={{fontSize:11.5,margin:'0 14px 6px'}}>Bấm từng kỹ năng để xem cách dạy theo bước. Mỗi bé một nhịp — cứ từ từ, khen nhiều 💛</div>
         {SKILL_GUIDES.filter(g=>!gDone[g.name]).map(g=><SkillGuide key={g.name} g={g} done={false} onTick={()=>setGDone({...gDone,[g.name]:true})}/>)}
         {SKILL_GUIDES.some(g=>gDone[g.name]) && <div className="muted" style={{fontSize:11.5,margin:'10px 14px 4px'}}>✅ Bé đã biết ({SKILL_GUIDES.filter(g=>gDone[g.name]).length}) — bấm nút xanh để bỏ đánh dấu:</div>}
         {SKILL_GUIDES.filter(g=>gDone[g.name]).map(g=><SkillGuide key={g.name} g={g} done={true} onTick={()=>{ const n={...gDone}; delete n[g.name]; setGDone(n); }}/>)}
+        </Collapse>
         <div className="sec-title">📔 Nhật ký “điều đầu tiên”</div>
         <div className="row" style={{margin:'0 14px 4px',gap:8}}>
           <input className="inp grow" placeholder="Hôm nay bé… (lần đầu nói, bước đi…)" value={dtext} onChange={e=>setDtext(e.target.value)} onKeyDown={e=>{ if(e.key==='Enter') addDiary(); }}/>
@@ -4414,11 +4420,13 @@ function FamilyTree({people,me,flash}){
           <div className="muted" style={{fontSize:12,marginTop:10}}>Điểm: <b>{score.ok}/{score.total}</b></div>
         </div>}
       </div> : <div>
-        <div className="sec-title">🤝 Cư xử với họ hàng</div>
+        <Collapse id="fam-tips" defaultOpen={false} title="🤝 Cư xử với họ hàng">
         <div className="card"><ul style={{margin:0,paddingLeft:18,fontSize:13,lineHeight:1.7}}>{RELATIVE_TIPS.map((t,i)=><li key={i} style={{marginBottom:5}}>{t}</li>)}</ul></div>
-        <div className="sec-title">🍶 Khi bị ép rượu</div>
+        </Collapse>
+        <Collapse id="fam-alcohol" defaultOpen={false} title="🍶 Khi bị ép rượu">
         <div className="card"><ul style={{margin:0,paddingLeft:18,fontSize:13,lineHeight:1.7}}>{ALCOHOL_TIPS.map((t,i)=><li key={i} style={{marginBottom:5}}>{t}</li>)}</ul>
           <div style={{fontSize:11.5,marginTop:8,background:'var(--bg)',borderRadius:8,padding:'7px 10px'}}>⚠️ Đã uống rượu bia thì <b>tuyệt đối không lái xe</b> — đặt taxi/Grab. Luật VN phạt nồng độ cồn rất nặng.</div></div>
+        </Collapse>
       </div>}
       {tagImg && !edit && <div className="ov" onClick={()=>{ setTagImg(null); setBox(null); }}>
         <div className="sheet" onClick={e=>e.stopPropagation()} style={{maxWidth:520}}>
