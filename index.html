@@ -3828,7 +3828,7 @@ function ChildCare({people,me}){
           </div>
         ))}
         <div className="muted center" style={{fontSize:11,margin:'6px 14px 8px'}}>Chơi cùng con 15–20 phút mỗi ngày giúp bé gắn kết & phát triển toàn diện 💛</div>
-        <div className="sec-title">☕ Cafe / khu vui chơi cho bé ở Hà Nội</div>
+        <Collapse id="child-cafe" defaultOpen={false} title="☕ Cafe / khu vui chơi cho bé ở Hà Nội">
         <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>Gần → xa tính từ nhà (Núi Trúc). Giá & taxi khứ hồi là ước tính (taxi ~13.5k/km, 2 chiều).</div>
         {KIDS_CAFES.map(c=>({...c,km:haversine(NHA.lat,NHA.lng,c.lat,c.lng)})).sort((a,b)=>a.km-b.km).map((c,i)=>(
           <div key={i} className="item" style={{padding:'9px 13px'}}>
@@ -3839,6 +3839,7 @@ function ChildCare({people,me}){
             <div style={{marginTop:6}}><a className="pill" style={{textDecoration:'none'}} href={'https://www.google.com/maps/dir/?api=1&origin='+encodeURIComponent('Núi Trúc, Ba Đình, Hà Nội')+'&destination='+encodeURIComponent(c.n+', '+c.a+', Hà Nội')} target="_blank" rel="noreferrer">🗺️ Chỉ đường</a></div>
           </div>
         ))}
+        </Collapse>
       </div>}
 
       {tab==='health' && <div>
@@ -3901,7 +3902,7 @@ function ChildCare({people,me}){
       {tab==='eat' && <div>
         <div className="sec-title">🍎 Ăn uống & chăm sóc {months!=null?`(~${months} tháng)`:''}</div>
         <div className="card"><div className="muted" style={{fontSize:13.5,lineHeight:1.8}}>{CHILD_TIPS.map((t,i)=><div key={i}>{t}</div>)}</div></div>
-        <div className="sec-title">🍚 Thực đơn ăn dặm / ăn thô cả tuần</div>
+        <Collapse id="child-wean" defaultOpen={false} title="🍚 Thực đơn ăn dặm / ăn thô cả tuần">
         <div className="muted center" style={{fontSize:11.5,margin:'0 14px 4px'}}>Gợi ý cho bé ~18–24 tháng (cơm nát + món mềm). Điều chỉnh theo khẩu vị bé nhé.</div>
         {WEAN_MENU.map((m,i)=>(
           <div key={i} className="item">
@@ -3914,6 +3915,7 @@ function ChildCare({people,me}){
             </div>
           </div>
         ))}
+        </Collapse>
       </div>}
 
       {tab==='school' && <div>
