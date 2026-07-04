@@ -1397,7 +1397,7 @@ const CALM_ANXIOUS=['Thở ra dài hơn hít vào, lặp lại 1 phút','Kỹ th
 /* ============ small components ============ */
 function Collapse({id,title,defaultOpen=true,right,children}){
   const k='ju.col.'+id;
-  const [open,setOpen]=useState(()=>{ const v=store.get(k,null); return v==null?defaultOpen:!!v; });
+  const [open,setOpen]=useState(()=>{ const v=store.get(k,null); if(v!=null) return !!v; const gd=store.get('ju.colDefault',null); return gd!=null?!!gd:defaultOpen; });
   const toggle=()=>setOpen(o=>{ store.set(k,!o); return !o; });
   return (
     <div className="collapse">
@@ -1464,18 +1464,14 @@ function ReorderSheet({items, menuId, onClose}){
   </div>);
 }
 function FilterBar({items, value, onChange, menuId}){
-  const [ro,setRo]=useState(false);
   const shown=menuId?orderItems(items,menuId):items;
   return (
     <div className="filters">
       {shown.map(it=>(<button key={it.k} className={value===it.k?'on':''} onClick={()=>onChange(it.k)}>{it.icon?it.icon+' ':''}{it.label}</button>))}
-      {menuId && <button className="flt-ro" onClick={()=>setRo(true)} title="Sắp xếp thứ tự">↕︎</button>}
-      {ro && <Sheet title="↕︎ Sắp xếp menu" onClose={()=>setRo(false)}><ReorderSheet items={items} menuId={menuId} onClose={()=>setRo(false)}/></Sheet>}
     </div>
   );
 }
 function SegGrid({items, value, onChange, sub, menuId}){
-  const [ro,setRo]=useState(false);
   const shown=menuId?orderItems(items,menuId):items;
   return (
     <div className={'segbar'+(sub?' sub':'')}>
@@ -1484,8 +1480,6 @@ function SegGrid({items, value, onChange, sub, menuId}){
           <span className="segic">{it.icon}</span><span>{it.label}</span>
         </button>
       ))}
-      {menuId && <button className="segpill seg-ro" onClick={()=>setRo(true)} title="Sắp xếp thứ tự"><span className="segic">↕︎</span><span>Sắp xếp</span></button>}
-      {ro && <Sheet title="↕︎ Sắp xếp menu" onClose={()=>setRo(false)}><ReorderSheet items={items} menuId={menuId} onClose={()=>setRo(false)}/></Sheet>}
     </div>
   );
 }
@@ -4571,20 +4565,55 @@ const US_GROUPS=[
   {k:'bigfam',icon:'🏡',label:'Gia đình lớn',items:['projects','spirit','family']},
   {k:'health',icon:'🩺',label:'Sức khỏe',items:['health','period']},
 ];
+const US_SEG_MAP=Object.fromEntries(US_SEGS.map(s=>[s.k,s]));
+const MENU_REGISTRY=[
+  {id:'us-groups',label:'Tụi Mình · nhóm chính',items:US_GROUPS.map(g=>({k:g.k,icon:g.icon,label:g.label}))},
+  ...US_GROUPS.map(g=>({id:'us-'+g.k,label:'Tụi Mình · '+g.label,items:g.items.map(k=>US_SEG_MAP[k]).filter(Boolean)})),
+  {id:'date',label:'Hẹn hò',items:[{k:'idea',icon:'💡',label:'Ý tưởng'},{k:'hanoi',icon:'📍',label:'Gợi ý HN'},{k:'events',icon:'🎪',label:'Sự kiện HN'},{k:'food',icon:'🍜',label:'Quán & Món'},{k:'checkin',icon:'📸',label:'Check-in'},{k:'wish',icon:'💝',label:'Ước muốn'},{k:'music',icon:'🎵',label:'Nhạc đôi'}]},
+  {id:'wish',label:'Ước muốn',items:[{k:'gift',icon:'🎁',label:'Quà tặng'},{k:'bucket',icon:'🎯',label:'Muốn làm cùng'},{k:'watch',icon:'🎬',label:'Xem·Đọc·Nghe'},{k:'coupon',icon:'🎟️',label:'Phiếu yêu thương'},{k:'link',icon:'🔗',label:'Link hay'}]},
+  {id:'talk',label:'Trò chuyện',items:[{k:'notes',icon:'💌',label:'Nhắn nhau'},{k:'question',icon:'❓',label:'Câu hỏi'},{k:'wishes',icon:'💛',label:'Mong nhau'},{k:'guide',icon:'🕊️',label:'Giao tiếp'},{k:'parenting',icon:'🤝',label:'Dạy con'},{k:'quiz',icon:'💞',label:'Đố vui'},{k:'checkin',icon:'📝',label:'Check-in'},{k:'topics',icon:'🗣️',label:'Chủ đề'}]},
+  {id:'comm',label:'Cẩm nang giao tiếp',items:[{k:'principles',icon:'🕊️',label:'Nguyên tắc'},{k:'say',icon:'💬',label:'Nói khéo'},{k:'love',icon:'💖',label:'NN yêu thương'},{k:'fight',icon:'⚖️',label:'Cãi lành mạnh'},{k:'connect',icon:'🔗',label:'Câu hỏi kết nối'}]},
+  {id:'spirit',label:'Tâm linh',items:[{k:'le',icon:'📅',label:'Ngày lễ'},{k:'kinh',icon:'📿',label:'Kinh Phật'},{k:'khan',icon:'📜',label:'Văn khấn'},{k:'chay',icon:'🍃',label:'Quán chay'},{k:'co',icon:'🍲',label:'Mâm cỗ'}]},
+  {id:'child',label:'Nuôi con',items:[{k:'develop',icon:'🌱',label:'Phát triển'},{k:'play',icon:'🎲',label:'Chơi với con'},{k:'health',icon:'🏥',label:'Sức khoẻ'},{k:'eat',icon:'🍎',label:'Ăn uống'},{k:'school',icon:'🎒',label:'Đi học'},{k:'parent',icon:'💞',label:'Nuôi dạy'}]},
+];
+function LongSectionsControl({flash}){
+  const setAll=(open)=>{ try{ Object.keys(localStorage).forEach(k=>{ if(k.indexOf('ju.col.')===0) localStorage.removeItem(k); }); }catch(_){}; store.set('ju.colDefault',open?1:0); flash&&flash(open?'Đã mở tất cả mục dài ✓':'Đã thu gọn tất cả mục dài ✓'); };
+  return (
+    <div className="card">
+      <div className="row"><span className="hc-title">📂 Mục dài (gập/mở)</span></div>
+      <div className="muted" style={{fontSize:12,margin:'4px 0 8px'}}>Mở hoặc thu gọn tất cả các mục dài trong app cùng lúc.</div>
+      <div className="row" style={{gap:8}}>
+        <button className="btn soft grow" onClick={()=>setAll(true)}>▾ Mở tất cả</button>
+        <button className="btn soft grow" onClick={()=>setAll(false)}>▸ Thu gọn tất cả</button>
+      </div>
+    </div>
+  );
+}
+function MenuReorderSettings(){
+  const [pick,setPick]=useState(null);
+  return (
+    <div className="card">
+      <div className="row"><span className="hc-title">🔀 Sắp xếp menu</span></div>
+      <div className="muted" style={{fontSize:12,margin:'4px 0 8px'}}>Chọn một menu để đổi thứ tự các mục bên trong.</div>
+      <div style={{display:'flex',flexWrap:'wrap',gap:6}}>
+        {MENU_REGISTRY.map(m=><button key={m.id} className="pill" onClick={()=>setPick(m)}>{m.label}</button>)}
+      </div>
+      {pick && <Sheet title={'↕︎ '+pick.label} onClose={()=>setPick(null)}><ReorderSheet items={pick.items} menuId={pick.id} onClose={()=>setPick(null)}/></Sheet>}
+    </div>
+  );
+}
 function UsMenu({group,seg,onPickGroup,onSeg}){
   const map=Object.fromEntries(US_SEGS.map(s=>[s.k,s]));
   const grpDefs=US_GROUPS.map(g=>({k:g.k,icon:g.icon,label:g.label}));
   const groups=orderItems(grpDefs,'us-groups');
   const grp=US_GROUPS.find(g=>g.k===group)||US_GROUPS[0];
   const items=orderItems(grp.items.map(k=>map[k]).filter(Boolean),'us-'+group);
-  const [roG,setRoG]=useState(false); const [roS,setRoS]=useState(false);
   return (
     <div className="usm4">
       <div className="usm4-groups">
         {groups.map(g=>(
           <button key={g.k} className={'usm4-dot'+(g.k===group?' on':'')} onClick={()=>onPickGroup(g.k)} title={g.label} aria-label={g.label}>{g.icon}</button>
         ))}
-        <button className="usm4-dot usm4-ro" onClick={()=>setRoG(true)} title="Sắp xếp nhóm" aria-label="Sắp xếp nhóm">↕︎</button>
       </div>
       <div className="usm4-name">{grp.label}</div>
       <div className="usm4-tabs">
@@ -4593,10 +4622,7 @@ function UsMenu({group,seg,onPickGroup,onSeg}){
             <span className="segic">{it.icon}</span><span>{it.label}</span>
           </button>
         ))}
-        <button className="usm4-tab usm4-ro" onClick={()=>setRoS(true)}><span className="segic">↕︎</span><span>Sắp xếp</span></button>
       </div>
-      {roG && <Sheet title="↕︎ Sắp xếp nhóm menu" onClose={()=>setRoG(false)}><ReorderSheet items={grpDefs} menuId="us-groups" onClose={()=>setRoG(false)}/></Sheet>}
-      {roS && <Sheet title={'↕︎ Sắp xếp: '+grp.label} onClose={()=>setRoS(false)}><ReorderSheet items={grp.items.map(k=>map[k]).filter(Boolean)} menuId={'us-'+group} onClose={()=>setRoS(false)}/></Sheet>}
     </div>
   );
 }
@@ -6199,6 +6225,11 @@ function Profile({setup,setSetup,people,me,setMe,flash}){
       {/* Thông báo điện thoại */}
       <div className="sec-title">🔔 Thông báo</div>
       <NotiSettings flash={flash}/>
+
+      {/* Giao diện: mục dài + sắp xếp menu */}
+      <div className="sec-title">🎛️ Giao diện</div>
+      <LongSectionsControl flash={flash}/>
+      <MenuReorderSettings/>
 
       {/* Sao lưu & bảo mật */}
       <div className="sec-title">💾 Sao lưu & bảo mật</div>
