@@ -127,15 +127,11 @@ textarea.inp{resize:vertical;min-height:64px}
 .seg button{flex:0 0 auto;padding:8px 13px;border-radius:10px;font-weight:700;font-size:13px;color:var(--chip-tx);white-space:nowrap}
 .seg button.on{background:var(--card);color:var(--primary);box-shadow:0 3px 10px rgba(0,0,0,.08)}
 /* Thanh menu gọn: cuộn ngang, mỗi mục 1 viên nhỏ (icon + chữ cùng dòng) */
-.segbar{display:flex;gap:7px;overflow-x:auto;padding:8px 14px 2px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
-.segbar::-webkit-scrollbar{display:none}
-.segpill{flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;padding:8px 13px;border-radius:12px;background:var(--card);border:1px solid var(--line);color:var(--text);font-weight:700;font-size:13px;line-height:1;white-space:nowrap;cursor:pointer}
-.segpill .segic{font-size:16px;line-height:1}
+/* Menu Mẫu C: lưới ô, icon trên — chữ dưới, KHÔNG cuộn ngang */
+.segbar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;padding:8px 14px 2px}
+.segpill{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:9px 3px;border-radius:12px;background:var(--card);border:1px solid var(--line);color:var(--text);font-weight:700;font-size:11px;line-height:1.15;text-align:center;cursor:pointer;min-height:54px}
+.segpill .segic{font-size:19px;line-height:1}
 .segpill.on{background:var(--primary);color:var(--on-primary);border-color:var(--primary);box-shadow:var(--shadow)}
-.segbar.sub{padding-top:3px;padding-bottom:4px}
-.segbar.sub .segpill{padding:6px 11px;font-size:12.5px;background:var(--bg)}
-.segbar.sub .segpill .segic{font-size:14px}
-.segbar.sub .segpill.on{background:var(--primary);color:var(--on-primary);border-color:var(--primary)}
 /* Menu Tụi Mình (Mẫu 4): 5 icon tròn chọn nhóm + tab gạch chân cho mục con */
 .usm4{padding:10px 14px 2px}
 .usm4-groups{display:flex;justify-content:space-between;gap:8px;max-width:322px;margin:0 auto}
@@ -4517,11 +4513,12 @@ const US_SEGS=[
   {k:'goals',icon:'🎯',label:'Mục tiêu'},
   {k:'shop',icon:'🛒',label:'Đi chợ'},
   {k:'chores',icon:'🧹',label:'Việc nhà'},
+  {k:'budget',icon:'🎚️',label:'Ngân sách'},
   {k:'moneylover',icon:'💵',label:'Money Lover'},
 ];
 const US_GROUPS=[
   {k:'daily',icon:'📆',label:'Hàng ngày',items:['todos','routine','chores','menu','shop']},
-  {k:'money',icon:'💰',label:'Tiền nong',items:['fund','goals','moneylover']},
+  {k:'money',icon:'💰',label:'Tiền nong',items:['fund','goals','budget','moneylover']},
   {k:'plan',icon:'📅',label:'Kế hoạch & Lịch',items:['events','dates','timeline']},
   {k:'bigfam',icon:'🏡',label:'Gia đình lớn',items:['projects','spirit','family']},
   {k:'health',icon:'🩺',label:'Sức khỏe',items:['health','period']},
@@ -4569,6 +4566,7 @@ function UsTab({people,me,flash}){
       {seg==='fund' && <Fund people={people} me={me}/>}
       {seg==='todos' && <FamilyTodos people={people} me={me}/>}
       {seg==='goals' && <Goals people={people} me={me}/>}
+      {seg==='budget' && <VinhaBudgets/>}
       {seg==='moneylover' && <MoneyLover/>}
       {seg==='shop' && <Shopping people={people} me={me}/>}
       {seg==='chores' && <Chores people={people} me={me}/>}
@@ -5189,7 +5187,8 @@ function readVinhaLocal(){
   try{ const raw=localStorage.getItem('vn.tx'); if(!raw) return null; const tx=JSON.parse(raw); if(!Array.isArray(tx)) return null;
     let cats={}; try{ cats=catsArrToMap(JSON.parse(localStorage.getItem('vn.cats')||'[]')); }catch(e){}
     let wallets=[]; try{ wallets=JSON.parse(localStorage.getItem('vn.wallets')||'[]'); }catch(e){}
-    return {tx,cats,wallets};
+    let budgets=[]; try{ budgets=JSON.parse(localStorage.getItem('vn.budgets')||'[]'); }catch(e){}
+    return {tx,cats,wallets,budgets};
   }catch(e){ return null; }
 }
 // Chỉ lấy chi tiêu CHUNG của gia đình (m_gd) + của Sóc (m_soc); BỎ ví cá nhân (m_cn / w_cn)
@@ -5198,7 +5197,7 @@ function normVinha(tx,cats,wallets){
   const catMap=Object.assign({},VINHA_CATS,cats||{});
   const wmap={}; (Array.isArray(wallets)?wallets:[]).forEach(w=>{ if(w&&w.id) wmap[w.id]=w.memberId; });
   return (tx||[]).filter(t=>t&&t.type!=='transfer'&&t.date&&!vinhaIsPersonal(t.walletId,wmap)).map(t=>{ const m=catMap[t.categoryId]||{i:'📦',n:'Khác'};
-    return {id:t.id||uid(),type:t.type||'expense',amount:Number(t.amount)||0,date:t.date,note:t.note||'',ci:m.i,cn:m.n}; })
+    return {id:t.id||uid(),type:t.type||'expense',amount:Number(t.amount)||0,date:t.date,note:t.note||'',catId:t.categoryId||'',ci:m.i,cn:m.n}; })
     .sort((a,b)=> a.date<b.date?1:(a.date>b.date?-1:0)).slice(0,800);
 }
 const VN_SB_URL='https://ltmlueqkajqmduoqghdf.supabase.co';
@@ -5207,15 +5206,27 @@ let _vnsb=null;
 function vnSb(){ if(_vnsb) return _vnsb; if(window.supabase&&window.supabase.createClient){ try{ _vnsb=window.supabase.createClient(VN_SB_URL,VN_SB_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}}); }catch(e){ _vnsb=null; } } return _vnsb; }
 async function pullVinhaCloud(){ try{ const c=vnSb(); if(!c) return null; const u=await c.auth.getUser(); if(!(u&&u.data&&u.data.user)) return null;
   const r=await c.from('vinha_state').select('data').maybeSingle(); if(r.error||!r.data||!r.data.data) return null; const blob=r.data.data;
-  return {tx:blob['vn.tx']||[], cats:catsArrToMap(blob['vn.cats']), wallets:blob['vn.wallets']||[]}; }catch(e){ return null; } }
+  return {tx:blob['vn.tx']||[], cats:catsArrToMap(blob['vn.cats']), wallets:blob['vn.wallets']||[], budgets:blob['vn.budgets']||[]}; }catch(e){ return null; } }
+function normBudgets(budgets,cats){
+  const catMap=Object.assign({},VINHA_CATS,cats||{});
+  return (budgets||[]).filter(b=>b&&b.categoryId&&Number(b.amount)>0&&b.scope!=='m_cn').map(b=>{ const m=catMap[b.categoryId]||{i:'📦',n:'Khác'}; return {catId:b.categoryId,amount:Number(b.amount)||0,ci:m.i,cn:m.n}; });
+}
+async function refreshVinhaInto(setSync){
+  let d=await pullVinhaCloud(); let src='cloud';
+  if(!d||!d.tx||!d.tx.length){ const l=readVinhaLocal(); if(l){ d=l; src='local'; } }
+  if(!d||!d.tx) return;
+  const rows=normVinha(d.tx,d.cats,d.wallets); const budgets=normBudgets(d.budgets,d.cats);
+  const sig=rows.length+':'+(rows[0]?rows[0].date+rows[0].id:'')+':b'+budgets.length;
+  setSync(s=>{ if(s&&s.src==='file') return s; if(s&&s.sig===sig) return s; return {at:Date.now(),src,sig,rows,budgets}; });
+}
 function MoneyLover(){
   const [sync,setSync]=useLocal('ju.vinhaSync',null);
   const [ym,setYm]=useState(thisYM());
   const [msg,setMsg]=useState('');
   const fileRef=useRef(null);
   const [busy,setBusy]=useState(false);
-  const applyRows=(data,src,manual)=>{ const rows=normVinha(data.tx,data.cats,data.wallets); const sig=rows.length+':'+(rows[0]?rows[0].date+rows[0].id:'');
-    setSync(s=>{ if(!manual && s && s.sig===sig) return s; return {at:Date.now(),src,sig,rows}; });
+  const applyRows=(data,src,manual)=>{ const rows=normVinha(data.tx,data.cats,data.wallets); const budgets=normBudgets(data.budgets,data.cats); const sig=rows.length+':'+(rows[0]?rows[0].date+rows[0].id:'')+':b'+budgets.length;
+    setSync(s=>{ if(!manual && s && s.sig===sig) return s; return {at:Date.now(),src,sig,rows,budgets}; });
     if(manual){ setMsg('Đã đồng bộ '+rows.length+' giao dịch từ VíNhà'+(src==='cloud'?' (đám mây)':(src==='file'?' (file)':''))+'.'); celebrate(['💵']); } };
   const refresh=async(manual)=>{ if(manual) setBusy(true);
     let d=await pullVinhaCloud(); let src='cloud';
@@ -5273,6 +5284,38 @@ function MoneyLover(){
         ))}
         <div className="muted center" style={{fontSize:10.5,margin:'8px 14px 4px'}}>Dữ liệu chỉ đọc từ VíNhà — sửa/thêm khoản chi hãy làm bên VíNhà rồi đồng bộ lại.</div>
       </div>}
+    </div>
+  );
+}
+function VinhaBudgets(){
+  const [sync,setSync]=useLocal('ju.vinhaSync',null);
+  useEffect(()=>{ refreshVinhaInto(setSync); },[]);
+  const budgets=(sync&&sync.budgets)||[];
+  const rows=(sync&&sync.rows)||[];
+  const ym=thisYM();
+  const spent={}; rows.filter(x=>x.type==='expense'&&ymOf(x.date)===ym).forEach(x=>{ if(x.catId) spent[x.catId]=(spent[x.catId]||0)+x.amount; });
+  const totalBud=budgets.reduce((s,b)=>s+b.amount,0);
+  const totalSpent=budgets.reduce((s,b)=>s+(spent[b.catId]||0),0);
+  const list=budgets.map(b=>({...b,sp:spent[b.catId]||0})).sort((a,b)=>(b.sp/(b.amount||1))-(a.sp/(a.amount||1)));
+  const tpct=totalBud?Math.round(totalSpent/totalBud*100):0;
+  return (
+    <div>
+      <div className="muted center" style={{fontSize:11.5,margin:'10px 14px 6px'}}>🎚️ Hạn mức theo danh mục lấy từ <b>VíNhà</b> — so với chi tiêu chung nhà + Sóc tháng {ymLabel(ym)}. Sửa hạn mức bên VíNhà.</div>
+      {!budgets.length && <div className="empty"><span className="big">🎚️</span>Chưa có ngân sách nào từ VíNhà.<br/>Đặt ngân sách danh mục bên VíNhà rồi mở lại (hoặc bấm 🔄 Đồng bộ ở tab Money Lover).</div>}
+      {budgets.length>0 && <div className="card" style={{margin:'0 14px'}}>
+        <div className="muted" style={{fontSize:12.5}}>Tổng đã chi / ngân sách tháng</div>
+        <div style={{fontSize:22,fontWeight:800,color:tpct>100?'#d9534f':'var(--primary)',margin:'2px 0 4px'}}>{VND(totalSpent)} <span className="muted" style={{fontSize:13,fontWeight:500}}>/ {VND(totalBud)}</span></div>
+        <div className="prog" style={{background:tpct>100?'#f3d5d5':'var(--line)'}}><i style={{width:Math.min(100,tpct)+'%',background:tpct>100?'#d9534f':(tpct>=80?'#e0a341':'var(--primary)')}}></i></div>
+        <div style={{fontSize:12,marginTop:5}}><span style={tpct>100?{color:'#d9534f',fontWeight:700}:{color:'var(--muted)'}}>{tpct}% · {tpct>100?'vượt '+VND(totalSpent-totalBud):'còn '+VND(totalBud-totalSpent)}</span></div>
+      </div>}
+      {list.map(b=>{ const pct=b.amount?Math.round(b.sp/b.amount*100):0; const over=pct>100; const near=pct>=80&&!over; return (
+        <div key={b.catId} className="item" style={{padding:'9px 13px'}}>
+          <div className="row" style={{fontSize:13.5}}><span style={{marginRight:6}}>{b.ci}</span><span className="grow">{b.cn}</span>
+            <b style={over?{color:'#d9534f'}:{}}>{VND(b.sp)}</b><span className="muted" style={{fontSize:12,marginLeft:4}}>/ {VND(b.amount)}</span></div>
+          <div className="prog" style={{height:6,marginTop:5,background:over?'#f3d5d5':'var(--line)'}}><i style={{width:Math.min(100,pct)+'%',background:over?'#d9534f':(near?'#e0a341':'var(--primary)')}}></i></div>
+          <div style={{fontSize:11.5,marginTop:3}}><span style={over?{color:'#d9534f',fontWeight:700}:{color:'var(--muted)'}}>{pct}% · {over?'vượt '+VND(b.sp-b.amount):(near?'sắp hết — còn '+VND(b.amount-b.sp):'còn '+VND(b.amount-b.sp))}</span></div>
+        </div>
+      ); })}
     </div>
   );
 }
