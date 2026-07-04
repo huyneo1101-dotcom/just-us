@@ -142,6 +142,9 @@ textarea.inp{resize:vertical;min-height:64px}
 .usm4-tab{display:inline-flex;align-items:center;gap:5px;background:none;border:0;border-bottom:2px solid transparent;color:var(--muted);font-weight:700;font-size:12.5px;line-height:1;padding:2px 1px 6px;cursor:pointer}
 .usm4-tab .segic{font-size:14px;line-height:1}
 .usm4-tab.on{color:var(--primary);border-bottom-color:var(--primary)}
+.segpill.seg-ro{color:var(--muted);border-style:dashed;font-weight:600}
+.usm4-dot.usm4-ro{border-style:dashed;color:var(--muted);font-size:16px}
+.usm4-tab.usm4-ro{color:var(--muted)}
 /* Mục gập gọn (Collapse) */
 .col-h{cursor:pointer;user-select:none;display:inline-flex;align-items:center;gap:5px}
 .col-chev{font-size:11px;color:var(--muted);width:11px;display:inline-block;text-align:center}
@@ -273,7 +276,7 @@ const store={
 const SB_URL='https://vvgkjgvzjeklaadusbne.supabase.co';
 const SB_KEY='sb_publishable_DMMPv5L2kGhrHTxeQ72iKw_dIh13iT1';
 // Các key được đồng bộ (KHÔNG gồm ju.me/ju.device/ju.sync — đó là riêng từng máy)
-const SYNC_KEYS=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood','ju.qa','ju.timeline','ju.coupons','ju.chores','ju.lovejar','ju.quiz','ju.city','ju.goals','ju.checkin','ju.challengeDone','ju.homecfg','ju.diary','ju.projects','ju.vinhaUrl','ju.checkins','ju.menu','ju.period','ju.menuPlan','ju.accuKey','ju.habits','ju.hiddenSpots','ju.usOrder','ju.eventPrefs','ju.child','ju.childGrowth','ju.childVaccines','ju.childMilestones','ju.childDiary','ju.partnerWishes','ju.todos','ju.spotify','ju.dishPrefs','ju.favDishes','ju.childPack','ju.childSkills','ju.childMed','ju.childIllness','ju.childWords','ju.childTantrum','ju.childParenting','ju.saveTips','ju.saveCustom','ju.funPrefs','ju.routine','ju.routineIssues','ju.noti','ju.family','ju.health','ju.transfers','ju.skillGuidesDone','ju.expenses','ju.budget','ju.vinhaSync'];
+const SYNC_KEYS=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood','ju.qa','ju.timeline','ju.coupons','ju.chores','ju.lovejar','ju.quiz','ju.city','ju.goals','ju.checkin','ju.challengeDone','ju.homecfg','ju.diary','ju.projects','ju.vinhaUrl','ju.checkins','ju.menu','ju.period','ju.menuPlan','ju.accuKey','ju.habits','ju.hiddenSpots','ju.usOrder','ju.eventPrefs','ju.child','ju.childGrowth','ju.childVaccines','ju.childMilestones','ju.childDiary','ju.partnerWishes','ju.todos','ju.spotify','ju.dishPrefs','ju.favDishes','ju.childPack','ju.childSkills','ju.childMed','ju.childIllness','ju.childWords','ju.childTantrum','ju.childParenting','ju.saveTips','ju.saveCustom','ju.funPrefs','ju.routine','ju.routineIssues','ju.noti','ju.family','ju.health','ju.transfers','ju.skillGuidesDone','ju.expenses','ju.budget','ju.vinhaSync','ju.menuOrder'];
 let _sb=null;
 function sbClient(){
   if(_sb) return _sb;
@@ -1426,14 +1429,51 @@ function Sheet({title,onClose,children}){
 }
 
 /* ============ Menu lưới biểu tượng (thay seg cuộn ngang) ============ */
-function SegGrid({items, value, onChange, sub}){
+function orderItems(items, menuId){
+  const ord=(store.get('ju.menuOrder',{})||{})[menuId];
+  if(!ord||!ord.length) return items;
+  const byK={}; items.forEach(it=>{ byK[it.k]=it; });
+  const out=[]; ord.forEach(k=>{ if(byK[k]){ out.push(byK[k]); delete byK[k]; } });
+  items.forEach(it=>{ if(byK[it.k]) out.push(it); });
+  return out;
+}
+function ReorderSheet({items, menuId, onClose}){
+  const [order,setOrder]=useLocal('ju.menuOrder',{});
+  const byK=Object.fromEntries(items.map(it=>[it.k,it]));
+  const [list,setList]=useState(()=>orderItems(items,menuId).map(it=>it.k).filter(k=>byK[k]));
+  const move=(i,dir)=>{ const j=i+dir; if(j<0||j>=list.length) return; const n=list.slice(); const t=n[i]; n[i]=n[j]; n[j]=t; setList(n); };
+  const persist=(m)=>{ store.set('ju.menuOrder',m); try{ Cloud.schedulePush&&Cloud.schedulePush(); }catch(_){}; setOrder(m); };
+  const save=()=>{ persist({...order,[menuId]:list}); onClose&&onClose(); };
+  const reset=()=>{ const n={...order}; delete n[menuId]; persist(n); onClose&&onClose(); };
+  return (<div>
+    <div className="muted" style={{fontSize:12.5,marginBottom:10}}>Bấm ▲ ▼ để đổi thứ tự các mục, rồi Lưu.</div>
+    <div className="card" style={{padding:'2px 12px'}}>
+      {list.map((k,i)=>{ const it=byK[k]; if(!it) return null; return (
+        <div key={k} className="row" style={{padding:'8px 0',borderBottom:i<list.length-1?'1px solid var(--line)':'none'}}>
+          <span style={{fontSize:17,marginRight:8}}>{it.icon}</span><span className="grow" style={{fontSize:14}}>{it.label}</span>
+          <button className="iconbtn" style={i===0?{opacity:.3}:{}} onClick={()=>move(i,-1)}>▲</button>
+          <button className="iconbtn" style={i===list.length-1?{opacity:.3}:{}} onClick={()=>move(i,1)}>▼</button>
+        </div>
+      ); })}
+    </div>
+    <div className="row" style={{gap:8,marginTop:12}}>
+      <button className="btn grow" onClick={save}>💾 Lưu thứ tự</button>
+      <button className="btn soft" onClick={reset}>↺ Mặc định</button>
+    </div>
+  </div>);
+}
+function SegGrid({items, value, onChange, sub, menuId}){
+  const [ro,setRo]=useState(false);
+  const shown=menuId?orderItems(items,menuId):items;
   return (
     <div className={'segbar'+(sub?' sub':'')}>
-      {items.map(it=>(
+      {shown.map(it=>(
         <button key={it.k} className={'segpill'+(value===it.k?' on':'')} onClick={()=>onChange(it.k)}>
           <span className="segic">{it.icon}</span><span>{it.label}</span>
         </button>
       ))}
+      {menuId && <button className="segpill seg-ro" onClick={()=>setRo(true)} title="Sắp xếp thứ tự"><span className="segic">↕︎</span><span>Sắp xếp</span></button>}
+      {ro && <Sheet title="↕︎ Sắp xếp menu" onClose={()=>setRo(false)}><ReorderSheet items={items} menuId={menuId} onClose={()=>setRo(false)}/></Sheet>}
     </div>
   );
 }
@@ -2170,7 +2210,7 @@ function WishTab({people,me,flash}){
         {k:'gift',icon:'🎁',label:'Quà tặng'},{k:'bucket',icon:'🎯',label:'Muốn làm cùng'},
         {k:'watch',icon:'🎬',label:'Xem·Đọc·Nghe'},{k:'coupon',icon:'🎟️',label:'Phiếu yêu thương'},
         {k:'link',icon:'🔗',label:'Link hay'},
-      ]}/>
+      ]} menuId="wish"/>
       {seg==='gift' && <SimpleList skey="ju.wish" people={people} me={me} addLabel="món quà" doneLabel="Đã tặng"
         fields={['photo','price','link','note']} suggest={GIFT_SUGGEST} claimable showTotal empty={{icon:'🎁',text:'Ghi lại món quà bạn mơ ước — để nửa kia biết đường! Bấm 💡 để xem gợi ý.'}} flash={flash}/>}
       {seg==='bucket' && <SimpleList skey="ju.bucket" people={people} me={me} addLabel="điều muốn làm" doneLabel="Đã làm"
@@ -2389,7 +2429,7 @@ function DateTab({people,me,flash}){
         {k:'events',icon:'🎪',label:'Sự kiện HN'},
         {k:'food',icon:'🍜',label:'Quán & Món'},{k:'checkin',icon:'📸',label:'Check-in'},
         {k:'wish',icon:'💝',label:'Ước muốn'},{k:'music',icon:'🎵',label:'Nhạc đôi'},
-      ]}/>
+      ]} menuId="date"/>
       {seg==='idea' && <><WeatherCard/><DateIdeas people={people} me={me}/></>}
       {seg==='hanoi' && <HanoiCatalog me={me} flash={flash}/>}
       {seg==='events' && <EventsSuggest me={me} flash={flash}/>}
@@ -3105,7 +3145,7 @@ function TalkTab({people,me,flash}){
         {k:'parenting',icon:'🤝',label:'Dạy con'},
         {k:'quiz',icon:'💞',label:'Đố vui'},{k:'checkin',icon:'📝',label:'Check-in'},
         {k:'topics',icon:'🗣️',label:'Chủ đề'},
-      ]}/>
+      ]} menuId="talk"/>
       {seg==='notes' && <Notes people={people} me={me}/>}
       {seg==='question' && <DailyQuestion people={people} me={me}/>}
       {seg==='wishes' && <PartnerWishes people={people} me={me}/>}
@@ -4530,14 +4570,18 @@ const US_GROUPS=[
 ];
 function UsMenu({group,seg,onPickGroup,onSeg}){
   const map=Object.fromEntries(US_SEGS.map(s=>[s.k,s]));
+  const grpDefs=US_GROUPS.map(g=>({k:g.k,icon:g.icon,label:g.label}));
+  const groups=orderItems(grpDefs,'us-groups');
   const grp=US_GROUPS.find(g=>g.k===group)||US_GROUPS[0];
-  const items=grp.items.map(k=>map[k]).filter(Boolean);
+  const items=orderItems(grp.items.map(k=>map[k]).filter(Boolean),'us-'+group);
+  const [roG,setRoG]=useState(false); const [roS,setRoS]=useState(false);
   return (
     <div className="usm4">
       <div className="usm4-groups">
-        {US_GROUPS.map(g=>(
+        {groups.map(g=>(
           <button key={g.k} className={'usm4-dot'+(g.k===group?' on':'')} onClick={()=>onPickGroup(g.k)} title={g.label} aria-label={g.label}>{g.icon}</button>
         ))}
+        <button className="usm4-dot usm4-ro" onClick={()=>setRoG(true)} title="Sắp xếp nhóm" aria-label="Sắp xếp nhóm">↕︎</button>
       </div>
       <div className="usm4-name">{grp.label}</div>
       <div className="usm4-tabs">
@@ -4546,7 +4590,10 @@ function UsMenu({group,seg,onPickGroup,onSeg}){
             <span className="segic">{it.icon}</span><span>{it.label}</span>
           </button>
         ))}
+        <button className="usm4-tab usm4-ro" onClick={()=>setRoS(true)}><span className="segic">↕︎</span><span>Sắp xếp</span></button>
       </div>
+      {roG && <Sheet title="↕︎ Sắp xếp nhóm menu" onClose={()=>setRoG(false)}><ReorderSheet items={grpDefs} menuId="us-groups" onClose={()=>setRoG(false)}/></Sheet>}
+      {roS && <Sheet title={'↕︎ Sắp xếp: '+grp.label} onClose={()=>setRoS(false)}><ReorderSheet items={grp.items.map(k=>map[k]).filter(Boolean)} menuId={'us-'+group} onClose={()=>setRoS(false)}/></Sheet>}
     </div>
   );
 }
