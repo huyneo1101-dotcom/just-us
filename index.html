@@ -2038,7 +2038,8 @@ function AngerHelper(){
 
 /* ============ HOME ============ */
 const WHATS_NEW=[
-  {d:'2026-07-05',ic:'💗',t:'"Trả bài" là menu lớn riêng trong Tụi mình — 6 tab: Nhật ký · Tín hiệu tế nhị · Muốn thử · Sức khỏe & kế hoạch · Kiến thức vợ chồng · Riêng tư (khoá mã)'},
+  {d:'2026-07-05',ic:'💛',t:'Trả bài → tab "Cảm xúc": từ chu kỳ, app dự đoán ngày vợ dễ nhạy cảm (tiền kinh nguyệt / đèn đỏ) + gợi ý cách quan tâm. Mục kế hoạch thụ thai tạm ẩn (bật lại được).'},
+  {d:'2026-07-05',ic:'💗',t:'"Trả bài" là menu lớn riêng trong Tụi mình — 6 tab: Nhật ký · Tín hiệu tế nhị · Muốn thử · Cảm xúc · Kiến thức vợ chồng · Riêng tư (khoá mã)'},
   {d:'2026-07-05',ic:'🆕',t:'Trang chủ có ô "Mới cập nhật" điểm các thay đổi mới nhất'},
   {d:'2026-07-04',ic:'🔀',t:'Đổi thứ tự mục trong mọi menu + Mở/thu gọn tất cả mục dài (trong Hồ Sơ → Giao diện)'},
   {d:'2026-07-04',ic:'💵',t:'Tiền nong: "Money Lover" tự đồng bộ chi tiêu chung nhà + Sóc từ VíNhà; thêm mục Ngân sách'},
@@ -3424,6 +3425,12 @@ const INT_KNOW=[
   {t:'💞 Màn dạo đầu & kết nối',body:'Kết nối cảm xúc trước khi gần gũi giúp cả hai thăng hoa hơn:\n• Dành thời gian âu yếm, hôn, trò chuyện — đừng vội.\n• Tạo không gian: ánh sáng dịu, nhạc nhẹ, điện thoại để xa.\n• Khen ngợi, chạm nhẹ, quan tâm cảm xúc người kia.\n• Hỏi xem người kia thích gì — mỗi người mỗi khác.'},
   {t:'🩺 Sức khỏe & an toàn',body:'• Vệ sinh trước & sau; đi tiểu sau khi gần gũi giúp giảm viêm đường tiết niệu (nữ).\n• Khám phụ khoa/nam khoa định kỳ; tiêm phòng HPV nếu có thể.\n• Nếu đau, khó chịu kéo dài, ra máu bất thường… nên đi khám.\n• Ngủ đủ, vận động, giảm rượu bia — đều tốt cho chuyện chăn gối.'},
 ];
+const INT_CARE={
+  pms:['Kiên nhẫn hơn, tránh tranh luận căng thẳng','Chủ động hỏi han, ôm & vỗ về','Chuẩn bị món / đồ ngọt vợ thích','Gánh bớt việc nhà để vợ nghỉ','Khen & trấn an — đừng chê hay trêu vô duyên'],
+  period:['Giữ ấm, pha nước ấm / trà gừng cho vợ','Chuẩn bị sẵn băng vệ sinh, túi chườm','Nhận việc nhà & trông con để vợ nghỉ','Tránh đồ lạnh/chua; hỏi vợ có đau không','Nhẹ nhàng, kiên nhẫn, quan tâm nhiều hơn'],
+  ov:['Vợ đang phơi phới — rủ hẹn hò, đi chơi','Thời điểm hai đứa dễ gần gũi & thăng hoa'],
+  stable:['Tâm trạng vợ thường ổn — tận hưởng ngày vui bên nhau','Giữ những quan tâm nhỏ mỗi ngày'],
+};
 function IntimacySection({people,me,flash,view}){
   const v=view||'log';
   const DEF={log:{},want:[],signal:null,desire:{},plan:'',healthNote:'',pin:''};
@@ -3491,6 +3498,9 @@ function IntimacySection({people,me,flash,view}){
   const plan=data.plan||'';
   const cyc=(()=>{ if(!info) return null; if(info.onPeriod) return {k:'period'}; const ov=new Date(info.date+'T00:00:00'); ov.setDate(ov.getDate()-14); const t=new Date(today+'T00:00:00'); const dOv=Math.round((ov-t)/86400000); return {k:(dOv>=-1&&dOv<=3)?'fertile':'low',dOv,ovStr:ov.getDate()+'/'+(ov.getMonth()+1)}; })();
   const cycMsg=(()=>{ if(!info) return null; if(cyc.k==='period') return '🌸 Đang kỳ đèn đỏ — ngày '+info.dayOfPeriod+'/'+info.length+'. Ưu tiên nghỉ ngơi, nhẹ nhàng.'; if(plan==='tranhthai') return cyc.k==='fertile'?'⚠️ Đang ngày dễ thụ thai — nên dùng biện pháp tránh thai an toàn.':'🟢 Hôm nay khả năng thụ thai thấp hơn (vẫn không tuyệt đối an toàn).'; if(plan==='muoncon') return cyc.k==='fertile'?'💚 Ngày dễ thụ thai — thời điểm tốt nếu muốn thêm bé (rụng trứng ~'+cyc.ovStr+').':'Hôm nay khả năng thụ thai thấp; ngày dễ đậu quanh '+cyc.ovStr+'.'; return cyc.k==='fertile'?('🌱 Đang trong ngày dễ thụ thai (rụng trứng ~'+cyc.ovStr+').'):('Ngày rụng trứng ước tính ~'+cyc.ovStr+'.'); })();
+  const wifeName=(people&&people.b&&people.b.name)||'vợ';
+  const emo=(()=>{ if(!info) return null; if(info.onPeriod) return {k:'period',e:'🌸',t:'Kỳ đèn đỏ',d:wifeName+' có thể mệt, đau bụng & nhạy cảm hơn. Hãy nhẹ nhàng, quan tâm.'}; const dtp=info.days; if(dtp<=5) return {k:'pms',e:'💛',t:'Tiền kinh nguyệt · dễ nhạy cảm',d:'Còn '+dtp+' ngày tới kỳ. Nội tiết thay đổi khiến '+wifeName+' dễ xúc động, tủi thân hoặc cáu. Kiên nhẫn & ân cần hơn nhé.'}; if(dtp>=12&&dtp<=16) return {k:'ov',e:'🌱',t:'Rụng trứng',d:wifeName+' thường vui vẻ, nhiều năng lượng.'}; return {k:'stable',e:'🙂',t:'Giai đoạn ổn định',d:'Tâm trạng '+wifeName+' thường tốt.'}; })();
+  const sensWin=(()=>{ if(!info) return null; const np=new Date(info.date+'T00:00:00'); const ps=new Date(np); ps.setDate(ps.getDate()-5); const pe=new Date(np); pe.setDate(pe.getDate()+((info.length||5)-1)); const f=x=>x.getDate()+'/'+(x.getMonth()+1); return {range:f(ps)+'–'+f(pe)}; })();
   const desOf=(dv)=>INT_DESIRE.find(x=>x.v===dv)||{e:'',l:''};
   return (
     <div>
@@ -3562,16 +3572,37 @@ function IntimacySection({people,me,flash,view}){
         </div>
       </React.Fragment>}
 
-      {v==='health' && <div className="card">
-        <div className="hc-title" style={{marginBottom:8}}>🌸 Sức khỏe & kế hoạch</div>
-        <div className="row" style={{gap:6,flexWrap:'wrap',marginBottom:8}}>
-          {[['','—'],['tranhthai','🛡️ Tránh thai'],['muoncon','🤰 Muốn thêm bé']].map(([k,l])=><button key={k} className="pill" style={{background:plan===k?'var(--primary)':'var(--chip)',color:plan===k?'#fff':'var(--chip-tx)'}} onClick={()=>set({plan:k})}>{l}</button>)}
+      {v==='health' && <div>
+        <div className="card">
+          <div className="hc-title" style={{marginBottom:8}}>💛 Chu kỳ & cảm xúc của {wifeName}</div>
+          {!info
+            ? <div className="muted" style={{fontSize:12.5}}>Chưa có dữ liệu chu kỳ. Vào mục <b>🌸 Chu kỳ</b> (nhóm Sức khỏe) ghi ngày kỳ gần nhất — app sẽ dự đoán ngày {wifeName} dễ nhạy cảm để bạn quan tâm đúng lúc.</div>
+            : <React.Fragment>
+                <div style={{background:'var(--chip)',borderRadius:10,padding:'10px 12px'}}>
+                  <div style={{fontSize:15,fontWeight:800}}>{emo.e} {emo.t}</div>
+                  <div style={{fontSize:12.5,marginTop:3,lineHeight:1.55,opacity:.9}}>{emo.d}</div>
+                </div>
+                <div className="muted" style={{fontSize:12,marginTop:8}}>Kỳ tiếp theo: <b>{fmtDateVN(info.date)}</b> · còn <b>{info.days}</b> ngày{sensWin?<span> · ngày nhạy cảm dự kiến <b>{sensWin.range}</b></span>:null}</div>
+                {INT_CARE[emo.k] && <div style={{marginTop:10}}>
+                  <div className="hc-title" style={{fontSize:12.5}}>💡 Gợi ý cho bạn</div>
+                  <ul style={{margin:'4px 0 0',paddingLeft:18,fontSize:12.5,lineHeight:1.7}}>{INT_CARE[emo.k].map((t,i)=><li key={i}>{t}</li>)}</ul>
+                </div>}
+              </React.Fragment>}
         </div>
-        {info
-          ? <div style={{fontSize:13.5,lineHeight:1.6}}>{cycMsg}</div>
-          : <div className="muted" style={{fontSize:12.5}}>Chưa có dữ liệu chu kỳ. Vào mục <b>🌸 Chu kỳ</b> (nhóm Sức khỏe) để thiết lập, rồi quay lại đây xem gợi ý ngày dễ/khó thụ thai.</div>}
-        <div className="field" style={{marginTop:10}}><label>Ghi chú sức khỏe / mệt–khoẻ (riêng tư)</label><textarea className="inp" value={data.healthNote||''} onChange={e=>set({healthNote:e.target.value})} placeholder="vd: đang mệt, kiêng cữ sau sinh, dùng biện pháp gì…"/></div>
-        <div className="muted center" style={{fontSize:11,marginTop:8}}>Ước tính theo chu kỳ — không thay thế tư vấn y tế.</div>
+        <div className="card">
+          <div className="field" style={{margin:0}}><label>Ghi chú sức khỏe / mệt–khoẻ (riêng tư)</label><textarea className="inp" value={data.healthNote||''} onChange={e=>set({healthNote:e.target.value})} placeholder="vd: đang mệt, kiêng cữ, dạo này căng thẳng…"/></div>
+        </div>
+        {data.showPlan && <div className="card">
+          <div className="hc-title" style={{marginBottom:8}}>🍼 Kế hoạch thụ thai</div>
+          <div className="row" style={{gap:6,flexWrap:'wrap',marginBottom:8}}>
+            {[['','—'],['tranhthai','🛡️ Tránh thai'],['muoncon','🤰 Muốn thêm bé']].map(([k,l])=><button key={k} className="pill" style={{background:plan===k?'var(--primary)':'var(--chip)',color:plan===k?'#fff':'var(--chip-tx)'}} onClick={()=>set({plan:k})}>{l}</button>)}
+          </div>
+          {info
+            ? <div style={{fontSize:13.5,lineHeight:1.6}}>{cycMsg}</div>
+            : <div className="muted" style={{fontSize:12.5}}>Cần dữ liệu chu kỳ (mục 🌸 Chu kỳ).</div>}
+          <div className="muted center" style={{fontSize:11,marginTop:8}}>Ước tính theo chu kỳ — không thay thế tư vấn y tế.</div>
+        </div>}
+        <div className="muted center" style={{fontSize:11.5,marginTop:8}}><span style={{cursor:'pointer',textDecoration:'underline'}} onClick={()=>set({showPlan:!data.showPlan})}>{data.showPlan?'▴ Ẩn mục kế hoạch thụ thai':'⚙️ Hiện mục kế hoạch thụ thai'}</span></div>
       </div>}
 
       {v==='know' && <div>
@@ -4817,7 +4848,7 @@ const US_SEGS=[
   {k:'ibLog',icon:'📝',label:'Nhật ký'},
   {k:'ibSig',icon:'😏',label:'Tín hiệu'},
   {k:'ibWant',icon:'🌟',label:'Muốn thử'},
-  {k:'ibHealth',icon:'🌸',label:'Sức khỏe'},
+  {k:'ibHealth',icon:'💛',label:'Cảm xúc'},
   {k:'ibKnow',icon:'📖',label:'Kiến thức'},
   {k:'ibLock',icon:'🔒',label:'Riêng tư'},
   {k:'menu',icon:'🍱',label:'Thực đơn'},
