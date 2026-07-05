@@ -2038,6 +2038,7 @@ function AngerHelper(){
 
 /* ============ HOME ============ */
 const WHATS_NEW=[
+  {d:'2026-07-05',ic:'🗂️',t:'Hồ sơ gọn hơn: mỗi mục có nút gập/mở (mặc định thu gọn) — dùng "Mở tất cả" trong 🎛️ Giao diện nếu muốn xem hết. Bỏ mục "Nguồn thời tiết".'},
   {d:'2026-07-05',ic:'💛',t:'Trả bài → tab "Cảm xúc": từ chu kỳ, app dự đoán ngày vợ dễ nhạy cảm (tiền kinh nguyệt / đèn đỏ) + gợi ý cách quan tâm. Mục kế hoạch thụ thai tạm ẩn (bật lại được).'},
   {d:'2026-07-05',ic:'💗',t:'"Trả bài" là menu lớn riêng trong Tụi mình — 6 tab: Nhật ký · Tín hiệu tế nhị · Muốn thử · Cảm xúc · Kiến thức vợ chồng · Riêng tư (khoá mã)'},
   {d:'2026-07-05',ic:'🆕',t:'Trang chủ có ô "Mới cập nhật" điểm các thay đổi mới nhất'},
@@ -6011,8 +6012,7 @@ function AccountPanel({flash}){
   const syncedTxt=synced? new Date(synced).toLocaleString('vi-VN') : '—';
 
   return (
-    <div>
-      <div className="sec-title">☁️ Tài khoản & đồng bộ 2 máy</div>
+    <Collapse id="prof-account" title="☁️ Tài khoản & đồng bộ 2 máy" defaultOpen={false}>
       <div className="card">
         {noLib && <div className="danger" style={{fontSize:12.5}}>⚠️ Chưa tải được Supabase (cần Internet/chạy qua web). Mở app qua localhost hoặc bản đã đăng để đăng nhập.</div>}
 
@@ -6092,7 +6092,7 @@ function AccountPanel({flash}){
         </div>}
         {note && <div className="danger" style={{fontSize:12.5,marginTop:10}}>{note}</div>}
       </div>
-    </div>
+    </Collapse>
   );
 }
 
@@ -6120,8 +6120,7 @@ function LoveStats({setup}){
     ['🔥',answerStreak(qa),'ngày streak'],
   ];
   return (
-    <div>
-      <div className="sec-title">📊 Hồ sơ tình yêu</div>
+    <Collapse id="prof-stats" title="📊 Hồ sơ tình yêu" defaultOpen={false}>
       <div style={{display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:10,margin:'0 14px'}}>
         {tiles.map((t,i)=>(
           <div key={i} className="card" style={{margin:0,padding:'11px 12px',display:'flex',alignItems:'center',gap:10}}>
@@ -6131,7 +6130,7 @@ function LoveStats({setup}){
           </div>
         ))}
       </div>
-    </div>
+    </Collapse>
   );
 }
 
@@ -6172,8 +6171,7 @@ function Achievements({setup}){
   ];
   const got=list.filter(b=>b.ok).length;
   return (
-    <div>
-      <div className="sec-title">🏅 Thành tích <span className="grow"></span><span className="muted" style={{fontSize:12}}>{got}/{list.length}</span></div>
+    <Collapse id="prof-badges" title="🏅 Thành tích" defaultOpen={false} right={<span className="muted" style={{fontSize:12}}>{got}/{list.length}</span>}>
       <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:8,margin:'0 14px'}}>
         {list.map((b,i)=>(
           <div key={i} className="card" style={{margin:0,padding:'10px 6px',textAlign:'center',opacity:b.ok?1:.5}}>
@@ -6183,7 +6181,7 @@ function Achievements({setup}){
           </div>
         ))}
       </div>
-    </div>
+    </Collapse>
   );
 }
 
@@ -6319,8 +6317,7 @@ function HomeSettings(){
   const toggle=(k)=>{ const h=hidden.includes(k)?hidden.filter(x=>x!==k):[...hidden,k]; setCfg({...cfg,hidden:h}); };
   const move=(k,dir)=>{ const ks=keys.slice(); const i=ks.indexOf(k); const j=i+dir; if(j<0||j>=ks.length) return; const t=ks[i]; ks[i]=ks[j]; ks[j]=t; setCfg({...cfg,order:ks}); };
   return (
-    <div>
-      <div className="sec-title">🏠 Tuỳ chỉnh Trang chủ</div>
+    <Collapse id="prof-home" title="🏠 Tuỳ chỉnh Trang chủ" defaultOpen={false}>
       <div className="card">
         <div className="muted" style={{fontSize:12,marginBottom:6}}>Bật/tắt & sắp xếp thứ tự các thẻ bằng nút ▲▼.</div>
         {keys.map((k,i)=>(
@@ -6333,26 +6330,11 @@ function HomeSettings(){
         ))}
         {(cfg.order&&cfg.order.length>0) && <button className="muted" style={{fontSize:11.5,marginTop:8}} onClick={()=>setCfg({...cfg,order:[]})}>↩︎ Về thứ tự mặc định</button>}
       </div>
-    </div>
+    </Collapse>
   );
 }
 
-function AccuKeySetting({flash}){
-  const [key,setKey]=useLocal('ju.accuKey','');
-  const [tmp,setTmp]=useState(key);
-  return (
-    <div>
-      <div className="sec-title">🌤️ Nguồn thời tiết</div>
-      <div className="card">
-        <div className="muted" style={{fontSize:12.5,marginBottom:8}}>Gợi ý hẹn hò dùng thời tiết ở <b>Giảng Võ, Ba Đình</b>. Mặc định lấy từ open-meteo (miễn phí). Muốn dùng <b>AccuWeather</b>, tạo API key miễn phí ở developer.accuweather.com rồi dán vào đây.</div>
-        <div className="row" style={{gap:8}}>
-          <input className="inp grow" value={tmp} onChange={e=>setTmp(e.target.value)} placeholder="AccuWeather API key (tuỳ chọn)"/>
-          <button className="btn sm" onClick={()=>{ const k=tmp.trim(); setKey(k); if(flash) flash(k?'Đã lưu key AccuWeather ✓':'Đã xoá — dùng open-meteo'); }}>Lưu</button>
-        </div>
-      </div>
-    </div>
-  );
-}
+/* (Đã gỡ mục "Nguồn thời tiết" — luôn dùng open-meteo miễn phí, không cần API key) */
 
 /* ============ Tab: Hồ sơ ============ */
 function Profile({setup,setSetup,people,me,setMe,flash}){
@@ -6470,24 +6452,22 @@ function Profile({setup,setSetup,people,me,setMe,flash}){
       <Achievements setup={setup}/>
 
       {/* Người đang dùng */}
+      <Collapse id="prof-who" title="👤 Bạn là ai" defaultOpen={false}>
       <div className="card">
-        <b>👤 Bạn là ai?</b>
-        <div className="row" style={{marginTop:8,gap:8}}>
+        <div className="row" style={{gap:8}}>
           <button className={'btn '+(me==='a'?'':'soft')} onClick={()=>setMe('a')}>{people.a.avatar} {people.a.name}</button>
           <button className={'btn '+(me==='b'?'':'soft')} onClick={()=>setMe('b')}>{people.b.avatar} {people.b.name}</button>
         </div>
         <div className="muted" style={{fontSize:12,marginTop:8}}>Chọn để biết ai thêm mục nào & thả tim. (Lựa chọn này riêng từng máy.)</div>
       </div>
+      </Collapse>
 
       {/* Tài khoản & ghép đôi */}
       <AccountPanel flash={flash}/>
 
       {/* Ảnh chung */}
-      <div className="sec-title">📷 Ảnh chung <span className="grow"></span>
-        <button className="pill" onClick={()=>fileRef.current.click()}>＋ Tải ảnh</button>
-        <button className="pill" onClick={()=>setAddPhoto(true)}>🔗 Link</button>
-      </div>
       <input ref={fileRef} type="file" accept="image/*" hidden onChange={onFile}/>
+      <Collapse id="prof-photos" title="📷 Ảnh chung" defaultOpen={false} right={<React.Fragment><button className="pill" onClick={()=>fileRef.current.click()}>＋ Tải ảnh</button><button className="pill" style={{marginLeft:6}} onClick={()=>setAddPhoto(true)}>🔗 Link</button></React.Fragment>}>
       {!Cloud.connected() && <div className="muted center" style={{fontSize:11.5,margin:'0 16px'}}>Đăng nhập & ghép đôi để ảnh được lưu an toàn trên đám mây và đồng bộ. Khi chưa đăng nhập, ảnh tải lên chỉ nằm trong máy này.</div>}
       {photos.length===0 && <div className="empty" style={{padding:'18px'}}>Chưa có ảnh chung nào.</div>}
       <div className="gallery">
@@ -6499,6 +6479,7 @@ function Profile({setup,setSetup,people,me,setMe,flash}){
         ))}
       </div>
       {photos.length>0 && <div className="muted center" style={{fontSize:11}}>Chạm ảnh để xem lớn</div>}
+      </Collapse>
 
       {viewer && (
         <div className="ov" style={{alignItems:'center'}} onClick={()=>setViewer(null)}>
@@ -6516,7 +6497,7 @@ function Profile({setup,setSetup,people,me,setMe,flash}){
       )}
 
       {/* Theme */}
-      <div className="sec-title">🎨 Giao diện đôi</div>
+      <Collapse id="prof-theme" title="🎨 Giao diện đôi" defaultOpen={false}>
       <div className="card">
         <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:8}}>
           {THEMES.map(t=>(
@@ -6528,24 +6509,24 @@ function Profile({setup,setSetup,people,me,setMe,flash}){
           ))}
         </div>
       </div>
+      </Collapse>
 
       {/* Tuỳ chỉnh Trang chủ */}
       <HomeSettings/>
 
-      {/* Nguồn thời tiết */}
-      <AccuKeySetting flash={flash}/>
-
       {/* Thông báo điện thoại */}
-      <div className="sec-title">🔔 Thông báo</div>
+      <Collapse id="prof-noti" title="🔔 Thông báo" defaultOpen={false}>
       <NotiSettings flash={flash}/>
+      </Collapse>
 
       {/* Giao diện: mục dài + sắp xếp menu */}
-      <div className="sec-title">🎛️ Giao diện</div>
+      <Collapse id="prof-ui" title="🎛️ Giao diện" defaultOpen={false}>
       <LongSectionsControl flash={flash}/>
       <MenuReorderSettings/>
+      </Collapse>
 
       {/* Sao lưu & bảo mật */}
-      <div className="sec-title">💾 Sao lưu & bảo mật</div>
+      <Collapse id="prof-backup" title="💾 Sao lưu & bảo mật" defaultOpen={false}>
       <div className="card">
         <div className="muted" style={{fontSize:12.5,marginBottom:8}}>Dữ liệu chỉ nằm trong máy này. Nên xuất file để khỏi mất khi xoá cache hoặc đổi máy.</div>
         <div className="row" style={{gap:8}}>
@@ -6556,6 +6537,7 @@ function Profile({setup,setSetup,people,me,setMe,flash}){
         <button className="btn soft" style={{marginTop:8}} onClick={exportYearbook}>📖 Xuất "Kỷ yếu" (in / PDF)</button>
         <div style={{marginTop:12}}><PinSection/></div>
       </div>
+      </Collapse>
 
       <div className="card">
         <button className="btn ghost" style={{borderColor:'#e0436b',color:'#e0436b'}}
