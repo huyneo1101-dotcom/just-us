@@ -2038,6 +2038,7 @@ function AngerHelper(){
 
 /* ============ HOME ============ */
 const WHATS_NEW=[
+  {d:'2026-07-05',ic:'✨',t:'Trả bài: bổ sung nhiều dữ liệu — thêm mẹo giữ lửa, câu hỏi, Thật/Thách, câu hỏi nóng dần, thử thách tuần, muốn thử; +4 bài kiến thức (massage đôi · gần gũi khi mang thai · sau "cuộc yêu" · khi trục trặc) + 2 bài sức khỏe nam (thực phẩm · kéo dài & kiểm soát).'},
   {d:'2026-07-05',ic:'🧘',t:'Trả bài → Kiến thức: các tư thế quan hệ nay có hình minh hoạ (vẽ tế nhị, đơn giản).'},
   {d:'2026-07-05',ic:'💗',t:'Trả bài thêm nhiều: tab 🎲 Chơi (Thật/Thách · xúc xắc · câu hỏi nóng dần), tab 📅 Hẹn hò (mẹo giữ lửa mỗi ngày · đặt đêm hẹn · tạo không khí), dự đoán "ngày vợ dễ hứng khởi" theo chu kỳ, góc sức khỏe nam + bài tư thế; noti báo chồng khi sắp tới ngày vợ hứng khởi.'},
   {d:'2026-07-05',ic:'🗂️',t:'Hồ sơ gọn hơn: mỗi mục có nút gập/mở (mặc định thu gọn) — dùng "Mở tất cả" trong 🎛️ Giao diện nếu muốn xem hết. Bỏ mục "Nguồn thời tiết".'},
@@ -3398,6 +3399,14 @@ const INT_WANT_SEED=[
   'Cùng xem phim lãng mạn rồi âu yếm',
   'Ôm nhau ngủ, không cần làm gì thêm',
   'Nhắn nhau những lời ngọt ngào giữa ngày',
+  'Thử một buổi tối chỉ dành cho màn dạo đầu',
+  'Cùng tắm nến & thư giãn',
+  'Viết thư tay gợi cảm cho nhau',
+  'Chọn một "mật khẩu" riêng để ngỏ ý',
+  'Thử massage bằng tinh dầu cho nhau',
+  'Một kỳ nghỉ ngắn chỉ hai đứa (gửi con)',
+  'Cùng xem hoàng hôn rồi về sớm',
+  'Thử đổi không gian: phòng khách, ban công…',
 ];
 const INT_CHALLENGES=[
   {t:'Tuần của lời khen',d:'Mỗi ngày nói một điều bạn thấy hấp dẫn ở nửa kia.'},
@@ -3408,6 +3417,12 @@ const INT_CHALLENGES=[
   {t:'Bất ngờ nhỏ',d:'Một cử chỉ âu yếm bất ngờ giữa ngày (nhắn tin, ôm sau lưng…).'},
   {t:'Tối lãng mạn tại nhà',d:'Cơm tối nhẹ, nến, nhạc — dành trọn buổi tối cho nhau.'},
   {t:'Chạm nhẹ nhàng',d:'Nắm tay, ôm, tựa vai nhiều hơn — kết nối không vội vàng.'},
+  {t:'Tuần âu yếm',d:'Mỗi tối ôm nhau ít nhất 2 phút trước khi ngủ.'},
+  {t:'Không gian riêng',d:'Sắp một tối con ngủ sớm, dành trọn cho hai đứa.'},
+  {t:'Lời khen mỗi ngày',d:'Mỗi ngày khen nửa kia một điểm hấp dẫn khác nhau.'},
+  {t:'Tắt màn hình 9h',d:'Cả tuần, sau 21h cất điện thoại để bên nhau.'},
+  {t:'Bất ngờ cuối tuần',d:'Lên một bất ngờ nhỏ cho nửa kia dịp cuối tuần.'},
+  {t:'Hỏi & chiều',d:'Hỏi nửa kia một điều họ thích và thực hiện nó.'},
 ];
 const INT_QUESTIONS=[
   'Điều gì khiến bạn thấy được yêu nhất?',
@@ -3418,6 +3433,12 @@ const INT_QUESTIONS=[
   'Điều nhỏ nào người kia làm khiến bạn "rung động"?',
   'Bạn muốn hai đứa dành thời gian riêng thế nào?',
   'Có điều gì khiến bạn ngại — mình cùng gỡ nhé?',
+  'Dạo này hai đứa thấy gần gũi đủ chưa?',
+  'Có điều gì khiến bạn thấy được yêu hơn?',
+  'Mình có thể làm gì để tối của hai đứa thư giãn hơn?',
+  'Bạn thích bắt đầu một buổi tối lãng mạn thế nào?',
+  'Có điều gì bạn muốn mình thử mà chưa nói?',
+  'Khi nào bạn thấy kết nối với người kia nhất?',
 ];
 const INT_KNOW=[
   {t:'💗 Giữ lửa sau khi có con',body:'Có con nhỏ khiến cả hai mệt và ít thời gian riêng — điều này hoàn toàn bình thường. Vài cách giữ kết nối:\n• Hẹn "giờ của hai đứa" cố định, dù chỉ 20–30 phút sau khi con ngủ.\n• Ưu tiên gần gũi phi tình dục: ôm, hôn, nắm tay, massage — giữ lửa mà không áp lực.\n• Thay phiên chăm con để mỗi người có lúc nghỉ, bớt cáu gắt.\n• Nói rõ nhu cầu thay vì mong người kia tự đoán.'},
@@ -3427,6 +3448,10 @@ const INT_KNOW=[
   {t:'🌸 Gần gũi sau sinh',body:'• Thường nên đợi ~4–6 tuần sau sinh, khi sản dịch hết & cơ thể hồi phục — hỏi bác sĩ ở lần khám sau sinh.\n• Có thể khô hơn do nội tiết (nhất là khi cho con bú) — gel bôi trơn giúp dễ chịu.\n• Bắt đầu nhẹ nhàng, ưu tiên thoải mái của người vợ; dừng nếu đau.\n• Đừng quên tránh thai — có thể mang thai lại sớm dù chưa có kinh trở lại.'},
   {t:'💞 Màn dạo đầu & kết nối',body:'Kết nối cảm xúc trước khi gần gũi giúp cả hai thăng hoa hơn:\n• Dành thời gian âu yếm, hôn, trò chuyện — đừng vội.\n• Tạo không gian: ánh sáng dịu, nhạc nhẹ, điện thoại để xa.\n• Khen ngợi, chạm nhẹ, quan tâm cảm xúc người kia.\n• Hỏi xem người kia thích gì — mỗi người mỗi khác.'},
   {t:'🩺 Sức khỏe & an toàn',body:'• Vệ sinh trước & sau; đi tiểu sau khi gần gũi giúp giảm viêm đường tiết niệu (nữ).\n• Khám phụ khoa/nam khoa định kỳ; tiêm phòng HPV nếu có thể.\n• Nếu đau, khó chịu kéo dài, ra máu bất thường… nên đi khám.\n• Ngủ đủ, vận động, giảm rượu bia — đều tốt cho chuyện chăn gối.'},
+  {t:'💆 Massage đôi thư giãn',body:'Massage là màn dạo đầu tuyệt vời & giúp gắn kết:\n• Dùng chút dầu/kem ấm; bắt đầu ở vai, lưng, tay chân.\n• Lực vừa phải, chậm rãi; hỏi nửa kia thích mạnh hay nhẹ.\n• Kết hợp nhạc nhẹ & đèn dịu.\n• Đừng vội — mục tiêu là thư giãn & cảm nhận, không phải "đến đích".'},
+  {t:'🤰 Gần gũi khi mang thai',body:'Nếu thai kỳ khỏe mạnh, gần gũi thường an toàn — nhưng nên:\n• Hỏi bác sĩ, nhất là khi có dấu hiệu bất thường (ra máu, dọa sảy, nhau tiền đạo…).\n• Chọn tư thế nhẹ nhàng: nằm nghiêng, vợ ở trên — tránh đè bụng.\n• Đi chậm, lắng nghe cơ thể vợ; dừng nếu khó chịu.\n• Ôm ấp, âu yếm vẫn rất quý dù không quan hệ.'},
+  {t:'🌙 Sau "cuộc yêu" (afterglow)',body:'Khoảnh khắc sau khi gần gũi rất quan trọng để gắn kết:\n• Đừng vội quay đi ngủ / bấm điện thoại — ôm nhau vài phút.\n• Nói lời yêu thương, khen ngợi, cảm ơn.\n• Cùng uống nước, đắp chăn ấm.\n• Đây là lúc dễ tâm sự & thấy an toàn bên nhau nhất.'},
+  {t:'🧊 Khi gặp trục trặc',body:'Chuyện "trục trặc" đôi lúc là bình thường — đừng hoảng:\n• Không đổ lỗi hay chê bai — càng áp lực càng khó.\n• Cười xòa, chuyển sang âu yếm/massage, thử lại lúc khác.\n• Mệt, stress, rượu bia, thiếu ngủ đều ảnh hưởng.\n• Nếu kéo dài & ảnh hưởng tình cảm, cùng nhau đi khám hoặc gặp chuyên gia.'},
 ];
 const INT_POSITIONS=[
   {n:'Đối mặt (truyền thống)',d:'Gần gũi, dễ nhìn mắt & hôn nhau. Kê gối dưới hông vợ cho thoải mái hơn.',svg:'<svg viewBox="0 0 120 80" width="100%"><g fill="#8fb7b0"><circle cx="24" cy="55" r="9"/><rect x="30" y="49" width="72" height="14" rx="7"/></g><g fill="#d98cae"><circle cx="30" cy="34" r="9"/><rect x="36" y="29" width="66" height="13" rx="6.5"/></g></svg>'},
@@ -3446,32 +3471,36 @@ const INT_POSITIONS=[
   {n:'Kiểu chữ X',d:'Hai người bắt chéo ngang hông tạo hình chữ X — thư thái, vẫn nhìn được nhau.',svg:'<svg viewBox="0 0 120 80" width="100%"><g fill="#8fb7b0"><circle cx="16" cy="22" r="8"/><rect x="22" y="28" width="62" height="13" rx="6.5" transform="rotate(24 22 34)"/></g><g fill="#d98cae"><circle cx="16" cy="62" r="8"/><rect x="22" y="44" width="62" height="13" rx="6.5" transform="rotate(-24 22 50)"/></g></svg>'},
 ];
 const INT_SPARK=[
-  'Hôm nay ôm nửa kia thật lâu, không nói gì.','Nhắn một tin ngọt ngào giữa giờ làm.','Khen nửa kia một điều bạn thấy hấp dẫn.','Pha cho nửa kia ly nước/đồ uống họ thích.','Hôn tạm biệt lâu hơn thường lệ (6 giây).','Tối nay cất điện thoại 30 phút, chỉ hai đứa.','Nắm tay khi đi cạnh nhau.','Massage vai cho nửa kia 5 phút.','Nhắc lại một kỷ niệm đẹp của hai đứa.','Chuẩn bị bất ngờ nhỏ: món ăn, ghi chú, hoa.','Nhìn vào mắt nhau 1 phút, không cười.','Nói "cảm ơn vì…" một điều cụ thể.','Cùng nghe một bài hát kỷ niệm.','Rủ nửa kia tắm/thư giãn cùng tối nay.','Viết 3 điều bạn biết ơn về nửa kia.','Lên kế hoạch một buổi hẹn cuối tuần.','Ôm từ phía sau khi họ đang làm việc nhà.','Gửi một tấm ảnh kỷ niệm kèm lời nhắn.','Chủ động làm giúp việc họ hay làm.','Thì thầm một điều dễ thương vào tai họ.','Khen ngoại hình nửa kia hôm nay.','Chuẩn bị bữa sáng/cà phê cho nửa kia.','Dành 15 phút hỏi han ngày của nhau.','Gửi một lời "thả thính" bất ngờ.','Cùng xem hoàng hôn / uống trà tối.','Tặng một cái ôm 20 giây trước khi ngủ.','Viết một mẩu giấy nhắn để nơi họ dễ thấy.','Đề nghị một buổi tối "hẹn hò tại nhà".',
+  'Hôm nay ôm nửa kia thật lâu, không nói gì.','Nhắn một tin ngọt ngào giữa giờ làm.','Khen nửa kia một điều bạn thấy hấp dẫn.','Pha cho nửa kia ly nước/đồ uống họ thích.','Hôn tạm biệt lâu hơn thường lệ (6 giây).','Tối nay cất điện thoại 30 phút, chỉ hai đứa.','Nắm tay khi đi cạnh nhau.','Massage vai cho nửa kia 5 phút.','Nhắc lại một kỷ niệm đẹp của hai đứa.','Chuẩn bị bất ngờ nhỏ: món ăn, ghi chú, hoa.','Nhìn vào mắt nhau 1 phút, không cười.','Nói "cảm ơn vì…" một điều cụ thể.','Cùng nghe một bài hát kỷ niệm.','Rủ nửa kia tắm/thư giãn cùng tối nay.','Viết 3 điều bạn biết ơn về nửa kia.','Lên kế hoạch một buổi hẹn cuối tuần.','Ôm từ phía sau khi họ đang làm việc nhà.','Gửi một tấm ảnh kỷ niệm kèm lời nhắn.','Chủ động làm giúp việc họ hay làm.','Thì thầm một điều dễ thương vào tai họ.','Khen ngoại hình nửa kia hôm nay.','Chuẩn bị bữa sáng/cà phê cho nửa kia.','Dành 15 phút hỏi han ngày của nhau.','Gửi một lời "thả thính" bất ngờ.','Cùng xem hoàng hôn / uống trà tối.','Tặng một cái ôm 20 giây trước khi ngủ.','Viết một mẩu giấy nhắn để nơi họ dễ thấy.','Đề nghị một buổi tối "hẹn hò tại nhà".','Cùng nấu một món hai đứa thích.','Ôm nhau xem một tập phim yêu thích.','Để lại lời nhắn ngọt trong túi/áo nửa kia.','Rủ nửa kia đi dạo tối, nắm tay.','Tự tay pha trà/cà phê sáng cho nửa kia.','Cùng lên danh sách nơi muốn đi cùng nhau.','Gửi ảnh "hồi mới yêu" và nhắc kỷ niệm.','Ôm nửa kia và nói lời yêu.','Chuẩn bị nước ấm/khăn khi nửa kia đi làm về.','Cùng tắt đèn sớm, trò chuyện trước khi ngủ.','Vẽ/viết một tấm thiệp nhỏ bất ngờ.','Nhớ một sở thích nhỏ của nửa kia và chiều theo.','Chủ động làm hoà nếu đang giận nhau.','Đặt một bài hát tặng nửa kia rồi mở cùng nghe.','Cùng chụp một tấm ảnh đôi mới.',
 ];
 const INT_TRUTHS=[
-  'Lần đầu bạn thấy rung động với nửa kia là khi nào?','Điều gì ở nửa kia khiến bạn thấy hấp dẫn nhất?','Kỷ niệm gần gũi nào bạn nhớ nhất?','Có điều gì bạn muốn thử mà chưa dám nói?','Bạn thích được âu yếm ở đâu nhất?','Khoảnh khắc nào khiến bạn thấy được yêu nhất?','Điều nhỏ nào nửa kia làm khiến bạn "tan chảy"?','Bạn thích chủ động hay được chủ động hơn?','Buổi hẹn trong mơ của bạn là gì?','Có điều gì bạn tò mò muốn thử cùng nhau?','Bạn thấy mình quyến rũ nhất khi nào?','Điều gì khiến bạn thấy an toàn & thoải mái nhất bên nhau?','Bạn muốn nghe nửa kia nói câu gì nhiều hơn?','Bí mật nhỏ dễ thương nào bạn chưa kể?',
+  'Lần đầu bạn thấy rung động với nửa kia là khi nào?','Điều gì ở nửa kia khiến bạn thấy hấp dẫn nhất?','Kỷ niệm gần gũi nào bạn nhớ nhất?','Có điều gì bạn muốn thử mà chưa dám nói?','Bạn thích được âu yếm ở đâu nhất?','Khoảnh khắc nào khiến bạn thấy được yêu nhất?','Điều nhỏ nào nửa kia làm khiến bạn "tan chảy"?','Bạn thích chủ động hay được chủ động hơn?','Buổi hẹn trong mơ của bạn là gì?','Có điều gì bạn tò mò muốn thử cùng nhau?','Bạn thấy mình quyến rũ nhất khi nào?','Điều gì khiến bạn thấy an toàn & thoải mái nhất bên nhau?','Bạn muốn nghe nửa kia nói câu gì nhiều hơn?','Bí mật nhỏ dễ thương nào bạn chưa kể?','Điều gì khiến bạn nhớ nhất về lần đầu của hai đứa?','Bạn thích được "tán tỉnh" như thế nào?','Có nơi nào bạn muốn hai đứa thử gần gũi không?','Bạn thấy tự tin nhất về điểm nào ở mình?','Điều gì ở nửa kia khiến bạn thấy thèm muốn?','Bạn thích trước hay sau khi gần gũi được ôm ấp hơn?','Có ranh giới nào bạn muốn nửa kia biết & tôn trọng?','Điều lãng mạn nhất nửa kia từng làm cho bạn?','Một buổi tối hoàn hảo của hai đứa sẽ diễn ra thế nào?','Bạn muốn được khen kiểu nào khi gần gũi?',
 ];
 const INT_DARES=[
-  'Hôn nửa kia 10 giây.','Thì thầm điều bạn thích vào tai nửa kia.','Massage vai nửa kia 1 phút.','Ôm nửa kia thật chặt 20 giây.','Nhìn mắt nhau 30 giây không rời.','Khen 3 điều hấp dẫn ở nửa kia.','Nắm tay & kể một điều bạn mong muốn tối nay.','Hôn lên trán, má rồi tay nửa kia.','Nhảy một điệu chậm cùng nhau.','Gửi nửa kia một ánh mắt "mời gọi".','Vuốt tóc nửa kia trong 30 giây.','Kể một điều bạn thấy "cuốn" ở nửa kia hôm nay.','Cù nhẹ cho nửa kia cười.','Đổi vai: để nửa kia "ra lệnh" một việc dễ thương.',
+  'Hôn nửa kia 10 giây.','Thì thầm điều bạn thích vào tai nửa kia.','Massage vai nửa kia 1 phút.','Ôm nửa kia thật chặt 20 giây.','Nhìn mắt nhau 30 giây không rời.','Khen 3 điều hấp dẫn ở nửa kia.','Nắm tay & kể một điều bạn mong muốn tối nay.','Hôn lên trán, má rồi tay nửa kia.','Nhảy một điệu chậm cùng nhau.','Gửi nửa kia một ánh mắt "mời gọi".','Vuốt tóc nửa kia trong 30 giây.','Kể một điều bạn thấy "cuốn" ở nửa kia hôm nay.','Cù nhẹ cho nửa kia cười.','Đổi vai: để nửa kia "ra lệnh" một việc dễ thương.','Hôn lên cổ nửa kia thật nhẹ.','Nói 3 điều bạn muốn làm cùng nửa kia tối nay.','Ôm nửa kia từ phía sau 30 giây.','Vuốt nhẹ lưng nửa kia trong 1 phút.','Thì thầm một lời khen táo bạo vào tai nửa kia.','Cởi áo khoác cho nửa kia một cách nhẹ nhàng.','Đặt tay nửa kia lên tim mình, để họ cảm nhịp.','Chọn nhạc & mời nửa kia một điệu nhảy chậm.','Kể một tưởng tượng dễ thương cho nửa kia nghe.','Hôn ở nơi nửa kia thích nhất (hỏi trước nếu chưa biết).',
 ];
 const INT_DICE_ACT=['💋 Hôn','🤲 Chạm nhẹ','💆 Massage','🌬️ Thổi nhẹ','🫦 Cắn yêu','🤗 Ôm','😙 Hôn phớt','👅 Liếm nhẹ'];
 const INT_DICE_PART=['👄 Môi','🧣 Cổ','👂 Tai','🤚 Bàn tay','💪 Vai','🫀 Ngực','🦵 Đùi','🔙 Lưng'];
 const INT_HOT=[
-  'Điều gì khiến bạn thấy thư giãn nhất bên nhau?','Bạn thích được ôm kiểu nào?','Nụ hôn kiểu nào bạn thích nhất?','Bạn thích được chạm ở đâu?','Điều gì khiến bạn dễ "nổi hứng"?','Bạn thích không khí thế nào cho một tối lãng mạn?','Bạn muốn thử điều gì mới trong tuần này?','Có tưởng tượng nhẹ nhàng nào bạn từng nghĩ tới?','Điều gì nửa kia làm khiến bạn "mê mẩn"?','Bạn muốn dẫn dắt hay được dẫn dắt tối nay?','Một điều táo bạo (trong thoải mái) bạn muốn thử?','Cách nào giúp bạn thấy được khao khát nhất?',
+  'Điều gì khiến bạn thấy thư giãn nhất bên nhau?','Bạn thích được ôm kiểu nào?','Nụ hôn kiểu nào bạn thích nhất?','Bạn thích được chạm ở đâu?','Điều gì khiến bạn dễ "nổi hứng"?','Bạn thích không khí thế nào cho một tối lãng mạn?','Bạn muốn thử điều gì mới trong tuần này?','Có tưởng tượng nhẹ nhàng nào bạn từng nghĩ tới?','Điều gì nửa kia làm khiến bạn "mê mẩn"?','Bạn muốn dẫn dắt hay được dẫn dắt tối nay?','Một điều táo bạo (trong thoải mái) bạn muốn thử?','Cách nào giúp bạn thấy được khao khát nhất?','Bạn thích được hôn ở đâu nhất?','Có kiểu chạm nào khiến bạn "rùng mình" dễ chịu?','Bạn thích ánh sáng thế nào khi gần gũi — sáng hay mờ?','Một điều bạn muốn nửa kia làm nhiều hơn khi gần gũi?','Bạn muốn thử ở đâu ngoài phòng ngủ không?','Điều gì giúp bạn thả lỏng & tận hưởng trọn vẹn hơn?','Bạn thích tốc độ chậm rãi hay mãnh liệt hơn?','Có "vai" nào bạn tò mò muốn thử tối nay?',
 ];
-const INT_AMBIANCE=['🕯️ Thắp nến','🎵 Bật nhạc nhẹ','💡 Chỉnh đèn dịu','📵 Điện thoại để xa','🚪 Khoá cửa phòng','🌸 Xịt hương thơm','🍷 Chuẩn bị đồ uống','🛏️ Thay ga giường sạch','🧴 Sẵn gel bôi trơn','🚿 Tắm gội thơm tho'];
+const INT_AMBIANCE=['🕯️ Thắp nến','🎵 Bật nhạc nhẹ','💡 Chỉnh đèn dịu','📵 Điện thoại để xa','🚪 Khoá cửa phòng','🌸 Xịt hương thơm','🍷 Chuẩn bị đồ uống','🛏️ Thay ga giường sạch','🧴 Sẵn gel bôi trơn','🚿 Tắm gội thơm tho','🛁 Chuẩn bị nước ấm','🍫 Sô-cô-la / trái cây','🎶 Playlist chọn sẵn','🪟 Rèm che kín'];
 const INT_PLAYLISTS=[
   {n:'R&B nhẹ nhàng',d:'The Weeknd, SZA, Daniel Caesar…'},
   {n:'Lo-fi ấm cúng',d:'nhạc lo-fi chill, không lời'},
   {n:'Ballad Việt tình',d:'Vũ, Hà Anh Tuấn, Trung Quân…'},
   {n:'Jazz tối',d:'jazz mượt, tiếng saxophone'},
   {n:'Acoustic dịu',d:'guitar mộc, giọng hát ấm'},
+  {n:'City pop / Synth chill',d:'nhịp êm, hoài niệm'},
+  {n:'Bolero / Trữ tình',d:'không khí hoài cổ, tình tứ'},
 ];
 const INT_MEN=[
   {t:'🏋️ Bài tập Kegel cho nam',body:'Kegel giúp cơ sàn chậu khỏe → kiểm soát tốt hơn, cải thiện phong độ.\n• Xác định cơ: siết như khi nhịn tiểu (chỉ để nhận biết, KHÔNG tập lúc đang đi tiểu).\n• Bài tập: siết 3–5 giây, thả 3–5 giây × 10 lần, 3 hiệp/ngày.\n• Tăng dần lên siết 10 giây. Thở đều, không nín thở, không gồng bụng/mông.\n• Kiên trì 4–6 tuần sẽ thấy cải thiện.'},
   {t:'💪 Mẹo cải thiện phong độ',body:'• Ngủ đủ 7–8 tiếng — thiếu ngủ giảm testosterone.\n• Tập thể dục đều (chân & tim mạch), giữ cân hợp lý.\n• Ăn đủ kẽm, omega-3, rau xanh; hạn chế rượu bia; bỏ thuốc lá.\n• Giảm stress — lo âu là "kẻ thù" số 1 của phong độ.\n• Uống đủ nước; hạn chế đồ ăn nhanh & đường.'},
   {t:'🧘 Thư giãn & giảm lo âu',body:'Áp lực "phải làm tốt" dễ gây trục trặc. Cách gỡ:\n• Tập trung vào cảm giác & kết nối, đừng đặt mục tiêu "thành tích".\n• Thở sâu 4-7-8 (hít 4s, giữ 7s, thở 8s) vài lần trước khi gần gũi.\n• Trò chuyện cởi mở với vợ — được thấu hiểu giúp thả lỏng.\n• Ngủ đủ, giảm caffeine buổi tối.'},
   {t:'🩺 Khi nào nên đi khám nam khoa',body:'Nên đi khám nếu:\n• Trục trặc kéo dài vài tuần (không phải do mệt/stress nhất thời).\n• Đau, sưng, u cục, tiểu buốt/rắt, ra dịch bất thường.\n• Giảm ham muốn rõ rệt, mệt mỏi kéo dài (có thể do nội tiết).\n👉 Nên khám nam khoa/tổng quát định kỳ 6–12 tháng/lần. Đừng ngại — bác sĩ giúp bạn khỏe hơn.'},
+  {t:'🥗 Thực phẩm tốt cho phong độ',body:'Ăn uống ảnh hưởng lớn tới sinh lý nam:\n• Kẽm: hàu, thịt bò, hạt bí — hỗ trợ testosterone.\n• Omega-3: cá hồi, cá thu — tốt cho mạch máu.\n• Rau xanh, củ dền, lựu — giúp lưu thông máu.\n• Hạn chế đường, đồ chiên, rượu bia.\n• Uống đủ nước, ăn đều, ngủ đủ.'},
+  {t:'⏱️ Mẹo kéo dài & kiểm soát',body:'• Tập Kegel đều (xem bài Kegel) — cải thiện kiểm soát.\n• Kỹ thuật "dừng–thở": khi gần tới, dừng lại, hít thở sâu, tiếp tục sau vài giây.\n• Tập trung vào cảm giác chung & màn dạo đầu thay vì "đích".\n• Giảm lo âu — càng thả lỏng càng kiểm soát tốt.\n• Nếu quá sớm thường xuyên & lo lắng, hỏi bác sĩ nam khoa.'},
 ];
 const INT_WD=[[1,'Thứ 2'],[2,'Thứ 3'],[3,'Thứ 4'],[4,'Thứ 5'],[5,'Thứ 6'],[6,'Thứ 7'],[0,'Chủ nhật']];
 const INT_CARE={
