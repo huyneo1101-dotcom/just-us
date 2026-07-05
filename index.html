@@ -277,7 +277,7 @@ const store={
 const SB_URL='https://vvgkjgvzjeklaadusbne.supabase.co';
 const SB_KEY='sb_publishable_DMMPv5L2kGhrHTxeQ72iKw_dIh13iT1';
 // Các key được đồng bộ (KHÔNG gồm ju.me/ju.device/ju.sync — đó là riêng từng máy)
-const SYNC_KEYS=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood','ju.qa','ju.timeline','ju.coupons','ju.chores','ju.lovejar','ju.quiz','ju.city','ju.goals','ju.checkin','ju.challengeDone','ju.homecfg','ju.diary','ju.projects','ju.vinhaUrl','ju.checkins','ju.menu','ju.period','ju.menuPlan','ju.accuKey','ju.habits','ju.hiddenSpots','ju.usOrder','ju.eventPrefs','ju.child','ju.childGrowth','ju.childVaccines','ju.childMilestones','ju.childDiary','ju.partnerWishes','ju.todos','ju.spotify','ju.dishPrefs','ju.favDishes','ju.childPack','ju.childSkills','ju.childMed','ju.childIllness','ju.childWords','ju.childTantrum','ju.childParenting','ju.saveTips','ju.saveCustom','ju.funPrefs','ju.routine','ju.routineIssues','ju.noti','ju.family','ju.health','ju.transfers','ju.skillGuidesDone','ju.expenses','ju.budget','ju.vinhaSync','ju.menuOrder'];
+const SYNC_KEYS=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood','ju.qa','ju.timeline','ju.coupons','ju.chores','ju.lovejar','ju.quiz','ju.city','ju.goals','ju.checkin','ju.challengeDone','ju.homecfg','ju.diary','ju.projects','ju.vinhaUrl','ju.checkins','ju.menu','ju.period','ju.menuPlan','ju.accuKey','ju.habits','ju.hiddenSpots','ju.usOrder','ju.eventPrefs','ju.child','ju.childGrowth','ju.childVaccines','ju.childMilestones','ju.childDiary','ju.partnerWishes','ju.todos','ju.spotify','ju.dishPrefs','ju.favDishes','ju.childPack','ju.childSkills','ju.childMed','ju.childIllness','ju.childWords','ju.childTantrum','ju.childParenting','ju.saveTips','ju.saveCustom','ju.funPrefs','ju.routine','ju.routineIssues','ju.noti','ju.family','ju.health','ju.transfers','ju.skillGuidesDone','ju.expenses','ju.budget','ju.vinhaSync','ju.menuOrder','ju.notesSeen'];
 let _sb=null;
 function sbClient(){
   if(_sb) return _sb;
@@ -2051,28 +2051,29 @@ const WHATS_NEW=[
 ];
 function WhatsNewCard(){
   const [seen,setSeen]=useState(()=>store.get('ju.whatsNewSeen','')||'');
+  const [all,setAll]=useState(false);
   const newest=WHATS_NEW[0]?WHATS_NEW[0].d:'';
   const nUnseen=WHATS_NEW.filter(x=>x.d>seen).length;
-  const [open,setOpen]=useState(nUnseen>0);
   const markSeen=()=>{ store.set('ju.whatsNewSeen',newest); setSeen(newest); };
+  const list=all?WHATS_NEW:WHATS_NEW.slice(0,3);
   return (
-    <div className="card" style={{margin:'10px 14px 2px',borderColor:nUnseen>0?'var(--primary)':'var(--line)'}}>
-      <div className="row" onClick={()=>setOpen(o=>!o)} style={{cursor:'pointer'}}>
+    <div className="card" style={{margin:'12px 14px 0',borderColor:nUnseen>0?'var(--primary)':'var(--line)'}}>
+      <div className="row">
         <span className="hc-title">🆕 Mới cập nhật</span>
         {nUnseen>0 && <span className="pill" style={{background:'var(--primary)',color:'#fff',marginLeft:6,fontSize:11}}>{nUnseen} mới</span>}
         <span className="grow"></span>
-        <span className="col-chev">{open?'▾':'▸'}</span>
+        {nUnseen>0 && <span className="hc-act" style={{cursor:'pointer'}} onClick={markSeen}>✓ Đã xem</span>}
       </div>
-      {open && <div style={{marginTop:6}}>
-        {WHATS_NEW.slice(0,12).map((x,i)=>(
+      <div style={{marginTop:4}}>
+        {list.map((x,i)=>(
           <div key={i} style={{display:'flex',gap:8,padding:'6px 0',borderTop:i>0?'1px solid var(--line)':'none'}}>
             <span style={{fontSize:16,flex:'0 0 auto'}}>{x.ic}</span>
             <div className="grow" style={{fontSize:13,lineHeight:1.5}}>{x.t}{x.d>seen && <span style={{color:'var(--primary)',fontWeight:700,fontSize:10.5}}> · MỚI</span>}
               <div className="muted" style={{fontSize:10.5,marginTop:1}}>{fmtDateVN(x.d)}</div></div>
           </div>
         ))}
-        {nUnseen>0 && <button className="btn soft" style={{marginTop:8,width:'100%'}} onClick={markSeen}>✓ Đã xem hết</button>}
-      </div>}
+      </div>
+      {WHATS_NEW.length>3 && <button className="muted" style={{fontSize:12,marginTop:6,cursor:'pointer'}} onClick={()=>setAll(a=>!a)}>{all?'▴ Thu gọn':'▾ Xem tất cả ('+WHATS_NEW.length+')'}</button>}
     </div>
   );
 }
@@ -2164,7 +2165,6 @@ function Home({setup,setSetup,people,me,go}){
 
   return (
     <div>
-      <WhatsNewCard/>
       <div className="hero">
         {cover && <div className="cover" style={{backgroundImage:`url(${cover})`}}></div>}
         {cover && <div className="scrim"></div>}
@@ -2188,6 +2188,7 @@ function Home({setup,setSetup,people,me,go}){
       </div>
       {!cover && <div className="muted center" style={{fontSize:11,margin:'-6px 14px 6px',cursor:'pointer'}} onClick={()=>coverRef.current&&coverRef.current.click()}>📷 Chọn ảnh hai đứa làm ảnh bìa — số ngày sẽ hiện đè lên ảnh ›</div>}
 
+      <WhatsNewCard/>
       <InstallShare/>
       {keys.filter(show).map(k=> cardEls[k] ? <div key={k}>{cardEls[k]}</div> : null)}
       <div style={{height:8}}></div>
@@ -4240,7 +4241,7 @@ async function subscribePush(){
     const j=sub.toJSON(); const c=sbClient(); const cp=Cloud.couple&&Cloud.couple();
     const {data:ud}=await c.auth.getUser(); const user=ud&&ud.user;
     if(!user||!cp||!cp.id||!j.keys) return {ok:false,reason:'notconnected'};
-    const {error}=await c.from('justus_push_subs').upsert({couple_id:cp.id,user_id:user.id,endpoint:j.endpoint,p256dh:j.keys.p256dh,auth:j.keys.auth,ua:navigator.userAgent},{onConflict:'endpoint'});
+    const {error}=await c.from('justus_push_subs').upsert({couple_id:cp.id,user_id:user.id,role:store.get('ju.me',(store.get('ju.setup',{})||{}).me||'a'),endpoint:j.endpoint,p256dh:j.keys.p256dh,auth:j.keys.auth,ua:navigator.userAgent},{onConflict:'endpoint'});
     if(error) return {ok:false,reason:error.message||'db'};
     return {ok:true};
   }catch(e){ return {ok:false,reason:String((e&&e.message)||e)}; }
@@ -4259,12 +4260,14 @@ function computeDueNotis(noti){
   if(on('thucDon')){ const plan=store.get('ju.menuPlan',null); const idx=(new Date().getDay()+6)%7; if(plan&&plan[idx]) out.push({id:'menu',title:'🍱 Nhắc chuẩn bị bữa ăn hôm nay'}); const shop=(store.get('ju.shop',[])||[]).filter(s=>s&&!s.done&&!s.bought); if(shop.length) out.push({id:'shop',title:'🛒 Đi chợ: còn '+shop.length+' món trong danh sách'}); }
   if(on('nganSach')){ const vs=store.get('ju.vinhaSync',null); if(vs&&vs.budgets&&vs.budgets.length){ const ym=todayISO().slice(0,7); const sp={}; (vs.rows||[]).filter(x=>x.type==='expense'&&(x.date||'').slice(0,7)===ym).forEach(x=>{ if(x.catId) sp[x.catId]=(sp[x.catId]||0)+x.amount; }); const over=vs.budgets.filter(b=>(sp[b.catId]||0)>b.amount); const near=vs.budgets.filter(b=>{ const s=sp[b.catId]||0; return s<=b.amount&&s>=b.amount*0.8; }); if(over.length) out.push({id:'budover',title:'💰 Vượt ngân sách: '+over.slice(0,3).map(b=>b.cn).join(', ')}); else if(near.length) out.push({id:'budnear',title:'💰 Sắp hết ngân sách: '+near.slice(0,3).map(b=>b.cn).join(', ')}); } }
   if(on('yeuThuong')) out.push({id:'love',title:'💌 Gửi nửa kia một lời yêu thương hôm nay nhé 💞'});
+  if(on('nhanNhau')){ const me=store.get('ju.me',setup.me||'a'); const ns=store.get('ju.notesSeen',{})||{}; const unread=(store.get('ju.notes',[])||[]).filter(n=>n&&n.by&&n.by!==me&&(n.createdAt||0)>(ns[me]||0)); if(unread.length) out.push({id:'notes'+unread.length,title:'💌 Nửa kia gửi bạn '+unread.length+' lời nhắn mới ("Nhắn nhau")'}); }
   if(on('tamLinh')) (upcomingSpiritual(2)||[]).slice(0,2).forEach((h,i)=>{ if(h.d!=null&&h.d>=0&&h.d<=2) out.push({id:'sp'+(h.name||i),title:'🪷 '+h.name+(h.d===0?' — hôm nay':' — còn '+h.d+' ngày')}); });
   if(on('chuky')){ const p=periodNext(); if(p&&!p.onPeriod&&p.days!=null&&p.days<=2) out.push({id:'period',title:'🌸 Kỳ kinh dự kiến — còn '+p.days+' ngày'}); }
   return out;
 }
 function NotiRunner(){
   useEffect(()=>{
+    try{ const n0=store.get('ju.noti',null); if(n0&&n0.on) subscribePush().catch(()=>{}); }catch(_){}
     const run=async()=>{
       try{
         const noti=store.get('ju.noti',null); if(!noti||!noti.on) return;
@@ -4293,7 +4296,7 @@ function NotiRunner(){
   return null;
 }
 function NotiSettings({flash}){
-  const [noti,setNoti]=useLocal('ju.noti',{on:false,cats:{kyNiem:true,sukien:true,viec:true,thucDon:true,nganSach:true,yeuThuong:true,tamLinh:true,ngayNho:false,chuky:false},time:'08:00'});
+  const [noti,setNoti]=useLocal('ju.noti',{on:false,cats:{kyNiem:true,sukien:true,viec:true,thucDon:true,nganSach:true,yeuThuong:true,nhanNhau:true,tamLinh:true,ngayNho:false,chuky:false},time:'08:00'});
   const supported=(typeof Notification!=='undefined')&&('serviceWorker' in navigator);
   const [perm,setPerm]=useState(supported?Notification.permission:'unsupported');
   const [pushMsg,setPushMsg]=useState('');
@@ -4313,7 +4316,7 @@ function NotiSettings({flash}){
   const test=async()=>{ if(!supported){ flash&&flash('Máy không hỗ trợ thông báo'); return; } try{ const reg=await navigator.serviceWorker.ready; reg.showNotification('Thử thông báo 🔔',{body:'Đây là thông báo thử từ Just Us 💗',icon:'icon.svg',badge:'icon.svg'}); }catch(e){ flash&&flash('Không gửi được — kiểm tra quyền thông báo'); } };
   const tog=(k)=>setNoti({...noti,cats:{...(noti.cats||{}),[k]:!((noti.cats||{})[k]!==false)}});
   const cats=noti.cats||{};
-  const CATS=[['kyNiem','💞 Ngày yêu nhau · cột mốc'],['sukien','📅 Sự kiện gia đình'],['viec','✅ Việc tới hạn · ưu tiên cao'],['thucDon','🍱 Món nấu hôm nay · đi chợ'],['nganSach','💰 Cảnh báo ngân sách tháng'],['yeuThuong','💌 Nhắc gửi lời yêu thương'],['tamLinh','🪷 Mùng 1 · rằm · lễ'],['ngayNho','🎂 Sinh nhật · giỗ · lễ cần quà'],['chuky','🌸 Chu kỳ sắp đến']];
+  const CATS=[['kyNiem','💞 Ngày yêu nhau · cột mốc'],['sukien','📅 Sự kiện gia đình'],['viec','✅ Việc tới hạn · ưu tiên cao'],['thucDon','🍱 Món nấu hôm nay · đi chợ'],['nganSach','💰 Cảnh báo ngân sách tháng'],['yeuThuong','💌 Nhắc gửi lời yêu thương'],['nhanNhau','💌 Nhắn nhau (có lời nhắn mới)'],['tamLinh','🪷 Mùng 1 · rằm · lễ'],['ngayNho','🎂 Sinh nhật · giỗ · lễ cần quà'],['chuky','🌸 Chu kỳ sắp đến']];
   return (
     <div className="card">
       <div className="row"><span className="hc-title">🔔 Thông báo điện thoại</span><span className="grow"></span>
@@ -5646,6 +5649,7 @@ function Notes({people,me}){
   const endRef=useRef(null);
   const add=()=>{ if(!t.trim())return; setNotes([...notes,{id:uid(),by:me,text:t.trim(),createdAt:Date.now()}]); setT(''); };
   useEffect(()=>{ endRef.current?.scrollIntoView({behavior:'smooth'}); },[notes.length]);
+  useEffect(()=>{ const latest=notes.reduce((m,n)=>Math.max(m,n.createdAt||0),0); const ns={...(store.get('ju.notesSeen',{})||{})}; if((ns[me]||0)<latest){ ns[me]=latest; store.set('ju.notesSeen',ns); try{ Cloud.schedulePush&&Cloud.schedulePush(); }catch(_){} } },[notes.length]);
   const del=(id)=>{ if(confirm('Bạn có chắc muốn xoá? Thao tác này không hoàn tác được.')){ setNotes(notes.filter(x=>x.id!==id)); } };
   const heart=(id)=>setNotes(notes.map(n=>{ if(n.id!==id) return n; const r={...(n.reacts||{})}; r[me]=r[me]?null:'❤️'; return {...n,reacts:r}; }));
   return (
