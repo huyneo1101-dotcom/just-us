@@ -2038,6 +2038,7 @@ function AngerHelper(){
 
 /* ============ HOME ============ */
 const WHATS_NEW=[
+  {d:'2026-07-05',ic:'🧘',t:'Trả bài → Kiến thức: các tư thế quan hệ nay có hình minh hoạ (vẽ tế nhị, đơn giản).'},
   {d:'2026-07-05',ic:'💗',t:'Trả bài thêm nhiều: tab 🎲 Chơi (Thật/Thách · xúc xắc · câu hỏi nóng dần), tab 📅 Hẹn hò (mẹo giữ lửa mỗi ngày · đặt đêm hẹn · tạo không khí), dự đoán "ngày vợ dễ hứng khởi" theo chu kỳ, góc sức khỏe nam + bài tư thế; noti báo chồng khi sắp tới ngày vợ hứng khởi.'},
   {d:'2026-07-05',ic:'🗂️',t:'Hồ sơ gọn hơn: mỗi mục có nút gập/mở (mặc định thu gọn) — dùng "Mở tất cả" trong 🎛️ Giao diện nếu muốn xem hết. Bỏ mục "Nguồn thời tiết".'},
   {d:'2026-07-05',ic:'💛',t:'Trả bài → tab "Cảm xúc": từ chu kỳ, app dự đoán ngày vợ dễ nhạy cảm (tiền kinh nguyệt / đèn đỏ) + gợi ý cách quan tâm. Mục kế hoạch thụ thai tạm ẩn (bật lại được).'},
@@ -3426,7 +3427,13 @@ const INT_KNOW=[
   {t:'🌸 Gần gũi sau sinh',body:'• Thường nên đợi ~4–6 tuần sau sinh, khi sản dịch hết & cơ thể hồi phục — hỏi bác sĩ ở lần khám sau sinh.\n• Có thể khô hơn do nội tiết (nhất là khi cho con bú) — gel bôi trơn giúp dễ chịu.\n• Bắt đầu nhẹ nhàng, ưu tiên thoải mái của người vợ; dừng nếu đau.\n• Đừng quên tránh thai — có thể mang thai lại sớm dù chưa có kinh trở lại.'},
   {t:'💞 Màn dạo đầu & kết nối',body:'Kết nối cảm xúc trước khi gần gũi giúp cả hai thăng hoa hơn:\n• Dành thời gian âu yếm, hôn, trò chuyện — đừng vội.\n• Tạo không gian: ánh sáng dịu, nhạc nhẹ, điện thoại để xa.\n• Khen ngợi, chạm nhẹ, quan tâm cảm xúc người kia.\n• Hỏi xem người kia thích gì — mỗi người mỗi khác.'},
   {t:'🩺 Sức khỏe & an toàn',body:'• Vệ sinh trước & sau; đi tiểu sau khi gần gũi giúp giảm viêm đường tiết niệu (nữ).\n• Khám phụ khoa/nam khoa định kỳ; tiêm phòng HPV nếu có thể.\n• Nếu đau, khó chịu kéo dài, ra máu bất thường… nên đi khám.\n• Ngủ đủ, vận động, giảm rượu bia — đều tốt cho chuyện chăn gối.'},
-  {t:'🧘 Các tư thế quan hệ (tham khảo)',body:'Mỗi tư thế hợp mỗi lúc — quan trọng nhất là thoải mái & đồng thuận:\n• Đối mặt (truyền thống): gần gũi, dễ nhìn mắt, hôn & ôm nhau.\n• Nằm nghiêng ôm nhau ("thìa"): nhẹ nhàng, ít gắng sức — hợp khi mệt hoặc sau sinh.\n• Vợ ở trên: vợ chủ động nhịp độ & độ sâu, thoải mái cho chồng.\n• Ngồi ôm nhau: ấm áp, chậm rãi, hợp không gian nhỏ.\n• Áp lưng (chồng phía sau): kích thích khác lạ, nên bắt đầu chậm.\nMẹo: kê gối cho đỡ mỏi; khởi động bằng màn dạo đầu; nói cho nhau biết chỗ nào dễ chịu; dừng ngay nếu đau. Sau sinh nên ưu tiên tư thế nhẹ nhàng và hỏi bác sĩ nếu còn đau.'},
+];
+const INT_POSITIONS=[
+  {n:'Đối mặt (truyền thống)',d:'Gần gũi, dễ nhìn mắt & hôn nhau. Kê gối dưới hông vợ cho thoải mái hơn.',svg:'<svg viewBox="0 0 120 80" width="100%"><g fill="#8fb7b0"><circle cx="24" cy="55" r="9"/><rect x="30" y="49" width="72" height="14" rx="7"/></g><g fill="#d98cae"><circle cx="30" cy="34" r="9"/><rect x="36" y="29" width="66" height="13" rx="6.5"/></g></svg>'},
+  {n:'Nằm nghiêng ôm nhau ("thìa")',d:'Nhẹ nhàng, ít gắng sức — hợp khi mệt hoặc sau sinh.',svg:'<svg viewBox="0 0 120 80" width="100%"><g fill="#8fb7b0"><circle cx="26" cy="44" r="9"/><rect x="32" y="38" width="64" height="15" rx="7.5"/></g><g fill="#d98cae"><circle cx="46" cy="46" r="8"/><rect x="52" y="41" width="56" height="13" rx="6.5"/></g></svg>'},
+  {n:'Vợ ở trên',d:'Vợ chủ động nhịp độ & độ sâu; chồng thư giãn, thoải mái.',svg:'<svg viewBox="0 0 120 80" width="100%"><g fill="#8fb7b0"><circle cx="20" cy="57" r="9"/><rect x="26" y="52" width="78" height="14" rx="7"/></g><g fill="#d98cae"><circle cx="62" cy="21" r="9"/><rect x="55" y="27" width="14" height="28" rx="7"/></g></svg>'},
+  {n:'Ngồi ôm nhau',d:'Ấm áp, chậm rãi, nhiều ôm ấp — hợp không gian nhỏ.',svg:'<svg viewBox="0 0 120 80" width="100%"><g fill="#8fb7b0"><circle cx="47" cy="23" r="9"/><rect x="40" y="29" width="14" height="36" rx="7"/></g><g fill="#d98cae"><circle cx="70" cy="25" r="9"/><rect x="64" y="31" width="14" height="32" rx="7"/></g></svg>'},
+  {n:'Áp lưng (chồng phía sau)',d:'Cảm giác mới lạ; nên bắt đầu chậm & nhẹ nhàng.',svg:'<svg viewBox="0 0 120 80" width="100%"><g fill="#8fb7b0"><circle cx="32" cy="30" r="9"/><rect x="36" y="34" width="44" height="14" rx="7" transform="rotate(14 36 41)"/></g><g fill="#d98cae"><circle cx="54" cy="34" r="8"/><rect x="58" y="38" width="44" height="13" rx="6.5" transform="rotate(14 58 44)"/></g></svg>'},
 ];
 const INT_SPARK=[
   'Hôm nay ôm nửa kia thật lâu, không nói gì.','Nhắn một tin ngọt ngào giữa giờ làm.','Khen nửa kia một điều bạn thấy hấp dẫn.','Pha cho nửa kia ly nước/đồ uống họ thích.','Hôn tạm biệt lâu hơn thường lệ (6 giây).','Tối nay cất điện thoại 30 phút, chỉ hai đứa.','Nắm tay khi đi cạnh nhau.','Massage vai cho nửa kia 5 phút.','Nhắc lại một kỷ niệm đẹp của hai đứa.','Chuẩn bị bất ngờ nhỏ: món ăn, ghi chú, hoa.','Nhìn vào mắt nhau 1 phút, không cười.','Nói "cảm ơn vì…" một điều cụ thể.','Cùng nghe một bài hát kỷ niệm.','Rủ nửa kia tắm/thư giãn cùng tối nay.','Viết 3 điều bạn biết ơn về nửa kia.','Lên kế hoạch một buổi hẹn cuối tuần.','Ôm từ phía sau khi họ đang làm việc nhà.','Gửi một tấm ảnh kỷ niệm kèm lời nhắn.','Chủ động làm giúp việc họ hay làm.','Thì thầm một điều dễ thương vào tai họ.','Khen ngoại hình nửa kia hôm nay.','Chuẩn bị bữa sáng/cà phê cho nửa kia.','Dành 15 phút hỏi han ngày của nhau.','Gửi một lời "thả thính" bất ngờ.','Cùng xem hoàng hôn / uống trà tối.','Tặng một cái ôm 20 giây trước khi ngủ.','Viết một mẩu giấy nhắn để nơi họ dễ thấy.','Đề nghị một buổi tối "hẹn hò tại nhà".',
@@ -3653,6 +3660,15 @@ function IntimacySection({people,me,flash,view}){
 
       {v==='know' && <div>
         {INT_KNOW.map((a,i)=><Collapse key={i} id={'int-k'+i} defaultOpen={false} title={a.t}><div className="card"><div style={{fontSize:13,lineHeight:1.7,whiteSpace:'pre-line'}}>{a.body}</div></div></Collapse>)}
+        <Collapse id="int-pos" defaultOpen={false} title="🧘 Tư thế quan hệ (có minh hoạ)">
+          {INT_POSITIONS.map((p,i)=>(
+            <div key={i} className="card" style={{display:'flex',gap:12,alignItems:'center'}}>
+              <div style={{flex:'0 0 88px',background:'var(--chip)',borderRadius:10,padding:'6px 4px',display:'flex'}} dangerouslySetInnerHTML={{__html:p.svg}}/>
+              <div style={{flex:1}}><div style={{fontWeight:800,fontSize:13.5}}>{p.n}</div><div className="muted" style={{fontSize:12,marginTop:3,lineHeight:1.5}}>{p.d}</div></div>
+            </div>
+          ))}
+          <div className="muted center" style={{fontSize:11,margin:'2px 14px 4px'}}>Hình minh hoạ đơn giản, tôn trọng sự riêng tư — quan trọng nhất là thoải mái & đồng thuận. Sau sinh ưu tiên tư thế nhẹ nhàng, hỏi bác sĩ nếu còn đau.</div>
+        </Collapse>
         <div className="sec-title" style={{marginTop:14}}>💪 Góc sức khỏe nam</div>
         {INT_MEN.map((a,i)=><Collapse key={'m'+i} id={'int-m'+i} defaultOpen={false} title={a.t}><div className="card"><div style={{fontSize:13,lineHeight:1.7,whiteSpace:'pre-line'}}>{a.body}</div></div></Collapse>)}
         <div className="muted center" style={{fontSize:11,margin:'6px 14px'}}>Thông tin tham khảo, không thay thế tư vấn của bác sĩ.</div>
