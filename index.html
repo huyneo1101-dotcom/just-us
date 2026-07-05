@@ -277,7 +277,7 @@ const store={
 const SB_URL='https://vvgkjgvzjeklaadusbne.supabase.co';
 const SB_KEY='sb_publishable_DMMPv5L2kGhrHTxeQ72iKw_dIh13iT1';
 // Các key được đồng bộ (KHÔNG gồm ju.me/ju.device/ju.sync — đó là riêng từng máy)
-const SYNC_KEYS=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood','ju.qa','ju.timeline','ju.coupons','ju.chores','ju.lovejar','ju.quiz','ju.city','ju.goals','ju.checkin','ju.challengeDone','ju.homecfg','ju.diary','ju.projects','ju.vinhaUrl','ju.checkins','ju.menu','ju.period','ju.menuPlan','ju.accuKey','ju.habits','ju.hiddenSpots','ju.usOrder','ju.eventPrefs','ju.child','ju.childGrowth','ju.childVaccines','ju.childMilestones','ju.childDiary','ju.partnerWishes','ju.todos','ju.spotify','ju.dishPrefs','ju.favDishes','ju.childPack','ju.childSkills','ju.childMed','ju.childIllness','ju.childWords','ju.childTantrum','ju.childParenting','ju.saveTips','ju.saveCustom','ju.funPrefs','ju.routine','ju.routineIssues','ju.noti','ju.family','ju.health','ju.transfers','ju.skillGuidesDone','ju.expenses','ju.budget','ju.vinhaSync','ju.menuOrder','ju.notesSeen','ju.intimacy','ju.intimacySeen'];
+const SYNC_KEYS=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood','ju.qa','ju.timeline','ju.coupons','ju.chores','ju.lovejar','ju.quiz','ju.city','ju.goals','ju.checkin','ju.challengeDone','ju.homecfg','ju.diary','ju.projects','ju.vinhaUrl','ju.checkins','ju.menu','ju.period','ju.menuPlan','ju.accuKey','ju.habits','ju.hiddenSpots','ju.usOrder','ju.eventPrefs','ju.child','ju.childGrowth','ju.childVaccines','ju.childMilestones','ju.childDiary','ju.partnerWishes','ju.todos','ju.spotify','ju.dishPrefs','ju.favDishes','ju.childPack','ju.childSkills','ju.childMed','ju.childIllness','ju.childWords','ju.childTantrum','ju.childParenting','ju.saveTips','ju.saveCustom','ju.funPrefs','ju.routine','ju.routineIssues','ju.noti','ju.family','ju.health','ju.transfers','ju.skillGuidesDone','ju.expenses','ju.budget','ju.vinhaSync','ju.menuOrder','ju.notesSeen','ju.intimacy','ju.intimacySeen','ju.quizKnow'];
 let _sb=null;
 function sbClient(){
   if(_sb) return _sb;
@@ -2038,6 +2038,7 @@ function AngerHelper(){
 
 /* ============ HOME ============ */
 const WHATS_NEW=[
+  {d:'2026-07-05',ic:'🧠',t:'Thêm "Đố kiến thức gia đình" — nút 🧠 trên thanh trên cùng (cạnh 🔎): trắc nghiệm rút từ mọi bài viết trong app (vợ chồng · nuôi con · giao tiếp · tâm linh · sức khỏe · bếp núc · tiền nong), có kỷ lục điểm.'},
   {d:'2026-07-05',ic:'✨',t:'Trả bài: bổ sung nhiều dữ liệu — thêm mẹo giữ lửa, câu hỏi, Thật/Thách, câu hỏi nóng dần, thử thách tuần, muốn thử; +4 bài kiến thức (massage đôi · gần gũi khi mang thai · sau "cuộc yêu" · khi trục trặc) + 2 bài sức khỏe nam (thực phẩm · kéo dài & kiểm soát).'},
   {d:'2026-07-05',ic:'🧘',t:'Trả bài → Kiến thức: các tư thế quan hệ nay có hình minh hoạ (vẽ tế nhị, đơn giản).'},
   {d:'2026-07-05',ic:'💗',t:'Trả bài thêm nhiều: tab 🎲 Chơi (Thật/Thách · xúc xắc · câu hỏi nóng dần), tab 📅 Hẹn hò (mẹo giữ lửa mỗi ngày · đặt đêm hẹn · tạo không khí), dự đoán "ngày vợ dễ hứng khởi" theo chu kỳ, góc sức khỏe nam + bài tư thế; noti báo chồng khi sắp tới ngày vợ hứng khởi.'},
@@ -6879,12 +6880,117 @@ function GlobalSearch({onClose,go}){
   );
 }
 
+const QUIZ_BANK=[
+  {c:'couple',q:'Sau sinh, thường nên đợi bao lâu mới quan hệ lại?',o:['Ngay khi thấy khỏe','Khoảng 4–6 tuần & khi sản dịch đã hết','Đúng 6 tháng'],a:1,e:'Thường đợi ~4–6 tuần và hỏi bác sĩ ở lần khám sau sinh.'},
+  {c:'couple',q:'Bài tập Kegel cho nam giúp gì?',o:['Tăng chiều cao','Khỏe cơ sàn chậu → kiểm soát tốt hơn','Giảm cân nhanh'],a:1,e:'Kegel làm khỏe cơ sàn chậu, cải thiện kiểm soát & phong độ.'},
+  {c:'couple',q:'Khi hai vợ chồng lệch ham muốn, nên?',o:['Đổ lỗi cho nhau','Trò chuyện, tìm điểm chung, không tạo áp lực','Im lặng chịu đựng'],a:1,e:'Nhu cầu thay đổi theo sức khỏe/stress — quan trọng là chất lượng & thấu hiểu.'},
+  {c:'couple',q:'Vì sao "màn dạo đầu" quan trọng?',o:['Giúp kết nối cảm xúc, cả hai thăng hoa hơn','Không cần thiết','Chỉ tốn thời gian'],a:0,e:'Kết nối cảm xúc trước khi gần gũi giúp cả hai tận hưởng trọn vẹn hơn.'},
+  {c:'couple',q:'Ngày vợ dễ hứng khởi thường rơi vào lúc nào của chu kỳ?',o:['Ngày đèn đỏ','Quanh rụng trứng (giữa chu kỳ)','Ngay sát trước kỳ'],a:1,e:'Ham muốn thường tăng quanh thời điểm rụng trứng.'},
+  {c:'couple',q:'Khi gặp "trục trặc" nhất thời, nên làm gì?',o:['Chê bai để cố gắng hơn','Thư giãn, chuyển sang âu yếm, thử lại lúc khác','Bỏ cuộc luôn'],a:1,e:'Càng áp lực càng khó — thả lỏng, đừng đổ lỗi.'},
+  {c:'couple',q:'Sau khi gần gũi (afterglow), điều nên làm?',o:['Quay đi ngủ ngay','Ôm nhau, nói lời yêu thương vài phút','Bấm điện thoại'],a:1,e:'Khoảnh khắc sau đó rất quý để gắn kết & tâm sự.'},
+  {c:'couple',q:'Thực phẩm nào hỗ trợ phong độ nam (giàu kẽm)?',o:['Đồ chiên rán','Hàu, thịt bò, hạt bí','Nước ngọt có ga'],a:1,e:'Kẽm hỗ trợ testosterone; omega-3 & rau xanh tốt cho tuần hoàn.'},
+  {c:'couple',q:'Biện pháp tránh thai nào CÒN ngừa bệnh lây qua đường tình dục?',o:['Thuốc uống hằng ngày','Bao cao su','Vòng tránh thai'],a:1,e:'Chỉ bao cao su vừa tránh thai vừa giảm nguy cơ bệnh lây truyền.'},
+  {c:'couple',q:'Gel bôi trơn hữu ích nhất khi nào?',o:['Bị cấm dùng','Khi khô rát (vd sau sinh, đang cho con bú)','Chỉ khi có bệnh'],a:1,e:'Nội tiết sau sinh/cho con bú dễ gây khô — gel giúp dễ chịu hơn.'},
+  {c:'child',q:'Bé quanh 1–2 tuổi nên ngủ khoảng bao nhiêu/ngày (cả ngủ trưa)?',o:['6–8 tiếng','11–14 tiếng','18 tiếng'],a:1,e:'Trẻ nhỏ cần ngủ nhiều để phát triển não bộ & thể chất.'},
+  {c:'child',q:'Khi bé ăn vạ (tantrum), cách nên làm?',o:['Quát mắng, dọa nạt','Bình tĩnh ở bên, gọi tên cảm xúc của bé','Chiều theo mọi đòi hỏi'],a:1,e:'Giữ bình tĩnh & gọi tên cảm xúc giúp bé học điều tiết.'},
+  {c:'child',q:'Dấu hiệu bé sốt CẦN đi khám ngay?',o:['Li bì, co giật, phát ban, khó thở','Chỉ hơi ấm đầu','Bé vẫn chơi bình thường'],a:0,e:'Các dấu hiệu nặng cần khám ngay, không tự ý ở nhà.'},
+  {c:'child',q:'Cho bé ăn dặm nên?',o:['Ép ăn thật nhiều','Đa dạng món, để bé tự khám phá, không ép','Chỉ cháo trắng'],a:1,e:'Không ép ăn; đa dạng giúp bé quen vị & đủ chất.'},
+  {c:'child',q:'Bé đang tập nói, bố mẹ nên?',o:['Nói chuyện, đọc sách, gọi tên đồ vật cùng bé','Cho xem điện thoại nhiều','Không cần nói gì'],a:0,e:'Tương tác ngôn ngữ nhiều giúp bé phát triển lời nói.'},
+  {c:'child',q:'Bé va đập đầu, dấu hiệu nguy hiểm?',o:['Nôn nhiều, lơ mơ, bất tỉnh','Khóc rồi nín, chơi lại bình thường','Chỉ có vết đỏ nhẹ'],a:0,e:'Nôn/lơ mơ/bất tỉnh sau va đập đầu cần đi khám ngay.'},
+  {c:'child',q:'Thời gian xem màn hình cho trẻ nhỏ nên?',o:['Càng nhiều càng tốt','Hạn chế tối đa, ưu tiên chơi & vận động','Bắt buộc 5 tiếng/ngày'],a:1,e:'Trẻ nhỏ nên hạn chế màn hình, ưu tiên vận động & tương tác.'},
+  {c:'child',q:'Cách dạy con tích cực & hiệu quả?',o:['Đòn roi','Khen hành vi tốt, đặt giới hạn nhất quán, làm gương','So sánh với con nhà khác'],a:1,e:'Kỷ luật tích cực + làm gương hiệu quả hơn đòn roi.'},
+  {c:'comm',q:'Về quê tới nơi, nên chào ai trước?',o:['Người cùng lứa','Ông bà / người lớn tuổi trước','Không cần chào'],a:1,e:'Chào người lớn tuổi trước rồi mới tới người cùng lứa.'},
+  {c:'comm',q:'Bị "ép rượu", cách từ chối khéo?',o:['Uống hết cho vừa lòng','Lý do sức khỏe/đang uống thuốc, nhấp môi + thêm nước lọc','Cãi nhau'],a:1,e:'Lý do sức khỏe rất dễ được chấp nhận; nhấp môi giữ phép.'},
+  {c:'comm',q:'Trong mâm cỗ nên TRÁNH chủ đề gì?',o:['Thời tiết, món ăn','Lương thưởng, chuyện sinh con, so sánh con cháu','Chuyện vui gia đình'],a:1,e:'Tránh chủ đề nhạy cảm dễ gây khó xử trong mâm cỗ.'},
+  {c:'comm',q:'Điều nào KHÔNG phải "ngôn ngữ yêu thương"?',o:['Lời khẳng định','Thời gian chất lượng','Cãi nhau to tiếng'],a:2,e:'5 NN yêu thương: lời khẳng định, thời gian, quà, hành động, cử chỉ âu yếm.'},
+  {c:'comm',q:'Cãi nhau lành mạnh nên?',o:['Công kích cá nhân','Nói về vấn đề, dùng "em/anh cảm thấy…", không lôi chuyện cũ','Im lặng bỏ đi mãi'],a:1,e:'Tập trung vào vấn đề, tránh công kích & lôi quá khứ.'},
+  {c:'comm',q:'Gặp câu hỏi khó ("bao giờ sinh thêm?"), nên?',o:['Cáu gắt','Cười xòa, trả lời ngắn, lái sang chuyện khác','Tranh cãi tới cùng'],a:1,e:'Cười xòa & lái chủ đề giúp giữ không khí vui vẻ.'},
+  {c:'comm',q:'Cách ghi điểm với họ hàng?',o:['Ngồi không, bấm điện thoại','Chủ động phụ việc: bê mâm, rửa bát, trông trẻ','Chê món ăn'],a:1,e:'Chủ động phụ việc được lòng người lớn hơn ngồi không.'},
+  {c:'comm',q:'Khi mừng tuổi/tặng quà người lớn nên?',o:['Đưa một tay, hờ hững','Đưa hai tay, kèm lời chúc','Đặt đại lên bàn'],a:1,e:'Đưa hai tay & nói lời chúc thể hiện sự kính trọng.'},
+  {c:'spirit',q:'Ngày Rằm là ngày mấy âm lịch?',o:['Mùng 1','15','30'],a:1,e:'Rằm = ngày 15 âm lịch (trăng tròn).'},
+  {c:'spirit',q:'Ông Công Ông Táo là ngày nào âm lịch?',o:['23 tháng Chạp (12)','Mùng 1 Tết','Rằm tháng 7'],a:0,e:'23 tháng Chạp tiễn Táo quân về trời.'},
+  {c:'spirit',q:'Lễ Vu Lan (báo hiếu) vào?',o:['Rằm tháng Giêng','Rằm tháng Bảy','Rằm tháng Tám'],a:1,e:'Vu Lan là Rằm tháng 7 âm lịch.'},
+  {c:'spirit',q:'Tết Trung Thu là ngày nào?',o:['15 tháng 8 âm','5 tháng 5 âm','10 tháng 3 âm'],a:0,e:'Trung Thu = 15 tháng 8 âm lịch.'},
+  {c:'spirit',q:'Vía Thần Tài (nhiều người mua vàng) là?',o:['Mùng 10 tháng Giêng','Mùng 1 Tết','Rằm tháng Giêng'],a:0,e:'Vía Thần Tài mùng 10 tháng Giêng.'},
+  {c:'spirit',q:'Trước khi tụng kinh nên?',o:['Ăn mặc luộm thuộm','Rửa tay, súc miệng, ăn mặc chỉnh tề, giữ tâm thanh tịnh','Vừa ăn vừa tụng'],a:1,e:'Giữ thân & tâm thanh tịnh trước khi tụng kinh.'},
+  {c:'spirit',q:'Tết Đoan Ngọ ("giết sâu bọ") là?',o:['5 tháng 5 âm','3 tháng 3 âm','10 tháng 3 âm'],a:0,e:'Đoan Ngọ = mùng 5 tháng 5 âm lịch.'},
+  {c:'spirit',q:'Giỗ Tổ Hùng Vương là ngày nào âm lịch?',o:['10 tháng 3','15 tháng 4','23 tháng Chạp'],a:0,e:'"Dù ai đi ngược về xuôi, nhớ ngày Giỗ Tổ mùng 10 tháng 3".'},
+  {c:'health',q:'Người huyết áp cao nên hạn chế?',o:['Rau xanh','Muối, đồ mặn, mỡ động vật','Nước lọc'],a:1,e:'Giảm muối & mỡ động vật giúp kiểm soát huyết áp.'},
+  {c:'health',q:'Người tiểu đường nên?',o:['Ăn nhiều đường','Hạn chế đường/tinh bột nhanh, chia nhỏ bữa','Bỏ hẳn bữa ăn'],a:1,e:'Kiểm soát đường huyết bằng chế độ ăn hợp lý, không bỏ bữa.'},
+  {c:'health',q:'Sau khi gần gũi, để giảm viêm đường tiết niệu (nữ) nên?',o:['Nhịn tiểu','Đi tiểu & vệ sinh','Không cần làm gì'],a:1,e:'Đi tiểu sau đó giúp giảm nguy cơ viêm đường tiết niệu.'},
+  {c:'health',q:'Người đau dạ dày nên tránh?',o:['Ăn đúng giờ, uống đủ nước','Đồ chua cay, rượu bia, bỏ bữa','Nhai kỹ'],a:1,e:'Đồ chua cay, rượu bia & bỏ bữa làm dạ dày nặng hơn.'},
+  {c:'health',q:'Để ngủ ngon nên?',o:['Cà phê tối, lướt điện thoại khuya','Ngủ–dậy đúng giờ, tránh caffeine tối, phòng tối yên tĩnh','Ăn thật no sát giờ ngủ'],a:1,e:'Vệ sinh giấc ngủ tốt giúp ngủ sâu hơn.'},
+  {c:'health',q:'Tiêm phòng HPV giúp?',o:['Ngừa cảm cúm','Giảm nguy cơ ung thư cổ tử cung & một số bệnh','Tăng chiều cao'],a:1,e:'HPV liên quan ung thư cổ tử cung; tiêm phòng giúp giảm nguy cơ.'},
+  {c:'food',q:'Ngày "đèn đỏ" nên ăn gì cho ấm bụng, bổ máu?',o:['Đồ lạnh, nước đá','Món ấm bổ máu (thịt bò, gừng, canh nóng)','Đồ chua'],a:1,e:'Món ấm & bổ máu giúp dễ chịu hơn trong kỳ.'},
+  {c:'food',q:'Bữa sáng đủ chất nên có?',o:['Chỉ cà phê','Tinh bột + đạm + rau/trái cây','Chỉ đồ ngọt'],a:1,e:'Cân đối tinh bột–đạm–vitamin cho năng lượng cả buổi.'},
+  {c:'food',q:'Để giữ dinh dưỡng khi nấu rau nên?',o:['Luộc thật lâu','Nấu vừa chín tới, không quá lâu','Chiên ngập dầu'],a:1,e:'Nấu quá lâu làm mất vitamin trong rau.'},
+  {c:'food',q:'Bảo quản đồ ăn thừa an toàn?',o:['Để ngoài qua đêm','Đậy kín, cho tủ lạnh sớm, hâm kỹ khi ăn lại','Trộn chung đồ sống & chín'],a:1,e:'Cho tủ lạnh sớm & hâm kỹ để tránh ngộ độc.'},
+  {c:'food',q:'Nên uống bao nhiêu nước mỗi ngày (ước lượng)?',o:['Khoảng 1,5–2 lít','Nửa ly','Chỉ khi khát mới uống, càng ít càng tốt'],a:0,e:'Khoảng 1,5–2 lít/ngày, điều chỉnh theo thời tiết & vận động.'},
+  {c:'money',q:'Nguyên tắc chia thu nhập 50/30/20 nghĩa là?',o:['50% tiết kiệm hết','50% thiết yếu / 30% mong muốn / 20% tiết kiệm','Tiêu hết, không để dành'],a:1,e:'50% nhu cầu thiết yếu, 30% mong muốn, 20% tiết kiệm/trả nợ.'},
+  {c:'money',q:'Quỹ dự phòng nên bằng khoảng?',o:['1 ngày lương','3–6 tháng chi tiêu','10 năm lương'],a:1,e:'Quỹ khẩn cấp ~3–6 tháng chi tiêu giúp an tâm khi biến cố.'},
+  {c:'money',q:'Mẹo mua sắm tiết kiệm?',o:['Mua theo cảm hứng','Lập danh sách, so giá, canh dịp sale','Trả góp mọi thứ'],a:1,e:'Danh sách + so giá + canh sale giúp không mua thừa.'},
+  {c:'money',q:'Để không "vung tay quá trán" nên?',o:['Không ghi chép gì','Ghi lại chi tiêu & đặt ngân sách tháng','Giấu tiền khắp nơi'],a:1,e:'Ghi chi tiêu & đặt ngân sách giúp kiểm soát dòng tiền.'},
+  {c:'money',q:'Khoản nợ nào nên ưu tiên trả trước?',o:['Nợ lãi cao (vd thẻ tín dụng)','Nợ lãi thấp nhất','Không cần trả nợ'],a:0,e:'Trả nợ lãi cao trước để giảm tiền lãi phải gánh.'},
+];
+function KnowledgeQuiz({onClose}){
+  const [best,setBest]=useLocal('ju.quizKnow',{});
+  const [stage,setStage]=useState('home');
+  const [cat,setCat]=useState('all');
+  const [qs,setQs]=useState([]);
+  const [idx,setIdx]=useState(0);
+  const [picked,setPicked]=useState(null);
+  const [score,setScore]=useState(0);
+  const CATS=[['all','🎲 Tất cả'],['couple','💞 Vợ chồng'],['child','👶 Nuôi con'],['comm','🕊️ Giao tiếp'],['spirit','🪷 Tâm linh'],['health','🩺 Sức khỏe'],['food','🍱 Bếp núc'],['money','💰 Tiền nong']];
+  const catLabel=(c)=>(CATS.find(x=>x[0]===c)||[0,''])[1];
+  const start=(c)=>{ const pool=c==='all'?QUIZ_BANK:QUIZ_BANK.filter(x=>x.c===c); const sh=[...pool].sort(()=>Math.random()-0.5).slice(0,10); setCat(c); setQs(sh); setIdx(0); setScore(0); setPicked(null); setStage('play'); };
+  const q=qs[idx];
+  const answer=(i)=>{ if(picked!=null||!q) return; setPicked(i); if(i===q.a) setScore(s=>s+1); };
+  const next=()=>{ if(idx+1>=qs.length){ const nb={...(best||{})}; if((nb[cat]||0)<score) nb[cat]=score; setBest(nb); setStage('done'); } else { setIdx(idx+1); setPicked(null); } };
+  return (
+    <div className="ov" onClick={onClose}>
+      <div className="sheet" onClick={e=>e.stopPropagation()} style={{minHeight:'64vh'}}>
+        <div className="x" onClick={onClose}>✕</div>
+        <h3>🧠 Đố kiến thức gia đình</h3>
+        {stage==='home' && <div>
+          <div className="muted" style={{fontSize:12.5,marginBottom:10,lineHeight:1.5}}>Trắc nghiệm rút từ các bài viết & thông tin trong app: vợ chồng, nuôi con, giao tiếp, tâm linh, sức khỏe, bếp núc, tiền nong. Mỗi lượt 10 câu — chọn chủ đề để bắt đầu.</div>
+          <div style={{display:'flex',flexWrap:'wrap',gap:8}}>
+            {CATS.map(([c,l])=>(
+              <button key={c} className="pill" style={{padding:'9px 12px',fontSize:13}} onClick={()=>start(c)}>{l}{best&&best[c]?<span style={{opacity:.65}}> · kỷ lục {best[c]}</span>:null}</button>
+            ))}
+          </div>
+        </div>}
+        {stage==='play' && q && <div>
+          <div className="row"><span className="muted" style={{fontSize:12}}>{catLabel(cat)} · Câu {idx+1}/{qs.length}</span><span className="grow"></span><span className="pill">Điểm {score}</span></div>
+          <div style={{fontSize:15,fontWeight:700,margin:'12px 0 10px',lineHeight:1.4}}>{q.q}</div>
+          {q.o.map((opt,i)=>{ let bg='var(--card)'; if(picked!=null){ if(i===q.a) bg='var(--good)'; else if(i===picked) bg='#e0436b'; } const white=picked!=null&&(i===q.a||i===picked);
+            return <button key={i} onClick={()=>answer(i)} style={{display:'block',width:'100%',textAlign:'left',padding:'11px 13px',margin:'6px 0',borderRadius:12,border:'1.5px solid var(--line)',background:bg,color:white?'#fff':'var(--text)',fontSize:13.5,fontWeight:600,lineHeight:1.4}}>{opt}</button>;
+          })}
+          {picked!=null && <div>
+            <div style={{fontSize:13,marginTop:8,padding:'9px 11px',background:'var(--chip)',borderRadius:10,lineHeight:1.5}}>{picked===q.a?'✅ Chính xác! ':'❌ Chưa đúng. '}{q.e||''}</div>
+            <button className="btn" style={{marginTop:12}} onClick={next}>{idx+1>=qs.length?'Xem kết quả →':'Câu tiếp →'}</button>
+          </div>}
+        </div>}
+        {stage==='done' && <div style={{textAlign:'center',padding:'12px 0'}}>
+          <div style={{fontSize:42}}>{score>=8?'🏆':score>=5?'👏':'💪'}</div>
+          <div style={{fontSize:22,fontWeight:800,marginTop:6}}>{score}/{qs.length} điểm</div>
+          <div className="muted" style={{fontSize:13,margin:'6px 0 4px',lineHeight:1.5}}>{score>=8?'Xuất sắc! Kiến thức gia đình vững ghê 🥰':score>=5?'Khá đấy! Ôn thêm chút nữa nhé.':'Cùng đọc thêm các bài trong app rồi thử lại nha 💗'}</div>
+          {best&&best[cat]?<div className="muted" style={{fontSize:12}}>Kỷ lục {catLabel(cat)}: {best[cat]}/10</div>:null}
+          <div className="row" style={{gap:8,marginTop:14}}>
+            <button className="btn grow" onClick={()=>start(cat)}>🔁 Chơi lại</button>
+            <button className="btn soft grow" onClick={()=>setStage('home')}>Đổi chủ đề</button>
+          </div>
+        </div>}
+      </div>
+    </div>
+  );
+}
 function App(){
   const [setup,setSetup]=useLocal('ju.setup',null);
   const [tab,setTab]=useState('home');
   const [me,setMe]=useState(()=> store.get('ju.me', (store.get('ju.setup',{})||{}).me || 'a'));
   const [flashMsg,setFlashMsg]=useState('');
   const [showSearch,setShowSearch]=useState(false);
+  const [showQuiz,setShowQuiz]=useState(false);
   const [unlocked,setUnlocked]=useState(false);
   const flash=(m)=>{ setFlashMsg(m); setTimeout(()=>setFlashMsg(''),2200); };
 
@@ -6912,11 +7018,13 @@ function App(){
         <div className="brand">Just <span className="heart">Us</span></div>
         <span className="grow"></span>
         <button className="iconbtn" onClick={()=>setShowSearch(true)} title="Tìm kiếm">🔎</button>
+        <button className="iconbtn" onClick={()=>setShowQuiz(true)} title="Đố kiến thức gia đình">🧠</button>
         <button className="who" onClick={()=>setMe(me==='a'?'b':'a')}>
           <span className="av">{people[me].avatar}</span>{people[me].name} ⇄
         </button>
       </div>
       {showSearch && <GlobalSearch go={setTab} onClose={()=>setShowSearch(false)}/>}
+      {showQuiz && <KnowledgeQuiz onClose={()=>setShowQuiz(false)}/>}
 
       {tab==='home' && <Home setup={setup} setSetup={setSetup} people={people} me={me} go={setTab}/>}
       {tab==='child' && <ChildCare people={people} me={me}/>}
