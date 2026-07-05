@@ -2038,6 +2038,7 @@ function AngerHelper(){
 
 /* ============ HOME ============ */
 const WHATS_NEW=[
+  {d:'2026-07-05',ic:'💗',t:'Trả bài thêm nhiều: tab 🎲 Chơi (Thật/Thách · xúc xắc · câu hỏi nóng dần), tab 📅 Hẹn hò (mẹo giữ lửa mỗi ngày · đặt đêm hẹn · tạo không khí), dự đoán "ngày vợ dễ hứng khởi" theo chu kỳ, góc sức khỏe nam + bài tư thế; noti báo chồng khi sắp tới ngày vợ hứng khởi.'},
   {d:'2026-07-05',ic:'🗂️',t:'Hồ sơ gọn hơn: mỗi mục có nút gập/mở (mặc định thu gọn) — dùng "Mở tất cả" trong 🎛️ Giao diện nếu muốn xem hết. Bỏ mục "Nguồn thời tiết".'},
   {d:'2026-07-05',ic:'💛',t:'Trả bài → tab "Cảm xúc": từ chu kỳ, app dự đoán ngày vợ dễ nhạy cảm (tiền kinh nguyệt / đèn đỏ) + gợi ý cách quan tâm. Mục kế hoạch thụ thai tạm ẩn (bật lại được).'},
   {d:'2026-07-05',ic:'💗',t:'"Trả bài" là menu lớn riêng trong Tụi mình — 6 tab: Nhật ký · Tín hiệu tế nhị · Muốn thử · Cảm xúc · Kiến thức vợ chồng · Riêng tư (khoá mã)'},
@@ -3425,7 +3426,37 @@ const INT_KNOW=[
   {t:'🌸 Gần gũi sau sinh',body:'• Thường nên đợi ~4–6 tuần sau sinh, khi sản dịch hết & cơ thể hồi phục — hỏi bác sĩ ở lần khám sau sinh.\n• Có thể khô hơn do nội tiết (nhất là khi cho con bú) — gel bôi trơn giúp dễ chịu.\n• Bắt đầu nhẹ nhàng, ưu tiên thoải mái của người vợ; dừng nếu đau.\n• Đừng quên tránh thai — có thể mang thai lại sớm dù chưa có kinh trở lại.'},
   {t:'💞 Màn dạo đầu & kết nối',body:'Kết nối cảm xúc trước khi gần gũi giúp cả hai thăng hoa hơn:\n• Dành thời gian âu yếm, hôn, trò chuyện — đừng vội.\n• Tạo không gian: ánh sáng dịu, nhạc nhẹ, điện thoại để xa.\n• Khen ngợi, chạm nhẹ, quan tâm cảm xúc người kia.\n• Hỏi xem người kia thích gì — mỗi người mỗi khác.'},
   {t:'🩺 Sức khỏe & an toàn',body:'• Vệ sinh trước & sau; đi tiểu sau khi gần gũi giúp giảm viêm đường tiết niệu (nữ).\n• Khám phụ khoa/nam khoa định kỳ; tiêm phòng HPV nếu có thể.\n• Nếu đau, khó chịu kéo dài, ra máu bất thường… nên đi khám.\n• Ngủ đủ, vận động, giảm rượu bia — đều tốt cho chuyện chăn gối.'},
+  {t:'🧘 Các tư thế quan hệ (tham khảo)',body:'Mỗi tư thế hợp mỗi lúc — quan trọng nhất là thoải mái & đồng thuận:\n• Đối mặt (truyền thống): gần gũi, dễ nhìn mắt, hôn & ôm nhau.\n• Nằm nghiêng ôm nhau ("thìa"): nhẹ nhàng, ít gắng sức — hợp khi mệt hoặc sau sinh.\n• Vợ ở trên: vợ chủ động nhịp độ & độ sâu, thoải mái cho chồng.\n• Ngồi ôm nhau: ấm áp, chậm rãi, hợp không gian nhỏ.\n• Áp lưng (chồng phía sau): kích thích khác lạ, nên bắt đầu chậm.\nMẹo: kê gối cho đỡ mỏi; khởi động bằng màn dạo đầu; nói cho nhau biết chỗ nào dễ chịu; dừng ngay nếu đau. Sau sinh nên ưu tiên tư thế nhẹ nhàng và hỏi bác sĩ nếu còn đau.'},
 ];
+const INT_SPARK=[
+  'Hôm nay ôm nửa kia thật lâu, không nói gì.','Nhắn một tin ngọt ngào giữa giờ làm.','Khen nửa kia một điều bạn thấy hấp dẫn.','Pha cho nửa kia ly nước/đồ uống họ thích.','Hôn tạm biệt lâu hơn thường lệ (6 giây).','Tối nay cất điện thoại 30 phút, chỉ hai đứa.','Nắm tay khi đi cạnh nhau.','Massage vai cho nửa kia 5 phút.','Nhắc lại một kỷ niệm đẹp của hai đứa.','Chuẩn bị bất ngờ nhỏ: món ăn, ghi chú, hoa.','Nhìn vào mắt nhau 1 phút, không cười.','Nói "cảm ơn vì…" một điều cụ thể.','Cùng nghe một bài hát kỷ niệm.','Rủ nửa kia tắm/thư giãn cùng tối nay.','Viết 3 điều bạn biết ơn về nửa kia.','Lên kế hoạch một buổi hẹn cuối tuần.','Ôm từ phía sau khi họ đang làm việc nhà.','Gửi một tấm ảnh kỷ niệm kèm lời nhắn.','Chủ động làm giúp việc họ hay làm.','Thì thầm một điều dễ thương vào tai họ.','Khen ngoại hình nửa kia hôm nay.','Chuẩn bị bữa sáng/cà phê cho nửa kia.','Dành 15 phút hỏi han ngày của nhau.','Gửi một lời "thả thính" bất ngờ.','Cùng xem hoàng hôn / uống trà tối.','Tặng một cái ôm 20 giây trước khi ngủ.','Viết một mẩu giấy nhắn để nơi họ dễ thấy.','Đề nghị một buổi tối "hẹn hò tại nhà".',
+];
+const INT_TRUTHS=[
+  'Lần đầu bạn thấy rung động với nửa kia là khi nào?','Điều gì ở nửa kia khiến bạn thấy hấp dẫn nhất?','Kỷ niệm gần gũi nào bạn nhớ nhất?','Có điều gì bạn muốn thử mà chưa dám nói?','Bạn thích được âu yếm ở đâu nhất?','Khoảnh khắc nào khiến bạn thấy được yêu nhất?','Điều nhỏ nào nửa kia làm khiến bạn "tan chảy"?','Bạn thích chủ động hay được chủ động hơn?','Buổi hẹn trong mơ của bạn là gì?','Có điều gì bạn tò mò muốn thử cùng nhau?','Bạn thấy mình quyến rũ nhất khi nào?','Điều gì khiến bạn thấy an toàn & thoải mái nhất bên nhau?','Bạn muốn nghe nửa kia nói câu gì nhiều hơn?','Bí mật nhỏ dễ thương nào bạn chưa kể?',
+];
+const INT_DARES=[
+  'Hôn nửa kia 10 giây.','Thì thầm điều bạn thích vào tai nửa kia.','Massage vai nửa kia 1 phút.','Ôm nửa kia thật chặt 20 giây.','Nhìn mắt nhau 30 giây không rời.','Khen 3 điều hấp dẫn ở nửa kia.','Nắm tay & kể một điều bạn mong muốn tối nay.','Hôn lên trán, má rồi tay nửa kia.','Nhảy một điệu chậm cùng nhau.','Gửi nửa kia một ánh mắt "mời gọi".','Vuốt tóc nửa kia trong 30 giây.','Kể một điều bạn thấy "cuốn" ở nửa kia hôm nay.','Cù nhẹ cho nửa kia cười.','Đổi vai: để nửa kia "ra lệnh" một việc dễ thương.',
+];
+const INT_DICE_ACT=['💋 Hôn','🤲 Chạm nhẹ','💆 Massage','🌬️ Thổi nhẹ','🫦 Cắn yêu','🤗 Ôm','😙 Hôn phớt','👅 Liếm nhẹ'];
+const INT_DICE_PART=['👄 Môi','🧣 Cổ','👂 Tai','🤚 Bàn tay','💪 Vai','🫀 Ngực','🦵 Đùi','🔙 Lưng'];
+const INT_HOT=[
+  'Điều gì khiến bạn thấy thư giãn nhất bên nhau?','Bạn thích được ôm kiểu nào?','Nụ hôn kiểu nào bạn thích nhất?','Bạn thích được chạm ở đâu?','Điều gì khiến bạn dễ "nổi hứng"?','Bạn thích không khí thế nào cho một tối lãng mạn?','Bạn muốn thử điều gì mới trong tuần này?','Có tưởng tượng nhẹ nhàng nào bạn từng nghĩ tới?','Điều gì nửa kia làm khiến bạn "mê mẩn"?','Bạn muốn dẫn dắt hay được dẫn dắt tối nay?','Một điều táo bạo (trong thoải mái) bạn muốn thử?','Cách nào giúp bạn thấy được khao khát nhất?',
+];
+const INT_AMBIANCE=['🕯️ Thắp nến','🎵 Bật nhạc nhẹ','💡 Chỉnh đèn dịu','📵 Điện thoại để xa','🚪 Khoá cửa phòng','🌸 Xịt hương thơm','🍷 Chuẩn bị đồ uống','🛏️ Thay ga giường sạch','🧴 Sẵn gel bôi trơn','🚿 Tắm gội thơm tho'];
+const INT_PLAYLISTS=[
+  {n:'R&B nhẹ nhàng',d:'The Weeknd, SZA, Daniel Caesar…'},
+  {n:'Lo-fi ấm cúng',d:'nhạc lo-fi chill, không lời'},
+  {n:'Ballad Việt tình',d:'Vũ, Hà Anh Tuấn, Trung Quân…'},
+  {n:'Jazz tối',d:'jazz mượt, tiếng saxophone'},
+  {n:'Acoustic dịu',d:'guitar mộc, giọng hát ấm'},
+];
+const INT_MEN=[
+  {t:'🏋️ Bài tập Kegel cho nam',body:'Kegel giúp cơ sàn chậu khỏe → kiểm soát tốt hơn, cải thiện phong độ.\n• Xác định cơ: siết như khi nhịn tiểu (chỉ để nhận biết, KHÔNG tập lúc đang đi tiểu).\n• Bài tập: siết 3–5 giây, thả 3–5 giây × 10 lần, 3 hiệp/ngày.\n• Tăng dần lên siết 10 giây. Thở đều, không nín thở, không gồng bụng/mông.\n• Kiên trì 4–6 tuần sẽ thấy cải thiện.'},
+  {t:'💪 Mẹo cải thiện phong độ',body:'• Ngủ đủ 7–8 tiếng — thiếu ngủ giảm testosterone.\n• Tập thể dục đều (chân & tim mạch), giữ cân hợp lý.\n• Ăn đủ kẽm, omega-3, rau xanh; hạn chế rượu bia; bỏ thuốc lá.\n• Giảm stress — lo âu là "kẻ thù" số 1 của phong độ.\n• Uống đủ nước; hạn chế đồ ăn nhanh & đường.'},
+  {t:'🧘 Thư giãn & giảm lo âu',body:'Áp lực "phải làm tốt" dễ gây trục trặc. Cách gỡ:\n• Tập trung vào cảm giác & kết nối, đừng đặt mục tiêu "thành tích".\n• Thở sâu 4-7-8 (hít 4s, giữ 7s, thở 8s) vài lần trước khi gần gũi.\n• Trò chuyện cởi mở với vợ — được thấu hiểu giúp thả lỏng.\n• Ngủ đủ, giảm caffeine buổi tối.'},
+  {t:'🩺 Khi nào nên đi khám nam khoa',body:'Nên đi khám nếu:\n• Trục trặc kéo dài vài tuần (không phải do mệt/stress nhất thời).\n• Đau, sưng, u cục, tiểu buốt/rắt, ra dịch bất thường.\n• Giảm ham muốn rõ rệt, mệt mỏi kéo dài (có thể do nội tiết).\n👉 Nên khám nam khoa/tổng quát định kỳ 6–12 tháng/lần. Đừng ngại — bác sĩ giúp bạn khỏe hơn.'},
+];
+const INT_WD=[[1,'Thứ 2'],[2,'Thứ 3'],[3,'Thứ 4'],[4,'Thứ 5'],[5,'Thứ 6'],[6,'Thứ 7'],[0,'Chủ nhật']];
 const INT_CARE={
   pms:['Kiên nhẫn hơn, tránh tranh luận căng thẳng','Chủ động hỏi han, ôm & vỗ về','Chuẩn bị món / đồ ngọt vợ thích','Gánh bớt việc nhà để vợ nghỉ','Khen & trấn an — đừng chê hay trêu vô duyên'],
   period:['Giữ ấm, pha nước ấm / trà gừng cho vợ','Chuẩn bị sẵn băng vệ sinh, túi chườm','Nhận việc nhà & trông con để vợ nghỉ','Tránh đồ lạnh/chua; hỏi vợ có đau không','Nhẹ nhàng, kiên nhẫn, quan tâm nhiều hơn'],
@@ -3444,6 +3475,10 @@ function IntimacySection({people,me,flash,view}){
   const [lnote,setLnote]=useState('');
   const [wtext,setWtext]=useState('');
   const [np,setNp]=useState('');
+  const [truth,setTruth]=useState(null);
+  const [dare,setDare]=useState(null);
+  const [dice,setDice]=useState(null);
+  const [sparkAlt,setSparkAlt]=useState(0);
   const today=todayISO();
   const set=(patch)=>setD({...data,...patch});
   const other=me==='a'?'b':'a';
@@ -3502,6 +3537,15 @@ function IntimacySection({people,me,flash,view}){
   const wifeName=(people&&people.b&&people.b.name)||'vợ';
   const emo=(()=>{ if(!info) return null; if(info.onPeriod) return {k:'period',e:'🌸',t:'Kỳ đèn đỏ',d:wifeName+' có thể mệt, đau bụng & nhạy cảm hơn. Hãy nhẹ nhàng, quan tâm.'}; const dtp=info.days; if(dtp<=5) return {k:'pms',e:'💛',t:'Tiền kinh nguyệt · dễ nhạy cảm',d:'Còn '+dtp+' ngày tới kỳ. Nội tiết thay đổi khiến '+wifeName+' dễ xúc động, tủi thân hoặc cáu. Kiên nhẫn & ân cần hơn nhé.'}; if(dtp>=12&&dtp<=16) return {k:'ov',e:'🌱',t:'Rụng trứng',d:wifeName+' thường vui vẻ, nhiều năng lượng.'}; return {k:'stable',e:'🙂',t:'Giai đoạn ổn định',d:'Tâm trạng '+wifeName+' thường tốt.'}; })();
   const sensWin=(()=>{ if(!info) return null; const np=new Date(info.date+'T00:00:00'); const ps=new Date(np); ps.setDate(ps.getDate()-5); const pe=new Date(np); pe.setDate(pe.getDate()+((info.length||5)-1)); const f=x=>x.getDate()+'/'+(x.getMonth()+1); return {range:f(ps)+'–'+f(pe)}; })();
+  const pick=(arr)=>arr[Math.floor(Math.random()*arr.length)];
+  const libWin=(()=>{ if(!info||info.onPeriod) return null; const np2=new Date(info.date+'T00:00:00'); const ov=new Date(np2); ov.setDate(ov.getDate()-14); const a=new Date(ov); a.setDate(a.getDate()-2); const b=new Date(ov); b.setDate(b.getDate()+1); const f=x=>x.getDate()+'/'+(x.getMonth()+1); const t=new Date(today+'T00:00:00'); return {range:f(a)+'–'+f(b),inWin:(t>=a&&t<=b)}; })();
+  const sparkTip=INT_SPARK[(((dIdx+sparkAlt)%INT_SPARK.length)+INT_SPARK.length)%INT_SPARK.length];
+  const dn=data.dateNight||{weekday:null,note:''};
+  const setDN=(vv)=>set({dateNight:vv});
+  const nextDateNight=(()=>{ if(dn.weekday==null) return null; const t=new Date(today+'T00:00:00'); const diff=(dn.weekday-t.getDay()+7)%7; const d2=new Date(t); d2.setDate(d2.getDate()+diff); const lbl=(INT_WD.find(w=>w[0]===dn.weekday)||[0,''])[1]; return lbl+', '+d2.getDate()+'/'+(d2.getMonth()+1)+(diff===0?' (tối nay)':' (còn '+diff+' ngày)'); })();
+  const amb=data.ambiance||[];
+  const toggleAmb=(x)=>set({ambiance: amb.includes(x)?amb.filter(y=>y!==x):[...amb,x]});
+  const hotIdx=data.hotIdx||0;
   const desOf=(dv)=>INT_DESIRE.find(x=>x.v===dv)||{e:'',l:''};
   return (
     <div>
@@ -3584,6 +3628,7 @@ function IntimacySection({people,me,flash,view}){
                   <div style={{fontSize:12.5,marginTop:3,lineHeight:1.55,opacity:.9}}>{emo.d}</div>
                 </div>
                 <div className="muted" style={{fontSize:12,marginTop:8}}>Kỳ tiếp theo: <b>{fmtDateVN(info.date)}</b> · còn <b>{info.days}</b> ngày{sensWin?<span> · ngày nhạy cảm dự kiến <b>{sensWin.range}</b></span>:null}</div>
+                {libWin && <div style={{fontSize:13,marginTop:8,background:'var(--chip)',borderRadius:10,padding:'8px 11px'}}>💗 <b>{wifeName}</b> dễ hứng khởi (quanh rụng trứng): <b>{libWin.range}</b>{libWin.inWin?<span className="pill" style={{marginLeft:6,background:'var(--primary)',color:'#fff'}}>Hôm nay 😏</span>:null}</div>}
                 {INT_CARE[emo.k] && <div style={{marginTop:10}}>
                   <div className="hc-title" style={{fontSize:12.5}}>💡 Gợi ý cho bạn</div>
                   <ul style={{margin:'4px 0 0',paddingLeft:18,fontSize:12.5,lineHeight:1.7}}>{INT_CARE[emo.k].map((t,i)=><li key={i}>{t}</li>)}</ul>
@@ -3608,7 +3653,65 @@ function IntimacySection({people,me,flash,view}){
 
       {v==='know' && <div>
         {INT_KNOW.map((a,i)=><Collapse key={i} id={'int-k'+i} defaultOpen={false} title={a.t}><div className="card"><div style={{fontSize:13,lineHeight:1.7,whiteSpace:'pre-line'}}>{a.body}</div></div></Collapse>)}
+        <div className="sec-title" style={{marginTop:14}}>💪 Góc sức khỏe nam</div>
+        {INT_MEN.map((a,i)=><Collapse key={'m'+i} id={'int-m'+i} defaultOpen={false} title={a.t}><div className="card"><div style={{fontSize:13,lineHeight:1.7,whiteSpace:'pre-line'}}>{a.body}</div></div></Collapse>)}
         <div className="muted center" style={{fontSize:11,margin:'6px 14px'}}>Thông tin tham khảo, không thay thế tư vấn của bác sĩ.</div>
+      </div>}
+
+      {v==='games' && <div>
+        <div className="card">
+          <div className="hc-title" style={{marginBottom:8}}>🎭 Thật hay Thách</div>
+          <div className="row" style={{gap:8}}>
+            <button className="btn grow" onClick={()=>{ setDare(null); setTruth(pick(INT_TRUTHS)); }}>💬 Thật</button>
+            <button className="btn soft grow" onClick={()=>{ setTruth(null); setDare(pick(INT_DARES)); }}>🔥 Thách</button>
+          </div>
+          {truth && <div style={{marginTop:10,fontSize:14,lineHeight:1.5,background:'var(--chip)',borderRadius:10,padding:'10px 12px'}}>💬 {truth}</div>}
+          {dare && <div style={{marginTop:10,fontSize:14,lineHeight:1.5,background:'var(--chip)',borderRadius:10,padding:'10px 12px'}}>🔥 {dare}</div>}
+        </div>
+        <div className="card">
+          <div className="hc-title" style={{marginBottom:8}}>🎲 Xúc xắc tình yêu</div>
+          <button className="btn" onClick={()=>setDice({a:pick(INT_DICE_ACT),p:pick(INT_DICE_PART)})}>🎲 Tung xúc xắc</button>
+          {dice && <div style={{marginTop:12,fontSize:20,fontWeight:800,textAlign:'center'}}>{dice.a} <span style={{opacity:.6}}>→</span> {dice.p}</div>}
+        </div>
+        <div className="card">
+          <div className="hc-title" style={{marginBottom:8}}>🌶️ Câu hỏi nóng dần</div>
+          <div style={{fontSize:14,lineHeight:1.5}}>{INT_HOT[Math.min(hotIdx,INT_HOT.length-1)]}</div>
+          <div className="muted" style={{fontSize:11.5,marginTop:4}}>Câu {Math.min(hotIdx+1,INT_HOT.length)}/{INT_HOT.length}</div>
+          <div className="row" style={{gap:8,marginTop:8}}>
+            <button className="btn soft grow" onClick={()=>set({hotIdx:Math.max(0,hotIdx-1)})}>‹ Trước</button>
+            <button className="btn grow" onClick={()=>set({hotIdx:Math.min(INT_HOT.length-1,hotIdx+1)})}>Tiếp ›</button>
+          </div>
+        </div>
+        <div className="muted center" style={{fontSize:11,margin:'6px 14px'}}>Chơi vui, luôn tôn trọng & đồng thuận nhau 💞</div>
+      </div>}
+
+      {v==='date' && <div>
+        <div className="card">
+          <div className="hc-title" style={{marginBottom:6}}>💡 Mẹo giữ lửa hôm nay</div>
+          <div style={{fontSize:14,lineHeight:1.55}}>{sparkTip}</div>
+          <button className="muted" style={{fontSize:11.5,marginTop:8}} onClick={()=>setSparkAlt(a=>a+1)}>🔀 Mẹo khác</button>
+        </div>
+        <div className="card">
+          <div className="hc-title" style={{marginBottom:8}}>📅 Đêm hẹn hò</div>
+          <div className="muted" style={{fontSize:12,marginBottom:6}}>Chọn một tối cố định trong tuần dành riêng cho hai đứa.</div>
+          <div style={{display:'flex',flexWrap:'wrap',gap:6}}>
+            {INT_WD.map(([wd,l])=><button key={wd} className="pill" style={{background:dn.weekday===wd?'var(--primary)':'var(--chip)',color:dn.weekday===wd?'#fff':'var(--chip-tx)'}} onClick={()=>setDN({...dn,weekday:dn.weekday===wd?null:wd})}>{l}</button>)}
+          </div>
+          {dn.weekday!=null && <React.Fragment>
+            <div style={{marginTop:8,fontSize:13.5}}>Đêm hẹn tới: <b>{nextDateNight}</b></div>
+            <input className="inp" style={{marginTop:8,fontSize:13}} placeholder="Ý tưởng cho đêm hẹn (tuỳ chọn)" value={dn.note||''} onChange={e=>setDN({...dn,note:e.target.value})}/>
+          </React.Fragment>}
+          <div className="muted" style={{fontSize:11,marginTop:8}}>Bật "💗 Trả bài" trong 🔔 Thông báo để được nhắc vào tối hẹn.</div>
+        </div>
+        <div className="card">
+          <div className="hc-title" style={{marginBottom:8}}>🕯️ Tạo không khí</div>
+          <div className="muted" style={{fontSize:12,marginBottom:6}}>Tick những thứ muốn chuẩn bị:</div>
+          <div style={{display:'flex',flexWrap:'wrap',gap:6}}>
+            {INT_AMBIANCE.map(x=><button key={x} className="pill" style={{background:amb.includes(x)?'var(--good)':'var(--chip)',color:amb.includes(x)?'#fff':'var(--chip-tx)'}} onClick={()=>toggleAmb(x)}>{amb.includes(x)?'✓ ':''}{x}</button>)}
+          </div>
+          <div className="hc-title" style={{fontSize:12.5,marginTop:12}}>🎵 Gợi ý playlist</div>
+          {INT_PLAYLISTS.map(p=><div key={p.n} className="muted" style={{fontSize:12.5,padding:'3px 0'}}>• <b>{p.n}</b> — {p.d}</div>)}
+        </div>
       </div>}
 
       {v==='privacy' && <div className="card">
@@ -4513,7 +4616,7 @@ function computeDueNotis(noti){
   if(on('nhanNhau')){ const me=store.get('ju.me',setup.me||'a'); const ns=store.get('ju.notesSeen',{})||{}; const unread=(store.get('ju.notes',[])||[]).filter(n=>n&&n.by&&n.by!==me&&(n.createdAt||0)>(ns[me]||0)); if(unread.length) out.push({id:'notes'+unread.length,title:'💌 Nửa kia gửi bạn '+unread.length+' lời nhắn mới ("Nhắn nhau")'}); }
   if(on('tamLinh')) (upcomingSpiritual(2)||[]).slice(0,2).forEach((h,i)=>{ if(h.d!=null&&h.d>=0&&h.d<=2) out.push({id:'sp'+(h.name||i),title:'🪷 '+h.name+(h.d===0?' — hôm nay':' — còn '+h.d+' ngày')}); });
   if(on('chuky')){ const p=periodNext(); if(p&&!p.onPeriod&&p.days!=null&&p.days<=2) out.push({id:'period',title:'🌸 Kỳ kinh dự kiến — còn '+p.days+' ngày'}); }
-  if(on('trabai')){ const it=store.get('ju.intimacy',null); if(it){ const me=store.get('ju.me',setup.me||'a'); const sg=it.signal; const sn=store.get('ju.intimacySeen',{})||{}; if(sg&&sg.by&&sg.by!==me&&!(sg.reply&&sg.reply.by===me)&&(sg.at||0)>(sn[me]||0)) out.push({id:'intsig'+(sg.at||''),title:'💗 Nửa kia vừa bật tín hiệu cho bạn 😏'}); const lg=it.log||{}; const ks=Object.keys(lg).sort(); const lastd=ks.length?ks[ks.length-1]:null; if(lastd){ const ds=Math.round((new Date(todayISO()+'T00:00:00')-new Date(lastd+'T00:00:00'))/86400000); if(ds>=14) out.push({id:'intlong',title:'💗 Đã '+ds+' ngày rồi — dành cho nhau chút thời gian nhé 😊'}); } } }
+  if(on('trabai')){ const it=store.get('ju.intimacy',null); if(it){ const me=store.get('ju.me',setup.me||'a'); const sg=it.signal; const sn=store.get('ju.intimacySeen',{})||{}; if(sg&&sg.by&&sg.by!==me&&!(sg.reply&&sg.reply.by===me)&&(sg.at||0)>(sn[me]||0)) out.push({id:'intsig'+(sg.at||''),title:'💗 Nửa kia vừa bật tín hiệu cho bạn 😏'}); const lg=it.log||{}; const ks=Object.keys(lg).sort(); const lastd=ks.length?ks[ks.length-1]:null; if(lastd){ const ds=Math.round((new Date(todayISO()+'T00:00:00')-new Date(lastd+'T00:00:00'))/86400000); if(ds>=14) out.push({id:'intlong',title:'💗 Đã '+ds+' ngày rồi — dành cho nhau chút thời gian nhé 😊'}); } const dnw=it.dateNight&&it.dateNight.weekday; if(dnw!=null && new Date(todayISO()+'T00:00:00').getDay()===dnw) out.push({id:'datenight',title:'📅 Tối nay là đêm hẹn hò của hai đứa 💞'+(it.dateNight.note?' — '+it.dateNight.note:'')}); if(me==='a'){ const pinfo=periodNext(); if(pinfo&&!pinfo.onPeriod&&pinfo.days!=null){ const dOv=pinfo.days-14; if(dOv>=-1&&dOv<=2) out.push({id:'lib'+dOv,title:dOv<=0?'💗 Hôm nay vợ có thể hứng khởi hơn (quanh rụng trứng) 😏':'💗 Còn '+dOv+' ngày tới ngày vợ dễ hứng khởi 😏'}); } } } }
   return out;
 }
 function NotiRunner(){
@@ -4567,7 +4670,7 @@ function NotiSettings({flash}){
   const test=async()=>{ if(!supported){ flash&&flash('Máy không hỗ trợ thông báo'); return; } try{ const reg=await navigator.serviceWorker.ready; reg.showNotification('Thử thông báo 🔔',{body:'Đây là thông báo thử từ Just Us 💗',icon:'icon.svg',badge:'icon.svg'}); }catch(e){ flash&&flash('Không gửi được — kiểm tra quyền thông báo'); } };
   const tog=(k)=>setNoti({...noti,cats:{...(noti.cats||{}),[k]:!((noti.cats||{})[k]!==false)}});
   const cats=noti.cats||{};
-  const CATS=[['kyNiem','💞 Ngày yêu nhau · cột mốc'],['sukien','📅 Sự kiện gia đình'],['viec','✅ Việc tới hạn · ưu tiên cao'],['thucDon','🍱 Món nấu hôm nay · đi chợ'],['nganSach','💰 Cảnh báo ngân sách tháng'],['yeuThuong','💌 Nhắc gửi lời yêu thương'],['nhanNhau','💌 Nhắn nhau (có lời nhắn mới)'],['trabai','💗 Trả bài (tín hiệu · nhắc gần gũi)'],['tamLinh','🪷 Mùng 1 · rằm · lễ'],['ngayNho','🎂 Sinh nhật · giỗ · lễ cần quà'],['chuky','🌸 Chu kỳ sắp đến']];
+  const CATS=[['kyNiem','💞 Ngày yêu nhau · cột mốc'],['sukien','📅 Sự kiện gia đình'],['viec','✅ Việc tới hạn · ưu tiên cao'],['thucDon','🍱 Món nấu hôm nay · đi chợ'],['nganSach','💰 Cảnh báo ngân sách tháng'],['yeuThuong','💌 Nhắc gửi lời yêu thương'],['nhanNhau','💌 Nhắn nhau (có lời nhắn mới)'],['trabai','💗 Trả bài (tín hiệu · ngày vợ hứng khởi · đêm hẹn)'],['tamLinh','🪷 Mùng 1 · rằm · lễ'],['ngayNho','🎂 Sinh nhật · giỗ · lễ cần quà'],['chuky','🌸 Chu kỳ sắp đến']];
   return (
     <div className="card">
       <div className="row"><span className="hc-title">🔔 Thông báo điện thoại</span><span className="grow"></span>
@@ -4850,6 +4953,8 @@ const US_SEGS=[
   {k:'ibSig',icon:'😏',label:'Tín hiệu'},
   {k:'ibWant',icon:'🌟',label:'Muốn thử'},
   {k:'ibHealth',icon:'💛',label:'Cảm xúc'},
+  {k:'ibGame',icon:'🎲',label:'Chơi'},
+  {k:'ibDate',icon:'📅',label:'Hẹn hò'},
   {k:'ibKnow',icon:'📖',label:'Kiến thức'},
   {k:'ibLock',icon:'🔒',label:'Riêng tư'},
   {k:'menu',icon:'🍱',label:'Thực đơn'},
@@ -4870,7 +4975,7 @@ const US_GROUPS=[
   {k:'plan',icon:'📅',label:'Kế hoạch & Lịch',items:['events','dates','timeline']},
   {k:'bigfam',icon:'🏡',label:'Gia đình lớn',items:['projects','spirit','family']},
   {k:'health',icon:'🩺',label:'Sức khỏe',items:['health','period']},
-  {k:'trabai',icon:'💗',label:'Trả bài',items:['ibLog','ibSig','ibWant','ibHealth','ibKnow','ibLock']},
+  {k:'trabai',icon:'💗',label:'Trả bài',items:['ibLog','ibSig','ibWant','ibHealth','ibGame','ibDate','ibKnow','ibLock']},
 ];
 const US_SEG_MAP=Object.fromEntries(US_SEGS.map(s=>[s.k,s]));
 const MENU_REGISTRY=[
@@ -4951,6 +5056,8 @@ function UsTab({people,me,flash}){
       {seg==='ibSig' && <IntimacySection people={people} me={me} flash={flash} view="signal"/>}
       {seg==='ibWant' && <IntimacySection people={people} me={me} flash={flash} view="want"/>}
       {seg==='ibHealth' && <IntimacySection people={people} me={me} flash={flash} view="health"/>}
+      {seg==='ibGame' && <IntimacySection people={people} me={me} flash={flash} view="games"/>}
+      {seg==='ibDate' && <IntimacySection people={people} me={me} flash={flash} view="date"/>}
       {seg==='ibKnow' && <IntimacySection people={people} me={me} flash={flash} view="know"/>}
       {seg==='ibLock' && <IntimacySection people={people} me={me} flash={flash} view="privacy"/>}
       {seg==='menu' && <WeeklyMenu me={me}/>}
