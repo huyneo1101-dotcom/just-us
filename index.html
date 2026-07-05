@@ -2062,7 +2062,7 @@ function WhatsNewCard(){
   const newest=WHATS_NEW[0]?WHATS_NEW[0].d:'';
   const nUnseen=WHATS_NEW.filter(x=>x.d>seen).length;
   const markSeen=()=>{ store.set('ju.whatsNewSeen',newest); setSeen(newest); };
-  const list=all?WHATS_NEW:WHATS_NEW.slice(0,3);
+  const list=all?WHATS_NEW:WHATS_NEW.slice(0,1);
   return (
     <div className="card" style={{margin:'12px 14px 0',borderColor:nUnseen>0?'var(--primary)':'var(--line)'}}>
       <div className="row">
@@ -2080,7 +2080,7 @@ function WhatsNewCard(){
           </div>
         ))}
       </div>
-      {WHATS_NEW.length>3 && <button className="muted" style={{fontSize:12,marginTop:6,cursor:'pointer'}} onClick={()=>setAll(a=>!a)}>{all?'▴ Thu gọn':'▾ Xem tất cả ('+WHATS_NEW.length+')'}</button>}
+      {WHATS_NEW.length>1 && <button className="muted" style={{fontSize:12,marginTop:6,cursor:'pointer'}} onClick={()=>setAll(a=>!a)}>{all?'▴ Thu gọn':'▾ Xem tất cả ('+WHATS_NEW.length+')'}</button>}
     </div>
   );
 }
