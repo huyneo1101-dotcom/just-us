@@ -277,7 +277,7 @@ const store={
 const SB_URL='https://vvgkjgvzjeklaadusbne.supabase.co';
 const SB_KEY='sb_publishable_DMMPv5L2kGhrHTxeQ72iKw_dIh13iT1';
 // Các key được đồng bộ (KHÔNG gồm ju.me/ju.device/ju.sync — đó là riêng từng máy)
-const SYNC_KEYS=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood','ju.qa','ju.timeline','ju.coupons','ju.chores','ju.lovejar','ju.quiz','ju.city','ju.goals','ju.checkin','ju.challengeDone','ju.homecfg','ju.diary','ju.projects','ju.vinhaUrl','ju.checkins','ju.menu','ju.period','ju.menuPlan','ju.accuKey','ju.habits','ju.hiddenSpots','ju.usOrder','ju.eventPrefs','ju.child','ju.childGrowth','ju.childVaccines','ju.childMilestones','ju.childDiary','ju.partnerWishes','ju.todos','ju.spotify','ju.dishPrefs','ju.favDishes','ju.childPack','ju.childSkills','ju.childMed','ju.childIllness','ju.childWords','ju.childTantrum','ju.childParenting','ju.saveTips','ju.saveCustom','ju.funPrefs','ju.routine','ju.routineIssues','ju.noti','ju.family','ju.health','ju.transfers','ju.skillGuidesDone','ju.expenses','ju.budget','ju.vinhaSync','ju.menuOrder','ju.notesSeen'];
+const SYNC_KEYS=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood','ju.qa','ju.timeline','ju.coupons','ju.chores','ju.lovejar','ju.quiz','ju.city','ju.goals','ju.checkin','ju.challengeDone','ju.homecfg','ju.diary','ju.projects','ju.vinhaUrl','ju.checkins','ju.menu','ju.period','ju.menuPlan','ju.accuKey','ju.habits','ju.hiddenSpots','ju.usOrder','ju.eventPrefs','ju.child','ju.childGrowth','ju.childVaccines','ju.childMilestones','ju.childDiary','ju.partnerWishes','ju.todos','ju.spotify','ju.dishPrefs','ju.favDishes','ju.childPack','ju.childSkills','ju.childMed','ju.childIllness','ju.childWords','ju.childTantrum','ju.childParenting','ju.saveTips','ju.saveCustom','ju.funPrefs','ju.routine','ju.routineIssues','ju.noti','ju.family','ju.health','ju.transfers','ju.skillGuidesDone','ju.expenses','ju.budget','ju.vinhaSync','ju.menuOrder','ju.notesSeen','ju.intimacy','ju.intimacySeen'];
 let _sb=null;
 function sbClient(){
   if(_sb) return _sb;
@@ -2038,6 +2038,7 @@ function AngerHelper(){
 
 /* ============ HOME ============ */
 const WHATS_NEW=[
+  {d:'2026-07-05',ic:'💗',t:'Mục mới "Trả bài" (Sức khỏe): nhật ký & nhịp gần gũi, tín hiệu tế nhị, muốn thử cùng nhau, gợi ý theo chu kỳ, kiến thức vợ chồng, khoá riêng tư bằng mã'},
   {d:'2026-07-05',ic:'🆕',t:'Trang chủ có ô "Mới cập nhật" điểm các thay đổi mới nhất'},
   {d:'2026-07-04',ic:'🔀',t:'Đổi thứ tự mục trong mọi menu + Mở/thu gọn tất cả mục dài (trong Hồ Sơ → Giao diện)'},
   {d:'2026-07-04',ic:'💵',t:'Tiền nong: "Money Lover" tự đồng bộ chi tiêu chung nhà + Sóc từ VíNhà; thêm mục Ngân sách'},
@@ -3374,6 +3375,224 @@ function PeriodTracker({people}){
     </div>
   );
 }
+/* ============ Trả bài (chuyện gần gũi vợ chồng) — mục riêng tư ============ */
+let _intimacyUnlocked=false;
+function hashPin(s){ let h=5381; s=String(s||''); for(let i=0;i<s.length;i++){ h=((h*33)^s.charCodeAt(i))>>>0; } return 'h'+h.toString(36); }
+const INT_MOODS=['😏','😍','🔥','🥰','😌','🌙'];
+const INT_DESIRE=[{v:0,e:'😴',l:'Nghỉ ngơi'},{v:1,e:'🙂',l:'Bình thường'},{v:2,e:'😊',l:'Muốn gần'},{v:3,e:'🔥',l:'Rất muốn'}];
+const INT_HEAT=['#e7cbd8','#eaa9c6','#e57fac','#db4f8f','#c22f76'];
+const INT_WANT_SEED=[
+  'Hẹn hò lãng mạn rồi về nhà sớm',
+  'Massage thư giãn cho nhau',
+  'Tắm / thư giãn cùng nhau',
+  'Một tối không điện thoại — chỉ hai đứa',
+  'Đổi không gian: khách sạn / homestay một đêm',
+  'Viết điều thầm kín muốn thử rồi trao nhau',
+  'Bất ngờ diện đồ ngủ đẹp cho nửa kia',
+  'Nến thơm + nhạc nhẹ tạo không khí',
+  'Đặt "buổi hẹn của hai đứa" cố định mỗi tuần',
+  'Cùng xem phim lãng mạn rồi âu yếm',
+  'Ôm nhau ngủ, không cần làm gì thêm',
+  'Nhắn nhau những lời ngọt ngào giữa ngày',
+];
+const INT_CHALLENGES=[
+  {t:'Tuần của lời khen',d:'Mỗi ngày nói một điều bạn thấy hấp dẫn ở nửa kia.'},
+  {t:'Hẹn hò không màn hình',d:'Một tối trong tuần cất điện thoại, chỉ trò chuyện & gần nhau.'},
+  {t:'Massage 10 phút',d:'Đổi phiên massage vai/lưng cho nhau trước khi ngủ.'},
+  {t:'Nụ hôn 6 giây',d:'Mỗi lần gặp nhau, ôm & hôn ít nhất 6 giây.'},
+  {t:'Hỏi & lắng nghe',d:'Hỏi nửa kia điều họ thích, chỉ lắng nghe không phán xét.'},
+  {t:'Bất ngờ nhỏ',d:'Một cử chỉ âu yếm bất ngờ giữa ngày (nhắn tin, ôm sau lưng…).'},
+  {t:'Tối lãng mạn tại nhà',d:'Cơm tối nhẹ, nến, nhạc — dành trọn buổi tối cho nhau.'},
+  {t:'Chạm nhẹ nhàng',d:'Nắm tay, ôm, tựa vai nhiều hơn — kết nối không vội vàng.'},
+];
+const INT_QUESTIONS=[
+  'Điều gì khiến bạn thấy được yêu nhất?',
+  'Kỷ niệm gần gũi nào của hai đứa bạn nhớ nhất?',
+  'Có điều gì bạn muốn thử mà chưa dám nói?',
+  'Bạn thích được âu yếm thế nào nhất?',
+  'Khoảnh khắc nào khiến bạn thấy gắn kết với người kia?',
+  'Điều nhỏ nào người kia làm khiến bạn "rung động"?',
+  'Bạn muốn hai đứa dành thời gian riêng thế nào?',
+  'Có điều gì khiến bạn ngại — mình cùng gỡ nhé?',
+];
+const INT_KNOW=[
+  {t:'💗 Giữ lửa sau khi có con',body:'Có con nhỏ khiến cả hai mệt và ít thời gian riêng — điều này hoàn toàn bình thường. Vài cách giữ kết nối:\n• Hẹn "giờ của hai đứa" cố định, dù chỉ 20–30 phút sau khi con ngủ.\n• Ưu tiên gần gũi phi tình dục: ôm, hôn, nắm tay, massage — giữ lửa mà không áp lực.\n• Thay phiên chăm con để mỗi người có lúc nghỉ, bớt cáu gắt.\n• Nói rõ nhu cầu thay vì mong người kia tự đoán.'},
+  {t:'🗣️ Nói về nhu cầu mà không ngại',body:'Trò chuyện cởi mở là chìa khóa:\n• Chọn lúc thoải mái, riêng tư, không phải giữa lúc căng thẳng.\n• Dùng câu "em/anh cảm thấy…", "em/anh thích…" thay vì trách móc.\n• Hỏi và thật sự lắng nghe mong muốn của người kia.\n• Thống nhất "tín hiệu" riêng để ngỏ ý mà không ngại lời.'},
+  {t:'🛡️ Các biện pháp tránh thai phổ biến',body:'Tham khảo — nên hỏi bác sĩ để chọn cách hợp với mình:\n• Bao cao su: dễ dùng, còn ngừa bệnh lây qua đường tình dục.\n• Thuốc tránh thai hằng ngày: hiệu quả cao nếu uống đều.\n• Vòng tránh thai (IUD): hiệu quả lâu dài 3–10 năm.\n• Que cấy, miếng dán, tiêm…\n• Tính ngày theo chu kỳ: rủi ro cao hơn, chỉ nên kết hợp.\n• Thuốc tránh thai khẩn cấp: chỉ khi cần, không dùng thường xuyên.\nHiệu quả & tác dụng phụ khác nhau — nên tư vấn y tế.'},
+  {t:'⚖️ Khi hai người lệch ham muốn',body:'Chênh lệch nhu cầu rất thường gặp:\n• Không xem là "lỗi" của ai — nhu cầu thay đổi theo sức khỏe, stress, nội tiết.\n• Tìm điểm chung: chất lượng hơn số lần; gần gũi không nhất thiết phải "đến đích".\n• Người muốn nhiều hơn: tránh tạo áp lực. Người muốn ít hơn: chủ động âu yếm theo cách khác.\n• Nếu kéo dài & ảnh hưởng tình cảm, cân nhắc gặp chuyên gia.'},
+  {t:'🌸 Gần gũi sau sinh',body:'• Thường nên đợi ~4–6 tuần sau sinh, khi sản dịch hết & cơ thể hồi phục — hỏi bác sĩ ở lần khám sau sinh.\n• Có thể khô hơn do nội tiết (nhất là khi cho con bú) — gel bôi trơn giúp dễ chịu.\n• Bắt đầu nhẹ nhàng, ưu tiên thoải mái của người vợ; dừng nếu đau.\n• Đừng quên tránh thai — có thể mang thai lại sớm dù chưa có kinh trở lại.'},
+  {t:'💞 Màn dạo đầu & kết nối',body:'Kết nối cảm xúc trước khi gần gũi giúp cả hai thăng hoa hơn:\n• Dành thời gian âu yếm, hôn, trò chuyện — đừng vội.\n• Tạo không gian: ánh sáng dịu, nhạc nhẹ, điện thoại để xa.\n• Khen ngợi, chạm nhẹ, quan tâm cảm xúc người kia.\n• Hỏi xem người kia thích gì — mỗi người mỗi khác.'},
+  {t:'🩺 Sức khỏe & an toàn',body:'• Vệ sinh trước & sau; đi tiểu sau khi gần gũi giúp giảm viêm đường tiết niệu (nữ).\n• Khám phụ khoa/nam khoa định kỳ; tiêm phòng HPV nếu có thể.\n• Nếu đau, khó chịu kéo dài, ra máu bất thường… nên đi khám.\n• Ngủ đủ, vận động, giảm rượu bia — đều tốt cho chuyện chăn gối.'},
+];
+function IntimacySection({people,me,flash}){
+  const DEF={log:{},want:[],signal:null,desire:{},plan:'',healthNote:'',pin:''};
+  const [d,setD]=useLocal('ju.intimacy',DEF);
+  const [seen,setSeen]=useLocal('ju.intimacySeen',{});
+  const data=d||DEF;
+  const [unlocked,setUnlocked]=useState(()=>_intimacyUnlocked||!(data.pin));
+  const [pinIn,setPinIn]=useState('');
+  const [rate,setRate]=useState(0);
+  const [lnote,setLnote]=useState('');
+  const [wtext,setWtext]=useState('');
+  const [np,setNp]=useState('');
+  const today=todayISO();
+  const set=(patch)=>setD({...data,...patch});
+  const other=me==='a'?'b':'a';
+  const otName=(people&&people[other]&&people[other].name)||(other==='a'?'anh ấy':'nửa kia');
+  useEffect(()=>{ const tl=(data.log||{})[today]; setRate(tl?tl.r||0:0); setLnote(tl?tl.note||'':''); },[today]);
+  useEffect(()=>{ if(!unlocked) return; const sg=data.signal; if(sg&&sg.by&&sg.by!==me&&(sg.at||0)>((seen&&seen[me])||0)){ setSeen({...(seen||{}),[me]:sg.at}); } },[unlocked,data.signal&&data.signal.at]);
+  const savePin=()=>{ if((np||'').length<4){ flash&&flash('Mã tối thiểu 4 số'); return; } set({pin:hashPin(np)}); _intimacyUnlocked=true; setNp(''); flash&&flash('Đã đặt mã khoá 🔒'); };
+  const removePin=()=>{ set({pin:''}); setNp(''); flash&&flash('Đã bỏ mã khoá'); };
+  const tryUnlock=()=>{ if(hashPin(pinIn)===data.pin){ _intimacyUnlocked=true; setUnlocked(true); setPinIn(''); } else { flash&&flash('Mã chưa đúng'); setPinIn(''); } };
+  if(!unlocked){
+    return (<div>
+      <div className="card" style={{textAlign:'center',padding:'26px 16px'}}>
+        <div style={{fontSize:40}}>🔒</div>
+        <div className="hc-title" style={{marginTop:6}}>Mục riêng tư</div>
+        <div className="muted" style={{fontSize:12.5,margin:'6px 0 12px'}}>Nhập mã để mở “Trả bài”.</div>
+        <input className="inp" type="password" inputMode="numeric" value={pinIn} maxLength={8} onChange={e=>setPinIn(e.target.value)} onKeyDown={e=>{ if(e.key==='Enter') tryUnlock(); }} style={{maxWidth:170,margin:'0 auto',textAlign:'center',letterSpacing:5}} placeholder="••••"/>
+        <div style={{marginTop:12}}><button className="btn" onClick={tryUnlock}>Mở khoá</button></div>
+      </div>
+    </div>);
+  }
+  const log=data.log||{};
+  const dts=Object.keys(log).sort();
+  const last=dts.length?dts[dts.length-1]:null;
+  const daysSince=last?Math.round((new Date(today+'T00:00:00')-new Date(last+'T00:00:00'))/86400000):null;
+  const ym=today.slice(0,7);
+  const cntMonth=dts.filter(x=>x.slice(0,7)===ym).length;
+  const wkAgo=(()=>{ const x=new Date(); x.setDate(x.getDate()-6); return x.getFullYear()+'-'+pad(x.getMonth()+1)+'-'+pad(x.getDate()); })();
+  const cntWeek=dts.filter(x=>x>=wkAgo).length;
+  const ratings=dts.map(x=>log[x]&&log[x].r).filter(Boolean);
+  const avgR=ratings.length?(ratings.reduce((a,b)=>a+b,0)/ratings.length):0;
+  const todayLogged=!!log[today];
+  const logToday=()=>{ set({log:{...log,[today]:{r:rate||0,note:lnote||'',by:me}}}); celebrate(['💗','❤️','🔥']); };
+  const upToday=(patch)=>{ if(!log[today])return; set({log:{...log,[today]:{...log[today],...patch}}}); };
+  const unlogToday=()=>{ const lg={...log}; delete lg[today]; set({log:lg}); };
+  const heat=(()=>{ const t=new Date(today+'T00:00:00'); const dow=(t.getDay()+6)%7; const st=new Date(t); st.setDate(st.getDate()-(11*7+dow)); const cols=[]; for(let c=0;c<12;c++){ const col=[]; for(let r=0;r<7;r++){ const dd=new Date(st); dd.setDate(dd.getDate()+c*7+r); const k=dd.getFullYear()+'-'+pad(dd.getMonth()+1)+'-'+pad(dd.getDate()); col.push({k,has:!!log[k],r:(log[k]&&log[k].r)||0,future:dd>t}); } cols.push(col); } return cols; })();
+  const sg=data.signal;
+  const sendSignal=(m)=>{ set({signal:{by:me,at:Date.now(),mood:m||'😏',reply:null}}); flash&&flash('Đã gửi tín hiệu 💌'); };
+  const replySignal=(kind)=>{ if(!sg)return; set({signal:{...sg,reply:kind?{by:me,kind,at:Date.now()}:null}}); if(kind)flash&&flash(kind==='yes'?'❤️ Đã đồng ý':'🌙 Đã hẹn hôm khác'); };
+  const clearSignal=()=>set({signal:null});
+  const desire=data.desire||{};
+  const myD=(desire[today]||{})[me];
+  const otD=(desire[today]||{})[other];
+  const setDesire=(lv)=>set({desire:{...desire,[today]:{...(desire[today]||{}),[me]:lv}}});
+  const want=data.want||[];
+  const addWant=(t)=>{ const tx=(t||wtext).trim(); if(!tx)return; if(want.some(w=>w.text===tx)){ setWtext(''); return; } set({want:[...want,{id:uid(),text:tx,a:false,b:false}]}); setWtext(''); };
+  const toggleWant=(id)=>{ const nw=want.map(w=>w.id===id?{...w,[me]:!w[me]}:w); const w2=nw.find(w=>w.id===id); if(w2&&w2.a&&w2.b) celebrate(['💞','💖']); set({want:nw}); };
+  const delWant=(id)=>set({want:want.filter(w=>w.id!==id)});
+  const wIdx=(()=>{ const dd=new Date(); return Math.floor((dd-new Date(dd.getFullYear(),0,1))/(7*86400000)); })();
+  const chal=INT_CHALLENGES[((wIdx%INT_CHALLENGES.length)+INT_CHALLENGES.length)%INT_CHALLENGES.length];
+  const dIdx=(()=>{ const dd=new Date(); return Math.floor((dd-new Date(dd.getFullYear(),0,0))/86400000); })();
+  const q=INT_QUESTIONS[((dIdx%INT_QUESTIONS.length)+INT_QUESTIONS.length)%INT_QUESTIONS.length];
+  const info=periodNext();
+  const plan=data.plan||'';
+  const cyc=(()=>{ if(!info) return null; if(info.onPeriod) return {k:'period'}; const ov=new Date(info.date+'T00:00:00'); ov.setDate(ov.getDate()-14); const t=new Date(today+'T00:00:00'); const dOv=Math.round((ov-t)/86400000); return {k:(dOv>=-1&&dOv<=3)?'fertile':'low',dOv,ovStr:ov.getDate()+'/'+(ov.getMonth()+1)}; })();
+  const cycMsg=(()=>{ if(!info) return null; if(cyc.k==='period') return '🌸 Đang kỳ đèn đỏ — ngày '+info.dayOfPeriod+'/'+info.length+'. Ưu tiên nghỉ ngơi, nhẹ nhàng.'; if(plan==='tranhthai') return cyc.k==='fertile'?'⚠️ Đang ngày dễ thụ thai — nên dùng biện pháp tránh thai an toàn.':'🟢 Hôm nay khả năng thụ thai thấp hơn (vẫn không tuyệt đối an toàn).'; if(plan==='muoncon') return cyc.k==='fertile'?'💚 Ngày dễ thụ thai — thời điểm tốt nếu muốn thêm bé (rụng trứng ~'+cyc.ovStr+').':'Hôm nay khả năng thụ thai thấp; ngày dễ đậu quanh '+cyc.ovStr+'.'; return cyc.k==='fertile'?('🌱 Đang trong ngày dễ thụ thai (rụng trứng ~'+cyc.ovStr+').'):('Ngày rụng trứng ước tính ~'+cyc.ovStr+'.'); })();
+  const desOf=(v)=>INT_DESIRE.find(x=>x.v===v)||{e:'',l:''};
+  return (
+    <div>
+      <div className="card" style={{background:'linear-gradient(135deg,var(--chip),var(--card))'}}>
+        <div className="row"><b>💗 Trả bài</b><span className="grow"></span>{daysSince!=null&&<span className="muted" style={{fontSize:11.5}}>{daysSince===0?'hôm nay 💗':'đã '+daysSince+' ngày'}</span>}</div>
+        <div className="muted" style={{fontSize:12,margin:'6px 0 8px'}}>Tuần này <b>{cntWeek}</b> · tháng này <b>{cntMonth}</b>{avgR?<span> · điểm TB <b>{avgR.toFixed(1)}</b>★</span>:null}</div>
+        {!todayLogged
+          ? <button className="btn" onClick={logToday}>💗 Đánh dấu hôm nay</button>
+          : <div>
+              <div className="row" style={{gap:8,alignItems:'center'}}><span style={{fontSize:13.5}}>✓ Đã đánh dấu hôm nay</span><span className="grow"></span><Stars value={rate} onChange={v=>{ setRate(v); upToday({r:v}); }}/></div>
+              <input className="inp" style={{marginTop:7,padding:'7px 11px',fontSize:13}} placeholder="Ghi chú riêng (tuỳ chọn)" value={lnote} onChange={e=>setLnote(e.target.value)} onBlur={()=>upToday({note:lnote})}/>
+              <button className="muted" style={{fontSize:11.5,marginTop:6}} onClick={unlogToday}>↩︎ Bỏ đánh dấu hôm nay</button>
+            </div>}
+      </div>
+
+      <div className="card">
+        <div className="hc-title" style={{marginBottom:8}}>😏 Tín hiệu tế nhị</div>
+        {!sg
+          ? <div><div className="muted" style={{fontSize:12.5,marginBottom:6}}>Gửi {otName} một tín hiệu kín đáo — chỉ hai đứa hiểu 😉</div>
+              <div style={{display:'flex',flexWrap:'wrap',gap:6}}>{INT_MOODS.map(m=><button key={m} className="pill" style={{fontSize:16,padding:'6px 11px'}} onClick={()=>sendSignal(m)}>{m}</button>)}</div></div>
+          : sg.by===me
+            ? <div><div style={{fontSize:14}}>Bạn đã bật tín hiệu <b style={{fontSize:18}}>{sg.mood}</b> cho {otName}.</div>
+                {sg.reply?<div style={{marginTop:6,fontSize:13.5}}>{sg.reply.kind==='yes'?'❤️ Nửa kia đồng ý rồi!':'🌙 Nửa kia hẹn hôm khác.'}</div>:<div className="muted" style={{marginTop:6,fontSize:12.5}}>Đang chờ nửa kia phản hồi…</div>}
+                <button className="muted" style={{fontSize:11.5,marginTop:8}} onClick={clearSignal}>✕ Thu hồi tín hiệu</button></div>
+            : <div><div style={{fontSize:14}}>💌 {otName} bật tín hiệu <b style={{fontSize:18}}>{sg.mood}</b> cho bạn!</div>
+                {sg.reply&&sg.reply.by===me
+                  ? <div style={{marginTop:6,fontSize:13.5}}>{sg.reply.kind==='yes'?'❤️ Bạn đã đồng ý':'🌙 Bạn đã hẹn hôm khác'} <span className="muted" style={{fontSize:11.5,cursor:'pointer',textDecoration:'underline'}} onClick={()=>replySignal(null)}>đổi</span></div>
+                  : <div className="row" style={{gap:8,marginTop:8}}><button className="btn grow" onClick={()=>replySignal('yes')}>❤️ Đồng ý</button><button className="btn soft grow" onClick={()=>replySignal('later')}>🌙 Hôm khác</button></div>}
+              </div>}
+        <div style={{marginTop:12,borderTop:'1px solid var(--line)',paddingTop:10}}>
+          <div className="muted" style={{fontSize:12,marginBottom:6}}>Tâm trạng hôm nay của bạn:</div>
+          <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>{INT_DESIRE.map(o=><button key={o.v} className="pill" style={{padding:'6px 10px',background:myD===o.v?'var(--primary)':'var(--chip)',color:myD===o.v?'#fff':'var(--chip-tx)'}} onClick={()=>setDesire(o.v)}>{o.e} {o.l}</button>)}</div>
+          {otD!=null&&<div className="muted" style={{fontSize:12.5,marginTop:8}}>{otName} hôm nay: <b>{desOf(otD).e} {desOf(otD).l}</b></div>}
+        </div>
+      </div>
+
+      <div className="card">
+        <div className="hc-title" style={{marginBottom:4}}>✨ Gợi ý tuần này</div>
+        <div style={{fontSize:13.5,fontWeight:700,marginTop:4}}>🎯 {chal.t}</div>
+        <div className="muted" style={{fontSize:12.5,marginTop:2}}>{chal.d}</div>
+        <div style={{fontSize:13.5,marginTop:10}}>💬 <b>Câu hỏi hôm nay:</b> {q}</div>
+      </div>
+
+      <Collapse id="int-want" defaultOpen={false} title="🌟 Muốn thử cùng nhau">
+        <div className="card">
+          <div className="muted" style={{fontSize:12,marginBottom:8}}>Mỗi người tự tích 💖 điều mình muốn. Cả hai cùng thích → 💞 hợp ý nhau!</div>
+          {want.length===0&&<div className="muted" style={{fontSize:12.5,margin:'4px 0 8px'}}>Chưa có mục nào — thêm bên dưới hoặc chọn gợi ý.</div>}
+          {want.slice().sort((a,b)=>((b.a&&b.b)?1:0)-((a.a&&a.b)?1:0)).map(w=>{ const mine=w[me],their=w[other],match=w.a&&w.b; return (
+            <div key={w.id} className="row" style={{padding:'6px 0',borderBottom:'1px solid var(--line)'}}>
+              <button onClick={()=>toggleWant(w.id)} style={{fontSize:18}}>{mine?'💖':'🤍'}</button>
+              <span className="grow" style={{fontSize:13.5}}>{w.text}</span>
+              {match?<span className="pill" style={{background:'var(--primary)',color:'#fff'}}>💞 Cả hai</span>:(their?<span className="pill">nửa kia 💗</span>:null)}
+              <button className="muted" onClick={()=>delWant(w.id)} style={{marginLeft:6}}>✕</button>
+            </div>); })}
+          <div className="row" style={{gap:8,marginTop:8}}>
+            <input className="inp grow" placeholder="Thêm điều muốn thử…" value={wtext} onChange={e=>setWtext(e.target.value)} onKeyDown={e=>{ if(e.key==='Enter') addWant(); }}/>
+            <button className="btn sm" onClick={()=>addWant()}>＋</button>
+          </div>
+          <div style={{display:'flex',flexWrap:'wrap',gap:6,marginTop:8}}>{INT_WANT_SEED.filter(s=>!want.some(w=>w.text===s)).slice(0,8).map(s=><button key={s} className="pill" style={{opacity:.9}} onClick={()=>addWant(s)}>+ {s}</button>)}</div>
+        </div>
+      </Collapse>
+
+      <Collapse id="int-cycle" defaultOpen={false} title="🌸 Sức khỏe & kế hoạch">
+        <div className="card">
+          <div className="row" style={{gap:6,flexWrap:'wrap',marginBottom:8}}>
+            {[['','—'],['tranhthai','🛡️ Tránh thai'],['muoncon','🤰 Muốn thêm bé']].map(([k,l])=><button key={k} className="pill" style={{background:plan===k?'var(--primary)':'var(--chip)',color:plan===k?'#fff':'var(--chip-tx)'}} onClick={()=>set({plan:k})}>{l}</button>)}
+          </div>
+          {info
+            ? <div style={{fontSize:13.5,lineHeight:1.6}}>{cycMsg}</div>
+            : <div className="muted" style={{fontSize:12.5}}>Chưa có dữ liệu chu kỳ. Vào mục <b>🌸 Chu kỳ</b> (nhóm Sức khỏe) để thiết lập, rồi quay lại đây xem gợi ý ngày dễ/khó thụ thai.</div>}
+          <div className="field" style={{marginTop:10}}><label>Ghi chú sức khỏe / mệt–khoẻ (riêng tư)</label><textarea className="inp" value={data.healthNote||''} onChange={e=>set({healthNote:e.target.value})} placeholder="vd: đang mệt, kiêng cữ sau sinh, dùng biện pháp gì…"/></div>
+          <div className="muted center" style={{fontSize:11,marginTop:8}}>Ước tính theo chu kỳ — không thay thế tư vấn y tế.</div>
+        </div>
+      </Collapse>
+
+      <Collapse id="int-heat" defaultOpen={false} title="📅 Lịch sử gần đây (12 tuần)">
+        <div className="card">
+          <div style={{display:'flex',gap:3,overflowX:'auto',paddingBottom:4}}>
+            {heat.map((col,ci)=><div key={ci} style={{display:'flex',flexDirection:'column',gap:3}}>{col.map(cell=><div key={cell.k} title={fmtDateVN(cell.k)} style={{width:13,height:13,borderRadius:3,background:cell.future?'transparent':(cell.has?INT_HEAT[Math.max(0,Math.min(4,(cell.r||1)-1))]:'var(--chip)'),opacity:cell.future?.2:1}}></div>)}</div>)}
+          </div>
+          <div className="muted" style={{fontSize:11,marginTop:8}}>Ô đậm = có đánh dấu (đậm hơn nếu điểm cao). Chỉ mình hai đứa thấy.</div>
+        </div>
+      </Collapse>
+
+      <Collapse id="int-know" defaultOpen={false} title="📖 Kiến thức vợ chồng">
+        {INT_KNOW.map((a,i)=><Collapse key={i} id={'int-k'+i} defaultOpen={false} title={a.t}><div className="card"><div style={{fontSize:13,lineHeight:1.7,whiteSpace:'pre-line'}}>{a.body}</div></div></Collapse>)}
+        <div className="muted center" style={{fontSize:11,margin:'6px 14px'}}>Thông tin tham khảo, không thay thế tư vấn của bác sĩ.</div>
+      </Collapse>
+
+      <Collapse id="int-privacy" defaultOpen={false} title="🔒 Riêng tư (khoá mục)">
+        <div className="card">
+          {data.pin
+            ? <div><div style={{fontSize:13.5,marginBottom:8}}>🔒 Mục này đang được khoá bằng mã.</div>
+                <div className="row" style={{gap:8}}><input className="inp grow" type="password" inputMode="numeric" maxLength={8} placeholder="Đổi mã mới (≥4 số)" value={np} onChange={e=>setNp(e.target.value)}/><button className="btn sm" onClick={savePin}>Đổi</button></div>
+                <button className="muted" style={{fontSize:12,marginTop:8}} onClick={removePin}>Bỏ khoá</button></div>
+            : <div><div className="muted" style={{fontSize:12.5,marginBottom:8}}>Đặt mã để mỗi lần mở “Trả bài” phải nhập — an tâm khi đưa máy cho người khác.</div>
+                <div className="row" style={{gap:8}}><input className="inp grow" type="password" inputMode="numeric" maxLength={8} placeholder="Mã mới (≥4 số)" value={np} onChange={e=>setNp(e.target.value)}/><button className="btn sm" onClick={savePin}>Đặt mã</button></div></div>}
+          <div className="muted" style={{fontSize:11,marginTop:8}}>Mã dùng để che mắt nhanh, không phải bảo mật ngân hàng. Cả hai máy dùng chung một mã.</div>
+        </div>
+      </Collapse>
+    </div>
+  );
+}
 const VEG_RESTAURANTS=[
   {n:'Chay Vị Lai',a:'177 Bùi Thị Xuân, Hai Bà Trưng',r:4.4},
   {n:'Veggie Castle',a:'7 Yên Ninh, Ba Đình (& Ngọc Khánh, Âu Cơ)',r:4.5},
@@ -4263,6 +4482,7 @@ function computeDueNotis(noti){
   if(on('nhanNhau')){ const me=store.get('ju.me',setup.me||'a'); const ns=store.get('ju.notesSeen',{})||{}; const unread=(store.get('ju.notes',[])||[]).filter(n=>n&&n.by&&n.by!==me&&(n.createdAt||0)>(ns[me]||0)); if(unread.length) out.push({id:'notes'+unread.length,title:'💌 Nửa kia gửi bạn '+unread.length+' lời nhắn mới ("Nhắn nhau")'}); }
   if(on('tamLinh')) (upcomingSpiritual(2)||[]).slice(0,2).forEach((h,i)=>{ if(h.d!=null&&h.d>=0&&h.d<=2) out.push({id:'sp'+(h.name||i),title:'🪷 '+h.name+(h.d===0?' — hôm nay':' — còn '+h.d+' ngày')}); });
   if(on('chuky')){ const p=periodNext(); if(p&&!p.onPeriod&&p.days!=null&&p.days<=2) out.push({id:'period',title:'🌸 Kỳ kinh dự kiến — còn '+p.days+' ngày'}); }
+  if(on('trabai')){ const it=store.get('ju.intimacy',null); if(it){ const me=store.get('ju.me',setup.me||'a'); const sg=it.signal; const sn=store.get('ju.intimacySeen',{})||{}; if(sg&&sg.by&&sg.by!==me&&!(sg.reply&&sg.reply.by===me)&&(sg.at||0)>(sn[me]||0)) out.push({id:'intsig'+(sg.at||''),title:'💗 Nửa kia vừa bật tín hiệu cho bạn 😏'}); const lg=it.log||{}; const ks=Object.keys(lg).sort(); const lastd=ks.length?ks[ks.length-1]:null; if(lastd){ const ds=Math.round((new Date(todayISO()+'T00:00:00')-new Date(lastd+'T00:00:00'))/86400000); if(ds>=14) out.push({id:'intlong',title:'💗 Đã '+ds+' ngày rồi — dành cho nhau chút thời gian nhé 😊'}); } } }
   return out;
 }
 function NotiRunner(){
@@ -4296,7 +4516,7 @@ function NotiRunner(){
   return null;
 }
 function NotiSettings({flash}){
-  const [noti,setNoti]=useLocal('ju.noti',{on:false,cats:{kyNiem:true,sukien:true,viec:true,thucDon:true,nganSach:true,yeuThuong:true,nhanNhau:true,tamLinh:true,ngayNho:false,chuky:false},time:'08:00'});
+  const [noti,setNoti]=useLocal('ju.noti',{on:false,cats:{kyNiem:true,sukien:true,viec:true,thucDon:true,nganSach:true,yeuThuong:true,nhanNhau:true,tamLinh:true,trabai:true,ngayNho:false,chuky:false},time:'08:00'});
   const supported=(typeof Notification!=='undefined')&&('serviceWorker' in navigator);
   const [perm,setPerm]=useState(supported?Notification.permission:'unsupported');
   const [pushMsg,setPushMsg]=useState('');
@@ -4316,7 +4536,7 @@ function NotiSettings({flash}){
   const test=async()=>{ if(!supported){ flash&&flash('Máy không hỗ trợ thông báo'); return; } try{ const reg=await navigator.serviceWorker.ready; reg.showNotification('Thử thông báo 🔔',{body:'Đây là thông báo thử từ Just Us 💗',icon:'icon.svg',badge:'icon.svg'}); }catch(e){ flash&&flash('Không gửi được — kiểm tra quyền thông báo'); } };
   const tog=(k)=>setNoti({...noti,cats:{...(noti.cats||{}),[k]:!((noti.cats||{})[k]!==false)}});
   const cats=noti.cats||{};
-  const CATS=[['kyNiem','💞 Ngày yêu nhau · cột mốc'],['sukien','📅 Sự kiện gia đình'],['viec','✅ Việc tới hạn · ưu tiên cao'],['thucDon','🍱 Món nấu hôm nay · đi chợ'],['nganSach','💰 Cảnh báo ngân sách tháng'],['yeuThuong','💌 Nhắc gửi lời yêu thương'],['nhanNhau','💌 Nhắn nhau (có lời nhắn mới)'],['tamLinh','🪷 Mùng 1 · rằm · lễ'],['ngayNho','🎂 Sinh nhật · giỗ · lễ cần quà'],['chuky','🌸 Chu kỳ sắp đến']];
+  const CATS=[['kyNiem','💞 Ngày yêu nhau · cột mốc'],['sukien','📅 Sự kiện gia đình'],['viec','✅ Việc tới hạn · ưu tiên cao'],['thucDon','🍱 Món nấu hôm nay · đi chợ'],['nganSach','💰 Cảnh báo ngân sách tháng'],['yeuThuong','💌 Nhắc gửi lời yêu thương'],['nhanNhau','💌 Nhắn nhau (có lời nhắn mới)'],['trabai','💗 Trả bài (tín hiệu · nhắc gần gũi)'],['tamLinh','🪷 Mùng 1 · rằm · lễ'],['ngayNho','🎂 Sinh nhật · giỗ · lễ cần quà'],['chuky','🌸 Chu kỳ sắp đến']];
   return (
     <div className="card">
       <div className="row"><span className="hc-title">🔔 Thông báo điện thoại</span><span className="grow"></span>
@@ -4595,6 +4815,7 @@ const US_SEGS=[
   {k:'projects',icon:'💒',label:'Việc gia đình'},
   {k:'spirit',icon:'🪷',label:'Tâm linh'},
   {k:'period',icon:'🌸',label:'Chu kỳ'},
+  {k:'trabai',icon:'💗',label:'Trả bài'},
   {k:'menu',icon:'🍱',label:'Thực đơn'},
   {k:'events',icon:'📅',label:'Sự kiện'},
   {k:'dates',icon:'🎂',label:'Ngày nhớ'},
@@ -4612,7 +4833,7 @@ const US_GROUPS=[
   {k:'money',icon:'💰',label:'Tiền nong',items:['fund','goals','budget','moneylover']},
   {k:'plan',icon:'📅',label:'Kế hoạch & Lịch',items:['events','dates','timeline']},
   {k:'bigfam',icon:'🏡',label:'Gia đình lớn',items:['projects','spirit','family']},
-  {k:'health',icon:'🩺',label:'Sức khỏe',items:['health','period']},
+  {k:'health',icon:'🩺',label:'Sức khỏe',items:['health','period','trabai']},
 ];
 const US_SEG_MAP=Object.fromEntries(US_SEGS.map(s=>[s.k,s]));
 const MENU_REGISTRY=[
@@ -4689,6 +4910,7 @@ function UsTab({people,me,flash}){
       {seg==='projects' && <FamilyProjects people={people} me={me}/>}
       {seg==='spirit' && <SpiritualSection/>}
       {seg==='period' && <PeriodTracker people={people}/>}
+      {seg==='trabai' && <IntimacySection people={people} me={me} flash={flash}/>}
       {seg==='menu' && <WeeklyMenu me={me}/>}
       {seg==='events' && <Events people={people} me={me}/>}
       {seg==='dates' && <ImportantDates people={people} me={me}/>}
