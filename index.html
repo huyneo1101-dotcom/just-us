@@ -1271,7 +1271,8 @@ const TALK_TOPICS=[
 const PROJ_TYPES=[
   {k:'tet',icon:'🧧',label:'Tết'},{k:'wedding',icon:'💒',label:'Đám cưới'},{k:'birthday',icon:'🎂',label:'Sinh nhật'},
   {k:'travel',icon:'✈️',label:'Du lịch'},{k:'event',icon:'🎉',label:'Sự kiện'},
-  {k:'home',icon:'🏠',label:'Nhà cửa'},{k:'baby',icon:'👶',label:'Em bé'},{k:'other',icon:'📦',label:'Khác'},
+  {k:'home',icon:'🏠',label:'Nhà cửa'},{k:'baby',icon:'👶',label:'Em bé'},
+  {k:'paperwork',icon:'📋',label:'Thủ tục giấy tờ'},{k:'other',icon:'📦',label:'Khác'},
 ];
 function projIcon(k){ const t=PROJ_TYPES.find(x=>x.k===k); return t?t.icon:'📦'; }
 const PROJ_TASK_SUGGEST={
@@ -1283,6 +1284,27 @@ const PROJ_TASK_SUGGEST={
   event:['Chốt ngày & địa điểm','Lên danh sách khách mời','Gửi lời mời','Đặt đồ ăn / bánh','Trang trí','Chuẩn bị nhạc / trò chơi','Phân công chuẩn bị','Chụp ảnh / quay phim'],
   home:['Lên ngân sách sửa nhà','Chốt phong cách / màu sơn','Tìm thợ / báo giá','Mua nội thất chính','Mua đồ điện gia dụng','Dọn dẹp & sắp xếp','Mua cây xanh trang trí','Kiểm tra điện nước','Lắp rèm / đèn trang trí','Sắp xếp góc làm việc chung'],
 };
+// Mẫu checklist thủ tục hành chính — giấy tờ cần mang + các bước. THAM KHẢO, thủ tục có thể đổi theo địa phương/thời điểm.
+const PAPERWORK_TEMPLATES=[
+  {k:'thuongtru',icon:'🏠',label:'Chuyển / đăng ký thường trú',
+    docs:['CCCD/CMND của người đăng ký','Giấy tờ chứng minh chỗ ở hợp pháp (sổ đỏ / hợp đồng thuê / giấy cho ở nhờ)','Giấy tờ chứng minh quan hệ nhân thân (giấy kết hôn, giấy khai sinh của con)','Tờ khai thay đổi thông tin cư trú (mẫu CT01)'],
+    steps:['Xác định nơi đăng ký thường trú mới','Điền tờ khai CT01 (lấy tại công an xã/phường hoặc trên VNeID)','Nộp hồ sơ tại Công an xã/phường nơi đến (hoặc online qua Cổng DVC / VNeID)','Nhận giấy hẹn, chờ giải quyết (tối đa ~7 ngày làm việc)','Kiểm tra & cập nhật thông tin cư trú trên VNeID sau khi xong']},
+  {k:'khaisinh',icon:'📄',label:'Làm giấy khai sinh cho con',
+    docs:['Giấy chứng sinh (bệnh viện cấp)','CCCD/CMND của bố mẹ','Giấy đăng ký kết hôn của bố mẹ','Giấy tờ xác nhận cư trú'],
+    steps:['Chuẩn bị giấy chứng sinh & giấy tờ tuỳ thân','Đến UBND xã/phường nơi cư trú (nên làm trong 60 ngày sau sinh)','Điền tờ khai đăng ký khai sinh','Đăng ký liên thông: khai sinh + thường trú + BHYT cho trẻ','Nhận giấy khai sinh (thường trong ngày)']},
+  {k:'bhyt',icon:'💳',label:'Đăng ký BHYT cho con',
+    docs:['Giấy khai sinh (bản sao)','CCCD của bố/mẹ','Thông tin nơi khám chữa bệnh ban đầu mong muốn'],
+    steps:['Trẻ dưới 6 tuổi được cấp BHYT miễn phí — thường cấp cùng lúc khai sinh liên thông','Nếu chưa có: nộp hồ sơ tại UBND xã/phường hoặc cơ quan BHXH','Chọn nơi khám chữa bệnh ban đầu','Nhận thẻ BHYT (hoặc dùng mã số BHYT trên VssID / CCCD)']},
+  {k:'mamnon',icon:'🏫',label:'Xin nhập học mầm non',
+    docs:['Giấy khai sinh (bản sao)','Giấy tờ xác nhận cư trú (đúng tuyến)','Giấy khám sức khoẻ của bé','Sổ tiêm chủng','Ảnh thẻ của bé'],
+    steps:['Tìm hiểu trường công đúng tuyến / trường tư phù hợp','Xem thời gian tuyển sinh (thường tháng 6–8)','Chuẩn bị hồ sơ theo yêu cầu của trường','Nộp hồ sơ & tham quan/phỏng vấn trường','Đóng phí nhập học, sắm đồ dùng cho bé đi lớp']},
+  {k:'cccd',icon:'🪪',label:'Làm / đổi CCCD gắn chip',
+    docs:['CCCD/CMND cũ (nếu có)','Thông tin cư trú đã cập nhật'],
+    steps:['Đặt lịch / đến Công an cấp huyện hoặc điểm cấp CCCD lưu động','Khai thông tin, lấy vân tay & chụp ảnh tại chỗ','Nhận giấy hẹn','Nhận CCCD qua bưu điện hoặc đến lấy','Kích hoạt định danh điện tử VNeID mức 2']},
+  {k:'hochieu',icon:'🛂',label:'Làm hộ chiếu cho con',
+    docs:['Giấy khai sinh của con','CCCD của bố/mẹ','Ảnh 4x6 nền trắng của con','Tờ khai hộ chiếu (mẫu X01)'],
+    steps:['Điền tờ khai online tại Cổng DVC Bộ Công an (hoặc mẫu X01)','Bố/mẹ đưa con đến Phòng Quản lý XNC công an tỉnh nộp hồ sơ','Nộp lệ phí','Nhận giấy hẹn','Nhận hộ chiếu qua bưu điện hoặc đến lấy']},
+];
 const CITIES=[
   {k:'giangvo',name:'Giảng Võ, HN',lat:21.0313,lng:105.8163},
   {k:'hanoi',name:'Hà Nội',lat:21.03,lng:105.85},{k:'hcm',name:'TP.HCM',lat:10.78,lng:106.70},
@@ -3340,6 +3362,13 @@ function FamilyProjects({people,me}){
               ))}
               <TodoAdd onAdd={(t)=>addTask(p.id,t)}/>
               {sug && total===0 && <button className="pill" style={{marginTop:6}} onClick={()=>addTasks(p.id,sug)}>💡 Thêm việc gợi ý sẵn</button>}
+              {p.type==='paperwork' && <div style={{marginTop:8}}>
+                <div className="muted" style={{fontSize:11.5,marginBottom:5}}>📋 Chọn thủ tục để thêm sẵn giấy tờ cần mang + các bước:</div>
+                <div style={{display:'flex',flexWrap:'wrap',gap:6}}>
+                  {PAPERWORK_TEMPLATES.map(tpl=><button key={tpl.k} className="pill" style={{cursor:'pointer'}} onClick={()=>addTasks(p.id, tpl.docs.map(d=>'📎 Mang theo: '+d).concat(tpl.steps.map(s=>'▶️ '+s)))}>{tpl.icon} {tpl.label}</button>)}
+                </div>
+                <div className="muted" style={{fontSize:11,marginTop:6,lineHeight:1.5}}>⚠️ Thông tin tham khảo — thủ tục có thể đổi theo địa phương/thời điểm. Nên gọi hỏi cơ quan hoặc kiểm tra Cổng Dịch vụ công trước khi đi.</div>
+              </div>}
             </div>
             <div className="it-meta">
               {vinha && <a className="pill" href={vinha} target="_blank" rel="noreferrer" style={{textDecoration:'none'}}>💰 VíNhà</a>}
