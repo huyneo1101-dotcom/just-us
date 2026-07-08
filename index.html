@@ -3294,6 +3294,61 @@ function ParentingAgreement(){
     </div>
   );
 }
+/* ============ Quy tắc / giao ước gia đình ============ */
+const FAMILY_RULES_SUGGEST=[
+  {group:'💛 Ứng xử với nhau',items:['Nói cảm ơn và xin lỗi với nhau mỗi ngày','Không to tiếng, không nói nặng lời — nhất là trước mặt con','Giận nhau không quá một ngày, làm lành trước khi ngủ','Ôm / hôn tạm biệt khi ra khỏi nhà','Khó chịu thì nói thẳng, không im lặng dỗi']},
+  {group:'🧸 Với con',items:['Bố mẹ thống nhất một luật — không người cấm người cho','Không dùng điện thoại khi đang chơi với con','Khen khi con làm tốt, phạt bình tĩnh khi con sai','Mỗi ngày đọc sách / chơi cùng con ít nhất 15 phút']},
+  {group:'🏠 Nếp nhà',items:['Không điện thoại trong bữa ăn','Về đúng giờ ăn tối, báo trước nếu về muộn','Ai nấu thì người kia dọn','Dùng xong đồ cất về chỗ cũ','Cuối tuần dành ít nhất một buổi cho gia đình']},
+  {group:'💰 Tiền bạc',items:['Khoản chi lớn bàn nhau trước khi quyết','Minh bạch thu chi, không giấu quỹ đen','Mỗi tháng cùng xem lại chi tiêu một lần']},
+  {group:'📱 Công nghệ & riêng tư',items:['Tắt điện thoại 1 giờ trước giờ ngủ','Tôn trọng không gian riêng của nhau','Không đăng chuyện riêng của gia đình lên mạng khi chưa hỏi nhau']},
+];
+function FamilyRules({people,me}){
+  const [rules,setRules]=useLocal('ju.familyRules',[]);
+  const [t,setT]=useState('');
+  const [sugOpen,setSugOpen]=useState(()=>((store.get('ju.familyRules',[])||[]).length===0));
+  const has=(text)=>rules.some(x=>x.text===text);
+  const add=(text)=>{ const x=(text||'').trim(); if(!x||has(x))return; setRules(prev=>[{id:uid(),text:x,by:me,agreed:false,createdAt:Date.now()},...prev]); };
+  const addManual=()=>{ if(!t.trim())return; add(t.trim()); setT(''); celebrate(['📜']); };
+  const toggle=(id)=>setRules(rules.map(x=>x.id===id?{...x,agreed:!x.agreed}:x));
+  const del=(id)=>{ if(confirm('Xoá quy tắc này?')) setRules(rules.filter(x=>x.id!==id)); };
+  const agreed=rules.filter(x=>x.agreed).length;
+  return (
+    <div>
+      <div className="muted center" style={{fontSize:12,margin:'10px 14px'}}>📜 Giao ước của gia đình mình — cùng thống nhất để nhà êm ấm.{rules.length>0?' ':''}{rules.length>0 && <b>{agreed}/{rules.length} đã cam kết</b>}</div>
+      <div className="card">
+        <div className="row" style={{gap:6}}>
+          <input className="inp grow" placeholder="Thêm quy tắc của nhà mình…" value={t} onChange={e=>setT(e.target.value)} onKeyDown={e=>{ if(e.key==='Enter') addManual(); }}/>
+          <button className="btn sm" onClick={addManual}>＋</button>
+        </div>
+      </div>
+      <div className="card">
+        <div className="row"><span className="grow" style={{fontSize:13,fontWeight:600}}>💡 Gợi ý quy tắc — bấm để thêm</span>
+          <button className="muted" style={{fontSize:11.5}} onClick={()=>setSugOpen(v=>!v)}>{sugOpen?'▲ Ẩn':'▾ Xem'}</button></div>
+        {sugOpen && <div style={{marginTop:2}}>
+          {FAMILY_RULES_SUGGEST.map(gr=>(
+            <div key={gr.group} style={{marginBottom:9}}>
+              <div className="muted" style={{fontSize:11.5,margin:'2px 0 4px'}}>{gr.group}</div>
+              <div style={{display:'flex',flexWrap:'wrap',gap:6}}>
+                {gr.items.map(name=>{ const added=has(name); return <button key={name} className="pill" disabled={added} style={added?{opacity:.45}:{cursor:'pointer'}} onClick={()=>add(name)}>{added?'✓ ':'＋ '}{name}</button>; })}
+              </div>
+            </div>
+          ))}
+        </div>}
+      </div>
+      {rules.length===0 && <div className="empty"><span className="big">📜</span>Chưa có quy tắc nào. Thêm tay hoặc bấm 💡 Gợi ý ở trên.</div>}
+      {rules.map(x=>(
+        <div key={x.id} className="item">
+          <div className="row" style={{gap:8}}>
+            <button onClick={()=>toggle(x.id)} style={{fontSize:20,flex:'0 0 auto'}}>{x.agreed?'✅':'⬜'}</button>
+            <span className="grow" style={{fontSize:14}}>{x.text}</span>
+            <button className="muted" style={{flex:'0 0 auto'}} onClick={()=>del(x.id)}>✕</button>
+          </div>
+          <div className="muted" style={{fontSize:11,marginTop:3}}>{x.agreed?'💞 Cả nhà đã cam kết':'Chạm ô vuông để đánh dấu đã cam kết'} · {people[x.by]?.avatar} thêm</div>
+        </div>
+      ))}
+    </div>
+  );
+}
 function TalkTab({people,me,flash}){
   const [seg,setSeg]=useState('notes');
   return (
@@ -3301,7 +3356,7 @@ function TalkTab({people,me,flash}){
       <SegGrid value={seg} onChange={setSeg} items={[
         {k:'notes',icon:'💌',label:'Nhắn nhau'},{k:'question',icon:'❓',label:'Câu hỏi'},
         {k:'wishes',icon:'💛',label:'Mong nhau'},{k:'guide',icon:'🕊️',label:'Giao tiếp'},
-        {k:'parenting',icon:'🤝',label:'Dạy con'},
+        {k:'parenting',icon:'🤝',label:'Dạy con'},{k:'rules',icon:'📜',label:'Quy tắc'},
         {k:'quiz',icon:'💞',label:'Đố vui'},{k:'checkin',icon:'📝',label:'Check-in'},
         {k:'topics',icon:'🗣️',label:'Chủ đề'},
       ]} menuId="talk"/>
@@ -3310,6 +3365,7 @@ function TalkTab({people,me,flash}){
       {seg==='wishes' && <PartnerWishes people={people} me={me}/>}
       {seg==='guide' && <CommGuide/>}
       {seg==='parenting' && <ParentingAgreement/>}
+      {seg==='rules' && <FamilyRules people={people} me={me}/>}
       {seg==='quiz' && <CoupleQuiz people={people} me={me}/>}
       {seg==='checkin' && <WeeklyCheckin people={people} me={me}/>}
       {seg==='topics' && <TalkTopics/>}
@@ -5244,7 +5300,7 @@ const MENU_REGISTRY=[
   ...US_GROUPS.map(g=>({id:'us-'+g.k,label:'Tụi Mình · '+g.label,items:g.items.map(k=>US_SEG_MAP[k]).filter(Boolean)})),
   {id:'date',label:'Hẹn hò',items:[{k:'idea',icon:'💡',label:'Ý tưởng'},{k:'hanoi',icon:'📍',label:'Gợi ý HN'},{k:'events',icon:'🎪',label:'Sự kiện HN'},{k:'food',icon:'🍜',label:'Quán & Món'},{k:'checkin',icon:'📸',label:'Check-in'},{k:'wish',icon:'💝',label:'Ước muốn'},{k:'music',icon:'🎵',label:'Nhạc đôi'}]},
   {id:'wish',label:'Ước muốn',items:[{k:'gift',icon:'🎁',label:'Quà tặng'},{k:'bucket',icon:'🎯',label:'Muốn làm cùng'},{k:'watch',icon:'🎬',label:'Xem·Đọc·Nghe'},{k:'coupon',icon:'🎟️',label:'Phiếu yêu thương'},{k:'link',icon:'🔗',label:'Link hay'}]},
-  {id:'talk',label:'Trò chuyện',items:[{k:'notes',icon:'💌',label:'Nhắn nhau'},{k:'question',icon:'❓',label:'Câu hỏi'},{k:'wishes',icon:'💛',label:'Mong nhau'},{k:'guide',icon:'🕊️',label:'Giao tiếp'},{k:'parenting',icon:'🤝',label:'Dạy con'},{k:'quiz',icon:'💞',label:'Đố vui'},{k:'checkin',icon:'📝',label:'Check-in'},{k:'topics',icon:'🗣️',label:'Chủ đề'}]},
+  {id:'talk',label:'Trò chuyện',items:[{k:'notes',icon:'💌',label:'Nhắn nhau'},{k:'question',icon:'❓',label:'Câu hỏi'},{k:'wishes',icon:'💛',label:'Mong nhau'},{k:'guide',icon:'🕊️',label:'Giao tiếp'},{k:'parenting',icon:'🤝',label:'Dạy con'},{k:'rules',icon:'📜',label:'Quy tắc'},{k:'quiz',icon:'💞',label:'Đố vui'},{k:'checkin',icon:'📝',label:'Check-in'},{k:'topics',icon:'🗣️',label:'Chủ đề'}]},
   {id:'comm',label:'Cẩm nang giao tiếp',items:[{k:'principles',icon:'🕊️',label:'Nguyên tắc'},{k:'say',icon:'💬',label:'Nói khéo'},{k:'love',icon:'💖',label:'NN yêu thương'},{k:'fight',icon:'⚖️',label:'Cãi lành mạnh'},{k:'connect',icon:'🔗',label:'Câu hỏi kết nối'}]},
   {id:'spirit',label:'Tâm linh',items:[{k:'le',icon:'📅',label:'Ngày lễ'},{k:'kinh',icon:'📿',label:'Kinh Phật'},{k:'khan',icon:'📜',label:'Văn khấn'},{k:'chay',icon:'🍃',label:'Quán chay'},{k:'co',icon:'🍲',label:'Mâm cỗ'}]},
   {id:'child',label:'Nuôi con',items:[{k:'develop',icon:'🌱',label:'Phát triển'},{k:'play',icon:'🎲',label:'Chơi với con'},{k:'health',icon:'🏥',label:'Sức khoẻ'},{k:'eat',icon:'🍎',label:'Ăn uống'},{k:'school',icon:'🎒',label:'Đi học'},{k:'parent',icon:'💞',label:'Nuôi dạy'}]},
