@@ -24,7 +24,7 @@
 <!-- Font chữ: Be Vietnam Pro (thiết kế cho tiếng Việt) — fallback hệ thống nếu offline -->
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Nunito:wght@400;600;700&family=Quicksand:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700&family=Lora:wght@400;500;600&display=swap" rel="stylesheet" />
 
 <style>
 :root{
@@ -192,6 +192,7 @@ textarea.inp{resize:vertical;min-height:64px}
 .stat .n{font-size:22px;font-weight:900;color:var(--primary)}
 .stat .l{font-size:12.5px;color:var(--muted);font-weight:600}
 /* ===== Trang chủ · phong cách tối giản thanh lịch (mẫu 3) — chỉ áp cho .homev3 ===== */
+.homev3{font-family:var(--home-font,inherit)}
 .homev3 .hero:not(.hascover){background:none;color:var(--text);box-shadow:none;min-height:0;border-radius:0;margin:8px 20px 2px;padding:16px 0 2px;text-align:center;align-items:center}
 .homev3 .hero:not(.hascover) > button{display:none}
 .homev3 .hero:not(.hascover) .inner{order:1}
@@ -557,6 +558,15 @@ const THEMES=[
   {k:'mocha', name:'Mocha', c:'#b07a4f'},
 ];
 function applyTheme(k){ document.body.className='theme-'+k; }
+const HOME_FONTS=[
+  {k:'bevn',name:'Be Vietnam Pro',css:"'Be Vietnam Pro','Segoe UI',system-ui,sans-serif"},
+  {k:'nunito',name:'Nunito · tròn, thân thiện',css:"'Nunito','Segoe UI',system-ui,sans-serif"},
+  {k:'quicksand',name:'Quicksand · bo tròn',css:"'Quicksand','Segoe UI',system-ui,sans-serif"},
+  {k:'montserrat',name:'Montserrat · hiện đại',css:"'Montserrat','Segoe UI',system-ui,sans-serif"},
+  {k:'lora',name:'Lora · serif thanh lịch',css:"'Lora',Georgia,serif"},
+  {k:'system',name:'Hệ thống (nhẹ nhất)',css:"'Segoe UI',system-ui,-apple-system,Roboto,sans-serif"},
+];
+function applyHomeFont(k){ const f=HOME_FONTS.find(x=>x.k===k)||HOME_FONTS[0]; try{ document.body.style.setProperty('--home-font',f.css); }catch(_){} }
 
 const AVATARS=['🧑','👩','👨','🧔','👱‍♀️','👩‍🦱','🧑‍🦰','👸','🤴','🐰','🐱','🐻','🦊','🐧','🌷','⭐'];
 const MOODS=['😍','😊','🥰','😌','😎','😴','🤒','😢','😠','🤩','🥺','😋'];
@@ -2124,6 +2134,7 @@ function AngerHelper(){
 
 /* ============ HOME ============ */
 const WHATS_NEW=[
+  {d:'2026-07-08',ic:'🔠',t:'Tự chọn font chữ Trang chủ: vào Hồ sơ → 🔤 Font chữ trang chủ, chọn 1 trong 6 kiểu (Be Vietnam Pro, Nunito, Quicksand, Montserrat, Lora, Hệ thống) — áp ngay, số ngày vẫn giữ serif.'},
   {d:'2026-07-08',ic:'🔤',t:'Chỉnh lại chữ toàn app: dùng font Be Vietnam Pro (thiết kế cho tiếng Việt), thống nhất cỡ chữ &amp; độ đậm giữa các mục cho gọn gàng, dễ đọc hơn.'},
   {d:'2026-07-08',ic:'🔢',t:'Tâm linh thêm "Thần số học": nhập ngày sinh ra số chủ đạo (đường đời) + điểm mạnh/lưu ý, số ngày sinh và năm cá nhân của năm nay.'},
   {d:'2026-07-08',ic:'🔮',t:'Tâm linh có thêm "Đọc lá số tử vi": nhập ngày sinh để xem can chi · con giáp · bản mệnh (nạp âm), tuổi tam hợp/tứ hành xung, màu &amp; hướng hợp; kèm nút lập lá số đầy đủ.'},
@@ -7406,6 +7417,22 @@ function Profile({setup,setSetup,people,me,setMe,flash}){
       </div>
       </Collapse>
 
+      {/* Font chữ trang chủ */}
+      <Collapse id="prof-homefont" title="🔤 Font chữ trang chủ" defaultOpen={false}>
+      <div className="card">
+        <div className="hc-body" style={{marginBottom:8}}>Chọn kiểu chữ cho Trang chủ (số ngày bên nhau vẫn giữ kiểu serif). Áp ngay khi chọn.</div>
+        <div style={{display:'grid',gap:8}}>
+          {HOME_FONTS.map(fn=>{ const on=(setup.homeFont||'bevn')===fn.k;
+            return <button key={fn.k} onClick={()=>{ applyHomeFont(fn.k); setSetup({...setup,homeFont:fn.k}); }}
+              style={{textAlign:'left',padding:'11px 13px',borderRadius:12,border:on?'2px solid var(--primary)':'1px solid var(--line)',background:'var(--bg)',fontFamily:fn.css}}>
+              <div style={{fontWeight:700,fontSize:14}}>{fn.name}{on?' ✓':''}</div>
+              <div style={{fontSize:12.5,opacity:.75,marginTop:2}}>Nhật ký của hai đứa · 1.234 ngày bên nhau 💗</div>
+            </button>;
+          })}
+        </div>
+      </div>
+      </Collapse>
+
       {/* Tuỳ chỉnh Trang chủ */}
       <HomeSettings/>
 
@@ -7728,6 +7755,7 @@ function App(){
 
   // áp theme khi setup đổi
   useEffect(()=>{ if(setup?.theme) applyTheme(setup.theme); },[setup?.theme]);
+  useEffect(()=>{ applyHomeFont(setup?.homeFont||'bevn'); },[setup?.homeFont]);
   // "me" là riêng từng máy (không đồng bộ)
   useEffect(()=>{ store.set('ju.me',me); },[me]);
   // khởi tạo auth + tự kết nối lại đám mây khi mở app
