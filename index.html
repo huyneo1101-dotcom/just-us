@@ -2813,10 +2813,20 @@ function TimelineForm({init,onClose,onSave}){
 }
 
 /* ============ Chia việc nhà ============ */
+const CHORE_SUGGEST=[
+  {group:'🍳 Bếp núc',items:['Nấu cơm','Rửa bát','Đi chợ / mua thực phẩm','Lau bếp & bàn ăn','Đổ rác']},
+  {group:'🧹 Dọn dẹp',items:['Quét & lau nhà','Hút bụi','Dọn phòng khách','Cọ nhà vệ sinh','Sắp xếp đồ đạc']},
+  {group:'👕 Giặt giũ',items:['Giặt quần áo','Phơi & gấp đồ','Là (ủi) quần áo']},
+  {group:'🧸 Chăm con',items:['Tắm cho con','Cho con ăn','Dỗ con ngủ','Đưa / đón con đi lớp','Chơi cùng con']},
+  {group:'📦 Việc khác',items:['Thanh toán hoá đơn','Chăm cây','Bảo dưỡng / rửa xe','Mua đồ dùng gia đình']},
+];
 function Chores({people,me}){
   const [items,setItems]=useLocal('ju.chores',[]);
   const [t,setT]=useState('');
   const [who,setWho]=useState('both');
+  const [sugOpen,setSugOpen]=useState(()=>((store.get('ju.chores',[])||[]).length===0));
+  const has=(title)=>items.some(x=>x.title===title);
+  const addSug=(title)=>{ if(has(title))return; setItems(prev=>[{id:uid(),title,who:'both',done:false,by:me,createdAt:Date.now()},...prev]); };
   const add=()=>{ if(!t.trim())return; setItems([{id:uid(),title:t.trim(),who,done:false,by:me,createdAt:Date.now()},...items]); setT(''); };
   const toggle=(id)=>setItems(items.map(x=>x.id===id?{...x,done:!x.done}:x));
   const del=(id)=>{ if(confirm('Bạn có chắc muốn xoá? Thao tác này không hoàn tác được.')){ setItems(items.filter(x=>x.id!==id)); } };
@@ -2833,7 +2843,22 @@ function Chores({people,me}){
         </select>
         <button className="btn sm" onClick={add}>＋</button>
       </div>
-      {items.length===0 && <div className="empty"><span className="big">🧹</span>Chưa có việc nào. Thêm việc rồi chia cho công bằng nhé!</div>}
+      <div className="card">
+        <div className="row"><span className="grow" style={{fontSize:13,fontWeight:600}}>💡 Gợi ý việc nhà — chia theo khu vực</span>
+          <button className="muted" style={{fontSize:11.5}} onClick={()=>setSugOpen(v=>!v)}>{sugOpen?'▲ Ẩn':'▾ Xem'}</button></div>
+        {sugOpen && <div style={{marginTop:2}}>
+          <div className="muted" style={{fontSize:11.5,margin:'2px 0 8px'}}>Bấm để thêm nhanh, rồi giao cho từng người cho công bằng.</div>
+          {CHORE_SUGGEST.map(gr=>(
+            <div key={gr.group} style={{marginBottom:9}}>
+              <div className="muted" style={{fontSize:11.5,marginBottom:4}}>{gr.group}</div>
+              <div style={{display:'flex',flexWrap:'wrap',gap:6}}>
+                {gr.items.map(name=>{ const added=has(name); return <button key={name} className="pill" disabled={added} style={added?{opacity:.45}:{cursor:'pointer'}} onClick={()=>addSug(name)}>{added?'✓ ':'＋ '}{name}</button>; })}
+              </div>
+            </div>
+          ))}
+        </div>}
+      </div>
+      {items.length===0 && <div className="empty"><span className="big">🧹</span>Chưa có việc nào. Thêm tay hoặc bấm 💡 Gợi ý ở trên rồi chia cho công bằng nhé!</div>}
       {items.length>0 && <div className="row" style={{margin:'12px 14px 0'}}><span className="grow muted" style={{fontSize:12}}>{items.filter(x=>!x.done).length} việc chưa xong</span>
         <button className="pill" onClick={resetAll}>↻ Đặt lại tất cả</button></div>}
       <div className="card" style={{padding:'4px 13px'}}>
