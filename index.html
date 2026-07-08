@@ -2102,6 +2102,7 @@ function AngerHelper(){
 
 /* ============ HOME ============ */
 const WHATS_NEW=[
+  {d:'2026-07-08',ic:'🧹',t:'Trang chủ gọn hơn: ô "Mới cập nhật" mặc định thu gọn (bấm mở ra xem vài mục, "Xem thêm" xem hết). Chuyển "Cài app & gửi link cho nửa kia" vào Hồ sơ.'},
   {d:'2026-07-08',ic:'🗂️',t:'Nhóm mới 📦 Nhà & Kho (trong Tụi mình): ⏳ Hạn dùng (đồ ăn/thuốc/mỹ phẩm — đếm ngày, nhắc trước khi hết hạn) · 📦 Cất giữ (đồ trái mùa/kho + vị trí + ảnh, tìm nhanh khỏi quên chỗ) · 🗂️ Giấy tờ (CCCD/hộ chiếu/sổ đỏ… kèm nhiều ảnh, số hiệu, ngày hết hạn, nơi cất).'},
   {d:'2026-07-08',ic:'📷',t:'Cất giữ & Giấy tờ: thêm được ảnh (tự nén cho nhẹ máy, bấm phóng to), và dán "🔗 Link Google Photos" để mở album ra xem — khỏi copy ảnh.'},
   {d:'2026-07-08',ic:'🗓️',t:'Trang chủ có thẻ "Bây giờ nên làm" — hiện việc đang làm ngay lúc này theo lịch sinh hoạt (2 cột bố/mẹ) + việc tiếp theo.'},
@@ -2129,20 +2130,23 @@ const WHATS_NEW=[
 ];
 function WhatsNewCard(){
   const [seen,setSeen]=useState(()=>store.get('ju.whatsNewSeen','')||'');
+  const [open,setOpen]=useState(false);
   const [all,setAll]=useState(false);
+  const PEEK=3;
   const newest=WHATS_NEW[0]?WHATS_NEW[0].d:'';
   const nUnseen=WHATS_NEW.filter(x=>x.d>seen).length;
   const markSeen=()=>{ store.set('ju.whatsNewSeen',newest); setSeen(newest); };
-  const list=all?WHATS_NEW:WHATS_NEW.slice(0,1);
+  const list=!open?[]:(all?WHATS_NEW:WHATS_NEW.slice(0,PEEK));
   return (
     <div className="card" style={{margin:'12px 14px 0',borderColor:nUnseen>0?'var(--primary)':'var(--line)'}}>
-      <div className="row">
+      <div className="row" style={{cursor:'pointer'}} onClick={()=>{ setOpen(o=>!o); if(all) setAll(false); }}>
         <span className="hc-title">🆕 Mới cập nhật</span>
         {nUnseen>0 && <span className="pill" style={{background:'var(--primary)',color:'#fff',marginLeft:6,fontSize:11}}>{nUnseen} mới</span>}
         <span className="grow"></span>
-        {nUnseen>0 && <span className="hc-act" style={{cursor:'pointer'}} onClick={markSeen}>✓ Đã xem</span>}
+        {open && nUnseen>0 && <span className="hc-act" style={{cursor:'pointer'}} onClick={e=>{e.stopPropagation();markSeen();}}>✓ Đã xem</span>}
+        <span className="hc-act" style={{marginLeft:8}}>{open?'▴ Thu gọn':'▾ Mở ra xem'}</span>
       </div>
-      <div style={{marginTop:4}}>
+      {open && <div style={{marginTop:4}}>
         {list.map((x,i)=>(
           <div key={i} style={{display:'flex',gap:8,padding:'6px 0',borderTop:i>0?'1px solid var(--line)':'none'}}>
             <span style={{fontSize:16,flex:'0 0 auto'}}>{x.ic}</span>
@@ -2150,8 +2154,9 @@ function WhatsNewCard(){
               <div className="muted" style={{fontSize:10.5,marginTop:1}}>{fmtDateVN(x.d)}</div></div>
           </div>
         ))}
-      </div>
-      {WHATS_NEW.length>1 && <button className="muted" style={{fontSize:12,marginTop:6,cursor:'pointer'}} onClick={()=>setAll(a=>!a)}>{all?'▴ Thu gọn':'▾ Xem tất cả ('+WHATS_NEW.length+')'}</button>}
+        {!all && WHATS_NEW.length>PEEK && <button className="muted" style={{fontSize:12,marginTop:6,cursor:'pointer'}} onClick={()=>setAll(true)}>▾ Xem thêm ({WHATS_NEW.length-PEEK} mục nữa)</button>}
+        {all && WHATS_NEW.length>PEEK && <button className="muted" style={{fontSize:12,marginTop:6,cursor:'pointer'}} onClick={()=>setAll(false)}>▴ Rút gọn</button>}
+      </div>}
     </div>
   );
 }
@@ -2268,7 +2273,6 @@ function Home({setup,setSetup,people,me,go}){
       {!cover && <div className="muted center" style={{fontSize:11,margin:'-6px 14px 6px',cursor:'pointer'}} onClick={()=>coverRef.current&&coverRef.current.click()}>📷 Chọn ảnh hai đứa làm ảnh bìa — số ngày sẽ hiện đè lên ảnh ›</div>}
 
       <WhatsNewCard/>
-      <InstallShare/>
       {keys.filter(show).map(k=> cardEls[k] ? <div key={k}>{cardEls[k]}</div> : null)}
       <div style={{height:8}}></div>
     </div>
@@ -7168,6 +7172,9 @@ function Profile({setup,setSetup,people,me,setMe,flash}){
         {setup.loveDate && <div className="muted" style={{fontSize:13}}>Yêu nhau từ {fmtDateVN(setup.loveDate)}</div>}
         <button className="btn soft sm" style={{marginTop:10}} onClick={()=>setEditP(true)}>✏️ Sửa thông tin cặp đôi</button>
       </div>
+
+      {/* Cài app & gửi link cho nửa kia */}
+      <InstallShare/>
 
       {/* Thống kê tình yêu */}
       <LoveStats setup={setup}/>
