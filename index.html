@@ -419,6 +419,7 @@ const pad=(n)=> n<10?'0'+n:''+n;
 function todayISO(){ const d=new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
 function fmtDateVN(s){ if(!s) return ''; const [y,m,d]=s.split('-'); return d+'/'+m+'/'+y; }
 function escHtml(s){ return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function openUrl(u){ let x=(u||'').trim(); if(!x) return; if(!/^https?:\/\//i.test(x)) x='https://'+x; window.open(x,'_blank','noreferrer'); }
 /* ===== Tạo file .docx thật (Open XML) — zip STORED + CRC32, không cần thư viện ===== */
 function crc32(bytes){ const tbl=crc32._t||(crc32._t=(()=>{const t=[];for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?(0xEDB88320^(c>>>1)):(c>>>1);t[n]=c>>>0;}return t;})()); let crc=-1; for(let i=0;i<bytes.length;i++) crc=(crc>>>8)^tbl[(crc^bytes[i])&0xFF]; return (crc^-1)>>>0; }
 function zipStore(files){
@@ -5451,9 +5452,9 @@ function ExpiryItems({people,me}){
 const STASH_CATS=[{k:'seasonal',icon:'🧥',label:'Đồ trái mùa'},{k:'store',icon:'📦',label:'Đồ cất kho'},{k:'kitchen',icon:'🍳',label:'Đồ bếp'},{k:'other',icon:'🔖',label:'Đồ khác'}];
 function StashItems({people,me}){
   const [items,setItems]=useLocal('ju.stash',[]);
-  const [f,setF]=useState({name:'',cat:'seasonal',place:'',note:'',photo:null});
+  const [f,setF]=useState({name:'',cat:'seasonal',place:'',note:'',link:'',photo:null});
   const [q,setQ]=useState(''); const [cat,setCat]=useState('all'); const [view,setView]=useState(null);
-  const add=()=>{ if(!f.name.trim()||!f.place.trim()) return; setItems([{id:uid(),name:f.name.trim(),cat:f.cat,place:f.place.trim(),note:f.note.trim(),photo:f.photo||null,by:me,createdAt:Date.now()},...items]); setF({name:'',cat:f.cat,place:'',note:'',photo:null}); celebrate(['📦']); };
+  const add=()=>{ if(!f.name.trim()||!f.place.trim()) return; setItems([{id:uid(),name:f.name.trim(),cat:f.cat,place:f.place.trim(),note:f.note.trim(),link:(f.link||'').trim(),photo:f.photo||null,by:me,createdAt:Date.now()},...items]); setF({name:'',cat:f.cat,place:'',note:'',link:'',photo:null}); celebrate(['📦']); };
   const del=(id)=>{ if(confirm('Xoá món này?')) setItems(items.filter(x=>x.id!==id)); };
   const catOf=(k)=>STASH_CATS.find(x=>x.k===k)||STASH_CATS[STASH_CATS.length-1];
   const ql=q.trim().toLowerCase();
@@ -5467,6 +5468,7 @@ function StashItems({people,me}){
         <select className="inp" style={{marginTop:8,fontSize:13}} value={f.cat} onChange={e=>setF({...f,cat:e.target.value})}>{STASH_CATS.map(c=><option key={c.k} value={c.k}>{c.icon} {c.label}</option>)}</select>
         <input className="inp" style={{marginTop:8}} placeholder="📍 Cất ở đâu (vd: Thùng 3 gầm giường, nóc tủ)" value={f.place} onChange={e=>setF({...f,place:e.target.value})}/>
         <input className="inp" style={{marginTop:8}} placeholder="Ghi chú (tuỳ chọn)" value={f.note} onChange={e=>setF({...f,note:e.target.value})}/>
+        <input className="inp" style={{marginTop:8}} placeholder="🔗 Link Google Photos (tuỳ chọn)" value={f.link} onChange={e=>setF({...f,link:e.target.value})}/>
         <div className="row" style={{gap:8,marginTop:8,alignItems:'center'}}>
           {f.photo ? <div style={{position:'relative'}}><PhotoImg photo={f.photo} style={{width:52,height:52,borderRadius:10,objectFit:'cover'}}/><button className="muted" style={{position:'absolute',top:-7,right:-7,background:'var(--card)',border:'1px solid var(--line)',borderRadius:'50%',width:20,height:20,fontSize:11}} onClick={()=>setF({...f,photo:null})}>✕</button></div>
             : <div style={{width:52,height:52,borderRadius:10,background:'var(--chip)',display:'grid',placeItems:'center',fontSize:22}}>🖼️</div>}
@@ -5486,6 +5488,7 @@ function StashItems({people,me}){
               <div style={{marginTop:5,display:'flex',gap:6,flexWrap:'wrap'}}>
                 <span className="pill" style={{background:'var(--good)',color:'#fff'}}>📍 {x.place}</span>
                 <span className="pill">{c.icon} {c.label}</span>
+                {x.link && <button className="pill" style={{cursor:'pointer'}} onClick={()=>openUrl(x.link)}>🔗 Google Photos</button>}
               </div>
               {x.note && <div className="muted" style={{fontSize:12,marginTop:4}}>{x.note}</div>}
             </div>
@@ -5526,6 +5529,7 @@ function DocsVault({people,me}){
             {x.number && <span className="pill">#️⃣ {x.number}</span>}
             {x.place && <span className="pill" style={{background:'var(--good)',color:'#fff'}}>📍 {x.place}</span>}
             {x.expiry && <span className="pill">📅 {fmtDateVN(x.expiry)}</span>}
+            {x.link && <button className="pill" style={{cursor:'pointer'}} onClick={()=>openUrl(x.link)}>🔗 Google Photos</button>}
           </div>
           {(x.photos||[]).length>0 && <div style={{display:'flex',gap:8,flexWrap:'wrap',marginTop:8}}>
             {(x.photos||[]).map((p,i)=><span key={i} style={{cursor:'pointer',lineHeight:0}} onClick={()=>setView(p)}><PhotoImg photo={p} style={{width:78,height:56,borderRadius:8,objectFit:'cover'}}/></span>)}
@@ -5541,7 +5545,7 @@ function DocsVault({people,me}){
   );
 }
 function DocForm({init,onClose,onSave}){
-  const [f,setF]=useState(()=>init?{...init,photos:init.photos||[]}:{name:'',cat:'cccd',owner:'',number:'',expiry:'',place:'',note:'',photos:[]});
+  const [f,setF]=useState(()=>init?{...init,photos:init.photos||[]}:{name:'',cat:'cccd',owner:'',number:'',expiry:'',place:'',note:'',link:'',photos:[]});
   const set=(k,v)=>setF(p=>({...p,[k]:v}));
   const addPhoto=(p)=>setF(prev=>({...prev,photos:[...(prev.photos||[]),p]}));
   const rmPhoto=(i)=>setF(prev=>({...prev,photos:(prev.photos||[]).filter((_,j)=>j!==i)}));
@@ -5562,6 +5566,7 @@ function DocForm({init,onClose,onSave}){
         <PhotoAddBtn size={66} onAdd={addPhoto}/>
       </div>
     </div>
+    <div className="field"><label>🔗 Link Google Photos (tuỳ chọn — khỏi tải ảnh)</label><input className="inp" value={f.link||''} onChange={e=>set('link',e.target.value)} placeholder="Dán link album/ảnh Google Photos…"/></div>
     <div className="field"><label>Ghi chú</label><textarea className="inp" value={f.note} onChange={e=>set('note',e.target.value)} placeholder="(tuỳ chọn)"/></div>
     <button className="btn" onClick={()=>onSave(f)}>💾 Lưu</button>
   </Sheet>;
