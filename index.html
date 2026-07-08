@@ -3356,7 +3356,7 @@ function TalkTab({people,me,flash}){
       <SegGrid value={seg} onChange={setSeg} items={[
         {k:'notes',icon:'💌',label:'Nhắn nhau'},{k:'question',icon:'❓',label:'Câu hỏi'},
         {k:'wishes',icon:'💛',label:'Mong nhau'},{k:'guide',icon:'🕊️',label:'Giao tiếp'},
-        {k:'parenting',icon:'🤝',label:'Dạy con'},{k:'rules',icon:'📜',label:'Quy tắc'},
+        {k:'parenting',icon:'🤝',label:'Dạy con'},
         {k:'quiz',icon:'💞',label:'Đố vui'},{k:'checkin',icon:'📝',label:'Check-in'},
         {k:'topics',icon:'🗣️',label:'Chủ đề'},
       ]} menuId="talk"/>
@@ -3365,7 +3365,6 @@ function TalkTab({people,me,flash}){
       {seg==='wishes' && <PartnerWishes people={people} me={me}/>}
       {seg==='guide' && <CommGuide/>}
       {seg==='parenting' && <ParentingAgreement/>}
-      {seg==='rules' && <FamilyRules people={people} me={me}/>}
       {seg==='quiz' && <CoupleQuiz people={people} me={me}/>}
       {seg==='checkin' && <WeeklyCheckin people={people} me={me}/>}
       {seg==='topics' && <TalkTopics/>}
@@ -5283,11 +5282,12 @@ const US_SEGS=[
   {k:'goals',icon:'🎯',label:'Mục tiêu'},
   {k:'shop',icon:'🛒',label:'Đi chợ'},
   {k:'chores',icon:'🧹',label:'Việc nhà'},
+  {k:'rules',icon:'📜',label:'Quy tắc'},
   {k:'budget',icon:'🎚️',label:'Ngân sách'},
   {k:'moneylover',icon:'💵',label:'Money Lover'},
 ];
 const US_GROUPS=[
-  {k:'daily',icon:'📆',label:'Hàng ngày',items:['todos','routine','chores','menu','shop']},
+  {k:'daily',icon:'📆',label:'Hàng ngày',items:['todos','routine','chores','menu','shop','rules']},
   {k:'money',icon:'💰',label:'Tiền nong',items:['fund','goals','budget','moneylover']},
   {k:'plan',icon:'📅',label:'Kế hoạch & Lịch',items:['events','dates','timeline']},
   {k:'bigfam',icon:'🏡',label:'Gia đình lớn',items:['projects','spirit','family']},
@@ -5300,7 +5300,7 @@ const MENU_REGISTRY=[
   ...US_GROUPS.map(g=>({id:'us-'+g.k,label:'Tụi Mình · '+g.label,items:g.items.map(k=>US_SEG_MAP[k]).filter(Boolean)})),
   {id:'date',label:'Hẹn hò',items:[{k:'idea',icon:'💡',label:'Ý tưởng'},{k:'hanoi',icon:'📍',label:'Gợi ý HN'},{k:'events',icon:'🎪',label:'Sự kiện HN'},{k:'food',icon:'🍜',label:'Quán & Món'},{k:'checkin',icon:'📸',label:'Check-in'},{k:'wish',icon:'💝',label:'Ước muốn'},{k:'music',icon:'🎵',label:'Nhạc đôi'}]},
   {id:'wish',label:'Ước muốn',items:[{k:'gift',icon:'🎁',label:'Quà tặng'},{k:'bucket',icon:'🎯',label:'Muốn làm cùng'},{k:'watch',icon:'🎬',label:'Xem·Đọc·Nghe'},{k:'coupon',icon:'🎟️',label:'Phiếu yêu thương'},{k:'link',icon:'🔗',label:'Link hay'}]},
-  {id:'talk',label:'Trò chuyện',items:[{k:'notes',icon:'💌',label:'Nhắn nhau'},{k:'question',icon:'❓',label:'Câu hỏi'},{k:'wishes',icon:'💛',label:'Mong nhau'},{k:'guide',icon:'🕊️',label:'Giao tiếp'},{k:'parenting',icon:'🤝',label:'Dạy con'},{k:'rules',icon:'📜',label:'Quy tắc'},{k:'quiz',icon:'💞',label:'Đố vui'},{k:'checkin',icon:'📝',label:'Check-in'},{k:'topics',icon:'🗣️',label:'Chủ đề'}]},
+  {id:'talk',label:'Trò chuyện',items:[{k:'notes',icon:'💌',label:'Nhắn nhau'},{k:'question',icon:'❓',label:'Câu hỏi'},{k:'wishes',icon:'💛',label:'Mong nhau'},{k:'guide',icon:'🕊️',label:'Giao tiếp'},{k:'parenting',icon:'🤝',label:'Dạy con'},{k:'quiz',icon:'💞',label:'Đố vui'},{k:'checkin',icon:'📝',label:'Check-in'},{k:'topics',icon:'🗣️',label:'Chủ đề'}]},
   {id:'comm',label:'Cẩm nang giao tiếp',items:[{k:'principles',icon:'🕊️',label:'Nguyên tắc'},{k:'say',icon:'💬',label:'Nói khéo'},{k:'love',icon:'💖',label:'NN yêu thương'},{k:'fight',icon:'⚖️',label:'Cãi lành mạnh'},{k:'connect',icon:'🔗',label:'Câu hỏi kết nối'}]},
   {id:'spirit',label:'Tâm linh',items:[{k:'le',icon:'📅',label:'Ngày lễ'},{k:'kinh',icon:'📿',label:'Kinh Phật'},{k:'khan',icon:'📜',label:'Văn khấn'},{k:'chay',icon:'🍃',label:'Quán chay'},{k:'co',icon:'🍲',label:'Mâm cỗ'}]},
   {id:'child',label:'Nuôi con',items:[{k:'develop',icon:'🌱',label:'Phát triển'},{k:'play',icon:'🎲',label:'Chơi với con'},{k:'health',icon:'🏥',label:'Sức khoẻ'},{k:'eat',icon:'🍎',label:'Ăn uống'},{k:'school',icon:'🎒',label:'Đi học'},{k:'parent',icon:'💞',label:'Nuôi dạy'}]},
@@ -5388,6 +5388,7 @@ function UsTab({people,me,flash}){
       {seg==='moneylover' && <MoneyLover/>}
       {seg==='shop' && <Shopping people={people} me={me}/>}
       {seg==='chores' && <Chores people={people} me={me}/>}
+      {seg==='rules' && <FamilyRules people={people} me={me}/>}
     </div>
   );
 }
