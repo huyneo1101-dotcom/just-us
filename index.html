@@ -293,7 +293,7 @@ const store={
 const SB_URL='https://vvgkjgvzjeklaadusbne.supabase.co';
 const SB_KEY='sb_publishable_DMMPv5L2kGhrHTxeQ72iKw_dIh13iT1';
 // Các key được đồng bộ (KHÔNG gồm ju.me/ju.device/ju.sync — đó là riêng từng máy)
-const SYNC_KEYS=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood','ju.qa','ju.timeline','ju.coupons','ju.chores','ju.lovejar','ju.quiz','ju.city','ju.goals','ju.checkin','ju.challengeDone','ju.homecfg','ju.diary','ju.projects','ju.vinhaUrl','ju.checkins','ju.menu','ju.period','ju.menuPlan','ju.accuKey','ju.habits','ju.hiddenSpots','ju.usOrder','ju.eventPrefs','ju.child','ju.childGrowth','ju.childVaccines','ju.childMilestones','ju.childDiary','ju.partnerWishes','ju.todos','ju.spotify','ju.dishPrefs','ju.favDishes','ju.childPack','ju.childSkills','ju.childMed','ju.childIllness','ju.childWords','ju.childTantrum','ju.childParenting','ju.saveTips','ju.saveCustom','ju.funPrefs','ju.routine','ju.routineIssues','ju.noti','ju.family','ju.health','ju.transfers','ju.skillGuidesDone','ju.expenses','ju.budget','ju.vinhaSync','ju.menuOrder','ju.notesSeen','ju.intimacy','ju.intimacySeen','ju.quizKnow','ju.familyRules','ju.expiry','ju.stash','ju.docs','ju.tuvi'];
+const SYNC_KEYS=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood','ju.qa','ju.timeline','ju.coupons','ju.chores','ju.lovejar','ju.quiz','ju.city','ju.goals','ju.checkin','ju.challengeDone','ju.homecfg','ju.diary','ju.projects','ju.vinhaUrl','ju.checkins','ju.menu','ju.period','ju.menuPlan','ju.accuKey','ju.habits','ju.hiddenSpots','ju.usOrder','ju.eventPrefs','ju.child','ju.childGrowth','ju.childVaccines','ju.childMilestones','ju.childDiary','ju.partnerWishes','ju.todos','ju.spotify','ju.dishPrefs','ju.favDishes','ju.childPack','ju.childSkills','ju.childMed','ju.childIllness','ju.childWords','ju.childTantrum','ju.childParenting','ju.saveTips','ju.saveCustom','ju.funPrefs','ju.routine','ju.routineIssues','ju.noti','ju.family','ju.health','ju.transfers','ju.skillGuidesDone','ju.expenses','ju.budget','ju.vinhaSync','ju.menuOrder','ju.notesSeen','ju.intimacy','ju.intimacySeen','ju.quizKnow','ju.familyRules','ju.expiry','ju.stash','ju.docs','ju.tuvi','ju.thanso'];
 let _sb=null;
 function sbClient(){
   if(_sb) return _sb;
@@ -2118,6 +2118,7 @@ function AngerHelper(){
 
 /* ============ HOME ============ */
 const WHATS_NEW=[
+  {d:'2026-07-08',ic:'🔢',t:'Tâm linh thêm "Thần số học": nhập ngày sinh ra số chủ đạo (đường đời) + điểm mạnh/lưu ý, số ngày sinh và năm cá nhân của năm nay.'},
   {d:'2026-07-08',ic:'🔮',t:'Tâm linh có thêm "Đọc lá số tử vi": nhập ngày sinh để xem can chi · con giáp · bản mệnh (nạp âm), tuổi tam hợp/tứ hành xung, màu &amp; hướng hợp; kèm nút lập lá số đầy đủ.'},
   {d:'2026-07-08',ic:'🎨',t:'Trang chủ khoác áo mới — phong cách tối giản thanh lịch: số ngày bên nhau kiểu chữ serif, các mục ngăn bằng đường kẻ mảnh, nhiều khoảng thở.'},
   {d:'2026-07-08',ic:'🧹',t:'Trang chủ gọn hơn: ô "Mới cập nhật" mặc định thu gọn (bấm mở ra xem vài mục, "Xem thêm" xem hết). Chuyển "Cài app & gửi link cho nửa kia" vào Hồ sơ.'},
@@ -4171,6 +4172,70 @@ function TuViReader(){
     </div>
   );
 }
+/* ============ Thần số học (Pythagoras · theo ngày sinh) ============ */
+function reduceNum(n,keepMaster){ n=Math.abs(+n)||0; while(n>9){ if(keepMaster&&(n===11||n===22||n===33)) break; n=String(n).split('').reduce((s,d)=>s+(+d),0); } return n; }
+const NUM_MEAN={
+  1:{t:'Người tiên phong',g:'Độc lập, lãnh đạo, quyết đoán, sáng tạo, ý chí mạnh.',n:'Cẩn thận: bảo thủ, cái tôi cao, dễ cô độc.'},
+  2:{t:'Người hoà giải',g:'Nhạy cảm, tinh tế, hợp tác, ngoại giao, biết lắng nghe.',n:'Cẩn thận: thiếu quyết đoán, dễ tổn thương, hay do dự.'},
+  3:{t:'Người sáng tạo',g:'Vui vẻ, giao tiếp giỏi, nghệ thuật, lạc quan, cuốn hút.',n:'Cẩn thận: hời hợt, thiếu tập trung, dễ chán.'},
+  4:{t:'Người kiến tạo',g:'Chăm chỉ, kỷ luật, thực tế, đáng tin, bền bỉ.',n:'Cẩn thận: cứng nhắc, ngại thay đổi, quá lo xa.'},
+  5:{t:'Người tự do',g:'Linh hoạt, ưa phiêu lưu, năng động, thích nghi nhanh.',n:'Cẩn thận: bốc đồng, thiếu kiên định, cả thèm chóng chán.'},
+  6:{t:'Người chăm sóc',g:'Yêu thương, trách nhiệm, tận tụy với gia đình, ấm áp.',n:'Cẩn thận: ôm đồm, hay lo, dễ hy sinh quá mức.'},
+  7:{t:'Người tìm tòi',g:'Trí tuệ, sâu sắc, trực giác tốt, thích khám phá tâm linh.',n:'Cẩn thận: khép kín, hoài nghi, khó mở lòng.'},
+  8:{t:'Người quyền lực',g:'Tham vọng, giỏi tài chính, bản lĩnh, thực tế, quyết đoán.',n:'Cẩn thận: tham công tiếc việc, đề cao vật chất.'},
+  9:{t:'Người nhân ái',g:'Bao dung, lý tưởng, giàu trắc ẩn, rộng lượng, vị tha.',n:'Cẩn thận: mơ mộng, dễ hy sinh, khó dứt điểm.'},
+  11:{t:'Bậc thầy trực giác',g:'Nhạy bén phi thường, truyền cảm hứng, tâm linh cao, lý tưởng.',n:'Số bậc thầy · áp lực lớn — cần cân bằng cảm xúc.'},
+  22:{t:'Bậc thầy kiến tạo',g:'Tầm nhìn lớn, biến ước mơ thành hiện thực, vừa thực tế vừa lý tưởng.',n:'Số bậc thầy · tiềm năng lớn — cần kiên trì hiện thực hoá.'},
+  33:{t:'Bậc thầy dẫn dắt',g:'Yêu thương vô điều kiện, tận hiến, chữa lành, nâng đỡ người khác.',n:'Số bậc thầy hiếm · trách nhiệm tinh thần cao.'},
+};
+const PY_MEAN={1:'Khởi đầu — gieo hạt, bắt đầu điều mới, chủ động.',2:'Kiên nhẫn — hợp tác, vun đắp quan hệ, chờ thời.',3:'Sáng tạo — giao tiếp, niềm vui, mở rộng, thể hiện.',4:'Xây nền — làm việc chăm chỉ, kỷ luật, ổn định.',5:'Thay đổi — tự do, cơ hội mới, dịch chuyển.',6:'Gia đình — tình yêu, trách nhiệm, chăm sóc, cam kết.',7:'Nội tâm — học hỏi, nghỉ ngơi, chiêm nghiệm.',8:'Gặt hái — thành quả, tài chính, quyền lực.',9:'Kết thúc — buông bỏ, cho đi, dọn đường chu kỳ mới.'};
+function thanSo(dateStr,curYear){
+  const parts=(dateStr||'').split('-'); if(parts.length<3) return null;
+  const Y=parts[0],M=parts[1],D=parts[2]; if(!+Y||!+M||!+D) return null;
+  const life=reduceNum((D+M+Y).split('').reduce((s,d)=>s+(+d),0),true);
+  const birth=reduceNum(+D,true);
+  const py=reduceNum((D+M+String(curYear)).split('').reduce((s,d)=>s+(+d),0),false);
+  return {life,birth,py};
+}
+function ThanSoReader(){
+  const [items,setItems]=useLocal('ju.thanso',[]);
+  const [f,setF]=useState({name:'',date:''});
+  const year=new Date().getFullYear();
+  const add=()=>{ if(!f.name.trim()||!f.date) return; setItems([{id:uid(),name:f.name.trim(),date:f.date},...items]); setF({name:'',date:''}); celebrate(['🔢','✨']); };
+  const del=(id)=>{ if(confirm('Xoá mục này?')) setItems(items.filter(x=>x.id!==id)); };
+  return (
+    <div>
+      <div className="muted center" style={{fontSize:11.5,margin:'10px 14px'}}>🔢 Thần số học theo ngày sinh — <b>số chủ đạo</b> (đường đời), số ngày sinh và <b>năm cá nhân {year}</b>. Tham khảo cho vui 😊</div>
+      <div className="card">
+        <input className="inp" placeholder="Tên (vd: Anh, Vợ, Sóc…)" value={f.name} onChange={e=>setF({...f,name:e.target.value})}/>
+        <div className="row" style={{gap:6,marginTop:8}}>
+          <input className="inp grow" type="date" value={f.date} onChange={e=>setF({...f,date:e.target.value})}/>
+          <button className="btn" style={{flex:'0 0 auto'}} onClick={add}>🔢 Xem</button>
+        </div>
+      </div>
+      {items.length===0 && <div className="empty"><span className="big">🔢</span>Thêm ngày sinh của cả nhà để xem thần số học.</div>}
+      {items.map(x=>{ const r=thanSo(x.date,year); if(!r) return null; const m=NUM_MEAN[r.life]||{};
+        return <div key={x.id} className="item">
+          <div className="row"><b className="grow" style={{fontSize:14.5}}>{x.name}</b>
+            <span className="muted" style={{fontSize:11.5}}>{fmtDateVN(x.date)}</span>
+            <button className="muted" onClick={()=>del(x.id)} style={{marginLeft:6}}>✕</button></div>
+          <div className="row" style={{marginTop:8,gap:12,alignItems:'center'}}>
+            <div style={{width:52,height:52,borderRadius:14,background:'var(--chip)',color:'var(--chip-tx)',display:'grid',placeItems:'center',fontSize:26,fontWeight:800,flex:'0 0 auto'}}>{r.life}</div>
+            <div style={{minWidth:0}}><div style={{fontSize:10.5,fontWeight:700,letterSpacing:.4,textTransform:'uppercase',color:'var(--primary)'}}>Số chủ đạo (đường đời)</div>
+              <div style={{fontSize:14.5,fontWeight:700}}>Số {r.life} · {m.t}</div></div>
+          </div>
+          <div style={{fontSize:12.5,marginTop:8,lineHeight:1.55}}><b style={{color:'var(--good)'}}>Điểm mạnh:</b> {m.g}</div>
+          <div style={{fontSize:12.5,marginTop:3,lineHeight:1.55}} className="muted">{m.n}</div>
+          <div style={{borderTop:'1px solid var(--line)',marginTop:8,paddingTop:7,display:'flex',gap:6,flexWrap:'wrap'}}>
+            <span className="pill">🎂 Số ngày sinh: {r.birth}</span>
+            <span className="pill" style={{background:'var(--chip)'}}>📅 Năm cá nhân {year}: {r.py}</span>
+          </div>
+          <div style={{fontSize:12,marginTop:6,lineHeight:1.5}} className="muted"><b>Năm {r.py}:</b> {PY_MEAN[r.py]}</div>
+        </div>;
+      })}
+    </div>
+  );
+}
 function SpiritualSection(){
   const [read,setRead]=useState(null);
   const [tab,setTab]=useState('le');
@@ -4180,9 +4245,10 @@ function SpiritualSection(){
     <div>
       <FilterBar value={tab} onChange={setTab} menuId="spirit" items={[
         {k:'le',icon:'📅',label:'Ngày lễ'},{k:'kinh',icon:'📿',label:'Kinh Phật'},{k:'khan',icon:'📜',label:'Văn khấn'},
-        {k:'tuvi',icon:'🔮',label:'Tử vi'},{k:'chay',icon:'🍃',label:'Quán chay'},{k:'co',icon:'🍲',label:'Mâm cỗ'},
+        {k:'tuvi',icon:'🔮',label:'Tử vi'},{k:'thanso',icon:'🔢',label:'Thần số'},{k:'chay',icon:'🍃',label:'Quán chay'},{k:'co',icon:'🍲',label:'Mâm cỗ'},
       ]}/>
       {tab==='tuvi' && <TuViReader/>}
+      {tab==='thanso' && <ThanSoReader/>}
       {tab==='le' && <div>
         <div className="sec-title">🪷 Mùng 1 · rằm · lễ trong 30 ngày tới</div>
         {days.length===0 && <div className="empty">Không có ngày lễ nào trong 30 ngày tới.</div>}
@@ -5483,7 +5549,7 @@ const MENU_REGISTRY=[
   {id:'wish',label:'Ước muốn',items:[{k:'gift',icon:'🎁',label:'Quà tặng'},{k:'bucket',icon:'🎯',label:'Muốn làm cùng'},{k:'watch',icon:'🎬',label:'Xem·Đọc·Nghe'},{k:'coupon',icon:'🎟️',label:'Phiếu yêu thương'},{k:'link',icon:'🔗',label:'Link hay'}]},
   {id:'talk',label:'Trò chuyện',items:[{k:'notes',icon:'💌',label:'Nhắn nhau'},{k:'question',icon:'❓',label:'Câu hỏi'},{k:'wishes',icon:'💛',label:'Mong nhau'},{k:'guide',icon:'🕊️',label:'Giao tiếp'},{k:'parenting',icon:'🤝',label:'Dạy con'},{k:'quiz',icon:'💞',label:'Đố vui'},{k:'checkin',icon:'📝',label:'Check-in'},{k:'topics',icon:'🗣️',label:'Chủ đề'}]},
   {id:'comm',label:'Cẩm nang giao tiếp',items:[{k:'principles',icon:'🕊️',label:'Nguyên tắc'},{k:'say',icon:'💬',label:'Nói khéo'},{k:'love',icon:'💖',label:'NN yêu thương'},{k:'fight',icon:'⚖️',label:'Cãi lành mạnh'},{k:'connect',icon:'🔗',label:'Câu hỏi kết nối'}]},
-  {id:'spirit',label:'Tâm linh',items:[{k:'le',icon:'📅',label:'Ngày lễ'},{k:'kinh',icon:'📿',label:'Kinh Phật'},{k:'khan',icon:'📜',label:'Văn khấn'},{k:'tuvi',icon:'🔮',label:'Tử vi'},{k:'chay',icon:'🍃',label:'Quán chay'},{k:'co',icon:'🍲',label:'Mâm cỗ'}]},
+  {id:'spirit',label:'Tâm linh',items:[{k:'le',icon:'📅',label:'Ngày lễ'},{k:'kinh',icon:'📿',label:'Kinh Phật'},{k:'khan',icon:'📜',label:'Văn khấn'},{k:'tuvi',icon:'🔮',label:'Tử vi'},{k:'thanso',icon:'🔢',label:'Thần số'},{k:'chay',icon:'🍃',label:'Quán chay'},{k:'co',icon:'🍲',label:'Mâm cỗ'}]},
   {id:'child',label:'Nuôi con',items:[{k:'develop',icon:'🌱',label:'Phát triển'},{k:'play',icon:'🎲',label:'Chơi với con'},{k:'health',icon:'🏥',label:'Sức khoẻ'},{k:'eat',icon:'🍎',label:'Ăn uống'},{k:'school',icon:'🎒',label:'Đi học'},{k:'parent',icon:'💞',label:'Nuôi dạy'}]},
 ];
 function LongSectionsControl({flash}){
