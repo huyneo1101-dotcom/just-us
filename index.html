@@ -4594,18 +4594,19 @@ function ChildCare({people,me}){
   );
 }
 /* ============ Tối ưu lịch sinh hoạt ============ */
+// Mỗi mốc: {t} + hoặc {both} (việc chung, span 2 cột) hoặc {a,b} (riêng bố / mẹ)
 const DEFAULT_ROUTINE=[
-  {id:'r1',t:'06:30',act:'Cả nhà thức dậy, vệ sinh cá nhân'},
-  {id:'r2',t:'07:00',act:'Ăn sáng + chuẩn bị đi làm / đi lớp'},
-  {id:'r3',t:'07:45',act:'Đưa Sóc đi lớp · bố mẹ đi làm'},
-  {id:'r4',t:'12:00',act:'Sóc ăn trưa + ngủ trưa'},
-  {id:'r5',t:'17:30',act:'Đón Sóc, về nhà'},
-  {id:'r6',t:'18:00',act:'Chơi với con + chuẩn bị bữa tối'},
-  {id:'r7',t:'19:00',act:'Cả nhà ăn tối'},
-  {id:'r8',t:'20:00',act:'Tắm cho Sóc, đọc sách / hát ru'},
-  {id:'r9',t:'20:45',act:'Sóc đi ngủ'},
-  {id:'r10',t:'21:00',act:'Thời gian riêng của hai vợ chồng 💞'},
-  {id:'r11',t:'22:30',act:'Bố mẹ đi ngủ'},
+  {id:'r1',t:'06:30',both:'Cả nhà thức dậy, vệ sinh cá nhân'},
+  {id:'r2',t:'07:00',a:'Vệ sinh cá nhân, chuẩn bị đi làm',b:'Lo bữa sáng, chuẩn bị đồ cho Sóc'},
+  {id:'r3',t:'07:45',a:'Đưa Sóc đi lớp rồi đi làm',b:'Đi làm'},
+  {id:'r4',t:'12:00',both:'Sóc ăn trưa + ngủ trưa ở lớp'},
+  {id:'r5',t:'17:30',a:'Đi làm về, phụ dọn nhà',b:'Đón Sóc, về nhà'},
+  {id:'r6',t:'18:00',a:'Chơi với con',b:'Chuẩn bị bữa tối'},
+  {id:'r7',t:'19:00',both:'Cả nhà ăn tối'},
+  {id:'r8',t:'20:00',a:'Tắm cho Sóc, đọc sách / hát ru',b:'Dọn bếp, rửa bát'},
+  {id:'r9',t:'20:45',both:'Ru Sóc đi ngủ'},
+  {id:'r10',t:'21:00',both:'Thời gian riêng của hai vợ chồng 💞'},
+  {id:'r11',t:'22:30',both:'Bố mẹ đi ngủ'},
 ];
 const ROUTINE_FIXES=[
   {icon:'😴',title:'Con ngủ muộn / khó ngủ',key:['ngủ','ngu','khó ngủ','thức khuya','giấc','đi ngủ','quấy đêm','ngủ trưa','khóc đêm'],tips:[
@@ -4731,8 +4732,14 @@ function RoutineTab({people,me}){
   const [prob,setProb]=useState('');
   const [browse,setBrowse]=useState(null);
   const [openFix,setOpenFix]=useState({});
-  const list=(routine||[]).slice().sort((a,b)=>(a.t||'').localeCompare(b.t||''));
-  const saveBlock=()=>{ if(!edit||!edit.act.trim())return; if(edit.id){ setRoutine((routine||[]).map(x=>x.id===edit.id?edit:x)); } else { setRoutine([...(routine||[]),{...edit,id:uid()}]); } setEdit(null); };
+  const normBlock=(b)=> (b.both!=null||b.a!=null||b.b!=null) ? b : {id:b.id,t:b.t,both:b.act||''}; // migrate mốc cũ {act}
+  const list=(routine||[]).map(normBlock).slice().sort((a,b)=>(a.t||'').localeCompare(b.t||''));
+  const editMode=(e)=> e._mode || ((e.both!=null&&e.both!=='')?'both':((e.a!=null||e.b!=null)?'split':'both'));
+  const saveBlock=()=>{ if(!edit)return; const m=editMode(edit); let blk;
+    if(m==='both'){ const v=(edit.both||'').trim(); if(!v)return; blk={id:edit.id,t:edit.t,both:v}; }
+    else { const a=(edit.a||'').trim(), b=(edit.b||'').trim(); if(!a&&!b)return; blk={id:edit.id,t:edit.t,a,b}; }
+    if(blk.id){ setRoutine((routine||[]).map(x=>x.id===blk.id?blk:x)); } else { blk.id=uid(); setRoutine([...(routine||[]),blk]); }
+    setEdit(null); };
   const delBlock=(id)=>{ if(confirm('Xoá mốc này khỏi lịch?')) setRoutine((routine||[]).filter(x=>x.id!==id)); };
   const resetR=()=>{ if(confirm('Khôi phục lịch sinh hoạt mặc định?')) setRoutine(DEFAULT_ROUTINE); };
   const addIssueText=(text,fix)=>{ const x=(text||'').trim(); if(!x)return; setIssues([{id:uid(),text:x,fix:fix||null,by:me,done:false,createdAt:Date.now()},...(issues||[])]); };
@@ -4751,22 +4758,44 @@ function RoutineTab({people,me}){
       {view==='lich' ? (
         <div className="card">
           <div className="row"><span className="hc-title">🗓️ Lịch sinh hoạt một ngày</span><span className="grow"></span>
-            <button className="btn sm soft" onClick={()=>setEdit({t:'08:00',act:''})}>＋ Mốc</button></div>
-          <div className="hc-body" style={{margin:'6px 0 6px'}}>Chỉnh cho khớp nếp nhà mình — đây là khung để tối ưu, không cần cứng nhắc.</div>
+            <button className="btn sm soft" onClick={()=>setEdit({t:'08:00',both:'',_mode:'both'})}>＋ Mốc</button></div>
+          <div className="hc-body" style={{margin:'6px 0 6px'}}>Ai làm gì lúc nào — tách 2 cột cho khỏi giẫm việc nhau. Chỉnh cho khớp nếp nhà mình.</div>
+          <div className="row" style={{padding:'4px 0 6px',borderBottom:'2px solid var(--line)',gap:8,alignItems:'center'}}>
+            <span style={{width:46,flex:'0 0 auto'}}></span>
+            <span className="grow" style={{fontSize:11.5,fontWeight:800,textAlign:'center'}}>{people.a.avatar} {people.a.name}</span>
+            <span className="grow" style={{fontSize:11.5,fontWeight:800,textAlign:'center'}}>{people.b.avatar} {people.b.name}</span>
+            <span style={{width:24,flex:'0 0 auto'}}></span>
+          </div>
           {list.map(b=>(
-            <div key={b.id} className="row" style={{padding:'7px 0',borderBottom:'1px solid var(--line)',gap:10}}>
-              <span className="pill" style={{flex:'0 0 auto',minWidth:50,justifyContent:'center'}}>{b.t}</span>
-              <span className="grow" style={{fontSize:13.5}}>{b.act}</span>
-              <button className="iconbtn" onClick={()=>setEdit({...b})}>✎</button>
-              <button className="iconbtn" onClick={()=>delBlock(b.id)}>🗑️</button>
+            <div key={b.id} className="row" style={{padding:'7px 0',borderBottom:'1px solid var(--line)',gap:8,alignItems:'center'}}>
+              <span className="pill" style={{flex:'0 0 auto',minWidth:46,justifyContent:'center'}}>{b.t}</span>
+              {b.both!=null && b.both!=='' ?
+                <span className="grow" style={{fontSize:12.5,textAlign:'center',background:'var(--chip)',color:'var(--chip-tx)',borderRadius:8,padding:'6px 8px'}}>👫 {b.both}</span>
+              : <>
+                <span className="grow" style={{fontSize:12.5,textAlign:'center'}}>{b.a||'—'}</span>
+                <span style={{width:1,alignSelf:'stretch',background:'var(--line)',flex:'0 0 auto'}}></span>
+                <span className="grow" style={{fontSize:12.5,textAlign:'center'}}>{b.b||'—'}</span>
+              </>}
+              <button className="iconbtn" style={{flex:'0 0 auto'}} onClick={()=>setEdit({...b})}>✎</button>
             </div>
           ))}
           <button className="muted" style={{fontSize:11.5,marginTop:8}} onClick={resetR}>↩︎ Về lịch mặc định</button>
-          {edit && <Sheet title={edit.id?'Sửa mốc':'Thêm mốc'} onClose={()=>setEdit(null)}>
+          {edit && (()=>{ const m=editMode(edit); return <Sheet title={edit.id?'Sửa mốc':'Thêm mốc'} onClose={()=>setEdit(null)}>
             <div className="field"><label>Giờ</label><input className="inp" type="time" value={edit.t} onChange={e=>setEdit({...edit,t:e.target.value})}/></div>
-            <div className="field"><label>Hoạt động</label><input className="inp" autoFocus value={edit.act} onChange={e=>setEdit({...edit,act:e.target.value})} placeholder="vd: Cả nhà ăn tối"/></div>
+            <div className="field"><label>Kiểu việc</label>
+              <div className="row" style={{gap:6}}>
+                <button className={'btn sm grow '+(m==='both'?'':'soft')} onClick={()=>setEdit({...edit,_mode:'both'})}>👫 Việc chung</button>
+                <button className={'btn sm grow '+(m==='split'?'':'soft')} onClick={()=>setEdit({...edit,_mode:'split'})}>👤 Riêng từng người</button>
+              </div></div>
+            {m==='both'
+              ? <div className="field"><label>Hoạt động chung</label><input className="inp" autoFocus value={edit.both||''} onChange={e=>setEdit({...edit,both:e.target.value})} placeholder="vd: Cả nhà ăn tối"/></div>
+              : <>
+                <div className="field"><label>{people.a.avatar} {people.a.name}</label><input className="inp" value={edit.a||''} onChange={e=>setEdit({...edit,a:e.target.value})} placeholder="vd: Tắm cho Sóc"/></div>
+                <div className="field"><label>{people.b.avatar} {people.b.name}</label><input className="inp" value={edit.b||''} onChange={e=>setEdit({...edit,b:e.target.value})} placeholder="vd: Dọn bếp, rửa bát"/></div>
+              </>}
             <button className="btn" onClick={saveBlock}>💾 Lưu</button>
-          </Sheet>}
+            {edit.id && <button className="btn soft" style={{marginTop:8,width:'100%'}} onClick={()=>{ delBlock(edit.id); setEdit(null); }}>🗑️ Xoá mốc</button>}
+          </Sheet>; })()}
         </div>
       ) : (
         <div>
