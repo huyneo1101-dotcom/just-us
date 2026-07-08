@@ -418,6 +418,37 @@ const VND=(n)=> (Number(n)||0).toLocaleString('vi-VN')+'đ';
 const pad=(n)=> n<10?'0'+n:''+n;
 function todayISO(){ const d=new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
 function fmtDateVN(s){ if(!s) return ''; const [y,m,d]=s.split('-'); return d+'/'+m+'/'+y; }
+function escHtml(s){ return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+/* ===== Tạo file .docx thật (Open XML) — zip STORED + CRC32, không cần thư viện ===== */
+function crc32(bytes){ const tbl=crc32._t||(crc32._t=(()=>{const t=[];for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?(0xEDB88320^(c>>>1)):(c>>>1);t[n]=c>>>0;}return t;})()); let crc=-1; for(let i=0;i<bytes.length;i++) crc=(crc>>>8)^tbl[(crc^bytes[i])&0xFF]; return (crc^-1)>>>0; }
+function zipStore(files){
+  const u16=n=>[n&255,(n>>8)&255], u32=n=>[n&255,(n>>8)&255,(n>>16)&255,(n>>24)&255];
+  const parts=[]; let off=0; const central=[];
+  files.forEach(f=>{ const nm=f.name, data=f.data, crc=crc32(data);
+    const loc=[].concat(u32(0x04034b50),u16(20),u16(0),u16(0),u16(0),u16(0x21),u32(crc),u32(data.length),u32(data.length),u16(nm.length),u16(0));
+    parts.push(Uint8Array.from(loc),nm,data); central.push({nm,crc,size:data.length,off}); off+=loc.length+nm.length+data.length;
+  });
+  const cen=[]; const cenStart=off; let cenSize=0;
+  central.forEach(c=>{ const rec=[].concat(u32(0x02014b50),u16(20),u16(20),u16(0),u16(0),u16(0),u16(0x21),u32(c.crc),u32(c.size),u32(c.size),u16(c.nm.length),u16(0),u16(0),u16(0),u16(0),u32(0),u32(c.off)); cen.push(Uint8Array.from(rec),c.nm); cenSize+=rec.length+c.nm.length; });
+  const eocd=[].concat(u32(0x06054b50),u16(0),u16(0),u16(central.length),u16(central.length),u32(cenSize),u32(cenStart),u16(0));
+  const all=parts.concat(cen,[Uint8Array.from(eocd)]); let total=0; all.forEach(p=>total+=p.length);
+  const out=new Uint8Array(total); let pos=0; all.forEach(p=>{out.set(p,pos);pos+=p.length;}); return out;
+}
+function ooP(text,o){ o=o||{}; const rpr='<w:rPr>'+(o.bold?'<w:b/>':'')+(o.color?'<w:color w:val="'+o.color+'"/>':'')+(o.size?'<w:sz w:val="'+(o.size*2)+'"/>':'')+'</w:rPr>';
+  const ppr='<w:pPr>'+(o.align?'<w:jc w:val="'+o.align+'"/>':'')+'<w:spacing w:after="'+(o.spacing!=null?o.spacing:80)+'"/></w:pPr>';
+  return '<w:p>'+ppr+'<w:r>'+rpr+'<w:t xml:space="preserve">'+escHtml(text)+'</w:t></w:r></w:p>'; }
+function ooCell(text,o){ o=o||{}; const w=o.w?'<w:tcW w:w="'+o.w+'" w:type="dxa"/>':''; const span=o.span?'<w:gridSpan w:val="'+o.span+'"/>':''; const shd=o.shade?'<w:shd w:val="clear" w:color="auto" w:fill="'+o.shade+'"/>':'';
+  return '<w:tc><w:tcPr>'+w+span+shd+'</w:tcPr>'+ooP(text,{bold:o.bold,align:o.align})+'</w:tc>'; }
+function ooTable(rowsXml){ const b='<w:tblBorders>'+['top','left','bottom','right','insideH','insideV'].map(s=>'<w:'+s+' w:val="single" w:sz="4" w:color="E0A7BD"/>').join('')+'</w:tblBorders>';
+  return '<w:tbl><w:tblPr><w:tblW w:w="5000" w:type="pct"/>'+b+'</w:tblPr>'+rowsXml+'</w:tbl>'; }
+function exportDocx(filename,bodyXml){
+  const enc=new TextEncoder();
+  const ct='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>';
+  const rels='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>';
+  const doc='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>'+bodyXml+'<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1134" w:right="1134" w:bottom="1134" w:left="1134"/></w:sectPr></w:body></w:document>';
+  const files=[{name:enc.encode('[Content_Types].xml'),data:enc.encode(ct)},{name:enc.encode('_rels/.rels'),data:enc.encode(rels)},{name:enc.encode('word/document.xml'),data:enc.encode(doc)}];
+  try{ const zip=zipStore(files); const blob=new Blob([zip],{type:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); a.click(); setTimeout(()=>{ try{document.body.removeChild(a);}catch(_){} URL.revokeObjectURL(url); },600); }catch(e){ alert('Không tạo được file: '+((e&&e.message)||e)); }
+}
 function daysFromToday(iso){
   if(!iso) return null;
   const t=new Date(); t.setHours(0,0,0,0);
@@ -3317,6 +3348,10 @@ function FamilyRules({people,me}){
   const toggle=(id)=>setRules(rules.map(x=>x.id===id?{...x,agreed:!x.agreed}:x));
   const del=(id)=>{ if(confirm('Xoá quy tắc này?')) setRules(rules.filter(x=>x.id!==id)); };
   const agreed=rules.filter(x=>x.agreed).length; const pct=rules.length?Math.round(agreed/rules.length*100):0;
+  const exportRulesWord=()=>{ if(!rules.length){ alert('Chưa có quy tắc nào để in.'); return; }
+    const body=ooP('📜 Quy tắc gia đình',{bold:true,size:18,color:'C2185B'})+ooP(agreed+'/'+rules.length+' quy tắc đã cam kết',{size:10,color:'777777',spacing:200})
+      +rules.map((x,i)=>ooP((x.agreed?'☑ ':'☐ ')+(i+1)+'. '+x.text,{spacing:100})).join('');
+    exportDocx('Quy-tac-gia-dinh.docx', body); };
   return (
     <div>
       <div style={{margin:'12px 14px',padding:'14px 16px',borderRadius:18,background:'linear-gradient(135deg,var(--primary),var(--primary2))',color:'var(--on-primary)',boxShadow:'var(--shadow)'}}>
@@ -3333,6 +3368,7 @@ function FamilyRules({people,me}){
         <div className="row" style={{gap:6}}>
           <input className="inp grow" placeholder="Thêm quy tắc của nhà mình…" value={t} onChange={e=>setT(e.target.value)} onKeyDown={e=>{ if(e.key==='Enter') addManual(); }}/>
           <button className="btn sm" onClick={addManual}>＋</button>
+          {rules.length>0 && <button className="btn sm soft" onClick={exportRulesWord} title="Xuất ra file Word (.docx) để in / sửa">🖨️ In</button>}
         </div>
       </div>
       <div className="card">
@@ -4813,9 +4849,17 @@ function RoutineTab({people,me}){
   const saveBlock=()=>{ if(!edit)return; const m=editMode(edit); let blk;
     if(m==='both'){ const v=(edit.both||'').trim(); if(!v)return; blk={id:edit.id,t:edit.t,both:v}; }
     else { const a=(edit.a||'').trim(), b=(edit.b||'').trim(); if(!a&&!b)return; blk={id:edit.id,t:edit.t,a,b}; }
+    if(edit.remind) blk.remind=true;
     if(blk.id){ setRoutine((routine||[]).map(x=>x.id===blk.id?blk:x)); } else { blk.id=uid(); setRoutine([...(routine||[]),blk]); }
     setEdit(null); };
   const delBlock=(id)=>{ if(confirm('Xoá mốc này khỏi lịch?')) setRoutine((routine||[]).filter(x=>x.id!==id)); };
+  const toggleRemind=(id)=>setRoutine((routine||[]).map(x=>x.id===id?{...normBlock(x),remind:!x.remind}:x));
+  const exportRoutineWord=()=>{ const shade='FFE0EA';
+    const head='<w:tr>'+ooCell('Giờ',{bold:true,shade,w:1100})+ooCell(people.a.name||'Người 1',{bold:true,shade})+ooCell(people.b.name||'Người 2',{bold:true,shade})+'</w:tr>';
+    const rows=list.map(b=> (b.both!=null&&b.both!=='')
+      ? '<w:tr>'+ooCell(b.t,{bold:true,w:1100})+ooCell(b.both,{span:2,align:'center',shade:'FFF6FA'})+'</w:tr>'
+      : '<w:tr>'+ooCell(b.t,{bold:true,w:1100})+ooCell(b.a||'',{})+ooCell(b.b||'',{})+'</w:tr>').join('');
+    exportDocx('Lich-sinh-hoat.docx', ooP('🗓️ Lịch sinh hoạt một ngày',{bold:true,size:18,color:'C2185B'})+ooP('Gia đình '+((people.a.name||'')+' & '+(people.b.name||'')),{size:10,color:'777777',spacing:200})+ooTable(head+rows)); };
   const resetR=()=>{ if(confirm('Khôi phục lịch sinh hoạt mặc định?')) setRoutine(DEFAULT_ROUTINE); };
   const addIssueText=(text,fix)=>{ const x=(text||'').trim(); if(!x)return; setIssues([{id:uid(),text:x,fix:fix||null,by:me,done:false,createdAt:Date.now()},...(issues||[])]); };
   const addIssue=()=>{ addIssueText(prob); setProb(''); };
@@ -4833,13 +4877,14 @@ function RoutineTab({people,me}){
       {view==='lich' ? (
         <div className="card">
           <div className="row"><span className="hc-title">🗓️ Lịch sinh hoạt một ngày</span><span className="grow"></span>
+            <button className="btn sm soft" onClick={exportRoutineWord} title="Xuất ra file Word (.docx) để in / sửa">🖨️ In</button>
             <button className="btn sm soft" onClick={()=>setEdit({t:'08:00',both:'',_mode:'both'})}>＋ Mốc</button></div>
-          <div className="hc-body" style={{margin:'6px 0 6px'}}>Ai làm gì lúc nào — tách 2 cột cho khỏi giẫm việc nhau. Chỉnh cho khớp nếp nhà mình.</div>
+          <div className="hc-body" style={{margin:'6px 0 6px'}}>Ai làm gì lúc nào — tách 2 cột cho khỏi giẫm việc nhau. Chạm 🔔 ở mốc muốn được nhắc.</div>
           <div className="row" style={{padding:'4px 0 6px',borderBottom:'2px solid var(--line)',gap:8,alignItems:'center'}}>
             <span style={{width:46,flex:'0 0 auto'}}></span>
             <span className="grow" style={{fontSize:11.5,fontWeight:800,textAlign:'center'}}>{people.a.avatar} {people.a.name}</span>
             <span className="grow" style={{fontSize:11.5,fontWeight:800,textAlign:'center'}}>{people.b.avatar} {people.b.name}</span>
-            <span style={{width:24,flex:'0 0 auto'}}></span>
+            <span style={{width:52,flex:'0 0 auto'}}></span>
           </div>
           {list.map(b=>(
             <div key={b.id} className="row" style={{padding:'7px 0',borderBottom:'1px solid var(--line)',gap:8,alignItems:'center'}}>
@@ -4851,9 +4896,11 @@ function RoutineTab({people,me}){
                 <span style={{width:1,alignSelf:'stretch',background:'var(--line)',flex:'0 0 auto'}}></span>
                 <span className="grow" style={{fontSize:12.5,textAlign:'center'}}>{b.b||'—'}</span>
               </>}
+              <button className="iconbtn" style={{flex:'0 0 auto',opacity:b.remind?1:.32}} title={b.remind?'Đang nhắc giờ này':'Bật nhắc giờ này'} onClick={()=>toggleRemind(b.id)}>🔔</button>
               <button className="iconbtn" style={{flex:'0 0 auto'}} onClick={()=>setEdit({...b})}>✎</button>
             </div>
           ))}
+          <div className="muted" style={{fontSize:11,marginTop:6}}>🔔 Mốc có chuông sẽ được nhắc đúng giờ (cần bật <b>Thông báo</b> ở Hồ sơ).</div>
           <button className="muted" style={{fontSize:11.5,marginTop:8}} onClick={resetR}>↩︎ Về lịch mặc định</button>
           {edit && (()=>{ const m=editMode(edit); return <Sheet title={edit.id?'Sửa mốc':'Thêm mốc'} onClose={()=>setEdit(null)}>
             <div className="field"><label>Giờ</label><input className="inp" type="time" value={edit.t} onChange={e=>setEdit({...edit,t:e.target.value})}/></div>
@@ -4964,15 +5011,19 @@ function NotiRunner(){
         if(typeof Notification==='undefined'||Notification.permission!=='granted') return;
         if(!('serviceWorker' in navigator)) return;
         const today=todayISO();
+        const reg=await navigator.serviceWorker.ready;
+        const now=new Date(); const nowHM=pad(now.getHours())+':'+pad(now.getMinutes()); const nm=now.getHours()*60+now.getMinutes();
+        // Nhắc theo lịch sinh hoạt — mốc có 🔔 sẽ nhắc 1 lần/ngày quanh đúng giờ
+        try{ if((noti.cats||{}).lich!==false){ const rlog=store.get('ju.notiRoutineLog',{})||{}; if(rlog.date!==today){ rlog.date=today; rlog.fired={}; }
+          (store.get('ju.routine',DEFAULT_ROUTINE)||[]).forEach(b=>{ if(!b||!b.remind) return; const p=(b.t||'').split(':'); if(p.length<2) return; const bm=(+p[0])*60+(+p[1]); const diff=nm-bm; if(diff>=0&&diff<25&&!rlog.fired[b.id]){ const act=b.both||[b.a,b.b].filter(Boolean).join(' / ')||b.act||'Lịch sinh hoạt'; reg.showNotification('🗓️ '+b.t+' — '+act,{body:act,icon:'icon.svg',badge:'icon.svg',tag:'ju-rt-'+today+'-'+b.id,data:{url:'./'}}); rlog.fired[b.id]=1; } });
+          store.set('ju.notiRoutineLog',rlog); } }catch(_){}
         const due=computeDueNotis(noti);
         try{ const c=await caches.open('justus-noti'); await c.put('/__digest',new Response(JSON.stringify({date:today,items:due}),{headers:{'Content-Type':'application/json'}})); }catch(_){}
         if(!due.length) return;
-        const now=new Date(); const nowHM=pad(now.getHours())+':'+pad(now.getMinutes());
-        if((noti.time||'08:00')>nowHM) return; // chưa tới giờ nhắc trong ngày
+        if((noti.time||'08:00')>nowHM) return; // chưa tới giờ nhắc digest trong ngày
         const hash=today+'|'+due.map(d=>d.id).join(',');
         const log=store.get('ju.notiLog',{})||{};
         if(log.hash===hash) return;
-        const reg=await navigator.serviceWorker.ready;
         await reg.showNotification('Hôm nay của tụi mình 💗',{body:due.slice(0,5).map(d=>d.title).join('\n'),icon:'icon.svg',badge:'icon.svg',tag:'ju-daily-'+today,data:{url:'./'}});
         store.set('ju.notiLog',{hash});
       }catch(_){}
@@ -4986,7 +5037,7 @@ function NotiRunner(){
   return null;
 }
 function NotiSettings({flash}){
-  const [noti,setNoti]=useLocal('ju.noti',{on:false,cats:{kyNiem:true,sukien:true,viec:true,thucDon:true,nganSach:true,yeuThuong:true,nhanNhau:true,tamLinh:true,trabai:true,ngayNho:false,chuky:false},time:'08:00'});
+  const [noti,setNoti]=useLocal('ju.noti',{on:false,cats:{kyNiem:true,sukien:true,viec:true,thucDon:true,nganSach:true,yeuThuong:true,nhanNhau:true,tamLinh:true,trabai:true,lich:true,ngayNho:false,chuky:false},time:'08:00'});
   const supported=(typeof Notification!=='undefined')&&('serviceWorker' in navigator);
   const [perm,setPerm]=useState(supported?Notification.permission:'unsupported');
   const [pushMsg,setPushMsg]=useState('');
@@ -5006,7 +5057,7 @@ function NotiSettings({flash}){
   const test=async()=>{ if(!supported){ flash&&flash('Máy không hỗ trợ thông báo'); return; } try{ const reg=await navigator.serviceWorker.ready; reg.showNotification('Thử thông báo 🔔',{body:'Đây là thông báo thử từ Just Us 💗',icon:'icon.svg',badge:'icon.svg'}); }catch(e){ flash&&flash('Không gửi được — kiểm tra quyền thông báo'); } };
   const tog=(k)=>setNoti({...noti,cats:{...(noti.cats||{}),[k]:!((noti.cats||{})[k]!==false)}});
   const cats=noti.cats||{};
-  const CATS=[['kyNiem','💞 Ngày yêu nhau · cột mốc'],['sukien','📅 Sự kiện gia đình'],['viec','✅ Việc tới hạn · ưu tiên cao'],['thucDon','🍱 Món nấu hôm nay · đi chợ'],['nganSach','💰 Cảnh báo ngân sách tháng'],['yeuThuong','💌 Nhắc gửi lời yêu thương'],['nhanNhau','💌 Nhắn nhau (có lời nhắn mới)'],['trabai','💗 Trả bài (tín hiệu · ngày vợ hứng khởi · đêm hẹn)'],['tamLinh','🪷 Mùng 1 · rằm · lễ'],['ngayNho','🎂 Sinh nhật · giỗ · lễ cần quà'],['chuky','🌸 Chu kỳ sắp đến']];
+  const CATS=[['kyNiem','💞 Ngày yêu nhau · cột mốc'],['sukien','📅 Sự kiện gia đình'],['lich','🗓️ Lịch sinh hoạt (mốc có 🔔)'],['viec','✅ Việc tới hạn · ưu tiên cao'],['thucDon','🍱 Món nấu hôm nay · đi chợ'],['nganSach','💰 Cảnh báo ngân sách tháng'],['yeuThuong','💌 Nhắc gửi lời yêu thương'],['nhanNhau','💌 Nhắn nhau (có lời nhắn mới)'],['trabai','💗 Trả bài (tín hiệu · ngày vợ hứng khởi · đêm hẹn)'],['tamLinh','🪷 Mùng 1 · rằm · lễ'],['ngayNho','🎂 Sinh nhật · giỗ · lễ cần quà'],['chuky','🌸 Chu kỳ sắp đến']];
   return (
     <div className="card">
       <div className="row"><span className="hc-title">🔔 Thông báo điện thoại</span><span className="grow"></span>
