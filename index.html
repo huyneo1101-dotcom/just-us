@@ -3119,9 +3119,41 @@ function FamilyTodos({people,me}){
   const [items,setItems]=useLocal('ju.todos',[]);
   const [t,setT]=useState(''); const [who,setWho]=useState('both'); const [prio,setPrio]=useState('vua'); const [due,setDue]=useState('');
   const [showDone,setShowDone]=useState(false);
-  const add=()=>{ if(!t.trim())return; setItems([{id:uid(),title:t.trim(),who,priority:prio,due:due||'',done:false,by:me,createdAt:Date.now()},...items]); setT('');setDue(''); celebrate(['📝']); };
+  const [openId,setOpenId]=useState(null);
+  const add=()=>{ if(!t.trim())return; setItems([{id:uid(),title:t.trim(),who,priority:prio,due:due||'',done:false,subs:[],comments:[],by:me,createdAt:Date.now()},...items]); setT('');setDue(''); celebrate(['📝']); };
   const toggle=(id)=>setItems(items.map(x=>x.id===id?{...x,done:!x.done}:x));
   const del=(id)=>{ if(confirm('Bạn có chắc muốn xoá? Thao tác này không hoàn tác được.')){ setItems(items.filter(x=>x.id!==id)); } };
+  const patch=(id,fn)=>setItems(prev=>prev.map(x=>x.id===id?fn(x):x));
+  const addSub=(id,text)=>patch(id,x=>({...x,subs:[...(x.subs||[]),{id:uid(),text,done:false}]}));
+  const toggleSub=(id,sid)=>patch(id,x=>({...x,subs:(x.subs||[]).map(s=>s.id===sid?{...s,done:!s.done}:s)}));
+  const delSub=(id,sid)=>patch(id,x=>({...x,subs:(x.subs||[]).filter(s=>s.id!==sid)}));
+  const addComment=(id,text)=>patch(id,x=>({...x,comments:[...(x.comments||[]),{id:uid(),text,by:me,at:Date.now()}]}));
+  const delComment=(id,cid)=>patch(id,x=>({...x,comments:(x.comments||[]).filter(c=>c.id!==cid)}));
+  const fmtWhen=(ms)=>{ const d=new Date(ms); const p=n=>String(n).padStart(2,'0'); return p(d.getHours())+':'+p(d.getMinutes())+' '+d.getDate()+'/'+(d.getMonth()+1); };
+  const Detail=({x})=>{ const subs=x.subs||[], cmts=x.comments||[];
+    return <div style={{marginTop:8,paddingTop:8,borderTop:'1px dashed var(--line)'}}>
+      <div className="muted" style={{fontSize:11.5,fontWeight:700,margin:'0 0 2px'}}>☑️ Việc nhỏ</div>
+      {subs.map(s=>(
+        <div key={s.id} className="row" style={{gap:6,padding:'2px 0'}}>
+          <button onClick={()=>toggleSub(x.id,s.id)} style={{fontSize:15}}>{s.done?'✅':'⬜'}</button>
+          <span className="grow" style={{fontSize:13,textDecoration:s.done?'line-through':'none',opacity:s.done?.55:1}}>{s.text}</span>
+          <button className="muted" style={{fontSize:12}} onClick={()=>delSub(x.id,s.id)}>✕</button>
+        </div>
+      ))}
+      <TodoAdd placeholder="+ việc nhỏ…" onAdd={txt=>addSub(x.id,txt)}/>
+      <div className="muted" style={{fontSize:11.5,fontWeight:700,margin:'12px 0 4px'}}>💬 Bình luận</div>
+      {cmts.map(c=>(
+        <div key={c.id} style={{background:'var(--chip)',borderRadius:10,padding:'6px 9px',margin:'4px 0'}}>
+          <div className="row" style={{gap:6}}>
+            <span className="muted grow" style={{fontSize:11}}>{people[c.by]?.avatar} {people[c.by]?.name} · {fmtWhen(c.at)}</span>
+            {c.by===me && <button className="muted" style={{fontSize:11}} onClick={()=>delComment(x.id,c.id)}>✕</button>}
+          </div>
+          <div style={{fontSize:13,whiteSpace:'pre-wrap',color:'var(--chip-tx)',marginTop:2}}>{c.text}</div>
+        </div>
+      ))}
+      <TodoAdd placeholder="+ bình luận…" icon="💬" onAdd={txt=>addComment(x.id,txt)}/>
+    </div>;
+  };
   const prioOf=(k)=>TODO_PRIO.find(p=>p.k===k)||TODO_PRIO[1];
   const prioRank=(k)=>({cao:0,vua:1,thap:2}[k]!=null?{cao:0,vua:1,thap:2}[k]:1);
   const whoLabel=(w)=> w==='a'?people.a.name : w==='b'?people.b.name : 'Cả hai';
@@ -3142,6 +3174,7 @@ function FamilyTodos({people,me}){
       </div>
       {active.length===0 && <div className="empty"><span className="big">🎉</span>Hết việc cần làm rồi!</div>}
       {active.map(x=>{ const p=prioOf(x.priority); const dd=x.due?daysFromToday(x.due):null;
+        const subs=x.subs||[], sd=subs.filter(s=>s.done).length, cn=(x.comments||[]).length; const isOpen=openId===x.id;
         return <div key={x.id} className="item" style={{borderLeft:'4px solid '+p.color}}>
           <div className="row"><button onClick={()=>toggle(x.id)} style={{fontSize:19}}>⬜</button>
             <span className="grow" style={{fontSize:14}}>{x.title}</span>
@@ -3150,7 +3183,14 @@ function FamilyTodos({people,me}){
             <span className="pill" style={{background:p.color,color:'#fff'}}>{p.label}</span>
             <span className="pill">{whoAv(x.who)} {whoLabel(x.who)}</span>
             {x.due && <span className="pill" style={dd!=null&&dd<0?{background:'#e25b5b',color:'#fff'}:null}>📅 {fmtDateVN(x.due)}{dd!=null?(dd<0?' · trễ':dd===0?' · hôm nay':' · còn '+dd+'n'):''}</span>}
+            <span className="grow"></span>
+            <button className="pill" onClick={()=>setOpenId(isOpen?null:x.id)} style={{cursor:'pointer'}}>
+              {subs.length>0 && <span>☑️ {sd}/{subs.length}</span>}
+              {cn>0 && <span>💬 {cn}</span>}
+              <span>{isOpen?'▲ Thu gọn':'＋ Chi tiết'}</span>
+            </button>
           </div>
+          {isOpen && <Detail x={x}/>}
         </div>; })}
       {done.length>0 && <div className="row" style={{margin:'10px 14px 0'}}><span className="grow"></span><button className="muted" style={{fontSize:11.5}} onClick={()=>setShowDone(v=>!v)}>{showDone?'Ẩn':'Xem'} {done.length} việc đã xong</button></div>}
       {showDone && done.map(x=>(
@@ -5305,13 +5345,13 @@ function Events({people,me}){
     </div>
   );
 }
-function TodoAdd({onAdd}){
+function TodoAdd({onAdd,placeholder,icon}){
   const [t,setT]=useState('');
   return (
     <div className="row" style={{marginTop:6,gap:6}}>
-      <input className="inp grow" placeholder="+ việc cần chuẩn bị…" value={t}
+      <input className="inp grow" placeholder={placeholder||"+ việc cần chuẩn bị…"} value={t}
         onChange={e=>setT(e.target.value)} onKeyDown={e=>{ if(e.key==='Enter'&&t.trim()){onAdd(t.trim());setT('');} }}/>
-      <button className="iconbtn" onClick={()=>{ if(t.trim()){onAdd(t.trim());setT('');} }}>＋</button>
+      <button className="iconbtn" onClick={()=>{ if(t.trim()){onAdd(t.trim());setT('');} }}>{icon||'＋'}</button>
     </div>
   );
 }
