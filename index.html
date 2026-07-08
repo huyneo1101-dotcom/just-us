@@ -3316,10 +3316,19 @@ function FamilyRules({people,me}){
   const addManual=()=>{ if(!t.trim())return; add(t.trim()); setT(''); celebrate(['📜']); };
   const toggle=(id)=>setRules(rules.map(x=>x.id===id?{...x,agreed:!x.agreed}:x));
   const del=(id)=>{ if(confirm('Xoá quy tắc này?')) setRules(rules.filter(x=>x.id!==id)); };
-  const agreed=rules.filter(x=>x.agreed).length;
+  const agreed=rules.filter(x=>x.agreed).length; const pct=rules.length?Math.round(agreed/rules.length*100):0;
   return (
     <div>
-      <div className="muted center" style={{fontSize:12,margin:'10px 14px'}}>📜 Giao ước của gia đình mình — cùng thống nhất để nhà êm ấm.{rules.length>0?' ':''}{rules.length>0 && <b>{agreed}/{rules.length} đã cam kết</b>}</div>
+      <div style={{margin:'12px 14px',padding:'14px 16px',borderRadius:18,background:'linear-gradient(135deg,var(--primary),var(--primary2))',color:'var(--on-primary)',boxShadow:'var(--shadow)'}}>
+        <div style={{fontSize:15.5,fontWeight:800}}>📜 Giao ước của gia đình mình</div>
+        <div style={{fontSize:12,opacity:.92,marginTop:2}}>Cùng thống nhất để nhà luôn êm ấm 💞</div>
+        {rules.length>0 && <>
+          <div style={{height:8,borderRadius:999,background:'rgba(255,255,255,.3)',overflow:'hidden',marginTop:11}}>
+            <div style={{height:'100%',width:pct+'%',background:'#fff',borderRadius:999,transition:'width .3s'}}></div>
+          </div>
+          <div style={{fontSize:11.5,marginTop:6,fontWeight:700,opacity:.95}}>💞 {agreed}/{rules.length} quy tắc cả nhà đã cam kết · {pct}%</div>
+        </>}
+      </div>
       <div className="card">
         <div className="row" style={{gap:6}}>
           <input className="inp grow" placeholder="Thêm quy tắc của nhà mình…" value={t} onChange={e=>setT(e.target.value)} onKeyDown={e=>{ if(e.key==='Enter') addManual(); }}/>
@@ -3341,14 +3350,20 @@ function FamilyRules({people,me}){
         </div>}
       </div>
       {rules.length===0 && <div className="empty"><span className="big">📜</span>Chưa có quy tắc nào. Thêm tay hoặc bấm 💡 Gợi ý ở trên.</div>}
+      {rules.length>0 && <div className="sec-title">Quy tắc của nhà mình</div>}
       {rules.map(x=>(
-        <div key={x.id} className="item">
-          <div className="row" style={{gap:8}}>
-            <button onClick={()=>toggle(x.id)} style={{fontSize:20,flex:'0 0 auto'}}>{x.agreed?'✅':'⬜'}</button>
-            <span className="grow" style={{fontSize:14}}>{x.text}</span>
-            <button className="muted" style={{flex:'0 0 auto'}} onClick={()=>del(x.id)}>✕</button>
+        <div key={x.id} className="item" style={{display:'flex',alignItems:'center',gap:12,padding:'12px 14px',borderLeft:'4px solid '+(x.agreed?'var(--good)':'var(--line)'),...(x.agreed?{background:'var(--chip)'}:{})}}>
+          <button onClick={()=>toggle(x.id)} title="Đánh dấu đã cam kết" style={{width:30,height:30,borderRadius:'50%',flex:'0 0 auto',display:'grid',placeItems:'center',fontSize:15,fontWeight:800,background:x.agreed?'var(--good)':'transparent',color:'#fff',border:x.agreed?'none':'2px solid var(--line)',boxShadow:x.agreed?'0 2px 8px rgba(43,182,115,.4)':'none'}}>{x.agreed?'✓':''}</button>
+          <div style={{flex:1,minWidth:0}}>
+            <div style={{fontSize:14,fontWeight:600,lineHeight:1.35,color:x.agreed?'var(--chip-tx)':'var(--text)'}}>{x.text}</div>
+            <div style={{marginTop:4,display:'flex',alignItems:'center',gap:6,flexWrap:'wrap'}}>
+              {x.agreed
+                ? <span style={{fontSize:9.5,fontWeight:800,letterSpacing:.3,color:'#fff',background:'var(--good)',borderRadius:999,padding:'2px 8px'}}>💞 ĐÃ CAM KẾT</span>
+                : <span className="muted" style={{fontSize:11}}>Chạm vòng tròn để cam kết</span>}
+              <span className="muted" style={{fontSize:10.5}}>{people[x.by]?.avatar} thêm</span>
+            </div>
           </div>
-          <div className="muted" style={{fontSize:11,marginTop:3}}>{x.agreed?'💞 Cả nhà đã cam kết':'Chạm ô vuông để đánh dấu đã cam kết'} · {people[x.by]?.avatar} thêm</div>
+          <button className="muted" onClick={()=>del(x.id)} style={{flex:'0 0 auto',fontSize:15}}>✕</button>
         </div>
       ))}
     </div>
