@@ -101,6 +101,37 @@
   ul.checklist li::before{content:"✓";position:absolute;left:0;top:8px;color:var(--pink);font-weight:700}
   footer{text-align:center;color:var(--muted);font-size:.85rem;margin-top:60px}
   code{background:#fdeef3;padding:2px 6px;border-radius:6px;font-size:.9em}
+
+  .tabs{
+    display:flex;justify-content:center;gap:8px;flex-wrap:wrap;
+    margin:-24px auto 0;padding:0 20px;position:relative;z-index:1;
+  }
+  .tab-btn{
+    font:inherit;font-weight:600;font-size:.95rem;
+    background:var(--card);color:var(--muted);
+    border:1px solid var(--border);border-radius:999px;
+    padding:10px 20px;cursor:pointer;
+    box-shadow:0 6px 16px rgba(232,93,138,.10);
+  }
+  .tab-btn.active{background:var(--pink);color:#fff;border-color:var(--pink)}
+  .badge{
+    display:inline-block;font-size:.72rem;font-weight:700;
+    background:var(--pink);color:#fff;border-radius:999px;
+    padding:2px 9px;margin-left:8px;vertical-align:middle;
+  }
+  .course-table td strong{color:var(--text)}
+  .track-tag{
+    display:inline-block;font-size:.75rem;font-weight:600;
+    background:#fdeef3;color:var(--pink);border-radius:6px;
+    padding:2px 8px;
+  }
+  .cmd{
+    display:block;background:#2c1b23;color:#ffd9e4;
+    border-radius:10px;padding:12px 16px;margin:10px 0;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:.88rem;overflow-x:auto;white-space:pre;
+  }
+  .source-note{font-size:.85rem;color:var(--muted);margin-top:10px}
 </style>
 </head>
 <body>
@@ -115,7 +146,12 @@
   <p>Cẩm nang ngắn gọn cho người mới bắt đầu dùng ChatGPT, Claude, Gemini... trong công việc và đời sống.</p>
 </header>
 
-<div class="wrap">
+<div class="tabs" role="tablist">
+  <button class="tab-btn" data-tab="general" role="tab" aria-selected="false" onclick="showTab('general')">Hướng dẫn chung</button>
+  <button class="tab-btn" data-tab="claude" role="tab" aria-selected="false" onclick="showTab('claude')">Claude &amp; Claude Code</button>
+</div>
+
+<div class="wrap" id="tab-general">
 
   <nav class="toc" aria-label="Mục lục">
     <h2>Mục lục</h2>
@@ -227,6 +263,161 @@
     Just Us · Hướng dẫn tổng quan, không liên kết với bất kỳ hãng AI nào cụ thể.
   </footer>
 </div>
+
+<div class="wrap" id="tab-claude" hidden>
+
+  <nav class="toc" aria-label="Mục lục">
+    <h2>Mục lục</h2>
+    <ol>
+      <li><a href="#claude-vs-code">Claude và Claude Code khác nhau thế nào?</a></li>
+      <li><a href="#claude-code-cai-dat">Cài đặt & bắt đầu với Claude Code</a></li>
+      <li><a href="#claude-code-meo">Dùng Claude Code hiệu quả</a></li>
+      <li><a href="#khoa-hoc">Tổng hợp khóa học Anthropic Academy</a></li>
+    </ol>
+  </nav>
+
+  <section id="claude-vs-code">
+    <h2><span class="num">1</span> Claude và Claude Code khác nhau thế nào?</h2>
+    <div class="tools-grid">
+      <div class="tool">
+        <h3>Claude<span class="badge">Chatbot / API</span></h3>
+        <p>Trợ lý AI trò chuyện tại claude.ai (hoặc qua API) — viết lách, tóm tắt, trả lời câu hỏi, phân tích ảnh/tài liệu, giống ChatGPT/Gemini.</p>
+      </div>
+      <div class="tool">
+        <h3>Claude Code<span class="badge">CLI cho lập trình</span></h3>
+        <p>Công cụ dòng lệnh chạy Claude ngay trong terminal của lập trình viên — đọc/sửa file, chạy lệnh, dùng git, tự kiểm thử code trong dự án thật.</p>
+      </div>
+    </div>
+    <div class="tip">💡 Hiểu đơn giản: <strong>Claude</strong> là "người trò chuyện", còn <strong>Claude Code</strong> là
+      "người trò chuyện đó được trao thêm quyền thao tác trực tiếp trên máy/dự án của bạn".</div>
+  </section>
+
+  <section id="claude-code-cai-dat">
+    <h2><span class="num">2</span> Cài đặt & bắt đầu với Claude Code</h2>
+    <p>Yêu cầu: đã cài <a href="https://nodejs.org" target="_blank" rel="noopener">Node.js</a>. Mở terminal và chạy:</p>
+    <code class="cmd">npm install -g @anthropic-ai/claude-code</code>
+    <p>Sau đó vào thư mục dự án và gõ:</p>
+    <code class="cmd">cd duong-dan/den/du-an
+claude</code>
+    <p>Claude Code sẽ mở phiên làm việc ngay trong terminal — bạn gõ yêu cầu bằng lời (tiếng Việt hoặc tiếng Anh đều
+      được), ví dụ: <em>"Sửa lỗi trang đăng nhập không lưu được mật khẩu"</em>, Claude sẽ tự đọc code, đề xuất/thực
+      hiện thay đổi và cho bạn xem trước khi áp dụng.</p>
+    <ul class="checklist">
+      <li>Gõ <code>/help</code> để xem danh sách lệnh có sẵn.</li>
+      <li>Gõ <code>/init</code> trong một dự án mới để Claude Code tự tạo file <code>CLAUDE.md</code> ghi nhớ ngữ cảnh dự án.</li>
+      <li>Gõ <code>/clear</code> để bắt đầu một phiên làm việc mới, không mang theo lịch sử cũ.</li>
+    </ul>
+  </section>
+
+  <section id="claude-code-meo">
+    <h2><span class="num">3</span> Dùng Claude Code hiệu quả</h2>
+    <div class="tip">📄 <strong>File CLAUDE.md</strong>: ghi các quy ước của dự án (cấu trúc thư mục, cách chạy test, style code) — Claude Code sẽ tự đọc file này ở mỗi phiên làm việc.</div>
+    <div class="tip">🧩 <strong>Yêu cầu nhỏ, rõ ràng</strong>: thay vì "làm lại cả trang web", hãy chia nhỏ thành từng việc cụ thể — dễ kiểm tra và sửa sai hơn.</div>
+    <div class="tip">🔍 <strong>Luôn xem lại thay đổi</strong>: Claude Code cho xem diff (phần code thay đổi) trước khi ghi vào file — nên đọc qua trước khi đồng ý.</div>
+    <div class="tip">🗺️ <strong>Chế độ lập kế hoạch (plan mode)</strong>: với việc lớn/phức tạp, để Claude Code lên kế hoạch trước rồi mới cho thực thi, tránh sửa lan man.</div>
+    <div class="tip">🔁 <strong>Dùng lại lệnh riêng (custom slash command)</strong>: các thao tác lặp lại (vd. review code, viết commit message) có thể lưu thành lệnh riêng để gọi nhanh.</div>
+  </section>
+
+  <section id="khoa-hoc">
+    <h2><span class="num">4</span> Tổng hợp khóa học Anthropic Academy</h2>
+    <p>Anthropic có nền tảng học chính thức, miễn phí — <strong>Anthropic Academy</strong>
+      (<a href="https://anthropic.skilljar.com/" target="_blank" rel="noopener">anthropic.skilljar.com</a>),
+      chia thành 3 nhóm: <span class="track-tag">AI Fluency</span> cho người dùng phổ thông,
+      <span class="track-tag">Product Training</span> cho người dùng Claude nói chung, và
+      <span class="track-tag">Developer</span> cho lập trình viên xây dựng trên Claude API.
+      Mỗi khóa chỉ cần đăng ký bằng email, học xong được cấp chứng chỉ.</p>
+
+    <div class="card">
+      <table class="course-table">
+        <tr><th>Khóa học</th><th>Nhóm</th><th>Nội dung (tóm tắt)</th></tr>
+        <tr>
+          <td><strong>Claude 101</strong></td>
+          <td><span class="track-tag">Product</span></td>
+          <td>Làm quen các tính năng cốt lõi của Claude, quy trình sử dụng thực tế và các cách dùng hay trong công việc hàng ngày.</td>
+        </tr>
+        <tr>
+          <td><strong>AI Fluency: Framework &amp; Foundations</strong></td>
+          <td><span class="track-tag">AI Fluency</span></td>
+          <td>Xây dựng tư duy về cách AI hoạt động, AI làm được/không làm được gì, theo khung "4E": Hiệu quả — Hiệu suất — Đạo đức — An toàn.</td>
+        </tr>
+        <tr>
+          <td><strong>AI Fluency for Students</strong></td>
+          <td><span class="track-tag">AI Fluency</span></td>
+          <td>Phiên bản dành cho học sinh, sinh viên — dùng AI đúng cách trong học tập, tránh phụ thuộc và gian lận học thuật.</td>
+        </tr>
+        <tr>
+          <td><strong>AI Fluency for Nonprofits</strong></td>
+          <td><span class="track-tag">AI Fluency</span></td>
+          <td>Ứng dụng AI cho tổ chức phi lợi nhuận, tập trung vào mục tiêu sứ mệnh và hiệu quả thực tế với nguồn lực hạn chế.</td>
+        </tr>
+        <tr>
+          <td><strong>Building with the Claude API</strong></td>
+          <td><span class="track-tag">Developer</span></td>
+          <td>Toàn cảnh làm việc với Claude API: gọi model, streaming, tool use, cấu hình, đưa ứng dụng lên production.</td>
+        </tr>
+        <tr>
+          <td><strong>Claude Code in Action</strong></td>
+          <td><span class="track-tag">Developer</span></td>
+          <td>Khóa thực hành đưa Claude Code vào quy trình phát triển phần mềm thật để làm việc nhanh hơn.</td>
+        </tr>
+        <tr>
+          <td><strong>Introduction to Agent Skills</strong></td>
+          <td><span class="track-tag">Developer</span></td>
+          <td>Xây dựng, cấu hình và chia sẻ các "Skill" tái sử dụng được cho Claude Code.</td>
+        </tr>
+        <tr>
+          <td><strong>Intro to Model Context Protocol (MCP)</strong></td>
+          <td><span class="track-tag">Developer</span></td>
+          <td>Từ số 0 đến xây dựng MCP server/client bằng Python — nắm 3 thành phần cốt lõi: tools, resources, prompts.</td>
+        </tr>
+        <tr>
+          <td><strong>MCP: Advanced Topics</strong></td>
+          <td><span class="track-tag">Developer</span></td>
+          <td>Các mẫu triển khai MCP nâng cao ở mức sản xuất: sampling, notification, truy cập file hệ thống, cơ chế transport.</td>
+        </tr>
+        <tr>
+          <td><strong>Claude with Amazon Bedrock</strong></td>
+          <td><span class="track-tag">Developer</span></td>
+          <td>Tích hợp và triển khai Claude thông qua Amazon Bedrock cho hạ tầng AWS.</td>
+        </tr>
+        <tr>
+          <td><strong>Claude with Google Cloud Vertex AI</strong></td>
+          <td><span class="track-tag">Developer</span></td>
+          <td>Thiết lập và triển khai Claude trên Google Cloud Vertex AI, từ cấu hình đến production.</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="tip">⚠️ Đây là bản <strong>tóm tắt tiếng Việt</strong> theo mô tả chính thức của từng khóa — nội dung
+      bài học đầy đủ (video, bài tập tương tác, quiz) nằm trên nền tảng Skilljar của Anthropic và cần đăng ký để xem trực tiếp,
+      nên không thể sao chép/dịch nguyên văn vào trang tĩnh này.</div>
+
+    <p class="source-note">Nguồn tham khảo: trang khóa học chính thức tại
+      <a href="https://anthropic.skilljar.com/" target="_blank" rel="noopener">anthropic.skilljar.com</a> và
+      <a href="https://www.anthropic.com/learn" target="_blank" rel="noopener">anthropic.com/learn</a>.</p>
+  </section>
+
+  <footer>
+    Just Us · Tóm tắt phi chính thức, không thay thế nội dung gốc từ Anthropic Academy.
+  </footer>
+</div>
+
+<script>
+  function showTab(name){
+    var tabs = {general: document.getElementById('tab-general'), claude: document.getElementById('tab-claude')};
+    var btns = document.querySelectorAll('.tab-btn');
+    Object.keys(tabs).forEach(function(key){
+      tabs[key].hidden = key !== name;
+    });
+    btns.forEach(function(btn){
+      var on = btn.dataset.tab === name;
+      btn.classList.toggle('active', on);
+      btn.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
+    if (window.history && history.replaceState) history.replaceState(null, '', '#' + name);
+  }
+  showTab(location.hash.replace('#', '') === 'claude' ? 'claude' : 'general');
+</script>
 
 </body>
 </html>
