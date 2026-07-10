@@ -272,6 +272,7 @@
       <li><a href="#claude-vs-code">Claude và Claude Code khác nhau thế nào?</a></li>
       <li><a href="#claude-code-cai-dat">Cài đặt & bắt đầu với Claude Code</a></li>
       <li><a href="#claude-code-meo">Dùng Claude Code hiệu quả</a></li>
+      <li><a href="#agent-skills">Agent Skills — đóng gói kỹ năng tái sử dụng</a></li>
       <li><a href="#khoa-hoc">Tổng hợp khóa học Anthropic Academy</a></li>
     </ol>
   </nav>
@@ -318,8 +319,53 @@ claude</code>
     <div class="tip">🔁 <strong>Dùng lại lệnh riêng (custom slash command)</strong>: các thao tác lặp lại (vd. review code, viết commit message) có thể lưu thành lệnh riêng để gọi nhanh.</div>
   </section>
 
+  <section id="agent-skills">
+    <h2><span class="num">4</span> Agent Skills — đóng gói kỹ năng tái sử dụng</h2>
+    <p><strong>Agent Skill</strong> là một "gói kỹ năng" cho Claude Code: một thư mục chứa hướng dẫn (và có thể kèm
+      script, file mẫu) dạy Claude cách làm tốt một việc cụ thể — ví dụ viết báo cáo theo đúng mẫu công ty, thao tác
+      với một hệ thống nội bộ, hay tuân theo quy trình review code riêng của nhóm bạn. Thay vì phải giải thích lại
+      quy trình đó mỗi lần chat, bạn viết một lần rồi Claude tự dùng lại mỗi khi phù hợp.</p>
+
+    <div class="tip">💡 Khác với custom slash command (bạn phải gõ lệnh để gọi), Skill có thể được <strong>Claude tự
+      nhận ra và kích hoạt</strong> khi thấy yêu cầu của bạn khớp với phần mô tả của Skill đó.</div>
+
+    <h3 style="margin:20px 0 6px;font-size:1.05rem">Cấu trúc một Skill</h3>
+    <p>Một Skill tối thiểu chỉ cần 1 file <code>SKILL.md</code> nằm trong thư mục riêng:</p>
+    <code class="cmd">ten-skill/
+└── SKILL.md   (có thể kèm thêm script, template, tài liệu tham khảo...)</code>
+    <p>Đầu file <code>SKILL.md</code> có phần khai báo ngắn (frontmatter), theo sau là nội dung hướng dẫn bằng
+      ngôn ngữ tự nhiên:</p>
+    <code class="cmd">---
+name: viet-bao-cao-tuan
+description: Dùng khi cần viết báo cáo công việc hàng tuần theo mẫu chuẩn của phòng.
+---
+
+# Hướng dẫn viết báo cáo tuần
+1. Lấy danh sách việc đã làm từ ghi chú người dùng cung cấp.
+2. Nhóm theo dự án, sắp theo mức ưu tiên.
+3. Viết theo mẫu: Mục tiêu tuần / Đã làm / Đang vướng / Kế hoạch tuần sau.
+...</code>
+
+    <h3 style="margin:20px 0 6px;font-size:1.05rem">Nơi lưu & cách chia sẻ</h3>
+    <ul class="checklist">
+      <li><strong>Cá nhân</strong>: lưu trong thư mục Skill của riêng bạn — dùng được ở mọi dự án trên máy bạn.</li>
+      <li><strong>Theo dự án</strong>: lưu trong thư mục <code>.claude/skills/</code> ngay trong repo — commit lên
+        git để cả nhóm cùng dùng chung một Skill.</li>
+      <li><strong>Dạng plugin</strong>: đóng gói cùng các Skill/lệnh khác thành một plugin để chia sẻ rộng hơn,
+        cài vào nhiều dự án/nhóm khác nhau chỉ bằng một lệnh cài đặt.</li>
+    </ul>
+
+    <h3 style="margin:20px 0 6px;font-size:1.05rem">Mẹo khi tự viết Skill</h3>
+    <div class="tip">🎯 <strong>Mô tả (description) phải rõ "khi nào dùng"</strong> — Claude chọn Skill dựa vào phần
+      mô tả này, mô tả mơ hồ thì Claude khó biết lúc nào nên gọi tới.</div>
+    <div class="tip">✂️ <strong>Một Skill làm một việc</strong> — đừng nhồi nhiều quy trình không liên quan vào
+      chung một Skill, khó bảo trì và dễ bị gọi nhầm lúc.</div>
+    <div class="tip">🧪 <strong>Thử trước khi dùng thật</strong>: tạo Skill xong, thử vài yêu cầu khác nhau xem
+      Claude có kích hoạt đúng lúc và làm đúng ý không, rồi mới đưa cả nhóm dùng.</div>
+  </section>
+
   <section id="khoa-hoc">
-    <h2><span class="num">4</span> Tổng hợp khóa học Anthropic Academy</h2>
+    <h2><span class="num">5</span> Tổng hợp khóa học Anthropic Academy</h2>
     <p>Anthropic có nền tảng học chính thức, miễn phí — <strong>Anthropic Academy</strong>
       (<a href="https://anthropic.skilljar.com/" target="_blank" rel="noopener">anthropic.skilljar.com</a>),
       chia thành 3 nhóm: <span class="track-tag">AI Fluency</span> cho người dùng phổ thông,
@@ -363,7 +409,8 @@ claude</code>
         <tr>
           <td><strong>Introduction to Agent Skills</strong></td>
           <td><span class="track-tag">Developer</span></td>
-          <td>Xây dựng, cấu hình và chia sẻ các "Skill" tái sử dụng được cho Claude Code.</td>
+          <td>Xây dựng, cấu hình và chia sẻ các "Skill" tái sử dụng được cho Claude Code — xem chi tiết ở
+            <a href="#agent-skills">mục 4</a> phía trên.</td>
         </tr>
         <tr>
           <td><strong>Intro to Model Context Protocol (MCP)</strong></td>
