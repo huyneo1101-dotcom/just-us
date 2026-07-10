@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hướng dẫn sử dụng AI — Just Us</title>
+<meta name="description" content="Hướng dẫn cơ bản, dễ hiểu về cách dùng các trợ lý AI như ChatGPT, Claude, Gemini trong công việc và cuộc sống hàng ngày.">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<style>
+  :root{
+    --pink:#e85d8a;
+    --pink-light:#ff8fb1;
+    --bg:#fff0f4;
+    --text:#3a2530;
+    --muted:#8a6b76;
+    --card:#ffffff;
+    --border:#ffd9e4;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    line-height:1.65;
+  }
+  a{color:var(--pink)}
+  .wrap{max-width:820px;margin:0 auto;padding:32px 20px 80px}
+  header.hero{
+    text-align:center;
+    padding:48px 20px 36px;
+    background:linear-gradient(135deg,var(--pink-light),var(--pink));
+    color:#fff;
+  }
+  header.hero .icon{width:56px;height:56px;margin-bottom:14px}
+  header.hero h1{margin:0 0 8px;font-size:1.9rem}
+  header.hero p{margin:0;opacity:.95;font-size:1.02rem}
+  nav.toc{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:18px 22px;
+    margin:-28px auto 32px;
+    max-width:780px;
+    box-shadow:0 6px 20px rgba(232,93,138,.08);
+  }
+  nav.toc h2{font-size:.85rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin:0 0 10px}
+  nav.toc ol{margin:0;padding-left:1.2rem}
+  nav.toc li{margin:4px 0}
+  section{margin:36px 0}
+  section h2{
+    font-size:1.35rem;
+    display:flex;align-items:center;gap:10px;
+    border-bottom:2px solid var(--border);
+    padding-bottom:10px;
+  }
+  section h2 .num{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:30px;height:30px;border-radius:50%;
+    background:var(--pink);color:#fff;font-size:.9rem;flex:none;
+  }
+  .card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:18px 20px;
+    margin:14px 0;
+  }
+  .tools-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:14px}
+  .tool{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:16px 18px;
+  }
+  .tool h3{margin:0 0 6px;font-size:1.05rem}
+  .tool p{margin:0;color:var(--muted);font-size:.92rem}
+  .tip{
+    background:#fff7f9;
+    border-left:4px solid var(--pink);
+    border-radius:8px;
+    padding:12px 16px;
+    margin:12px 0;
+    font-size:.95rem;
+  }
+  .example{
+    background:#fdf2f6;
+    border-radius:10px;
+    padding:14px 16px;
+    font-size:.93rem;
+    white-space:pre-wrap;
+    border:1px dashed var(--border);
+  }
+  .example .label{display:block;font-weight:600;color:var(--pink);margin-bottom:6px;font-size:.8rem;text-transform:uppercase;letter-spacing:.04em}
+  table{width:100%;border-collapse:collapse;margin:14px 0}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--border);font-size:.93rem}
+  th{color:var(--muted);font-weight:600}
+  ul.checklist{list-style:none;padding:0;margin:0}
+  ul.checklist li{padding:8px 0 8px 30px;position:relative;border-bottom:1px solid var(--border)}
+  ul.checklist li:last-child{border-bottom:none}
+  ul.checklist li::before{content:"✓";position:absolute;left:0;top:8px;color:var(--pink);font-weight:700}
+  footer{text-align:center;color:var(--muted);font-size:.85rem;margin-top:60px}
+  code{background:#fdeef3;padding:2px 6px;border-radius:6px;font-size:.9em}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <svg class="icon" viewBox="0 0 512 512" aria-hidden="true">
+    <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#ffe3ec"/></linearGradient></defs>
+    <rect width="512" height="512" rx="104" fill="url(#g)"/>
+    <path fill="#e85d8a" d="M256 430C256 430 96 330 96 206c0-52 41-92 92-92 35 0 58 19 68 40 10-21 33-40 68-40 51 0 92 40 92 92 0 124-160 224-160 224z"/>
+  </svg>
+  <h1>Hướng dẫn sử dụng AI</h1>
+  <p>Cẩm nang ngắn gọn cho người mới bắt đầu dùng ChatGPT, Claude, Gemini... trong công việc và đời sống.</p>
+</header>
+
+<div class="wrap">
+
+  <nav class="toc" aria-label="Mục lục">
+    <h2>Mục lục</h2>
+    <ol>
+      <li><a href="#khai-niem">AI trợ lý (chatbot) là gì?</a></li>
+      <li><a href="#cong-cu">Các công cụ phổ biến</a></li>
+      <li><a href="#bat-dau">Bắt đầu trong 3 bước</a></li>
+      <li><a href="#viet-prompt">Cách viết yêu cầu (prompt) hiệu quả</a></li>
+      <li><a href="#vi-du">Ví dụ prompt theo tình huống</a></li>
+      <li><a href="#luu-y">Lưu ý & giới hạn</a></li>
+      <li><a href="#meo">Mẹo nâng cao</a></li>
+    </ol>
+  </nav>
+
+  <section id="khai-niem">
+    <h2><span class="num">1</span> AI trợ lý (chatbot) là gì?</h2>
+    <p>AI trợ lý là phần mềm được huấn luyện để hiểu ngôn ngữ tự nhiên và trò chuyện, trả lời câu hỏi, viết văn bản,
+      tóm tắt, dịch, lập trình... Bạn chỉ cần <strong>gõ yêu cầu bằng lời</strong> (gọi là <em>prompt</em>), AI sẽ
+      trả lời ngay trong khung chat — không cần biết lập trình.</p>
+    <div class="tip">💡 Hãy nghĩ về AI như một trợ lý rất chăm chỉ nhưng không đọc được suy nghĩ của bạn — nói càng
+      rõ ràng, cụ thể, AI trả lời càng đúng ý.</div>
+  </section>
+
+  <section id="cong-cu">
+    <h2><span class="num">2</span> Các công cụ phổ biến</h2>
+    <div class="tools-grid">
+      <div class="tool">
+        <h3>ChatGPT (OpenAI)</h3>
+        <p>Phổ biến nhất, dễ dùng, có bản miễn phí. Mạnh về viết lách, tra cứu, brainstorm.</p>
+      </div>
+      <div class="tool">
+        <h3>Claude (Anthropic)</h3>
+        <p>Trả lời cẩn thận, văn phong tự nhiên, xử lý tài liệu dài rất tốt, mạnh về lập trình.</p>
+      </div>
+      <div class="tool">
+        <h3>Gemini (Google)</h3>
+        <p>Tích hợp sẵn trong Gmail, Docs, Android; tra cứu thông tin thời gian thực tốt.</p>
+      </div>
+      <div class="tool">
+        <h3>Copilot (Microsoft)</h3>
+        <p>Tích hợp trong Word/Excel/Windows, tiện cho công việc văn phòng hàng ngày.</p>
+      </div>
+    </div>
+    <div class="tip">Bạn không cần chọn "cái tốt nhất" — hãy thử 1–2 công cụ miễn phí trước, quen tay rồi mới cân
+      nhắc trả phí nếu cần dùng nhiều.</div>
+  </section>
+
+  <section id="bat-dau">
+    <h2><span class="num">3</span> Bắt đầu trong 3 bước</h2>
+    <ul class="checklist">
+      <li>Vào trang web của công cụ (vd. chatgpt.com, claude.ai, gemini.google.com) và tạo tài khoản miễn phí bằng email.</li>
+      <li>Gõ câu hỏi hoặc yêu cầu vào ô chat, giống như đang nhắn tin — không cần cú pháp đặc biệt.</li>
+      <li>Đọc câu trả lời, nếu chưa đúng ý thì trả lời tiếp để AI chỉnh sửa — cuộc trò chuyện tiếp tục theo ngữ cảnh trước đó.</li>
+    </ul>
+  </section>
+
+  <section id="viet-prompt">
+    <h2><span class="num">4</span> Cách viết yêu cầu (prompt) hiệu quả</h2>
+    <p>Một prompt tốt thường có đủ 4 phần:</p>
+    <table>
+      <tr><th>Phần</th><th>Ý nghĩa</th></tr>
+      <tr><td><strong>Vai trò</strong></td><td>AI nên đóng vai gì? (vd: "bạn là biên tập viên")</td></tr>
+      <tr><td><strong>Bối cảnh</strong></td><td>Thông tin nền cần thiết (đối tượng, mục đích, giới hạn)</td></tr>
+      <tr><td><strong>Yêu cầu</strong></td><td>Việc cụ thể cần AI làm</td></tr>
+      <tr><td><strong>Định dạng</strong></td><td>Kết quả mong muốn trông như thế nào (danh sách, bảng, độ dài...)</td></tr>
+    </table>
+    <div class="tip">🎯 Càng cụ thể càng tốt. Thay vì "viết email", hãy nói "viết email xin nghỉ phép 2 ngày, giọng
+      lịch sự, gửi cho quản lý, khoảng 4 câu".</div>
+  </section>
+
+  <section id="vi-du">
+    <h2><span class="num">5</span> Ví dụ prompt theo tình huống</h2>
+
+    <div class="example">
+      <span class="label">Viết nội dung</span>Viết caption Instagram cho ảnh đi biển cùng người yêu, giọng vui vẻ, dưới 30 từ, có 2-3 emoji.</div>
+
+    <div class="example">
+      <span class="label">Tóm tắt tài liệu</span>Tóm tắt đoạn văn bản dưới đây thành 5 gạch đầu dòng, mỗi dòng tối đa 15 từ:
+[dán nội dung cần tóm tắt vào đây]</div>
+
+    <div class="example">
+      <span class="label">Lên kế hoạch</span>Gợi ý lịch trình hẹn hò 1 ngày ở Đà Lạt cho cặp đôi, ngân sách 1 triệu đồng, ưu tiên quán cà phê view đẹp và ít đi bộ.</div>
+
+    <div class="example">
+      <span class="label">Học tập / công việc</span>Giải thích khái niệm "lãi suất kép" như đang nói với người chưa học tài chính bao giờ, dùng ví dụ thực tế, không quá 100 từ.</div>
+  </section>
+
+  <section id="luu-y">
+    <h2><span class="num">6</span> Lưu ý & giới hạn</h2>
+    <div class="card">
+      <ul class="checklist">
+        <li>AI có thể trả lời sai hoặc "bịa" thông tin (gọi là ảo giác) — luôn kiểm tra lại số liệu, tên riêng, trích dẫn quan trọng.</li>
+        <li>Không dán thông tin nhạy cảm (mật khẩu, số CCCD, dữ liệu công ty mật) vào chat AI.</li>
+        <li>AI không thay thế tư vấn y tế, pháp lý, tài chính chuyên sâu — chỉ nên dùng để tham khảo ban đầu.</li>
+        <li>Với bài tập/công việc cần tính trung thực, hãy dùng AI để hỗ trợ tư duy, không sao chép nguyên văn.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="meo">
+    <h2><span class="num">7</span> Mẹo nâng cao</h2>
+    <div class="tip">🔁 Trò chuyện nhiều lượt: đừng cố nhồi mọi thứ vào 1 câu — hỏi từng bước, rồi yêu cầu AI chỉnh sửa dần theo phản hồi của bạn.</div>
+    <div class="tip">📎 Đính kèm file: hầu hết công cụ AI cho phép tải lên PDF, ảnh, file Word để hỏi trực tiếp về nội dung bên trong.</div>
+    <div class="tip">🗂️ Lưu prompt hay dùng: nếu có một mẫu câu lệnh hiệu quả, hãy lưu lại (ghi chú, Google Keep) để dùng lại về sau.</div>
+    <div class="tip">🌐 Kiểm tra nguồn: với thông tin thời sự hoặc số liệu, ưu tiên công cụ có tính năng "tìm kiếm web" và luôn đối chiếu nguồn gốc trước khi tin.</div>
+  </section>
+
+  <footer>
+    Just Us · Hướng dẫn tổng quan, không liên kết với bất kỳ hãng AI nào cụ thể.
+  </footer>
+</div>
+
+</body>
+</html>

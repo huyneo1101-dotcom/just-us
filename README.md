@@ -37,3 +37,7 @@ git push
 
 ## Cấu hình Supabase
 `SB_URL` và `SB_KEY` (publishable key — công khai được, an toàn vì có RLS) nằm trong `index.html`.
+
+## Hướng dẫn sử dụng AI
+Trang tĩnh `ai-guide.html` — cẩm nang ngắn gọn cho người mới dùng ChatGPT/Claude/Gemini (cách viết prompt,
+ví dụ theo tình huống, lưu ý khi dùng). Mở trực tiếp file hoặc truy cập `/ai-guide.html` sau khi deploy Netlify.
