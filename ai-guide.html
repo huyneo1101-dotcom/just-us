@@ -362,6 +362,98 @@ description: Dùng khi cần viết báo cáo công việc hàng tuần theo m�
       chung một Skill, khó bảo trì và dễ bị gọi nhầm lúc.</div>
     <div class="tip">🧪 <strong>Thử trước khi dùng thật</strong>: tạo Skill xong, thử vài yêu cầu khác nhau xem
       Claude có kích hoạt đúng lúc và làm đúng ý không, rồi mới đưa cả nhóm dùng.</div>
+
+    <h3 style="margin:28px 0 6px;font-size:1.05rem">🐣 Hướng dẫn từng bước cho người chưa biết gì</h3>
+    <p>Phần dưới đây giả sử bạn <strong>chưa từng viết Skill lần nào</strong> — làm theo đúng thứ tự là có một
+      Skill chạy được ngay. Ví dụ: tạo Skill giúp Claude Code luôn tóm tắt cuộc họp theo đúng 1 mẫu cố định.</p>
+
+    <div class="card">
+      <p><strong>Bước 1 — Mở terminal, vào đúng thư mục dự án</strong></p>
+      <code class="cmd">cd duong-dan/den/du-an</code>
+      <p style="margin:8px 0 0;color:var(--muted);font-size:.9rem">Đây phải là thư mục bạn đang mở Claude Code
+        để làm việc (có file code, hoặc chỉ cần một thư mục trống để thử nghiệm cũng được).</p>
+    </div>
+
+    <div class="card">
+      <p><strong>Bước 2 — Tạo thư mục chứa Skill</strong></p>
+      <code class="cmd">mkdir -p .claude/skills/tom-tat-hop</code>
+      <p style="margin:8px 0 0;color:var(--muted);font-size:.9rem">Tên thư mục <code>tom-tat-hop</code> chính là
+        tên Skill — nên đặt ngắn gọn, không dấu, không khoảng trắng.</p>
+    </div>
+
+    <div class="card">
+      <p><strong>Bước 3 — Tạo file <code>SKILL.md</code> bên trong thư mục vừa tạo</strong>, dán đúng nội dung sau
+        (không cần biết lập trình, đây chỉ là văn bản thường):</p>
+      <code class="cmd">---
+name: tom-tat-hop
+description: Dùng khi người dùng đưa nội dung cuộc họp và muốn tóm tắt lại theo mẫu chuẩn.
+---
+
+# Cách tóm tắt cuộc họp
+Khi người dùng dán nội dung một cuộc họp (biên bản, ghi chú, đoạn hội thoại...),
+hãy tóm tắt lại theo đúng mẫu sau, bằng tiếng Việt:
+
+## Mục tiêu cuộc họp
+(1-2 câu)
+
+## Các quyết định chính
+- ...
+
+## Việc cần làm tiếp theo
+- [Người phụ trách] — [việc cần làm] — [hạn]
+
+Giữ mỗi mục ngắn gọn, không thêm thông tin không có trong nội dung gốc.</code>
+      <p style="margin:8px 0 0;color:var(--muted);font-size:.9rem">Bạn có thể tạo file này bằng bất kỳ trình soạn
+        thảo nào (VS Code, Notepad...), hoặc nhờ chính Claude Code tạo giúp bằng câu lệnh tự nhiên: <em>"Tạo giúp tôi
+        một Skill tên tom-tat-hop với nội dung như trên"</em>.</p>
+    </div>
+
+    <div class="card">
+      <p><strong>Bước 4 — Mở phiên Claude Code trong đúng thư mục đó</strong></p>
+      <code class="cmd">claude</code>
+      <p style="margin:8px 0 0;color:var(--muted);font-size:.9rem">Nếu phiên Claude Code đang mở sẵn từ trước,
+        gõ <code>/clear</code> hoặc mở lại phiên mới để Claude Code quét thấy Skill vừa tạo.</p>
+    </div>
+
+    <div class="card">
+      <p><strong>Bước 5 — Thử ngay</strong>: gõ một yêu cầu khớp với phần <code>description</code> ở Bước 3, ví dụ:</p>
+      <div class="example" style="margin-top:8px">Tóm tắt giúp mình cuộc họp này:
+"Team bàn về việc đổi giao diện trang chủ, quyết định dùng bản mẫu 2,
+Lan phụ trách thiết kế xong trước thứ Sáu, Nam viết nội dung song song."</div>
+      <p style="margin:8px 0 0">Claude Code sẽ tự nhận ra yêu cầu này khớp với Skill <code>tom-tat-hop</code> và trả
+        lời đúng theo mẫu 3 phần đã định nghĩa — bạn không cần gõ thêm gì khác.</p>
+    </div>
+
+    <div class="card">
+      <p><strong>Bước 6 — Kiểm tra & chỉnh sửa</strong></p>
+      <ul class="checklist">
+        <li>Nếu Claude <strong>không</strong> dùng đúng mẫu: mở lại <code>SKILL.md</code>, viết phần
+          <code>description</code> cụ thể hơn (nêu rõ tình huống nên dùng), rồi thử lại.</li>
+        <li>Nếu muốn hỏi thẳng xem Claude có đang dùng Skill nào không, cứ hỏi bằng lời: <em>"Bạn có đang dùng
+          Skill nào để trả lời câu này không?"</em></li>
+        <li>Muốn xoá Skill: xoá cả thư mục <code>tom-tat-hop</code> là xong, không ảnh hưởng gì khác.</li>
+      </ul>
+    </div>
+
+    <h3 style="margin:28px 0 6px;font-size:1.05rem">❓ Câu hỏi thường gặp</h3>
+    <div class="card">
+      <table class="course-table">
+        <tr><td style="width:38%"><strong>Có cần biết lập trình không?</strong></td>
+          <td>Không. <code>SKILL.md</code> chỉ là văn bản thường (Markdown) — viết hướng dẫn bằng lời như đang
+            hướng dẫn một người mới vào làm.</td></tr>
+        <tr><td><strong>Skill tự chạy hay phải gọi?</strong></td>
+          <td>Mặc định Claude tự nhận diện khi thấy yêu cầu khớp mô tả. Không thấy kích hoạt thì có thể nhắc thẳng
+            tên Skill trong câu yêu cầu.</td></tr>
+        <tr><td><strong>Có cần internet hay cài thêm gì không?</strong></td>
+          <td>Không — chỉ cần Claude Code đã cài sẵn (xem mục 2) và một file văn bản đặt đúng thư mục.</td></tr>
+        <tr><td><strong>Skill có dùng được cho cả nhóm không?</strong></td>
+          <td>Có — nếu để trong <code>.claude/skills/</code> của repo và commit lên git, ai kéo code về cũng dùng
+            được ngay.</td></tr>
+        <tr><td><strong>Viết sai thì có hỏng gì không?</strong></td>
+          <td>Không — Skill chỉ là hướng dẫn thêm cho Claude, viết sai nhiều lắm là Claude làm chưa đúng ý, sửa lại
+            file rồi thử lại là được, không ảnh hưởng tới code hay dữ liệu dự án.</td></tr>
+      </table>
+    </div>
   </section>
 
   <section id="khoa-hoc">
