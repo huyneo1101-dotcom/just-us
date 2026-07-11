@@ -6719,7 +6719,7 @@ function Shopping({people,me}){
   const [t,setT]=useState('');
   const add=()=>{ if(!t.trim())return; setItems([{id:uid(),text:t.trim(),by:me,done:false},...items]); setT(''); };
   const toggle=(id)=>setItems(items.map(x=>x.id===id?{...x,done:!x.done}:x));
-  const del=(id)=>{ if(confirm('Bạn có chắc muốn xoá? Thao tác này không hoàn tác được.')){ setItems(items.filter(x=>x.id!==id)); } };
+  const del=(id)=>{ setItems(items.filter(x=>x.id!==id)); };
   const clearDone=()=>{ if(confirm('Xoá các việc đã hoàn thành?')){ setItems(items.filter(x=>!x.done)); } };
   const left=items.filter(x=>!x.done);
   const done=items.filter(x=>x.done);
