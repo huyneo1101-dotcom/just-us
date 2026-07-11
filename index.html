@@ -6721,6 +6721,7 @@ function Shopping({people,me}){
   const toggle=(id)=>setItems(items.map(x=>x.id===id?{...x,done:!x.done}:x));
   const del=(id)=>{ setItems(items.filter(x=>x.id!==id)); };
   const clearDone=()=>{ if(confirm('Xoá các việc đã hoàn thành?')){ setItems(items.filter(x=>!x.done)); } };
+  const clearAll=()=>{ if(confirm('Xoá toàn bộ danh sách đi chợ? Thao tác này không hoàn tác được.')){ setItems([]); } };
   const left=items.filter(x=>!x.done);
   const done=items.filter(x=>x.done);
   return (
@@ -6731,6 +6732,8 @@ function Shopping({people,me}){
         <button className="btn sm" onClick={add}>＋</button>
       </div>
       {items.length===0 && <div className="empty"><span className="big">🛒</span>Danh sách đi chợ chung — cả hai cùng thêm.</div>}
+      {items.length>0 && <div className="row" style={{margin:'0 14px 8px',justifyContent:'flex-end'}}>
+        <button className="pill" onClick={clearAll}>🗑️ Xoá hết</button></div>}
       <div className="card" style={{padding:'6px 13px'}}>
         {left.map(x=>(
           <div key={x.id} className="row" style={{padding:'8px 0',borderBottom:'1px solid var(--line)'}}>
