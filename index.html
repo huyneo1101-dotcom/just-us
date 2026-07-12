@@ -7338,6 +7338,31 @@ function HomeSettings(){
 
 /* (Đã gỡ mục "Nguồn thời tiết" — luôn dùng open-meteo miễn phí, không cần API key) */
 
+const FEEDBACK_EMAIL='huyneo1101@gmail.com';
+function FeedbackForm({people,me}){
+  const [kind,setKind]=useState('feature');
+  const [text,setText]=useState('');
+  const send=()=>{
+    if(!text.trim()) return;
+    const subject=kind==='feature'?'Just Us - Góp ý tính năng':'Just Us - Nhu cầu / vấn đề';
+    const body='Từ: '+(people[me]?.name||me)+'\n\n'+text.trim();
+    window.location.href='mailto:'+FEEDBACK_EMAIL+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+  };
+  return (
+    <div className="card">
+      <div className="hc-body" style={{marginBottom:8}}>Muốn app có thêm tính năng gì, hay đang gặp khó khăn/vấn đề gì khi dùng — gửi thẳng cho người làm app nhé.</div>
+      <div className="row" style={{gap:8,marginBottom:8}}>
+        <button className={'btn sm grow '+(kind==='feature'?'':'soft')} onClick={()=>setKind('feature')}>💡 Gợi ý tính năng</button>
+        <button className={'btn sm grow '+(kind==='issue'?'':'soft')} onClick={()=>setKind('issue')}>⚠️ Nhu cầu / vấn đề</button>
+      </div>
+      <textarea className="inp" style={{minHeight:110}}
+        placeholder={kind==='feature'?'Bạn muốn app có thêm tính năng gì?':'Bạn đang gặp khó khăn/vấn đề gì khi dùng app?'}
+        value={text} onChange={e=>setText(e.target.value)}/>
+      <button className="btn" style={{marginTop:8}} onClick={send} disabled={!text.trim()}>📧 Gửi góp ý</button>
+      <div className="muted" style={{fontSize:11,marginTop:8}}>Bấm gửi sẽ mở ứng dụng email trên máy, đã điền sẵn nội dung — bạn chỉ cần bấm gửi trong app email.</div>
+    </div>
+  );
+}
 /* ============ Tab: Hồ sơ ============ */
 function Profile({setup,setSetup,people,me,setMe,flash}){
   const [photos,setPhotos]=useLocal('ju.photos',[]);
@@ -7553,6 +7578,11 @@ function Profile({setup,setSetup,people,me,setMe,flash}){
       <LongSectionsControl flash={flash}/>
       <MenuReorderSettings/>
       <DefaultTabSettings setup={setup} setSetup={setSetup}/>
+      </Collapse>
+
+      {/* Góp ý & báo vấn đề */}
+      <Collapse id="prof-feedback" title="💡 Góp ý & báo vấn đề" defaultOpen={false}>
+      <FeedbackForm people={people} me={me}/>
       </Collapse>
 
       {/* Sao lưu & bảo mật */}
