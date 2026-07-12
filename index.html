@@ -4617,6 +4617,41 @@ function SkillGuide({g,done,onTick}){
     </div>
   );
 }
+const CHILD_ISSUES=[
+  {icon:'😴',title:'Con ngủ muộn / khó ngủ',tips:[
+    'Cố định giờ đi ngủ mỗi tối (vd 20:30–21:00) và lặp lại đều để tạo nếp.',
+    'Trình tự "hạ nhiệt" 30 phút trước ngủ: tắm ấm → thay đồ ngủ → đọc sách/hát ru, giảm đèn.',
+    'Tắt màn hình (TV/điện thoại) ít nhất 1 giờ trước giờ ngủ của bé.',
+    'Giữ giấc trưa hợp lý (bé ~20 tháng ngủ trưa 1 giấc ~1.5–2h, tránh ngủ sau 15:30).',
+    'Phòng tối, yên, mát ~26–28°C; có thể bật tiếng ồn trắng nhẹ.']},
+  {icon:'🍚',title:'Con biếng ăn',tips:['Cho ăn đúng bữa, đúng giờ; không ăn vặt sát bữa.','Bữa ăn gọn trong 30 phút, hết giờ dọn đi, không ép.','Cho con tự xúc, chấp nhận bừa bộn để con hứng thú.','Đa dạng màu sắc và kết cấu món; nêm nhạt riêng cho con.','Không dụ ăn bằng tivi/điện thoại; ăn cùng cả nhà để con bắt chước.']},
+  {icon:'🤱',title:'Con bám mẹ, không theo bố',tips:['Bố dành thời gian chơi riêng với con mỗi ngày, việc con thích.','Mẹ lùi lại để bố xử lý tắm/ăn/ngủ cho con.','Không lén đi khi con không để ý — chào tạm biệt rõ ràng, ngắn gọn.','Kiên nhẫn: giai đoạn bám mẹ là bình thường, sẽ qua.','Cả nhà cùng chơi để con thấy bố mẹ là một đội.']},
+  {icon:'👵',title:'Ông bà can thiệp cách dạy con',tips:['Hai vợ chồng thống nhất nguyên tắc trước rồi mới nói với ông bà.','Ghi nhận công ông bà trước khi góp ý, tránh chê trách.','Chọn 2–3 điều quan trọng nhất để giữ, việc nhỏ thì linh hoạt.','Để người con ruột nói với bố mẹ mình sẽ dễ hơn.','Nhất quán giữa bố mẹ là điều quan trọng nhất với con.']},
+  {icon:'📺',title:'Con xem tivi/điện thoại quá nhiều',tips:[
+    'Bé dưới 2 tuổi: hạn chế tối đa màn hình; 2–5 tuổi tối đa ~1 giờ/ngày và xem cùng người lớn.',
+    'Đặt khung giờ và chỗ xem cố định, tắt là tắt — báo trước "còn 1 tập nữa".',
+    'Không dùng màn hình khi ăn và trong 1 giờ trước giờ con ngủ.',
+    'Chuẩn bị sẵn hoạt động thay thế: tô màu, xếp hình, ra ngoài chơi.',
+    'Bố mẹ làm gương — giảm lướt điện thoại trước mặt con.']},
+  {icon:'😤',title:'Con ăn vạ, không nghe lời',tips:[
+    'Giữ bình tĩnh, hạ giọng; con càng gào thì mình càng nhẹ nhàng và chậm lại.',
+    'Gọi tên cảm xúc của con ("con đang giận vì…") rồi mới đặt giới hạn.',
+    'Thống nhất giữa bố mẹ: một luật, không người cấm người cho.',
+    'Cho con vài lựa chọn nhỏ ("mặc áo đỏ hay áo xanh") để con thấy được tự quyết.',
+    'Khen ngay khi con hợp tác; nhất quán quan trọng hơn nghiêm khắc.']},
+  {icon:'🤧',title:'Con hay ốm vặt',tips:[
+    'Ngủ đủ và đúng giờ giúp con tăng đề kháng — ưu tiên giấc ngủ.',
+    'Rửa tay trước khi ăn và sau khi về nhà; vệ sinh đồ chơi định kỳ.',
+    'Ăn đa dạng rau củ, uống đủ nước; tiêm phòng đúng lịch.',
+    'Tránh khói thuốc, giữ nhà thoáng; mặc đủ ấm theo thời tiết.',
+    'Ghi lại triệu chứng và ngày ốm (mục 🩺 Sức khỏe) để trao đổi với bác sĩ.']},
+  {icon:'🏫',title:'Con quấy khóc khi đi lớp',tips:[
+    'Chào tạm biệt ngắn gọn, dứt khoát và luôn giữ đúng lời hứa đón con.',
+    'Tạo "nghi thức chia tay" cố định (ôm một cái, vẫy tay) để con thấy an toàn.',
+    'Cho con mang theo món quen thuộc (gấu bông, khăn) trong tuần đầu.',
+    'Đến lớp đúng giờ, tránh vội vã; tối trước nói nhẹ nhàng về việc mai đi lớp.',
+    'Phối hợp với cô giáo để nắm con có ổn định lại sau khi bố mẹ đi.']},
+];
 function ChildCare({people,me}){
   const [child,setChild]=useLocal('ju.child',{name:'',dob:'',gender:''});
   const [growth,setGrowth]=useLocal('ju.childGrowth',[]);
@@ -4637,6 +4672,7 @@ function ChildCare({people,me}){
   const [dtext,setDtext]=useState(''); const [wordIn,setWordIn]=useState('');
   const [illForm,setIllForm]=useState({symptoms:[],meds:'',note:''});
   const [tanForm,setTanForm]=useState({situation:'',handling:''});
+  const [browseIssue,setBrowseIssue]=useState(null);
   const months=child.dob? Math.max(0, Math.round((new Date(todayISO()+'T00:00:00')-new Date(child.dob+'T00:00:00'))/(30.44*86400000))) : null;
   const ageLabel = months==null?'chưa đặt ngày sinh' : months<24? months+' tháng tuổi' : Math.floor(months/12)+' tuổi'+(months%12?(' '+(months%12)+' th'):'');
   const tg=(obj,set,key)=>{ const n={...obj}; if(n[key]) delete n[key]; else n[key]=true; set(n); };
@@ -4707,6 +4743,17 @@ function ChildCare({people,me}){
           {words.length>0 && <div style={{marginTop:8}}>{words.slice(0,40).map(w=>(
             <span key={w.id} className="pill" style={{margin:'3px 6px 3px 0',padding:'6px 10px',fontSize:12.5}}>{w.word} <span onClick={()=>{ if(confirm('Xoá từ này?')) setWords(words.filter(x=>x.id!==w.id)); }} style={{cursor:'pointer',marginLeft:3,opacity:.6}}>✕</span></span>
           ))}</div>}
+        </div>
+        <Collapse id="child-speech-delay" defaultOpen={false} title="🗣️ Con chậm nói? Xem gợi ý xử lý">
+          <ul style={{margin:'4px 0 0',paddingLeft:18,fontSize:12.5,lineHeight:1.65}}>
+            <li style={{marginBottom:4}}>Nói chuyện & mô tả mọi việc đang làm cùng con mỗi ngày; hỏi rồi chờ con phản hồi thay vì tự trả lời luôn.</li>
+            <li style={{marginBottom:4}}>Đọc sách tranh, gọi tên đồ vật, hát cùng con hằng ngày để tăng vốn từ một cách tự nhiên.</li>
+            <li style={{marginBottom:4}}>Hạn chế tối đa màn hình (tivi/điện thoại) — màn hình không thay thế được tương tác trực tiếp với con.</li>
+            <li style={{marginBottom:4}}>Chờ đợi, tạo cơ hội để con chủ động nói/ra hiệu trước, tránh đoán ý và đáp ứng ngay khi con chỉ cần chỉ tay.</li>
+            <li style={{marginBottom:4}}>Để ý thêm dấu hiệu đi kèm: ít giao tiếp mắt, không phản ứng khi gọi tên, không bắt chước âm thanh/cử chỉ.</li>
+            <li style={{marginBottom:4}}>Nếu 18–24 tháng con nói rất ít từ, hoặc 2 tuổi chưa ghép được 2 từ, nên cho con khám chuyên khoa (nhi khoa/âm ngữ trị liệu) sớm — can thiệp càng sớm càng hiệu quả.</li>
+          </ul>
+        </Collapse>
         </div>
       </div>}
 
@@ -4859,6 +4906,17 @@ function ChildCare({people,me}){
         {SKILL_GUIDES.some(g=>gDone[g.name]) && <div className="muted" style={{fontSize:11,margin:'10px 14px 4px'}}>✅ Bé đã biết ({SKILL_GUIDES.filter(g=>gDone[g.name]).length}) — bấm nút xanh để bỏ đánh dấu:</div>}
         {SKILL_GUIDES.filter(g=>gDone[g.name]).map(g=><SkillGuide key={g.name} g={g} done={true} onTick={()=>{ const n={...gDone}; delete n[g.name]; setGDone(n); }}/>)}
         </Collapse>
+        <Collapse id="child-issues" defaultOpen={false} title="🧩 Vấn đề thường gặp & cách xử lý">
+          <div className="muted center" style={{fontSize:11,margin:'0 14px 6px'}}>Bấm vào chủ đề để xem gợi ý.</div>
+          <div className="card">
+            <div style={{display:'flex',flexWrap:'wrap',gap:6}}>
+              {CHILD_ISSUES.map(f=><button key={f.title} className="pill" onClick={()=>setBrowseIssue(f)}>{f.icon} {f.title}</button>)}
+            </div>
+          </div>
+        </Collapse>
+        {browseIssue && <Sheet title={browseIssue.icon+' '+browseIssue.title} onClose={()=>setBrowseIssue(null)}>
+          <ul style={{margin:'4px 0 0',paddingLeft:18,fontSize:14,lineHeight:1.7}}>{browseIssue.tips.map((t,i)=><li key={i} style={{marginBottom:7}}>{t}</li>)}</ul>
+        </Sheet>}
         <div className="sec-title">📔 Nhật ký “điều đầu tiên”</div>
         <div className="row" style={{margin:'0 14px 4px',gap:8}}>
           <input className="inp grow" placeholder="Hôm nay bé… (lần đầu nói, bước đi…)" value={dtext} onChange={e=>setDtext(e.target.value)} onKeyDown={e=>{ if(e.key==='Enter') addDiary(); }}/>
@@ -4908,12 +4966,6 @@ const DEFAULT_ROUTINE=[
   {id:'r11',t:'22:30',both:'Bố mẹ đi ngủ'},
 ];
 const ROUTINE_FIXES=[
-  {icon:'😴',title:'Con ngủ muộn / khó ngủ',key:['ngủ','ngu','khó ngủ','thức khuya','giấc','đi ngủ','quấy đêm','ngủ trưa','khóc đêm'],tips:[
-    'Cố định giờ đi ngủ mỗi tối (vd 20:30–21:00) và lặp lại đều để tạo nếp.',
-    'Trình tự "hạ nhiệt" 30 phút trước ngủ: tắm ấm → thay đồ ngủ → đọc sách/hát ru, giảm đèn.',
-    'Tắt màn hình (TV/điện thoại) ít nhất 1 giờ trước giờ ngủ của bé.',
-    'Giữ giấc trưa hợp lý (bé ~20 tháng ngủ trưa 1 giấc ~1.5–2h, tránh ngủ sau 15:30).',
-    'Phòng tối, yên, mát ~26–28°C; có thể bật tiếng ồn trắng nhẹ.']},
   {icon:'🌅',title:'Buổi sáng cập rập',key:['sáng','buổi sáng','cập rập','vội','muộn giờ','đi làm','chuẩn bị','dậy muộn','trễ'],tips:[
     'Chuẩn bị từ tối: quần áo cả nhà, bình sữa, balo lớp, chìa khoá để sẵn.',
     'Dậy trước bé 20–30 phút để bố mẹ vệ sinh cá nhân xong trước.',
@@ -4961,45 +5013,7 @@ const ROUTINE_FIXES=[
     'Dùng mục 💡 Ý tưởng / 📍 Gợi ý HN để chọn điểm đi chơi hợp thời tiết.',
     'Giữ 1 buổi "không lịch" để nghỉ thật sự, tránh nhồi nhét.',
     'Xen kẽ hoạt động trong nhà và ngoài trời cho bé.',
-    'Chụp vài tấm ảnh lưu vào Kỷ niệm để sau này nhìn lại.']},{icon:'🍚',title:'Con biếng ăn',key:['biếng ăn','lười ăn','không chịu ăn','bỏ ăn','ăn ít','ngậm'],tips:['Cho ăn đúng bữa, đúng giờ; không ăn vặt sát bữa.','Bữa ăn gọn trong 30 phút, hết giờ dọn đi, không ép.','Cho con tự xúc, chấp nhận bừa bộn để con hứng thú.','Đa dạng màu sắc và kết cấu món; nêm nhạt riêng cho con.','Không dụ ăn bằng tivi/điện thoại; ăn cùng cả nhà để con bắt chước.']},{icon:'🤱',title:'Con bám mẹ, không theo bố',key:['bám mẹ','bám bố','không theo','chỉ theo mẹ','khóc đòi mẹ'],tips:['Bố dành thời gian chơi riêng với con mỗi ngày, việc con thích.','Mẹ lùi lại để bố xử lý tắm/ăn/ngủ cho con.','Không lén đi khi con không để ý — chào tạm biệt rõ ràng, ngắn gọn.','Kiên nhẫn: giai đoạn bám mẹ là bình thường, sẽ qua.','Cả nhà cùng chơi để con thấy bố mẹ là một đội.']},{icon:'👵',title:'Ông bà can thiệp cách dạy con',key:['ông bà','nội ngoại','can thiệp','bênh cháu','khác cách dạy','chiều cháu'],tips:['Hai vợ chồng thống nhất nguyên tắc trước rồi mới nói với ông bà.','Ghi nhận công ông bà trước khi góp ý, tránh chê trách.','Chọn 2–3 điều quan trọng nhất để giữ, việc nhỏ thì linh hoạt.','Để người con ruột nói với bố mẹ mình sẽ dễ hơn.','Nhất quán giữa bố mẹ là điều quan trọng nhất với con.']},{icon:'😮‍💨',title:'Thiếu ngủ trầm trọng',key:['thiếu ngủ','mất ngủ','ngủ không đủ','mệt vì con','dậy đêm nhiều'],tips:['Chia ca đêm: mỗi người phụ trách một nửa để có giấc dài.','Ngủ khi con ngủ, gác việc nhà không gấp lại.','Cắt caffeine buổi chiều; phòng ngủ tối và mát.','Nhờ ông bà/người thân trông con để ngủ bù cuối tuần.','Hạ kỳ vọng việc nhà giai đoạn này — sức khỏe trước.']},{icon:'⚖️',title:'Phân công chăm con không đều',key:['chăm con','không đều','một mình lo con','gánh hết','không phụ con'],tips:['Liệt kê mọi đầu việc chăm con rồi chia rõ ai làm gì.','Luân phiên việc khó (dỗ ngủ, dậy đêm) theo ngày trong tuần.','Người đi làm về nhận ca tối để người ở nhà được nghỉ.','Nói nhu cầu cụ thể thay vì mong người kia tự hiểu.','Cuối tuần mỗi người có 2 tiếng tự do, người kia trông con.']},
-  {icon:'📺',title:'Con xem tivi/điện thoại quá nhiều',key:['xem tivi','tivi','ipad','điện thoại của con','youtube','hoạt hình','nghiện tivi','xem nhiều','màn hình của con'],tips:[
-    'Bé dưới 2 tuổi: hạn chế tối đa màn hình; 2–5 tuổi tối đa ~1 giờ/ngày và xem cùng người lớn.',
-    'Đặt khung giờ và chỗ xem cố định, tắt là tắt — báo trước "còn 1 tập nữa".',
-    'Không dùng màn hình khi ăn và trong 1 giờ trước giờ con ngủ.',
-    'Chuẩn bị sẵn hoạt động thay thế: tô màu, xếp hình, ra ngoài chơi.',
-    'Bố mẹ làm gương — giảm lướt điện thoại trước mặt con.']},
-  {icon:'😤',title:'Con ăn vạ, không nghe lời',key:['ăn vạ','ăn va','mè nheo','bướng','không nghe lời','la hét','khóc ăn vạ','ném đồ','đánh','tantrum'],tips:[
-    'Giữ bình tĩnh, hạ giọng; con càng gào thì mình càng nhẹ nhàng và chậm lại.',
-    'Gọi tên cảm xúc của con ("con đang giận vì…") rồi mới đặt giới hạn.',
-    'Thống nhất giữa bố mẹ: một luật, không người cấm người cho.',
-    'Cho con vài lựa chọn nhỏ ("mặc áo đỏ hay áo xanh") để con thấy được tự quyết.',
-    'Khen ngay khi con hợp tác; nhất quán quan trọng hơn nghiêm khắc.']},
-  {icon:'🤧',title:'Con hay ốm vặt',key:['ốm','ốm vặt','hay ốm','sổ mũi','ho','sốt','bệnh','đi viện','hay bệnh','ho sốt'],tips:[
-    'Ngủ đủ và đúng giờ giúp con tăng đề kháng — ưu tiên giấc ngủ.',
-    'Rửa tay trước khi ăn và sau khi về nhà; vệ sinh đồ chơi định kỳ.',
-    'Ăn đa dạng rau củ, uống đủ nước; tiêm phòng đúng lịch.',
-    'Tránh khói thuốc, giữ nhà thoáng; mặc đủ ấm theo thời tiết.',
-    'Ghi lại triệu chứng và ngày ốm (mục 🩺 Sức khỏe) để trao đổi với bác sĩ.']},
-  {icon:'🚽',title:'Tập cho con bỏ bỉm, ngồi bô',key:['bỏ bỉm','ngồi bô','đi vệ sinh','tè dầm','potty','tập vệ sinh','đóng bỉm','bô'],tips:[
-    'Bắt đầu khi con có dấu hiệu sẵn sàng (báo khi tè/ị, giữ bỉm khô lâu hơn).',
-    'Cho con ngồi bô theo giờ cố định: sau khi ngủ dậy, sau bữa ăn.',
-    'Khen và ăn mừng mỗi lần thành công; không mắng khi con lỡ.',
-    'Mặc quần dễ cởi; để bô ở nơi con dễ thấy, dễ với.',
-    'Kiên nhẫn — mỗi bé một nhịp, lùi lại vài tuần nếu con chưa sẵn sàng.']},
-  {icon:'🗣️',title:'Con chậm nói',key:['chậm nói','không chịu nói','ít nói','nói ít từ','chưa biết nói','chậm phát triển ngôn ngữ','nói ngọng','không nói được','vốn từ ít','2 tuổi chưa nói'],tips:[
-    'Nói chuyện & mô tả mọi việc đang làm cùng con mỗi ngày; hỏi rồi chờ con phản hồi thay vì tự trả lời luôn.',
-    'Đọc sách tranh, gọi tên đồ vật, hát cùng con hằng ngày để tăng vốn từ một cách tự nhiên.',
-    'Hạn chế tối đa màn hình (tivi/điện thoại) — màn hình không thay thế được tương tác trực tiếp với con.',
-    'Chờ đợi, tạo cơ hội để con chủ động nói/ra hiệu trước, tránh đoán ý và đáp ứng ngay khi con chỉ cần chỉ tay.',
-    'Ghi lại số từ con nói được theo tuần (mục 🗣️ Mốc ngôn ngữ) để dễ theo dõi tiến bộ.',
-    'Để ý thêm dấu hiệu đi kèm: ít giao tiếp mắt, không phản ứng khi gọi tên, không bắt chước âm thanh/cử chỉ.',
-    'Nếu 18–24 tháng con nói rất ít từ, hoặc 2 tuổi chưa ghép được 2 từ, nên cho con khám chuyên khoa (nhi khoa/âm ngữ trị liệu) sớm — can thiệp càng sớm càng hiệu quả.']},
-  {icon:'🏫',title:'Con quấy khóc khi đi lớp',key:['đi lớp','đi học','khóc đòi về','bám khi đi học','xa mẹ','gửi trẻ','nhà trẻ','mầm non','chia tay ở lớp'],tips:[
-    'Chào tạm biệt ngắn gọn, dứt khoát và luôn giữ đúng lời hứa đón con.',
-    'Tạo "nghi thức chia tay" cố định (ôm một cái, vẫy tay) để con thấy an toàn.',
-    'Cho con mang theo món quen thuộc (gấu bông, khăn) trong tuần đầu.',
-    'Đến lớp đúng giờ, tránh vội vã; tối trước nói nhẹ nhàng về việc mai đi lớp.',
-    'Phối hợp với cô giáo để nắm con có ổn định lại sau khi bố mẹ đi.']},
+    'Chụp vài tấm ảnh lưu vào Kỷ niệm để sau này nhìn lại.']},{icon:'😮‍💨',title:'Thiếu ngủ trầm trọng',key:['thiếu ngủ','mất ngủ','ngủ không đủ','mệt vì con','dậy đêm nhiều'],tips:['Chia ca đêm: mỗi người phụ trách một nửa để có giấc dài.','Ngủ khi con ngủ, gác việc nhà không gấp lại.','Cắt caffeine buổi chiều; phòng ngủ tối và mát.','Nhờ ông bà/người thân trông con để ngủ bù cuối tuần.','Hạ kỳ vọng việc nhà giai đoạn này — sức khỏe trước.']},{icon:'⚖️',title:'Phân công chăm con không đều',key:['chăm con','không đều','một mình lo con','gánh hết','không phụ con'],tips:['Liệt kê mọi đầu việc chăm con rồi chia rõ ai làm gì.','Luân phiên việc khó (dỗ ngủ, dậy đêm) theo ngày trong tuần.','Người đi làm về nhận ca tối để người ở nhà được nghỉ.','Nói nhu cầu cụ thể thay vì mong người kia tự hiểu.','Cuối tuần mỗi người có 2 tiếng tự do, người kia trông con.']},
   {icon:'💸',title:'Căng thẳng chi tiêu, tài chính',key:['tiền','chi tiêu','tài chính','tốn kém','thiếu tiền','nợ','lương','tiết kiệm','ngân sách','đắt đỏ'],tips:[
     'Ngồi lại cùng nhau xem thu–chi tháng, thống nhất hạn mức mỗi khoản.',
     'Lập quỹ chung cho khoản cố định (bỉm sữa, học phí) và một quỹ dự phòng.',
