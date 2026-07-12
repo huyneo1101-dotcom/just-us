@@ -76,6 +76,12 @@ body.theme-mocha{
   --line:#e6d6c7; --primary:#b07a4f; --primary2:#d6a878; --accent:#c0392b;
   --chip:#ecdccd; --chip-tx:#8a5a36; --heart:#e0607a;
 }
+/* Chế độ tối — phủ lên bất kỳ theme màu nào đang chọn, giữ nguyên màu nhấn (--primary/--accent) của theme đó */
+body.dark{
+  --bg:#171221; --bg2:#221a30; --card:#241b33; --text:#f3e9f5; --muted:#a892b8;
+  --line:#3a2c4d; --chip:#3a2740; --chip-tx:#ffb3cd;
+  --shadow:0 12px 34px rgba(0,0,0,.45);
+}
 
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;padding:0}
@@ -557,7 +563,15 @@ const THEMES=[
   {k:'sky', name:'Trời xanh', c:'#3b82f6'},
   {k:'mocha', name:'Mocha', c:'#b07a4f'},
 ];
-function applyTheme(k){ document.body.className='theme-'+k; }
+function applyTheme(k){
+  [...document.body.classList].forEach(c=>{ if(c.indexOf('theme-')===0) document.body.classList.remove(c); });
+  document.body.classList.add('theme-'+k);
+}
+// mode: 'light' | 'dark' | 'system' (theo cài đặt sáng/tối của điện thoại)
+function applyDarkMode(mode){
+  const dark = mode==='dark' || (mode==='system' && typeof window.matchMedia==='function' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  document.body.classList.toggle('dark', dark);
+}
 const HOME_FONTS=[
   {k:'bevn',name:'Be Vietnam Pro',css:"'Be Vietnam Pro','Segoe UI',system-ui,sans-serif"},
   {k:'nunito',name:'Nunito · tròn, thân thiện',css:"'Nunito','Segoe UI',system-ui,sans-serif"},
@@ -7489,6 +7503,14 @@ function Profile({setup,setSetup,people,me,setMe,flash}){
 
       {/* Theme */}
       <Collapse id="prof-theme" title="🎨 Giao diện đôi" defaultOpen={false}>
+      <div className="card" style={{marginBottom:8}}>
+        <div className="hc-body" style={{marginBottom:8}}>Chế độ sáng/tối</div>
+        <div className="row" style={{gap:8}}>
+          {[['light','☀️ Sáng'],['dark','🌙 Tối'],['system','🌗 Theo máy']].map(([k,l])=>(
+            <button key={k} className={'btn sm grow '+((setup.darkMode||'light')===k?'':'soft')} onClick={()=>setSetup({...setup,darkMode:k})}>{l}</button>
+          ))}
+        </div>
+      </div>
       <div className="card">
         <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:8}}>
           {THEMES.map(t=>(
@@ -7843,6 +7865,16 @@ function App(){
   // áp theme khi setup đổi
   useEffect(()=>{ if(setup?.theme) applyTheme(setup.theme); },[setup?.theme]);
   useEffect(()=>{ applyHomeFont(setup?.homeFont||'bevn'); },[setup?.homeFont]);
+  // sáng/tối — 'system' thì theo dõi cả khi điện thoại đổi chế độ
+  useEffect(()=>{
+    const mode=setup?.darkMode||'light';
+    applyDarkMode(mode);
+    if(mode!=='system'||typeof window.matchMedia!=='function') return;
+    const mq=window.matchMedia('(prefers-color-scheme: dark)');
+    const onChange=()=>applyDarkMode('system');
+    if(mq.addEventListener) mq.addEventListener('change',onChange); else mq.addListener(onChange);
+    return ()=>{ if(mq.removeEventListener) mq.removeEventListener('change',onChange); else mq.removeListener(onChange); };
+  },[setup?.darkMode]);
   // "me" là riêng từng máy (không đồng bộ)
   useEffect(()=>{ store.set('ju.me',me); },[me]);
   // khởi tạo auth + tự kết nối lại đám mây khi mở app
