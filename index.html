@@ -5205,7 +5205,7 @@ function unseenByPartner(listKey,seenKey,me){
   const seen=store.get(seenKey,{})||{};
   return (store.get(listKey,[])||[]).filter(x=>x&&x.by&&x.by!==me&&(x.createdAt||0)>(seen[me]||0));
 }
-// Giờ nhắc của một mục: dùng giờ riêng nếu đã chỉnh, không thì theo giờ mặc định.
+// Giờ nhắc của một mục: dùng giờ riêng nếu đã chỉnh, không thì theo giờ mặc định. 'now' = nhắc ngay khi phát hiện, không chờ giờ cố định.
 function catNotiTime(noti,cat){ return (cat&&(noti.times||{})[cat])||noti.time||'08:00'; }
 function computeDueNotis(noti){
   const cats=(noti&&noti.cats)||{}; const on=(k)=>cats[k]!==false;
@@ -5252,7 +5252,8 @@ function NotiRunner(){
         const log=store.get('ju.notiLog',{})||{}; const fired=(log.date===today?(log.fired||{}):{}); let changed=false;
         for(const d of due){
           if(fired[d.id]) continue;
-          if(catNotiTime(noti,d.cat)>nowHM) continue; // chưa tới giờ nhắc của mục này
+          const t=catNotiTime(noti,d.cat);
+          if(t!=='now' && t>nowHM) continue; // chưa tới giờ nhắc của mục này
           await reg.showNotification(d.title,{body:d.title,icon:'icon.svg',badge:'icon.svg',tag:'ju-item-'+today+'-'+d.id,data:{url:'./'}});
           fired[d.id]=1; changed=true;
         }
@@ -5305,8 +5306,11 @@ function NotiSettings({flash}){
                   <input type="checkbox" checked={cats[k]!==false} onChange={()=>tog(k)} style={{width:18,height:18}}/>
                   <span style={{fontSize:14}}>{l}</span>
                 </label>
-                {cats[k]!==false && k!=='lich' &&
-                  <input className="inp" type="time" value={catNotiTime(noti,k)} onChange={e=>setCatTime(k,e.target.value)} style={{width:110}}/>}
+                {cats[k]!==false && k!=='lich' && (()=>{ const isNow=(noti.times||{})[k]==='now'; return <>
+                  <button className="pill" style={{background:isNow?'var(--good)':'var(--chip)',color:isNow?'#fff':'var(--chip-tx)'}}
+                    onClick={()=>setCatTime(k,isNow?(noti.time||'08:00'):'now')}>⚡ Ngay</button>
+                  {!isNow && <input className="inp" type="time" value={catNotiTime(noti,k)} onChange={e=>setCatTime(k,e.target.value)} style={{width:110}}/>}
+                </>; })()}
               </div>
             ))}
             <div className="field" style={{marginTop:8}}><label>Giờ nhắc mặc định (áp cho mục chưa chỉnh riêng)</label>
