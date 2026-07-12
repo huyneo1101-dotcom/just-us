@@ -300,7 +300,7 @@ const store={
 const SB_URL='https://vvgkjgvzjeklaadusbne.supabase.co';
 const SB_KEY='sb_publishable_DMMPv5L2kGhrHTxeQ72iKw_dIh13iT1';
 // Các key được đồng bộ (KHÔNG gồm ju.me/ju.device/ju.sync — đó là riêng từng máy)
-const SYNC_KEYS=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood','ju.qa','ju.timeline','ju.coupons','ju.chores','ju.lovejar','ju.quiz','ju.city','ju.goals','ju.checkin','ju.challengeDone','ju.homecfg','ju.diary','ju.projects','ju.vinhaUrl','ju.checkins','ju.menu','ju.period','ju.menuPlan','ju.accuKey','ju.habits','ju.hiddenSpots','ju.usOrder','ju.eventPrefs','ju.child','ju.childGrowth','ju.childVaccines','ju.childMilestones','ju.childDiary','ju.partnerWishes','ju.todos','ju.spotify','ju.dishPrefs','ju.favDishes','ju.childPack','ju.childSkills','ju.childMed','ju.childIllness','ju.childWords','ju.childTantrum','ju.childParenting','ju.saveTips','ju.saveCustom','ju.funPrefs','ju.routine','ju.routineIssues','ju.noti','ju.family','ju.health','ju.transfers','ju.skillGuidesDone','ju.expenses','ju.budget','ju.vinhaSync','ju.menuOrder','ju.notesSeen','ju.intimacy','ju.intimacySeen','ju.quizKnow','ju.familyRules','ju.expiry','ju.stash','ju.docs','ju.tuvi','ju.thanso','ju.checkinSeen'];
+const SYNC_KEYS=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood','ju.qa','ju.timeline','ju.coupons','ju.chores','ju.lovejar','ju.quiz','ju.city','ju.goals','ju.checkin','ju.challengeDone','ju.homecfg','ju.diary','ju.projects','ju.vinhaUrl','ju.checkins','ju.menu','ju.period','ju.menuPlan','ju.accuKey','ju.habits','ju.hiddenSpots','ju.usOrder','ju.eventPrefs','ju.child','ju.childGrowth','ju.childVaccines','ju.childMilestones','ju.childDiary','ju.partnerWishes','ju.todos','ju.spotify','ju.dishPrefs','ju.favDishes','ju.childPack','ju.childSkills','ju.childMed','ju.childIllness','ju.childWords','ju.childTantrum','ju.childParenting','ju.saveTips','ju.saveCustom','ju.funPrefs','ju.routine','ju.routineIssues','ju.noti','ju.family','ju.health','ju.transfers','ju.skillGuidesDone','ju.expenses','ju.budget','ju.vinhaSync','ju.menuOrder','ju.notesSeen','ju.intimacy','ju.intimacySeen','ju.quizKnow','ju.familyRules','ju.expiry','ju.stash','ju.docs','ju.tuvi','ju.thanso','ju.checkinSeen','ju.menuHidden'];
 let _sb=null;
 function sbClient(){
   if(_sb) return _sb;
@@ -1534,33 +1534,51 @@ function Sheet({title,onClose,children}){
 /* ============ Menu lưới biểu tượng (thay seg cuộn ngang) ============ */
 function orderItems(items, menuId){
   const ord=(store.get('ju.menuOrder',{})||{})[menuId];
-  if(!ord||!ord.length) return items;
-  const byK={}; items.forEach(it=>{ byK[it.k]=it; });
-  const out=[]; ord.forEach(k=>{ if(byK[k]){ out.push(byK[k]); delete byK[k]; } });
-  items.forEach(it=>{ if(byK[it.k]) out.push(it); });
-  return out;
+  let list=items;
+  if(ord&&ord.length){
+    const byK={}; items.forEach(it=>{ byK[it.k]=it; });
+    const out=[]; ord.forEach(k=>{ if(byK[k]){ out.push(byK[k]); delete byK[k]; } });
+    items.forEach(it=>{ if(byK[it.k]) out.push(it); });
+    list=out;
+  }
+  const hidden=(store.get('ju.menuHidden',{})||{})[menuId];
+  if(hidden&&hidden.length) list=list.filter(it=>!hidden.includes(it.k));
+  return list;
 }
 function ReorderSheet({items, menuId, onClose}){
   const [order,setOrder]=useLocal('ju.menuOrder',{});
+  const [menuHidden,setMenuHidden]=useLocal('ju.menuHidden',{});
   const byK=Object.fromEntries(items.map(it=>[it.k,it]));
-  const [list,setList]=useState(()=>orderItems(items,menuId).map(it=>it.k).filter(k=>byK[k]));
+  const [list,setList]=useState(()=>{ const ord=orderItems(items,menuId).map(it=>it.k).filter(k=>byK[k]); const rest=items.map(it=>it.k).filter(k=>!ord.includes(k)); return [...ord,...rest]; });
+  const [hidden,setHidden]=useState(()=>(menuHidden[menuId]||[]).filter(k=>byK[k]));
   const move=(i,dir)=>{ const j=i+dir; if(j<0||j>=list.length) return; const n=list.slice(); const t=n[i]; n[i]=n[j]; n[j]=t; setList(n); };
-  const persist=(m)=>{ store.set('ju.menuOrder',m); try{ Cloud.schedulePush&&Cloud.schedulePush(); }catch(_){}; setOrder(m); };
-  const save=()=>{ persist({...order,[menuId]:list}); onClose&&onClose(); };
-  const reset=()=>{ const n={...order}; delete n[menuId]; persist(n); onClose&&onClose(); };
+  const toggleHidden=(k)=> setHidden(h=>h.includes(k)?h.filter(x=>x!==k):[...h,k]);
+  const save=()=>{
+    store.set('ju.menuOrder',{...order,[menuId]:list}); setOrder({...order,[menuId]:list});
+    store.set('ju.menuHidden',{...menuHidden,[menuId]:hidden}); setMenuHidden({...menuHidden,[menuId]:hidden});
+    try{ Cloud.schedulePush&&Cloud.schedulePush(); }catch(_){}
+    onClose&&onClose();
+  };
+  const reset=()=>{
+    const nOrder={...order}; delete nOrder[menuId]; store.set('ju.menuOrder',nOrder); setOrder(nOrder);
+    const nHidden={...menuHidden}; delete nHidden[menuId]; store.set('ju.menuHidden',nHidden); setMenuHidden(nHidden);
+    try{ Cloud.schedulePush&&Cloud.schedulePush(); }catch(_){}
+    onClose&&onClose();
+  };
   return (<div>
-    <div className="muted" style={{fontSize:12.5,marginBottom:10}}>Bấm ▲ ▼ để đổi thứ tự các mục, rồi Lưu.</div>
+    <div className="muted" style={{fontSize:12.5,marginBottom:10}}>Bấm ▲ ▼ để đổi thứ tự, bấm Ẩn/Hiện để bớt mục không dùng, rồi Lưu.</div>
     <div className="card" style={{padding:'2px 12px'}}>
-      {list.map((k,i)=>{ const it=byK[k]; if(!it) return null; return (
-        <div key={k} className="row" style={{padding:'8px 0',borderBottom:i<list.length-1?'1px solid var(--line)':'none'}}>
+      {list.map((k,i)=>{ const it=byK[k]; if(!it) return null; const off=hidden.includes(k); return (
+        <div key={k} className="row" style={{padding:'8px 0',borderBottom:i<list.length-1?'1px solid var(--line)':'none',opacity:off?.5:1}}>
           <span style={{fontSize:17,marginRight:8}}>{it.icon}</span><span className="grow" style={{fontSize:14}}>{it.label}</span>
+          <button className="pill" style={{marginRight:4,background:off?'var(--bg)':'var(--good)',color:off?'var(--muted)':'#fff',border:off?'1px solid var(--line)':'none'}} onClick={()=>toggleHidden(k)}>{off?'Ẩn':'Hiện'}</button>
           <button className="iconbtn" style={i===0?{opacity:.3}:{}} onClick={()=>move(i,-1)}>▲</button>
           <button className="iconbtn" style={i===list.length-1?{opacity:.3}:{}} onClick={()=>move(i,1)}>▼</button>
         </div>
       ); })}
     </div>
     <div className="row" style={{gap:8,marginTop:12}}>
-      <button className="btn grow" onClick={save}>💾 Lưu thứ tự</button>
+      <button className="btn grow" onClick={save}>💾 Lưu</button>
       <button className="btn soft" onClick={reset}>↺ Mặc định</button>
     </div>
   </div>);
@@ -5633,6 +5651,20 @@ function LongSectionsControl({flash}){
     </div>
   );
 }
+function DefaultTabSettings({setup,setSetup}){
+  const cur=setup.defaultTab||'home';
+  return (
+    <div className="card">
+      <div className="row"><span className="hc-title">🚪 Trang mở mặc định</span></div>
+      <div className="muted" style={{fontSize:12.5,margin:'4px 0 8px'}}>Chọn tab hiện ra ngay khi mở app, thay vì luôn về Tổ ấm.</div>
+      <div style={{display:'flex',flexWrap:'wrap',gap:6}}>
+        {MAIN_TABS.map(([k,ic,l])=>(
+          <button key={k} className="pill" style={cur===k?{background:'var(--good)',color:'#fff'}:{}} onClick={()=>setSetup({...setup,defaultTab:k})}>{ic} {l}</button>
+        ))}
+      </div>
+    </div>
+  );
+}
 function MenuReorderSettings(){
   const [pick,setPick]=useState(null);
   return (
@@ -7498,6 +7530,7 @@ function Profile({setup,setSetup,people,me,setMe,flash}){
       <Collapse id="prof-ui" title="🎛️ Giao diện" defaultOpen={false}>
       <LongSectionsControl flash={flash}/>
       <MenuReorderSettings/>
+      <DefaultTabSettings setup={setup} setSetup={setSetup}/>
       </Collapse>
 
       {/* Sao lưu & bảo mật */}
@@ -7796,9 +7829,10 @@ function KnowledgeQuiz({onClose}){
     </div>
   );
 }
+const MAIN_TABS=[['home','🏠','Tổ ấm'],['child','🐿️','Sóc'],['date','🗺️','Hẹn hò'],['us','📅','Tụi mình'],['talk','💬','Nói chuyện'],['me','💞','Hồ sơ']];
 function App(){
   const [setup,setSetup]=useLocal('ju.setup',null);
-  const [tab,setTab]=useState('home');
+  const [tab,setTab]=useState(()=>(setup&&setup.defaultTab)||'home');
   const [me,setMe]=useState(()=> store.get('ju.me', (store.get('ju.setup',{})||{}).me || 'a'));
   const [flashMsg,setFlashMsg]=useState('');
   const [showSearch,setShowSearch]=useState(false);
@@ -7847,7 +7881,7 @@ function App(){
       {tab==='me' && <Profile setup={setup} setSetup={setSetup} people={people} me={me} setMe={setMe} flash={flash}/>}
 
       <div className="nav">
-        {[['home','🏠','Tổ ấm'],['child','🐿️','Sóc'],['date','🗺️','Hẹn hò'],['us','📅','Tụi mình'],['talk','💬','Nói chuyện'],['me','💞','Hồ sơ']].map(([k,ic,l])=>(
+        {MAIN_TABS.map(([k,ic,l])=>(
           <button key={k} className={tab===k?'on':''} onClick={()=>setTab(k)}>
             <span className="ic">{ic}</span>{l}
           </button>
