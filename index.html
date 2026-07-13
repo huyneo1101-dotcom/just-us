@@ -1621,6 +1621,7 @@ function SegGrid({items, value, onChange, sub, menuId}){
 /* ============ Generic list (Wishlist, Bucket, Watch, Links, Places, Food, Date ideas) ============ */
 function SimpleList({skey, people, me, addLabel, doneLabel='Xong', fields=[], tagOptions, empty, flash, suggest, claimable, showTotal}){
   const [items,setItems]=useLocal(skey,[]);
+  const other=me==='a'?'b':'a';
   const claim=(id)=> setItems(items.map(x=>x.id===id?{...x,claimedBy:x.claimedBy?null:me}:x));
   const totalPrice=showTotal? items.reduce((s,x)=>s+(Number(x.price)||0),0):0;
   const [filter,setFilter]=useState('all');
@@ -1641,6 +1642,7 @@ function SimpleList({skey, people, me, addLabel, doneLabel='Xong', fields=[], ta
   const shown=useMemo(()=>{
     let a=items.slice();
     if(filter==='mine') a=a.filter(x=>x.by===me);
+    if(filter==='partner') a=a.filter(x=>x.by===other);
     if(filter==='fav') a=a.filter(x=>x.fav);
     if(filter==='todo') a=a.filter(x=>!x.done);
     if(q.trim()){ const s=q.toLowerCase(); a=a.filter(x=>(x.title||'').toLowerCase().includes(s)||(x.note||'').toLowerCase().includes(s)); }
@@ -1658,7 +1660,8 @@ function SimpleList({skey, people, me, addLabel, doneLabel='Xong', fields=[], ta
       <div className="filters">
         <button className={filter==='all'?'on':''} onClick={()=>setFilter('all')}>Tất cả</button>
         <button className={filter==='todo'?'on':''} onClick={()=>setFilter('todo')}>Chưa {doneLabel.toLowerCase()}</button>
-        <button className={filter==='mine'?'on':''} onClick={()=>setFilter('mine')}>Của tôi</button>
+        <button className={filter==='mine'?'on':''} onClick={()=>setFilter('mine')}>{people[me]?.name||'Của tôi'}</button>
+        <button className={filter==='partner'?'on':''} onClick={()=>setFilter('partner')}>{people[other]?.name||'Của nửa kia'}</button>
         <button className={filter==='fav'?'on':''} onClick={()=>setFilter('fav')}>❤️ Thích</button>
       </div>
 
@@ -1679,7 +1682,9 @@ function SimpleList({skey, people, me, addLabel, doneLabel='Xong', fields=[], ta
             <span className="av-sm">{people[it.by]?.avatar||'❤️'}</span>
             <span className="muted" style={{fontSize:12.5}}>{people[it.by]?.name||''}</span>
             {it.budget && <span className="pill">{budgetLabel(it.budget)}</span>}
-            {typeof it.price==='number' && it.price>0 && <span className="pill">{VND(it.price)}</span>}
+            {fields.includes('price')
+              ? <span className="pill">{(typeof it.price==='number'&&it.price>0)?VND(it.price):'Chưa ghi giá'}</span>
+              : (typeof it.price==='number' && it.price>0 && <span className="pill">{VND(it.price)}</span>)}
             {it.tag && <span className="pill">{it.tag}</span>}
             {typeof it.rating==='number' && it.rating>0 && <Stars value={it.rating} />}
             <span className="grow"></span>
@@ -1723,6 +1728,8 @@ function ItemForm({title,init,fields,tagOptions,onClose,onSave}){
     <Sheet title={title} onClose={onClose}>
       <div className="field"><label>Tiêu đề</label>
         <input className="inp" value={f.title||''} onChange={e=>set('title',e.target.value)} placeholder="Nhập…" autoFocus/></div>
+      {has('price') && <div className="field"><label>Giá ước tính (đ)</label>
+        <input className="inp" type="number" value={f.price||''} onChange={e=>set('price',Number(e.target.value))} placeholder="0"/></div>}
       {has('photo') && <div className="field"><label>Ảnh quán</label>
         {f.photo
           ? <div style={{position:'relative'}}>
@@ -1738,8 +1745,6 @@ function ItemForm({title,init,fields,tagOptions,onClose,onSave}){
         <select className="inp" value={f.tag||''} onChange={e=>set('tag',e.target.value)}>
           <option value="">— chọn —</option>{(tagOptions||[]).map(t=><option key={t} value={t}>{t}</option>)}
         </select></div>}
-      {has('price') && <div className="field"><label>Giá ước tính (đ)</label>
-        <input className="inp" type="number" value={f.price||''} onChange={e=>set('price',Number(e.target.value))} placeholder="0"/></div>}
       {has('address') && <div className="field"><label>Địa chỉ</label>
         <input className="inp" value={f.address||''} onChange={e=>set('address',e.target.value)} placeholder="Ở đâu?"/></div>}
       {has('link') && <div className="field"><label>Link</label>
