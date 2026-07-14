@@ -2704,15 +2704,77 @@ const BET_TIERS=[
   {t:'Thắng cả trận',d:'Miễn một việc nhà · chọn món ăn · hoặc chọn phim'},
   {t:'Đoán đúng tỉ số',d:'Một buổi hẹn hò · ngủ nướng · hoặc nghỉ chăm con hai giờ'},
 ];
+const COUPLE_GAMES=[
+  {icon:'💬',name:'Chỉ cần nói chuyện (không cần đạo cụ)',items:[
+    {n:'20 câu hỏi',d:'Một người nghĩ ra đồ vật/nhân vật, người kia hỏi tối đa 20 câu Có/Không để đoán.'},
+    {n:'Ai hiểu ai hơn',d:'Lần lượt đố về thói quen, sở thích của nhau — sai thì làm 1 việc nhỏ cho người kia.'},
+    {n:'Thật hay Thách',d:'Chọn "thật" (trả lời thật lòng) hoặc "thách" (làm một hành động vui).'},
+    {n:'Tôi chưa từng',d:'Nói "Tôi chưa từng…", ai đã từng thì thú nhận — hiểu nhau thêm.'},
+    {n:'Hai thật một xạo',d:'Kể 3 điều về mình, 1 điều là bịa; người kia đoán câu nào xạo.'},
+    {n:'Nhìn mắt nhau 2 phút',d:'Im lặng nhìn vào mắt nhau, ai cười/quay đi trước thì thua.'},
+    {n:'Kể chuyện nối tiếp',d:'Mỗi người thêm một câu để cùng dựng nên một câu chuyện hài.'},
+    {n:'Đoán bài hát ngân nga',d:'Một người ngân "à á" giai điệu, người kia đoán tên bài.'}]},
+  {icon:'✏️',name:'Cần giấy bút / điện thoại',items:[
+    {n:'Vẽ và đoán (Pictionary)',d:'Một người vẽ, người kia đoán từ trong thời gian giới hạn.'},
+    {n:'Cờ caro',d:'Kẻ ô rồi đánh X/O — nhanh gọn, chơi mọi lúc.'},
+    {n:'Ô ăn quan / nối chữ',d:'Nối từ cuối của người trước, ai bí thì thua.'},
+    {n:'Quiz "hiểu nhau tới đâu"',d:'Tự soạn 10 câu về nhau rồi chấm điểm cho vui.'},
+    {n:'Viết thư cho 5 năm sau',d:'Mỗi người viết một lá, cất đi, hẹn ngày mở lại.'},
+    {n:'Wordle / giải đố đôi',d:'Cùng giải một câu đố chữ mỗi ngày trên điện thoại.'}]},
+  {icon:'🎲',name:'Board game & bài',items:[
+    {n:'Uno',d:'Bài Uno cho 2 người — nhanh, dễ, nhiều pha "lật kèo".'},
+    {n:'Cờ tỷ phú',d:'Cổ điển, kéo dài cả buổi tối cuối tuần.'},
+    {n:'Cờ vua / cờ tướng',d:'Đấu trí nhẹ nhàng, có thể vừa chơi vừa nhâm nhi trà.'},
+    {n:'Cá ngựa / cờ cá sấu',d:'Đơn giản, hên xui, cười nhiều.'},
+    {n:'Rút gỗ (Jenga)',d:'Rút từng thanh gỗ, ai làm đổ tháp thì thua.'},
+    {n:'Xếp hình puzzle',d:'Cùng ghép một bức tranh lớn qua nhiều tối — thư giãn.'}]},
+  {icon:'🤸',name:'Vận động & lầy lội',items:[
+    {n:'Cá sấu (charades)',d:'Diễn tả bằng hành động cho người kia đoán, không được nói.'},
+    {n:'Bịt mắt cho ăn',d:'Bịt mắt, đút cho nhau ăn và đoán món.'},
+    {n:'Thử thách nấu ăn',d:'Bốc 1 nguyên liệu bí mật, mỗi người nấu 1 món rồi chấm.'},
+    {n:'Nhảy theo game (Just Dance)',d:'Bật nhạc, thi nhảy theo — cười vỡ bụng.'},
+    {n:'Thi plank / squat',d:'Ai giữ lâu hơn thì thắng — vừa vui vừa khoẻ.'},
+    {n:'Giữ bóng bay không rơi',d:'Cùng giữ bóng bay trên không bằng mọi cách.'}]},
+  {icon:'💞',name:'Lãng mạn & kết nối',items:[
+    {n:'36 câu hỏi khiến yêu nhau',d:'Bộ câu hỏi tâm lý học nổi tiếng — hỏi đáp để gần nhau hơn.'},
+    {n:'"Nếu… thì sao"',d:'Đặt các giả định vui/sâu rồi cùng bàn: "Nếu trúng số thì…".'},
+    {n:'Kể lại kỷ niệm đầu',d:'Mỗi người kể lần đầu gặp/hẹn theo góc nhìn của mình.'},
+    {n:'Vẽ chân dung nhau',d:'Vẽ mặt người kia mà không nhìn giấy — kết quả rất hài.'},
+    {n:'Playlist của hai đứa',d:'Mỗi người thêm bài "gợi nhớ về người kia" rồi cùng nghe.'}]},
+];
 function GameBets({people,me,flash}){
   const [data,setData]=useLocal('ju.gameBets',{pinned:[]});
   const pinned=data.pinned||[];
   const [openG,setOpenG]=useState({});
+  const [openP,setOpenP]=useState({});
   const [picked,setPicked]=useState(null);
+  const [view,setView]=useState('play');
   const togglePin=(t)=>{ const has=pinned.includes(t); setData({...data,pinned:has?pinned.filter(x=>x!==t):[...pinned,t]}); if(!has&&flash)flash('Đã ghim vào danh sách chọn trước 📌'); };
   const pickRandom=()=>{ const pool=pinned.length?pinned:BET_GROUPS.flatMap(g=>g.items); setPicked(pool[Math.floor(Math.random()*pool.length)]); celebrate(['🎲','🎉']); };
   return (
     <div>
+      <div className="seg" style={{marginTop:10}}>
+        <button className={view==='play'?'on':''} onClick={()=>setView('play')}>🎮 Chơi gì</button>
+        <button className={view==='bet'?'on':''} onClick={()=>setView('bet')}>🏆 Phần thưởng cược</button>
+      </div>
+      {view==='play' && <div>
+        <div className="muted center" style={{fontSize:12.5,margin:'10px 14px'}}>🎮 Gợi ý trò chơi hai vợ chồng chơi cùng nhau — từ chỉ cần nói chuyện tới board game, vận động & lãng mạn. Bấm nhóm để mở.</div>
+        {COUPLE_GAMES.map(g=>{ const open=openP[g.name]; return (
+          <div key={g.name} className="card" style={{padding:'6px 13px'}}>
+            <div className="row" style={{cursor:'pointer',padding:'6px 0'}} onClick={()=>setOpenP({...openP,[g.name]:!open})}>
+              <span className="grow" style={{fontSize:14,fontWeight:700}}>{g.icon} {g.name}</span>
+              <span className="muted" style={{fontSize:12.5}}>{g.items.length} · {open?'▲':'▾'}</span>
+            </div>
+            {open && <div style={{paddingBottom:6}}>{g.items.map(it=>(
+              <div key={it.n} style={{padding:'7px 0',borderTop:'1px solid var(--line)'}}>
+                <div style={{fontSize:13.5,fontWeight:600}}>{it.n}</div>
+                <div className="muted" style={{fontSize:12.5,marginTop:1,lineHeight:1.5}}>{it.d}</div>
+              </div>
+            ))}</div>}
+          </div>
+        ); })}
+      </div>}
+      {view==='bet' && <div>
       <div className="muted center" style={{fontSize:12.5,margin:'10px 14px'}}>🎲 Cá cược vui khi xem bóng / chơi game cùng nhau. Chọn trước phần thưởng — đủ vui mà không tạo cảm giác "bị phạt". Bấm 📌 để ghim món hai đứa thích vào danh sách chọn trước.</div>
       <div className="card">
         <div className="hc-title" style={{marginBottom:6}}>⚡ Bộ dễ áp dụng nhất (chốt sẵn 3 cấp)</div>
@@ -2755,6 +2817,7 @@ function GameBets({people,me,flash}){
           ); })}</div>}
         </div>
       ); })}
+      </div>}
     </div>
   );
 }
