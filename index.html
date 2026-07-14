@@ -4091,12 +4091,12 @@ function IntimacySection({people,me,flash,view}){
   );
 }
 const VEG_RESTAURANTS=[
-  {n:'Chay Vị Lai',a:'177 Bùi Thị Xuân, Hai Bà Trưng',r:4.4},
-  {n:'Veggie Castle',a:'7 Yên Ninh, Ba Đình (& Ngọc Khánh, Âu Cơ)',r:4.5},
-  {n:'Ưu Đàm Chay',a:'55 Nguyễn Du, Hai Bà Trưng',r:4.4},
+  {n:'Chay Vị Lai',a:'177 Bùi Thị Xuân, Hai Bà Trưng',r:4.4,p:'75.000–300.000đ/món · buffet ~250.000đ/người'},
+  {n:'Veggie Castle',a:'7 Yên Ninh, Ba Đình (& Ngọc Khánh, Âu Cơ)',r:4.5,p:'Buffet 90.000đ/người (thứ 3: 70.000đ)'},
+  {n:'Ưu Đàm Chay',a:'55 Nguyễn Du, Hai Bà Trưng',r:4.4,p:'60.000–285.000đ/món'},
   {n:'Buffet Chay An Lạc',a:'109 Trần Hưng Đạo, Hoàn Kiếm',r:4.2},
-  {n:'Tịnh Thực Quán',a:'43A Nguyên Hồng, Đống Đa',r:4.4},
-  {n:'Buffet Chay Hương Thiền',a:'261 Xã Đàn, Đống Đa',r:4.2},
+  {n:'Tịnh Thực Quán',a:'43A Nguyên Hồng, Đống Đa',r:4.4,p:'100.000–150.000đ/người'},
+  {n:'Buffet Chay Hương Thiền',a:'261 Xã Đàn, Đống Đa',r:4.2,p:'150.000đ/người (trẻ 1–1,3m: 80.000đ)'},
   {n:'Sadhu Buffet Chay',a:'Tầng 3 Lotte Mall Tây Hồ, 272 Võ Chí Công',r:4.5},
   {n:'D\'ve Buffet Chay',a:'83 Mai Hắc Đế, Hai Bà Trưng',r:4.3},
   {n:'Cơm Chay Nàng Tấm',a:'79A Trần Hưng Đạo, Hoàn Kiếm',r:4.3},
@@ -4110,6 +4110,13 @@ const VEG_RESTAURANTS=[
   {n:'Cơm chay Bồ Đề Tâm',a:'Nhiều cơ sở, Hà Nội',r:4.2},
   {n:'Cơm chay Thanh Đạm',a:'Nhiều cơ sở, Hà Nội',r:4.1},
   {n:'An Nhiên Vegan Garden',a:'Khu vực Tây Hồ',r:4.3},
+  {n:'Chay Cực Lạc',a:'9 ngõ 295 Thụy Khuê, Ba Đình',p:'150.000–250.000đ/người'},
+  {n:'Diệu Tâm',a:'Số 4 ngõ 59 Dương Khuê, Cầu Giấy',p:'40.000–100.000đ/người'},
+  {n:'Quán Chay Minh Tâm',a:'Ngõ 213 Xã Đàn, Đống Đa',p:'Bình dân (pizza chay ~80.000đ/phần)'},
+  {n:'Nhà hàng Chay Ahimsa',a:'6 Trung Liệt, Đống Đa',p:'30.000–200.000đ/người'},
+  {n:'Buffet Chay Định Thức',a:'11 ngõ 4 Đặng Văn Ngữ, Trung Tự, Đống Đa',p:'Từ 99.000đ/người'},
+  {n:'Chay Cồ Hồng - EZ Veggie',a:'189 Kim Hoa, Phương Liên, Đống Đa',p:'Từ 25.000đ/món'},
+  {n:'Cơm Chay Âu Lạc (Liên Hoa)',a:'277 ngõ Văn Chương, Đống Đa',p:'Bình dân'},
 ];
 const SUTRAS=[
   {title:'🪷 Bát Nhã Tâm Kinh',sub:'Tinh hoa trí tuệ Bát Nhã — tụng thường ngày, an định tâm.',
@@ -4297,6 +4304,8 @@ function SpiritualSection(){
   const [tab,setTab]=useState('le');
   const days=upcomingSpiritual(30);
   const mapUrl=(n,a)=>'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(n+' '+a+' Hà Nội');
+  const CHAY_ORIGIN='114 Nguyễn Khuyến, Văn Miếu, Đống Đa, Hà Nội';
+  const dirUrl=(n,a)=>'https://www.google.com/maps/dir/?api=1&origin='+encodeURIComponent(CHAY_ORIGIN)+'&destination='+encodeURIComponent(n+' '+a+' Hà Nội')+'&travelmode=driving';
   return (
     <div>
       <FilterBar value={tab} onChange={setTab} menuId="spirit" items={[
@@ -4333,13 +4342,15 @@ function SpiritualSection(){
         </div>
       </div>}
       {tab==='chay' && <div>
-        <div className="muted center" style={{fontSize:11,margin:'10px 14px'}}>Quán chay ở Hà Nội · ⭐ điểm tham khảo — bấm <b>⭐ Đánh giá</b> để xem điểm & review mới nhất trên Google Maps.</div>
+        <div className="muted center" style={{fontSize:11,margin:'10px 14px'}}>Quán chay ở Hà Nội · ⭐ điểm tham khảo — bấm <b>⭐ Đánh giá</b> để xem đúng quán trên Google Maps, bấm <b>🧭 Khoảng cách</b> để xem đường đi & km thực tế từ {CHAY_ORIGIN}.</div>
         {VEG_RESTAURANTS.slice().sort((a,b)=>(b.r||0)-(a.r||0)).map((r,i)=>(
           <div key={i} className="item">
             <div className="it-top"><h4>🍃 {r.n}</h4>{r.r?<span className="pill" style={{background:'var(--chip)'}}>⭐ {r.r.toFixed(1)}</span>:null}</div>
             <div className="muted" style={{fontSize:12.5,marginTop:2}}>📍 {r.a}</div>
+            {r.p && <div className="muted" style={{fontSize:12.5,marginTop:2}}>💰 {r.p}</div>}
             <div className="it-meta"><span className="grow"></span>
-              <a className="pill" href={mapUrl(r.n,r.a)} target="_blank" rel="noreferrer" style={{textDecoration:'none'}}>⭐ Đánh giá · chỉ đường</a></div>
+              <a className="pill" href={mapUrl(r.n,r.a)} target="_blank" rel="noreferrer" style={{textDecoration:'none'}}>⭐ Đánh giá</a>
+              <a className="pill" href={dirUrl(r.n,r.a)} target="_blank" rel="noreferrer" style={{textDecoration:'none'}}>🧭 Khoảng cách</a></div>
           </div>
         ))}
       </div>}
