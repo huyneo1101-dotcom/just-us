@@ -306,7 +306,7 @@ const store={
 const SB_URL='https://vvgkjgvzjeklaadusbne.supabase.co';
 const SB_KEY='sb_publishable_DMMPv5L2kGhrHTxeQ72iKw_dIh13iT1';
 // Các key được đồng bộ (KHÔNG gồm ju.me/ju.device/ju.sync — đó là riêng từng máy)
-const SYNC_KEYS=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood','ju.qa','ju.timeline','ju.coupons','ju.chores','ju.lovejar','ju.quiz','ju.city','ju.goals','ju.checkin','ju.challengeDone','ju.homecfg','ju.diary','ju.projects','ju.vinhaUrl','ju.checkins','ju.menu','ju.period','ju.menuPlan','ju.accuKey','ju.habits','ju.hiddenSpots','ju.usOrder','ju.eventPrefs','ju.child','ju.childGrowth','ju.childVaccines','ju.childMilestones','ju.childDiary','ju.partnerWishes','ju.todos','ju.spotify','ju.dishPrefs','ju.favDishes','ju.childPack','ju.childSkills','ju.childMed','ju.childIllness','ju.childWords','ju.childTantrum','ju.childParenting','ju.saveTips','ju.saveCustom','ju.funPrefs','ju.routine','ju.routineIssues','ju.noti','ju.family','ju.health','ju.transfers','ju.skillGuidesDone','ju.expenses','ju.budget','ju.vinhaSync','ju.menuOrder','ju.notesSeen','ju.intimacy','ju.intimacySeen','ju.quizKnow','ju.familyRules','ju.expiry','ju.stash','ju.docs','ju.tuvi','ju.thanso','ju.checkinSeen','ju.menuHidden'];
+const SYNC_KEYS=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood','ju.qa','ju.timeline','ju.coupons','ju.chores','ju.lovejar','ju.quiz','ju.city','ju.goals','ju.checkin','ju.challengeDone','ju.homecfg','ju.diary','ju.projects','ju.vinhaUrl','ju.checkins','ju.menu','ju.period','ju.menuPlan','ju.accuKey','ju.habits','ju.hiddenSpots','ju.usOrder','ju.eventPrefs','ju.child','ju.childGrowth','ju.childVaccines','ju.childMilestones','ju.childDiary','ju.partnerWishes','ju.todos','ju.spotify','ju.dishPrefs','ju.favDishes','ju.childPack','ju.childSkills','ju.childMed','ju.childIllness','ju.childWords','ju.childTantrum','ju.childParenting','ju.saveTips','ju.saveCustom','ju.funPrefs','ju.routine','ju.routineIssues','ju.noti','ju.family','ju.health','ju.transfers','ju.skillGuidesDone','ju.expenses','ju.budget','ju.vinhaSync','ju.menuOrder','ju.notesSeen','ju.intimacy','ju.intimacySeen','ju.quizKnow','ju.familyRules','ju.expiry','ju.stash','ju.docs','ju.tuvi','ju.thanso','ju.checkinSeen','ju.menuHidden','ju.gameBets'];
 let _sb=null;
 function sbClient(){
   if(_sb) return _sb;
@@ -2642,6 +2642,7 @@ function DateTab({people,me,flash}){
         {k:'idea',icon:'💡',label:'Ý tưởng'},{k:'hanoi',icon:'📍',label:'Gợi ý HN'},
         {k:'events',icon:'🎪',label:'Sự kiện HN'},
         {k:'food',icon:'🍜',label:'Quán & Món'},{k:'checkin',icon:'📸',label:'Check-in'},
+        {k:'game',icon:'🎲',label:'Trò chơi'},
         {k:'wish',icon:'💝',label:'Ước muốn'},{k:'music',icon:'🎵',label:'Nhạc đôi'},
       ]} menuId="date"/>
       {seg==='idea' && <><WeatherCard/><DateIdeas people={people} me={me}/></>}
@@ -2650,12 +2651,113 @@ function DateTab({people,me,flash}){
       {seg==='food' && <SimpleList skey="ju.food" people={people} me={me} addLabel="quán/món" doneLabel="Đã thử"
         fields={['photo','address','rating','link','note']} suggest={FOOD_SUGGEST} empty={{icon:'🍜',text:'Quán ăn, món muốn thử cùng nhau. Bấm 💡 để xem gợi ý!'}} flash={flash}/>}
       {seg==='checkin' && <CheckIns people={people} me={me}/>}
+      {seg==='game' && <GameBets people={people} me={me} flash={flash}/>}
       {seg==='wish' && <WishTab people={people} me={me} flash={flash}/>}
       {seg==='music' && <MusicPlaylists people={people} me={me}/>}
     </div>
   );
 }
 
+/* ============ Trò chơi — phần thưởng cá cược ============ */
+const BET_GROUPS=[
+  {icon:'🍜',name:'Ăn uống',items:[
+    'Người thắng được chọn món ăn tối hôm sau','Người thua đặt đồ ăn đêm','Được mời một cốc cà phê hoặc trà sữa',
+    'Người thua tự pha đồ uống yêu thích cho người thắng','Được chọn quán ăn cho buổi đi chơi tiếp theo','Được ăn món ngon mà không phải chia miếng cuối',
+    'Người thua chuẩn bị bữa sáng','Được chọn món tráng miệng','Người thua bóc hoa quả và mang tận nơi',
+    'Được quyền gọi thêm một món trong lần đi ăn tới','Người thắng được chọn đồ ăn vặt cho trận bóng tiếp theo','Người thua nấu một món theo yêu cầu, trong khả năng hợp lý']},
+  {icon:'🧹',name:'Việc nhà',items:[
+    'Một lần miễn rửa bát','Một lần miễn đổ rác','Một lần miễn gấp quần áo','Một tối không phải dọn phòng',
+    'Người thua thay ga giường','Người thua lau bàn và dọn đồ ăn sau trận','Được chọn một việc nhà để chuyển cho người kia',
+    'Một "phiếu miễn việc nhà" dùng trong vòng bảy ngày','Người thua chuẩn bị đồ cho con vào sáng hôm sau',
+    'Người thắng được nghỉ hoàn toàn 30 phút, không bị gọi làm việc gì','Người thua xử lý toàn bộ đống bát sau một bữa','Người thắng được quyền bỏ qua một việc lặt vặt mà mình ghét nhất']},
+  {icon:'💆',name:'Chăm sóc & thư giãn',items:[
+    'Massage vai 10 phút','Massage chân 15 phút','Gội đầu hoặc sấy tóc cho nhau','Được nằm xem điện thoại yên tĩnh trong 30 phút',
+    'Được ngủ nướng thêm 30 phút','Được tắm trước và không bị giục','Người thua chuẩn bị nước ấm và đồ ngủ','Được chọn bên giường mình thích',
+    'Được ôm và nghe người kia kể chuyện hoặc tâm sự 15 phút','Được một buổi tối không phải xử lý việc gia đình sau khi con ngủ',
+    'Người thua bóp vai trong lúc xem tập phim tiếp theo','Được quyền yêu cầu một buổi nghỉ ngơi riêng trong tuần']},
+  {icon:'💞',name:'Tình cảm',items:[
+    'Người thua phải nói ba lời khen thật lòng','Viết một tin nhắn tình cảm gửi vào sáng hôm sau','Được yêu cầu một cái ôm dài một phút',
+    'Người thua kể lại ba điều mình biết ơn ở người kia','Được chọn một bức ảnh hai người để đăng hoặc lưu làm kỷ niệm','Người thua phải chủ động rủ đi hẹn hò',
+    'Được nhận một nụ hôn mỗi khi đội mình ghi bàn ở trận tiếp theo','Người thua viết một tờ "voucher yêu thương"','Được quyền hỏi một câu và người kia phải trả lời thật lòng',
+    'Người thua kể lại kỷ niệm vui nhất của hai người','Được yêu cầu người kia làm một hành động lãng mạn nhỏ','Người thắng được chọn cách hai người dành thời gian riêng tối hôm đó']},
+  {icon:'🎬',name:'Giải trí',items:[
+    'Được chọn phim tối hôm sau','Được chọn chương trình truyền hình tiếp theo','Được giữ điều khiển tivi cả tối','Được chọn nhạc khi đi ô tô',
+    'Được chọn trận bóng tiếp theo hai người cùng xem','Người thua phải xem cùng 30 phút chương trình người thắng thích','Được chọn trò chơi hai người chơi cùng',
+    'Được chọn địa điểm đi chơi cuối tuần','Được chọn chủ đề cho buổi chụp ảnh gia đình','Được chọn quán cà phê lần tới',
+    'Được quyền bỏ qua một bộ phim mà người kia đang ép xem','Người thua phải tìm một bộ phim hay và chuẩn bị đồ ăn để cùng xem']},
+  {icon:'🛍️',name:'Mua sắm nhỏ',items:[
+    'Một món quà dưới 50.000 đồng','Một món quà dưới 100.000 đồng','Một món đồ ăn yêu thích khi đi siêu thị','Một món đồ nhỏ trong giỏ hàng online',
+    'Một bó hoa nhỏ','Một món đồ chơi nhỏ cho sở thích cá nhân','Được chọn món đồ gia đình sẽ mua tiếp theo','Người thua bỏ tiền vào "quỹ hẹn hò" 50.000 đồng',
+    'Được mua một món không cần giải thích','Một phiếu mua cà phê, bánh ngọt hoặc đồ ăn sáng']},
+  {icon:'😜',name:'Vui & hơi "lầy"',items:[
+    'Người thua phải đổi ảnh đại diện theo lựa chọn của người thắng trong một giờ','Người thua phải hát một đoạn bài hát','Người thua phải nhảy ăn mừng khi đội người thắng ghi bàn ở trận sau',
+    'Người thua phải gọi người thắng là "chuyên gia bóng đá" đến hết tối','Người thua phải đọc một lời xin lỗi bóng đá thật trang trọng','Người thua phải diễn lại pha bóng hài nhất trận',
+    'Người thua phải làm bình luận viên trong năm phút','Người thắng được chọn một biệt danh vui cho người thua trong tối đó','Người thua phải chụp một bức ảnh tạo dáng theo yêu cầu',
+    'Người thua phải phục vụ đồ uống với phong cách nhân viên VIP','Người thua phải đăng một câu thừa nhận người kia đoán bóng giỏi hơn, chỉ khi cả hai đều thấy thoải mái','Người thua phải mặc áo đội người thắng chọn trong trận tiếp theo']},
+  {icon:'🎁',name:'Phần thưởng lớn',items:[
+    'Một buổi hẹn hò do người thua lên kế hoạch','Một bữa ăn ngoài do người thua mời','Một buổi đi cà phê riêng không mang theo việc','Một buổi xem phim tại rạp',
+    'Một chuyến đi chơi nửa ngày','Một buổi người thắng được nghỉ chăm con trong hai giờ','Người thắng được chọn hoạt động cuối tuần','Một món quà có ngân sách thống nhất trước',
+    'Một buổi ăn sáng bên ngoài','Một tối "không điện thoại", chỉ dành thời gian cho nhau','Một buổi spa, gội đầu dưỡng sinh hoặc massage','Tích ba trận thắng để đổi lấy một buổi hẹn lớn']},
+];
+const BET_TIERS=[
+  {t:'Thắng kèo nhỏ',d:'Pha đồ uống · bóc hoa quả · massage 10 phút'},
+  {t:'Thắng cả trận',d:'Miễn một việc nhà · chọn món ăn · hoặc chọn phim'},
+  {t:'Đoán đúng tỉ số',d:'Một buổi hẹn hò · ngủ nướng · hoặc nghỉ chăm con hai giờ'},
+];
+function GameBets({people,me,flash}){
+  const [data,setData]=useLocal('ju.gameBets',{pinned:[]});
+  const pinned=data.pinned||[];
+  const [openG,setOpenG]=useState({});
+  const [picked,setPicked]=useState(null);
+  const togglePin=(t)=>{ const has=pinned.includes(t); setData({...data,pinned:has?pinned.filter(x=>x!==t):[...pinned,t]}); if(!has&&flash)flash('Đã ghim vào danh sách chọn trước 📌'); };
+  const pickRandom=()=>{ const pool=pinned.length?pinned:BET_GROUPS.flatMap(g=>g.items); setPicked(pool[Math.floor(Math.random()*pool.length)]); celebrate(['🎲','🎉']); };
+  return (
+    <div>
+      <div className="muted center" style={{fontSize:12.5,margin:'10px 14px'}}>🎲 Cá cược vui khi xem bóng / chơi game cùng nhau. Chọn trước phần thưởng — đủ vui mà không tạo cảm giác "bị phạt". Bấm 📌 để ghim món hai đứa thích vào danh sách chọn trước.</div>
+      <div className="card">
+        <div className="hc-title" style={{marginBottom:6}}>⚡ Bộ dễ áp dụng nhất (chốt sẵn 3 cấp)</div>
+        {BET_TIERS.map((x,i)=>(
+          <div key={i} className="row" style={{padding:'7px 0',borderBottom:i<BET_TIERS.length-1?'1px solid var(--line)':'none',gap:8,alignItems:'flex-start'}}>
+            <span className="pill" style={{flex:'0 0 auto',background:'var(--primary)',color:'#fff'}}>{i+1}</span>
+            <div className="grow"><div style={{fontSize:14,fontWeight:700}}>{x.t}</div><div className="muted" style={{fontSize:12.5,marginTop:1}}>{x.d}</div></div>
+          </div>
+        ))}
+      </div>
+      <div className="row" style={{margin:'12px 14px 4px',gap:8,alignItems:'center'}}>
+        <span className="grow muted" style={{fontSize:12.5}}>📌 Đã ghim: {pinned.length}</span>
+        <button className="btn sm" onClick={pickRandom}>🎲 Chọn ngẫu nhiên</button>
+      </div>
+      {picked && <div className="card" style={{background:'linear-gradient(135deg,var(--chip),var(--card))',textAlign:'center'}}>
+        <div className="muted" style={{fontSize:12}}>Phần thưởng bốc được 🎉</div>
+        <div style={{fontSize:15,fontWeight:800,margin:'6px 0'}}>{picked}</div>
+        <button className="muted" style={{fontSize:11}} onClick={()=>setPicked(null)}>✕ Đóng</button>
+      </div>}
+      {pinned.length>0 && <div className="card">
+        <div className="hc-title" style={{marginBottom:6}}>📌 Danh sách chọn trước của hai đứa</div>
+        {pinned.map(t=>(
+          <div key={t} className="row" style={{padding:'6px 0',borderBottom:'1px solid var(--line)',gap:8}}>
+            <span className="grow" style={{fontSize:13.5}}>{t}</span>
+            <button className="muted" onClick={()=>togglePin(t)}>✕</button>
+          </div>
+        ))}
+      </div>}
+      {BET_GROUPS.map(g=>{ const open=openG[g.name]; return (
+        <div key={g.name} className="card" style={{padding:'6px 13px'}}>
+          <div className="row" style={{cursor:'pointer',padding:'6px 0'}} onClick={()=>setOpenG({...openG,[g.name]:!open})}>
+            <span className="grow" style={{fontSize:14,fontWeight:700}}>{g.icon} {g.name}</span>
+            <span className="muted" style={{fontSize:12.5}}>{g.items.length} · {open?'▲':'▾'}</span>
+          </div>
+          {open && <div style={{paddingBottom:6}}>{g.items.map(t=>{ const on=pinned.includes(t); return (
+            <div key={t} className="row" style={{padding:'6px 0',borderTop:'1px solid var(--line)',gap:8,alignItems:'flex-start'}}>
+              <span className="grow" style={{fontSize:13.5}}>{t}</span>
+              <button className="pill" style={{flex:'0 0 auto',background:on?'var(--good)':'var(--chip)',color:on?'#fff':'var(--chip-tx)'}} onClick={()=>togglePin(t)}>{on?'📌 Đã ghim':'📌 Ghim'}</button>
+            </div>
+          ); })}</div>}
+        </div>
+      ); })}
+    </div>
+  );
+}
 /* ============ Check-in quán (đã ghé + tự đánh giá) ============ */
 function CheckIns({people,me}){
   const [items,setItems]=useLocal('ju.checkins',[]);
@@ -5685,7 +5787,7 @@ const US_SEG_MAP=Object.fromEntries(US_SEGS.map(s=>[s.k,s]));
 const MENU_REGISTRY=[
   {id:'us-groups',label:'Tụi Mình · nhóm chính',items:US_GROUPS.map(g=>({k:g.k,icon:g.icon,label:g.label}))},
   ...US_GROUPS.map(g=>({id:'us-'+g.k,label:'Tụi Mình · '+g.label,items:g.items.map(k=>US_SEG_MAP[k]).filter(Boolean)})),
-  {id:'date',label:'Hẹn hò',items:[{k:'idea',icon:'💡',label:'Ý tưởng'},{k:'hanoi',icon:'📍',label:'Gợi ý HN'},{k:'events',icon:'🎪',label:'Sự kiện HN'},{k:'food',icon:'🍜',label:'Quán & Món'},{k:'checkin',icon:'📸',label:'Check-in'},{k:'wish',icon:'💝',label:'Ước muốn'},{k:'music',icon:'🎵',label:'Nhạc đôi'}]},
+  {id:'date',label:'Hẹn hò',items:[{k:'idea',icon:'💡',label:'Ý tưởng'},{k:'hanoi',icon:'📍',label:'Gợi ý HN'},{k:'events',icon:'🎪',label:'Sự kiện HN'},{k:'food',icon:'🍜',label:'Quán & Món'},{k:'checkin',icon:'📸',label:'Check-in'},{k:'game',icon:'🎲',label:'Trò chơi'},{k:'wish',icon:'💝',label:'Ước muốn'},{k:'music',icon:'🎵',label:'Nhạc đôi'}]},
   {id:'wish',label:'Ước muốn',items:[{k:'gift',icon:'🎁',label:'Quà tặng'},{k:'bucket',icon:'🎯',label:'Muốn làm cùng'},{k:'watch',icon:'🎬',label:'Xem·Đọc·Nghe'},{k:'coupon',icon:'🎟️',label:'Phiếu yêu thương'},{k:'link',icon:'🔗',label:'Link hay'}]},
   {id:'talk',label:'Trò chuyện',items:[{k:'notes',icon:'💌',label:'Nhắn nhau'},{k:'question',icon:'❓',label:'Câu hỏi'},{k:'wishes',icon:'💛',label:'Mong nhau'},{k:'guide',icon:'🕊️',label:'Giao tiếp'},{k:'parenting',icon:'🤝',label:'Dạy con'},{k:'quiz',icon:'💞',label:'Đố vui'},{k:'checkin',icon:'📝',label:'Check-in'},{k:'topics',icon:'🗣️',label:'Chủ đề'}]},
   {id:'comm',label:'Cẩm nang giao tiếp',items:[{k:'principles',icon:'🕊️',label:'Nguyên tắc'},{k:'say',icon:'💬',label:'Nói khéo'},{k:'love',icon:'💖',label:'NN yêu thương'},{k:'fight',icon:'⚖️',label:'Cãi lành mạnh'},{k:'connect',icon:'🔗',label:'Câu hỏi kết nối'}]},
