@@ -3819,7 +3819,7 @@ const INT_CARE={
 };
 function IntimacySection({people,me,flash,view}){
   const v=view||'log';
-  const DEF={log:{},want:[],signal:null,desire:{},plan:'',healthNote:'',pin:''};
+  const DEF={log:{},want:[],signal:null,desire:{},plan:'',healthNote:'',pin:'',rejects:[]};
   const [d,setD]=useLocal('ju.intimacy',DEF);
   const [seen,setSeen]=useLocal('ju.intimacySeen',{});
   const data=d||DEF;
@@ -3827,6 +3827,7 @@ function IntimacySection({people,me,flash,view}){
   const [pinIn,setPinIn]=useState('');
   const [rate,setRate]=useState(0);
   const [lnote,setLnote]=useState('');
+  const [rjnote,setRjnote]=useState('');
   const [wtext,setWtext]=useState('');
   const [np,setNp]=useState('');
   const [truth,setTruth]=useState(null);
@@ -3876,6 +3877,9 @@ function IntimacySection({people,me,flash,view}){
   const myD=(desire[today]||{})[me];
   const otD=(desire[today]||{})[other];
   const setDesire=(lv)=>set({desire:{...desire,[today]:{...(desire[today]||{}),[me]:lv}}});
+  const rejects=data.rejects||[];
+  const addReject=(note)=>{ set({rejects:[{id:uid(),date:today,by:me,note:(note||'').trim()},...rejects]}); };
+  const delReject=(id)=>set({rejects:rejects.filter(x=>x.id!==id)});
   const want=data.want||[];
   const addWant=(t)=>{ const tx=(t||wtext).trim(); if(!tx)return; if(want.some(w=>w.text===tx)){ setWtext(''); return; } set({want:[...want,{id:uid(),text:tx,a:false,b:false}]}); setWtext(''); };
   const toggleWant=(id)=>{ const nw=want.map(w=>w.id===id?{...w,[me]:!w[me]}:w); const w2=nw.find(w=>w.id===id); if(w2&&w2.a&&w2.b) celebrate(['💞','💖']); set({want:nw}); };
@@ -3921,6 +3925,26 @@ function IntimacySection({people,me,flash,view}){
             {heat.map((col,ci)=><div key={ci} style={{display:'flex',flexDirection:'column',gap:3}}>{col.map(cell=><div key={cell.k} title={fmtDateVN(cell.k)} style={{width:13,height:13,borderRadius:3,background:cell.future?'transparent':(cell.has?INT_HEAT[Math.max(0,Math.min(4,(cell.r||1)-1))]:'var(--chip)'),opacity:cell.future?.2:1}}></div>)}</div>)}
           </div>
           <div className="muted" style={{fontSize:11,marginTop:8}}>Ô đậm = có đánh dấu (đậm hơn nếu điểm cao). Chỉ mình hai đứa thấy.</div>
+        </div>
+        <div className="card">
+          <div className="hc-title" style={{marginBottom:6}}>🌙 Những lần bị từ chối</div>
+          <div className="muted" style={{fontSize:12.5,marginBottom:8}}>Ghi lại khi bạn ngỏ ý mà {otName} chưa sẵn sàng — để nhìn lại nhẹ nhàng, hiểu nhau hơn (chỉ hai đứa thấy).</div>
+          <div className="row" style={{gap:8}}>
+            <input className="inp grow" placeholder="Lý do / cảm giác (tuỳ chọn)…" value={rjnote} onChange={e=>setRjnote(e.target.value)} onKeyDown={e=>{ if(e.key==='Enter'){ addReject(rjnote); setRjnote(''); } }}/>
+            <button className="btn sm" onClick={()=>{ addReject(rjnote); setRjnote(''); }}>＋ Ghi</button>
+          </div>
+          {rejects.length===0
+            ? <div className="muted" style={{fontSize:12.5,marginTop:8}}>Chưa ghi lần nào.</div>
+            : <div style={{marginTop:8}}>
+                <div className="muted" style={{fontSize:11,marginBottom:6}}>Đã ghi {rejects.length} lần{rejects.length>=3?' — có thể nên trò chuyện nhẹ nhàng với nhau 💛':''}</div>
+                {rejects.slice(0,20).map(x=>(
+                  <div key={x.id} className="row" style={{padding:'7px 0',borderBottom:'1px solid var(--line)',alignItems:'flex-start',gap:8}}>
+                    <span className="pill" style={{flex:'0 0 auto'}}>{fmtDateVN(x.date)}</span>
+                    <span className="grow" style={{fontSize:13.5}}>{x.by===me?'Bạn ngỏ ý':otName+' ngỏ ý'}{x.note?' · '+x.note:''}</span>
+                    <button className="muted" onClick={()=>delReject(x.id)}>✕</button>
+                  </div>
+                ))}
+              </div>}
         </div>
       </React.Fragment>}
 
