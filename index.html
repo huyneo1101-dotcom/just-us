@@ -606,8 +606,23 @@ const MEAL_SUGGEST={
 };
 const DOW=['Thứ 2','Thứ 3','Thứ 4','Thứ 5','Thứ 6','Thứ 7','Chủ nhật'];
 const MENU_GOALS=[
-  {k:'cb',label:'Đủ chất / cân bằng',icon:'🍱'},{k:'gc',label:'Giảm cân',icon:'🥗'},
+  {k:'cb',label:'Đủ chất / cân bằng',icon:'🍱'},{k:'ez',label:'Dễ nấu (cho chồng)',icon:'👨‍🍳'},{k:'gc',label:'Giảm cân',icon:'🥗'},
   {k:'dd',label:'Dịu dạ dày',icon:'🤍'},{k:'bm',label:'Bổ máu (đèn đỏ)',icon:'🌸'},{k:'tc',label:'Tăng cơ',icon:'💪'},
+];
+// Món đơn giản, nhanh, dễ nấu — hợp cho người ít vào bếp (vd chồng nấu). Đều gắn 'ez' + 'cb'.
+const EASY_DISHES=[
+  {n:'Trứng chiên thịt bằm',t:'man',g:['ez','cb','tc'],ing:['3 quả trứng','80g thịt băm','Hành lá','Nước mắm, tiêu'],r:'1) Đánh tan trứng với thịt băm, hành lá, chút nước mắm và tiêu.\n2) Làm nóng chảo với chút dầu, đổ trứng vào, dàn đều.\n3) Chiên lửa vừa 2–3 phút mỗi mặt tới khi vàng, chín đều. Dễ làm, đưa cơm.'},
+  {n:'Thịt ba chỉ rang cháy cạnh',t:'man',g:['ez','cb'],ing:['300g ba chỉ','Hành khô','Nước mắm, đường, tiêu'],r:'1) Ba chỉ thái miếng mỏng vừa ăn.\n2) Cho vào chảo rang lửa vừa tới khi ra mỡ và cháy cạnh vàng.\n3) Nêm 1 thìa nước mắm + chút đường, đảo tới khi sánh, rắc tiêu và hành. Cực dễ.'},
+  {n:'Đậu phụ rán chấm mắm hành',t:'man',g:['ez','cb','gc'],ing:['3 bìa đậu phụ','Hành lá','Nước mắm, ớt'],r:'1) Đậu phụ cắt miếng, thấm khô.\n2) Rán vàng đều các mặt trong chảo nhiều dầu.\n3) Pha nước mắm + hành lá phi thơm để chấm. Nhanh gọn, không cần kỹ thuật.'},
+  {n:'Trứng đúc thịt',t:'man',g:['ez','cb','tc'],ing:['3 quả trứng','100g thịt băm','Mộc nhĩ (tuỳ chọn)','Hành lá, gia vị'],r:'1) Trộn trứng + thịt băm + hành lá + chút gia vị.\n2) Đổ vào chảo lửa nhỏ, đậy vung 5 phút cho chín phồng.\n3) Lật nhẹ cho vàng mặt kia. Mềm, thơm, dễ.'},
+  {n:'Rau muống/cải luộc',t:'man',g:['ez','cb','gc','dd'],ing:['1 mớ rau muống hoặc cải','Muối','Chấm: xì dầu hoặc mắm tỏi'],r:'1) Nhặt rửa rau, đun nồi nước sôi với chút muối.\n2) Cho rau vào luộc 2–3 phút, vớt ra ngay cho xanh.\n3) Chấm xì dầu/mắm tỏi. Giữ lại nước luộc dầm sấu/chanh làm canh.'},
+  {n:'Canh rau nấu thịt bằm',t:'canh',g:['ez','cb','dd'],ing:['1 mớ rau (mồng tơi, cải, rau ngót…)','80g thịt băm','Hành khô, gia vị'],r:'1) Phi thơm hành, xào thịt băm cho săn, nêm chút mắm.\n2) Đổ nước đun sôi, hớt bọt.\n3) Thả rau vào, rau chín thì nêm vừa miệng, tắt bếp. Canh cơ bản, luôn thành công.'},
+  {n:'Canh trứng cà chua',t:'canh',g:['ez','cb'],ing:['2 quả trứng','2 quả cà chua','Hành lá','Muối, hạt nêm'],r:'1) Xào cà chua bổ múi cau cho mềm, đổ nước đun sôi.\n2) Đánh tan trứng, rót từ từ vào nồi đang sôi, khuấy nhẹ tạo vân.\n3) Nêm vừa, rắc hành lá. Nhanh, rẻ, dễ.'},
+  {n:'Mì tôm trứng rau',t:'man',g:['ez'],ing:['1 gói mì','1 quả trứng','Ít rau cải/giá','Hành lá'],r:'1) Đun nước sôi, thả rau chần nhanh rồi vớt.\n2) Cho mì và gói gia vị vào nấu, đập trứng vào.\n3) Trút ra tô, thêm rau và hành. Cứu đói nhanh, không cần khéo.'},
+  {n:'Cơm rang trứng',t:'man',g:['ez','cb'],ing:['1 bát cơm nguội','2 quả trứng','Hành lá','Nước mắm/xì dầu'],r:'1) Đánh trứng, chiên sơ rồi để riêng.\n2) Cho cơm vào chảo đảo tơi, thêm trứng, nêm chút xì dầu.\n3) Đảo đều tay, rắc hành lá. Tận dụng cơm nguội, cực dễ.'},
+  {n:'Tôm rang',t:'man',g:['ez','cb','tc'],ing:['250g tôm','Hành khô, tỏi','Nước mắm, đường, tiêu'],r:'1) Tôm cắt râu, rửa sạch để ráo.\n2) Phi thơm hành tỏi, cho tôm vào rang lửa to tới khi đỏ săn.\n3) Nêm chút nước mắm + xíu đường, đảo tới khi bóng, rắc tiêu. Nhanh và ngon.'},
+  {n:'Xúc xích/chả áp chảo rau củ',t:'man',g:['ez','cb'],ing:['Xúc xích hoặc chả','Bông cải, cà rốt, đậu que','Chút dầu, gia vị'],r:'1) Rau củ cắt miếng, chần sơ.\n2) Áp chảo xúc xích/chả cho vàng.\n3) Cho rau củ vào đảo cùng, nêm nhẹ. Bữa nhanh cho hôm bận.'},
+  {n:'Thịt bò xào hành tây',t:'man',g:['ez','cb','tc'],ing:['200g thịt bò','1 củ hành tây','Tỏi','Dầu hào, nước mắm'],r:'1) Bò thái mỏng, ướp chút dầu hào + tỏi 10 phút.\n2) Phi tỏi, xào bò lửa to 1 phút rồi trút ra.\n3) Xào hành tây tái, cho bò vào đảo nhanh, nêm vừa. Đơn giản mà ngon.'},
 ];
 const DISHES=[
   {n:'Canh bí đỏ nấu tôm tươi',t:'canh',g:['bm','dd','cb'],ing:['300g bí đỏ','100g tôm tươi bóc vỏ','Hành lá, ngò','Hành tím','Muối, hạt nêm'],r:'1) Bí đỏ gọt vỏ, thái miếng vừa ăn.\n2) Phi thơm hành tím, cho tôm vào xào săn rồi trút nước đun sôi.\n3) Thả bí đỏ nấu 10 phút cho mềm, nêm vừa miệng, rắc hành ngò.'},
@@ -4594,7 +4609,7 @@ function SpiritualSection(){
     </div>
   );
 }
-function WeeklyMenu({me}){
+function WeeklyMenu({me,people}){
   const [plan,setPlan]=useLocal('ju.menuPlan',null);
   const [shop,setShop]=useLocal('ju.shop',[]);
   const [prefs,setPrefs]=useLocal('ju.dishPrefs',{});
@@ -4604,7 +4619,7 @@ function WeeklyMenu({me}){
   const [recipe,setRecipe]=useState(null);
   const [favOpen,setFavOpen]=useState(false);
   const [favN,setFavN]=useState(''); const [favT,setFavT]=useState('man');
-  const allDishes=()=>DISHES.concat(favs.map(f=>({n:f.n,t:f.t,g:['cb'],ing:[],r:'(Món bạn tự thêm — chưa có công thức sẵn. Bấm “Xem video” để tham khảo cách làm.)',custom:true})));
+  const allDishes=()=>DISHES.concat(EASY_DISHES).concat(favs.map(f=>({n:f.n,t:f.t,g:['cb'],ing:[],r:'(Món bạn tự thêm — chưa có công thức sẵn. Bấm “Xem video” để tham khảo cách làm.)',custom:true})));
   const dishByName=(n)=>allDishes().find(d=>d.n===n);
   const matchG=(d)=> goal==='cb'? true : (d.g||[]).indexOf(goal)>=0;
   const rate=(name,v)=>{ const n={...prefs}; n[name]= n[name]===v?0:v; if(!n[name]) delete n[name]; setPrefs(n); };
@@ -4630,6 +4645,10 @@ function WeeklyMenu({me}){
     const have=new Set(shop.map(s=>s.text)); const add=[...ings].filter(x=>!have.has(x)).map(x=>({id:uid(),text:x,by:me||'a',done:false}));
     setShop([...add,...shop]); celebrate(['🛒']); alert('Đã thêm '+add.length+' nguyên liệu vào mục Đi chợ.'); };
   const goalLabel=(k)=>(MENU_GOALS.find(x=>x.k===k)||{}).label||'';
+  const setCook=(i,who)=>{ if(!plan) return; const days=plan.days.map((d,j)=>j===i?{...d,cook:d.cook===who?null:who}:d); setPlan({...plan,days}); };
+  const setAllCook=(who)=>{ if(!plan) return; const days=plan.days.map((d,j)=> who==='alt'?{...d,cook:j%2===0?'a':'b'}:{...d,cook:who}); setPlan({...plan,days}); };
+  const cookName=(who)=> who==='a'?((people&&people.a&&people.a.name)||'A') : who==='b'?((people&&people.b&&people.b.name)||'B') : who==='both'?'Cùng nấu':'';
+  const cookAva=(who)=> who==='a'?((people&&people.a&&people.a.avatar)||'🧑') : who==='b'?((people&&people.b&&people.b.avatar)||'🧑') : who==='both'?'👫':'';
   const dislikedNames=Object.keys(prefs).filter(k=>prefs[k]===-1);
   const healthConds=(()=>{ const ks={}; ['a','b','child'].forEach(m=>(((health||{})[m]||{}).conds||[]).forEach(k=>{ks[k]=1;})); return HEALTH_CONDITIONS.filter(c=>ks[c.k]); })();
   const hAgg=(f)=>{ const s=[]; healthConds.forEach(c=>(c[f]||[]).forEach(x=>{ if(s.indexOf(x)<0)s.push(x); })); return s; };
@@ -4650,9 +4669,25 @@ function WeeklyMenu({me}){
       </div>
       {!plan && <div className="empty"><span className="big">🍱</span>Bấm “Tạo thực đơn tuần” để có 7 ngày đủ chất, kèm công thức & danh sách mua.</div>}
       {plan && <div className="muted center" style={{fontSize:11,marginBottom:4}}>Mục tiêu: {goalLabel(plan.goal)} · chạm món để xem công thức 📖</div>}
+      {plan && <div className="card" style={{margin:'0 14px 6px'}}>
+        <div className="row" style={{gap:6,flexWrap:'wrap',alignItems:'center'}}>
+          <span className="muted" style={{fontSize:12,flex:'0 0 auto'}}>👩‍🍳 Người nấu cả tuần:</span>
+          <button className="pill" onClick={()=>setAllCook('a')}>{cookAva('a')} {cookName('a')}</button>
+          <button className="pill" onClick={()=>setAllCook('b')}>{cookAva('b')} {cookName('b')}</button>
+          <button className="pill" onClick={()=>setAllCook('alt')}>🔁 Luân phiên</button>
+          <button className="pill" onClick={()=>setAllCook('both')}>👫 Cùng nấu</button>
+        </div>
+      </div>}
       {plan && plan.days.map((d,i)=>(
         <div key={i} className="item">
-          <div className="it-top"><h4>{DOW[i]}</h4></div>
+          <div className="it-top"><h4>{DOW[i]}</h4>
+            {d.cook && <span className="pill" style={{background:'var(--chip)'}}>{cookAva(d.cook)} {cookName(d.cook)} nấu</span>}</div>
+          <div className="row" style={{gap:6,margin:'2px 0 4px',flexWrap:'wrap'}}>
+            <span className="muted" style={{fontSize:11,flex:'0 0 auto'}}>Ai nấu:</span>
+            {['a','b','both'].map(w=>(
+              <button key={w} className="pill" style={{padding:'3px 9px',fontSize:11.5,background:d.cook===w?'var(--primary)':'var(--chip)',color:d.cook===w?'#fff':'var(--chip-tx)'}} onClick={()=>setCook(i,w)}>{cookAva(w)} {cookName(w)}</button>
+            ))}
+          </div>
           {d.sang && <div className="row" style={{padding:'3px 0'}}>
             <span className="muted" style={{width:42,fontSize:11,flex:'0 0 auto'}}>Sáng</span>
             <span className="grow" style={{fontSize:14}}>🥣 {d.sang}</span></div>}
@@ -4670,6 +4705,16 @@ function WeeklyMenu({me}){
             <button onClick={()=>rate(d.canh,-1)} style={{fontSize:14,opacity:prefs[d.canh]===-1?1:.4}}>👎</button></div>
         </div>
       ))}
+      <div className="sec-title">👨‍🍳 Món dễ nấu (cho chồng)</div>
+      <div className="muted" style={{fontSize:11,margin:'0 14px 4px'}}>Đơn giản, nhanh, ít bước — chạm để xem công thức. Chọn mục tiêu 👨‍🍳 ở trên để tạo cả tuần toàn món này.</div>
+      <div className="card">
+        {EASY_DISHES.map((b,i)=>(
+          <div key={i} className="row" style={{padding:'7px 0',borderBottom:i<EASY_DISHES.length-1?'1px solid var(--line)':'none',cursor:'pointer'}} onClick={()=>setRecipe(b)}>
+            <span className="grow" style={{fontSize:13.5}}>{b.t==='canh'?'🥣':'🍳'} {b.n}</span>
+            <span className="muted" style={{fontSize:11.5}}>công thức 📖</span>
+          </div>
+        ))}
+      </div>
       <div className="sec-title">🥣 Gợi ý bữa sáng đủ chất</div>
       <div className="card">
         {BREAKFAST_IDEAS.map((b,i)=>(
@@ -6127,7 +6172,7 @@ function UsTab({people,me,flash}){
       {seg==='ibDate' && <IntimacySection people={people} me={me} flash={flash} view="date"/>}
       {seg==='ibKnow' && <IntimacySection people={people} me={me} flash={flash} view="know"/>}
       {seg==='ibLock' && <IntimacySection people={people} me={me} flash={flash} view="privacy"/>}
-      {seg==='menu' && <WeeklyMenu me={me}/>}
+      {seg==='menu' && <WeeklyMenu me={me} people={people}/>}
       {seg==='events' && <Events people={people} me={me}/>}
       {seg==='dates' && <ImportantDates people={people} me={me}/>}
       {seg==='timeline' && <Timeline people={people} me={me}/>}
