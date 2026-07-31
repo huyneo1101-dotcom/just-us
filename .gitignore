@@ -14,3 +14,5 @@ Thumbs.db
 node_modules/
 .vscode/
 index.html.bak
+.claude/launch.json
+.claude/settings.local.json
