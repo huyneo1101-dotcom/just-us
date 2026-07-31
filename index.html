@@ -5579,7 +5579,7 @@ function NotiRunner(){
           (store.get('ju.routine',DEFAULT_ROUTINE)||[]).forEach(b=>{ if(!b||!b.remind) return; const p=(b.t||'').split(':'); if(p.length<2) return; const bm=(+p[0])*60+(+p[1]); const diff=nm-bm; if(diff>=0&&diff<25&&!rlog.fired[b.id]){ const act=b.both||[b.a,b.b].filter(Boolean).join(' / ')||b.act||'Lịch sinh hoạt'; reg.showNotification('🗓️ '+b.t+' — '+act,{body:act,icon:'icon.svg',badge:'icon.svg',tag:'ju-rt-'+today+'-'+b.id,data:{url:'./'}}); rlog.fired[b.id]=1; } });
           store.set('ju.notiRoutineLog',rlog); } }catch(_){}
         const due=computeDueNotis(noti);
-        try{ const c=await caches.open('justus-noti'); await c.put('/__digest',new Response(JSON.stringify({date:today,items:due}),{headers:{'Content-Type':'application/json'}})); }catch(_){}
+        try{ const c=await caches.open('justus-noti'); await c.put('/__digest',new Response(JSON.stringify({date:today,hour:(noti.digestHour||noti.time||'08:00'),items:due}),{headers:{'Content-Type':'application/json'}})); }catch(_){}
         if(!due.length) return;
         // Mỗi mục đã tick bật trong Hồ Sơ → 🔔 Thông báo có giờ nhắc riêng (mặc định dùng "Giờ nhắc mặc định" nếu chưa chỉnh)
         const log=store.get('ju.notiLog',{})||{}; const fired=(log.date===today?(log.fired||{}):{}); let changed=false;
@@ -5593,16 +5593,19 @@ function NotiRunner(){
         if(changed) store.set('ju.notiLog',{date:today,fired});
       }catch(_){}
     };
-    const t=setTimeout(run,3500);
-    const iv=setInterval(run,15*60*1000);
+    // Tần suất nhắc trong ngày đọc động từ ju.noti.everyMin (phút) — đổi trong Hồ Sơ là áp ngay chu kỳ sau.
+    let stop=false, timer=null;
+    const schedule=()=>{ const noti=store.get('ju.noti',null); const mins=Math.max(2,(+(noti&&noti.everyMin))||15); timer=setTimeout(tick,mins*60*1000); };
+    const tick=async()=>{ await run(); if(!stop) schedule(); };
+    const first=setTimeout(async()=>{ await run(); if(!stop) schedule(); },3500);
     const onVis=()=>{ if(document.visibilityState==='visible') run(); };
     document.addEventListener('visibilitychange',onVis);
-    return ()=>{ clearTimeout(t); clearInterval(iv); document.removeEventListener('visibilitychange',onVis); };
+    return ()=>{ stop=true; clearTimeout(first); clearTimeout(timer); document.removeEventListener('visibilitychange',onVis); };
   },[]);
   return null;
 }
 function NotiSettings({flash}){
-  const [noti,setNoti]=useLocal('ju.noti',{on:false,cats:{kyNiem:true,sukien:true,viec:true,thucDon:true,nganSach:true,yeuThuong:true,nhanNhau:true,tamLinh:true,trabai:true,lich:true,hanDung:true,giayTo:true,ngayNho:false,chuky:false,checkin:true},time:'08:00'});
+  const [noti,setNoti]=useLocal('ju.noti',{on:false,cats:{kyNiem:true,sukien:true,viec:true,thucDon:true,nganSach:true,yeuThuong:true,nhanNhau:true,tamLinh:true,trabai:true,lich:true,hanDung:true,giayTo:true,ngayNho:false,chuky:false,checkin:true},time:'08:00',everyMin:15,digestHour:'08:00'});
   const supported=(typeof Notification!=='undefined')&&('serviceWorker' in navigator);
   const [perm,setPerm]=useState(supported?Notification.permission:'unsupported');
   const [pushMsg,setPushMsg]=useState('');
@@ -5614,7 +5617,7 @@ function NotiSettings({flash}){
     if(p==='granted'){ setNoti({...noti,on:true}); flash&&flash('Đã bật thông báo ✓');
       try{ const reg=await navigator.serviceWorker.ready;
         reg.showNotification('Just Us 💗',{body:'Đã bật thông báo! Tụi mình sẽ nhắc bạn những dịp quan trọng.',icon:'icon.svg',badge:'icon.svg'});
-        if('periodicSync' in reg){ try{ const st=await navigator.permissions.query({name:'periodic-background-sync'}); if(st.state==='granted') await reg.periodicSync.register('ju-daily',{minInterval:12*60*60*1000}); }catch(_){} }
+        if('periodicSync' in reg){ try{ const st=await navigator.permissions.query({name:'periodic-background-sync'}); if(st.state==='granted') await reg.periodicSync.register('ju-daily',{minInterval:3*60*60*1000}); }catch(_){} }
       }catch(_){}
       const ps=await subscribePush(); setPushMsg(ps.ok?'push-on':(ps.reason==='notconnected'?'foreground':(ps.reason==='unsupported'?'foreground':'error')));
     } else { setPerm(p); flash&&flash('Thông báo đang bị chặn — mở lại trong cài đặt trình duyệt'); }
@@ -5648,6 +5651,17 @@ function NotiSettings({flash}){
             ))}
             <div className="field" style={{marginTop:8}}><label>Giờ nhắc mặc định (áp cho mục chưa chỉnh riêng)</label>
               <input className="inp" type="time" value={noti.time||'08:00'} onChange={e=>setNoti({...noti,time:e.target.value})} style={{width:130}}/></div>
+            <div className="field" style={{marginTop:8}}><label>Tần suất kiểm tra & nhắc trong ngày (khi có mở app)</label>
+              <select className="inp" value={String(noti.everyMin||15)} onChange={e=>setNoti({...noti,everyMin:+e.target.value})} style={{width:200}}>
+                <option value="5">Mỗi 5 phút (nhắc dày)</option>
+                <option value="15">Mỗi 15 phút (mặc định)</option>
+                <option value="30">Mỗi 30 phút</option>
+                <option value="60">Mỗi 60 phút (ít)</option>
+              </select>
+              <div className="muted" style={{fontSize:11,marginTop:4}}>Nhắc dày hơn thì tốn pin hơn một chút. Mục để "⚡ Ngay" sẽ được nhắc ngay ở lần kiểm tra kế tiếp.</div></div>
+            <div className="field" style={{marginTop:8}}><label>Giờ gửi bản tóm tắt nền hằng ngày</label>
+              <input className="inp" type="time" value={noti.digestHour||noti.time||'08:00'} onChange={e=>setNoti({...noti,digestHour:e.target.value})} style={{width:130}}/>
+              <div className="muted" style={{fontSize:11,marginTop:4}}>Bản tóm tắt "Hôm nay của tụi mình" gửi khi đóng app, 1 lần/ngày từ giờ này trở đi. Giờ chạy nền do trình duyệt quyết định nên có thể xê xích (chỉ chính xác khi đã cài app vào màn hình chính).</div></div>
             <div className="row" style={{gap:8,marginTop:8}}>
               <button className="btn soft grow" onClick={test}>Gửi thử 🔔</button>
               <button className="btn soft" onClick={()=>{ setNoti({...noti,on:false}); flash&&flash('Đã tắt thông báo'); }}>Tắt</button>

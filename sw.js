@@ -5,7 +5,7 @@
    - Thư viện CDN (jsdelivr) cố định theo version: CACHE-FIRST.
    - Supabase: KHÔNG cache (luôn ra mạng).
 */
-const CACHE = 'justus-v8';
+const CACHE = 'justus-v9';
 const NOTI_CACHE = 'justus-noti';
 const CDN = ['https://cdn.jsdelivr.net'];
 
@@ -88,9 +88,20 @@ async function showDailyDigest() {
     const d = await r.json();
     const today = new Date().toISOString().slice(0, 10);
     if (!d || d.date !== today || !d.items || !d.items.length) return;
+    // Chỉ hiện sau "giờ mong muốn" người dùng đặt (best-effort — periodicSync do trình duyệt quyết định),
+    // và tối đa 1 lần/ngày (đánh dấu qua cache /__digest-shown).
+    const hour = (d.hour || '08:00');
+    const hp = hour.split(':'); const wantMin = (+hp[0] || 0) * 60 + (+hp[1] || 0);
+    const now = new Date(); const nowMin = now.getHours() * 60 + now.getMinutes();
+    if (nowMin < wantMin) return;
+    try {
+      const sr = await c.match('/__digest-shown');
+      if (sr) { const s = await sr.json(); if (s && s.date === today) return; }
+    } catch (_) {}
     await self.registration.showNotification('Hôm nay của tụi mình 💗', {
       body: d.items.slice(0, 5).map(x => x.title).join('\n'),
       icon: 'icon.svg', badge: 'icon.svg', tag: 'ju-daily-' + today, data: { url: './' }
     });
+    try { await c.put('/__digest-shown', new Response(JSON.stringify({ date: today }), { headers: { 'Content-Type': 'application/json' } })); } catch (_) {}
   } catch (_) {}
 }
