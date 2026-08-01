@@ -256,6 +256,62 @@ textarea.inp{resize:vertical;min-height:64px}
 .grow{flex:1}
 .danger{color:#e0436b}
 .linkout{color:var(--primary);font-weight:700;font-size:13px;text-decoration:none;word-break:break-all}
+
+/* ============================================================
+   Skin "Sổ tay" (scrapbook) — theme riêng, chỉ áp khi body.theme-sotay,
+   không ảnh hưởng các theme khác.
+   ============================================================ */
+body.theme-sotay{
+  --bg:#efe7db; --bg2:#e7ddca; --card:#fffdf7; --text:#3d352c; --muted:#95896f;
+  --line:#ddd0b6; --primary:#c65b52; --primary2:#e0906f; --on-primary:#fff;
+  --accent:#a8553f; --chip:#f2e7cf; --chip-tx:#96682f; --good:#5f8a5a; --warn:#d99a3a;
+  --heart:#d76a6a; --shadow:2px 3px 0 rgba(90,72,48,.12); --radius:8px;
+  background:
+    repeating-linear-gradient(0deg, transparent 0 28px, rgba(150,120,80,.05) 28px 29px),
+    linear-gradient(180deg,var(--bg),var(--bg2));
+  background-attachment:fixed;
+}
+/* Thẻ = mảnh giấy dán: viền mảnh + bóng cứng lệch, bo góc nhỏ */
+body.theme-sotay .card,
+body.theme-sotay .item,
+body.theme-sotay .stat{
+  background:var(--card); border:1px solid var(--line); border-radius:8px;
+  box-shadow:2px 3px 0 rgba(90,72,48,.12);
+}
+/* Trang chủ (homev3) vốn phẳng → trả lại dạng thẻ giấy cho đồng bộ */
+body.theme-sotay .homev3 .card,
+body.theme-sotay .homev3 .item{
+  background:var(--card); border:1px solid var(--line);
+  border-radius:8px; box-shadow:2px 3px 0 rgba(90,72,48,.12);
+  margin:10px 16px; padding:13px 14px;
+}
+/* Tiêu đề mục = chữ serif nghiêng, tông mực ấm */
+body.theme-sotay .sec-title,
+body.theme-sotay .homev3 .sec-title{
+  font-family:Georgia,"Times New Roman",serif; font-style:italic; font-weight:600;
+  text-transform:none; letter-spacing:0; color:var(--primary); font-size:14.5px;
+}
+body.theme-sotay .homev3 .hc-title{ color:var(--primary); }
+/* Chip / pill / nút lọc = mẩu băng giấy (góc gần vuông) */
+body.theme-sotay .pill{ border-radius:2px; }
+body.theme-sotay .filters button{ border-radius:3px; }
+body.theme-sotay .seg{ border-radius:6px; }
+body.theme-sotay .seg button{ border-radius:4px; }
+/* Thanh điều hướng = mép giấy khâu (gạch đứt) */
+body.theme-sotay .nav{ background:var(--card); border-top:1px dashed var(--line); }
+/* Washi tape trên "măng-sét" trang chủ */
+body.theme-sotay .homev3 .hero:not(.hascover){ position:relative; padding-top:28px; }
+body.theme-sotay .homev3 .hero:not(.hascover)::before{
+  content:""; position:absolute; top:4px; left:50%;
+  width:74px; height:20px; transform:translateX(-50%) rotate(-2.5deg);
+  background:repeating-linear-gradient(45deg, rgba(216,169,79,.5) 0 7px, rgba(216,169,79,.34) 7px 14px);
+  border:1px solid rgba(190,140,60,.35); pointer-events:none;
+}
+/* Tên hai người = nét viết tay (thiếu font thì lùi về serif nghiêng/cursive hệ thống) */
+body.theme-sotay .homev3 .hero:not(.hascover) .names{
+  font-family:"Segoe Script","Bradley Hand","Snell Roundhand",cursive;
+  text-transform:none; letter-spacing:.4px; font-size:13px; color:var(--accent);
+}
 </style>
 </head>
 <body>
@@ -266,9 +322,9 @@ textarea.inp{resize:vertical;min-height:64px}
 (function(){
   try{
     var raw=localStorage.getItem('ju.setup');
-    var t=raw?(JSON.parse(raw).theme||'rose'):'rose';
+    var t=raw?(JSON.parse(raw).theme||'sotay'):'sotay';
     document.body.className='theme-'+t;
-  }catch(e){document.body.className='theme-rose';}
+  }catch(e){document.body.className='theme-sotay';}
 })();
 </script>
 
@@ -554,6 +610,7 @@ const BUDGETS=[
 const budgetLabel=(k)=> (BUDGETS.find(b=>b.k===k)||{}).label||'';
 
 const THEMES=[
+  {k:'sotay', name:'Sổ tay', c:'#c65b52'},
   {k:'rose', name:'Hồng yêu', c:'#e85d8a'},
   {k:'peach', name:'Hoàng hôn', c:'#f0803c'},
   {k:'lavender', name:'Oải hương', c:'#8b5cf6'},
@@ -8011,7 +8068,7 @@ function Onboarding({onDone}){
 
   const finish=()=>{
     onDone({a:{name:a.name||'Anh',avatar:a.avatar}, b:{name:b.name||'Em',avatar:b.avatar},
-      loveDate, weddingDate:'', theme:'rose', me:'a', pin:''});
+      loveDate, weddingDate:'', theme:'sotay', me:'a', pin:''});
   };
   return (
     <div style={{minHeight:'100vh',display:'flex',flexDirection:'column',justifyContent:'center',padding:'24px'}}>
@@ -8245,6 +8302,8 @@ function App(){
 
   // áp theme khi setup đổi
   useEffect(()=>{ if(setup?.theme) applyTheme(setup.theme); },[setup?.theme]);
+  // Đổi sang skin "Sổ tay" một lần cho máy đang dùng (vẫn đổi lại được trong Cài đặt).
+  useEffect(()=>{ if(setup && !store.get('ju.skinSotay',0)){ store.set('ju.skinSotay',1); if((setup.theme||'')!=='sotay') setSetup({...setup,theme:'sotay'}); } },[setup]);
   useEffect(()=>{ applyHomeFont(setup?.homeFont||'bevn'); },[setup?.homeFont]);
   // sáng/tối — 'system' thì theo dõi cả khi điện thoại đổi chế độ
   useEffect(()=>{
