@@ -287,24 +287,11 @@ body.theme-sotay .ju-now{
 body.theme-sotay .homev3 .card,
 body.theme-sotay .homev3 .item{ margin:13px 16px; padding:13px 14px; }
 body.theme-sotay .ju-now{ border:1px dashed var(--line) !important; border-radius:6px !important; }
-/* Nghiêng "ngẫu nhiên" như ảnh dán tay: nhiều góc khác nhau, cả 2 chiều,
-   độ lớn không đều, chu kỳ 6 để không lộ quy luật. */
+/* Nghiêng ngẫu nhiên THẬT: góc gán riêng cho từng thẻ bằng JS qua biến --rot
+   (xem hàm applySotayTilt). Mỗi thẻ một góc, cả 2 chiều → không dồn một bên. */
 body.theme-sotay .card,
-body.theme-sotay .item,
-body.theme-sotay .ju-now{ transform-origin:50% 50%; }
-body.theme-sotay .card:nth-of-type(6n+1){ transform:rotate(-1.7deg); }
-body.theme-sotay .card:nth-of-type(6n+2){ transform:rotate(0.9deg); }
-body.theme-sotay .card:nth-of-type(6n+3){ transform:rotate(-0.4deg); }
-body.theme-sotay .card:nth-of-type(6n+4){ transform:rotate(1.6deg); }
-body.theme-sotay .card:nth-of-type(6n+5){ transform:rotate(-1.1deg); }
-body.theme-sotay .card:nth-of-type(6n+6){ transform:rotate(0.5deg); }
-body.theme-sotay .item:nth-of-type(6n+1){ transform:rotate(0.8deg); }
-body.theme-sotay .item:nth-of-type(6n+2){ transform:rotate(-1.5deg); }
-body.theme-sotay .item:nth-of-type(6n+3){ transform:rotate(0.3deg); }
-body.theme-sotay .item:nth-of-type(6n+4){ transform:rotate(-0.7deg); }
-body.theme-sotay .item:nth-of-type(6n+5){ transform:rotate(1.3deg); }
-body.theme-sotay .item:nth-of-type(6n+6){ transform:rotate(-0.4deg); }
-body.theme-sotay .ju-now{ transform:rotate(-1.3deg); }
+body.theme-sotay .item{ transform:rotate(var(--rot,0deg)); transform-origin:50% 50%; }
+body.theme-sotay .ju-now{ transform:rotate(-1.3deg); transform-origin:50% 50%; }
 /* Washi tape trên thẻ "Bây giờ nên làm" */
 body.theme-sotay .ju-now{ position:relative; overflow:visible; }
 body.theme-sotay .ju-now::before{
@@ -674,6 +661,23 @@ function applyTheme(k){
 function applyDarkMode(mode){
   const dark = mode==='dark' || (mode==='system' && typeof window.matchMedia==='function' && window.matchMedia('(prefers-color-scheme: dark)').matches);
   document.body.classList.toggle('dark', dark);
+}
+// Skin "Sổ tay": gán góc nghiêng NGẪU NHIÊN thật cho từng thẻ/dòng (biến --rot).
+// Mỗi phần tử chỉ gán 1 lần (nhớ qua data-rot) nên góc ổn định, không nhảy khi re-render.
+function applySotayTilt(root){
+  if(!document.body.classList.contains('theme-sotay')) return;
+  const scope=root||document;
+  const els=scope.querySelectorAll('.card, .item');
+  let n=0;
+  for(let i=0;i<els.length;i++){ const el=els[i];
+    if(el.classList.contains('ju-now')) continue;
+    if(el.dataset.rot){ n++; continue; }
+    const mag=(0.9+Math.random()*1.4);          // 0.9°–2.3°: luôn thấy rõ, độ lớn ngẫu nhiên
+    const sign=(n%2===0)?-1:1;                    // luân phiên chiều theo thứ tự → không dồn 1 bên
+    el.dataset.rot='1';
+    el.style.setProperty('--rot',(sign*mag).toFixed(2)+'deg');
+    n++;
+  }
 }
 const HOME_FONTS=[
   {k:'bevn',name:'Be Vietnam Pro',css:"'Be Vietnam Pro','Segoe UI',system-ui,sans-serif"},
@@ -8347,6 +8351,17 @@ function App(){
 
   // áp theme khi setup đổi
   useEffect(()=>{ if(setup?.theme) applyTheme(setup.theme); },[setup?.theme]);
+  // Skin Sổ tay: gán góc nghiêng ngẫu nhiên cho thẻ/dòng, cả khi nội dung đổi.
+  useEffect(()=>{
+    if((setup?.theme)!=='sotay') return;
+    const root=document.querySelector('.app')||document.body;
+    let raf=0; const run=()=>{ raf=0; applySotayTilt(root); };
+    const schedule=()=>{ if(!raf) raf=requestAnimationFrame(run); };
+    applySotayTilt(root);
+    const mo=new MutationObserver(schedule);
+    mo.observe(root,{childList:true,subtree:true});
+    return ()=>{ mo.disconnect(); if(raf) cancelAnimationFrame(raf); };
+  },[setup?.theme, tab]);
   // Đổi sang skin "Sổ tay" một lần cho máy đang dùng (vẫn đổi lại được trong Cài đặt).
   useEffect(()=>{ if(setup && !store.get('ju.skinSotay',0)){ store.set('ju.skinSotay',1); if((setup.theme||'')!=='sotay') setSetup({...setup,theme:'sotay'}); } },[setup]);
   useEffect(()=>{ applyHomeFont(setup?.homeFont||'bevn'); },[setup?.homeFont]);
