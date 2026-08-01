@@ -2461,8 +2461,8 @@ function WishTab({people,me,flash}){
     <div>
       <SegGrid value={seg} onChange={setSeg} items={[
         {k:'gift',icon:'🎁',label:'Quà tặng'},{k:'bucket',icon:'🎯',label:'Muốn làm cùng'},
-        {k:'watch',icon:'🎬',label:'Xem·Đọc·Nghe'},{k:'coupon',icon:'🎟️',label:'Phiếu yêu thương'},
-        {k:'link',icon:'🔗',label:'Link hay'},
+        {k:'watch',icon:'🎬',label:'Xem·Đọc·Nghe'},{k:'music',icon:'🎵',label:'Nhạc đôi'},
+        {k:'coupon',icon:'🎟️',label:'Phiếu yêu thương'},{k:'link',icon:'🔗',label:'Link hay'},
       ]} menuId="wish"/>
       {seg==='gift' && <SimpleList skey="ju.wish" people={people} me={me} addLabel="món quà" doneLabel="Đã tặng"
         fields={['photo','price','link','note']} suggest={GIFT_SUGGEST} claimable showTotal empty={{icon:'🎁',text:'Ghi lại món quà bạn mơ ước — để nửa kia biết đường! Bấm 💡 để xem gợi ý.'}} flash={flash}/>}
@@ -2471,6 +2471,7 @@ function WishTab({people,me,flash}){
       {seg==='watch' && <SimpleList skey="ju.watch" people={people} me={me} addLabel="phim/sách/nhạc" doneLabel="Đã xong"
         fields={['tag','link','rating','note']} tagOptions={['Phim','Phim bộ','Sách','Nhạc','Podcast','Khác']} suggest={WATCH_SUGGEST}
         empty={{icon:'🎬',text:'Phim, sách, nhạc muốn thưởng thức cùng nhau. Bấm 💡 để xem gợi ý!'}} flash={flash}/>}
+      {seg==='music' && <MusicPlaylists people={people} me={me}/>}
       {seg==='coupon' && <Coupons people={people} me={me} flash={flash}/>}
       {seg==='link' && <SimpleList skey="ju.links" people={people} me={me} addLabel="link/bài viết" doneLabel="Đã đọc"
         fields={['link','note']} empty={{icon:'🔗',text:'Gửi nhau bài viết, link hay ở đây.'}} flash={flash}/>}
@@ -2684,9 +2685,8 @@ function DateTab({people,me,flash}){
       <SegGrid value={seg} onChange={setSeg} items={[
         {k:'idea',icon:'💡',label:'Ý tưởng'},{k:'hanoi',icon:'📍',label:'Gợi ý HN'},
         {k:'events',icon:'🎪',label:'Sự kiện HN'},
-        {k:'food',icon:'🍜',label:'Quán & Món'},{k:'checkin',icon:'📸',label:'Check-in'},
-        {k:'game',icon:'🎲',label:'Trò chơi'},
-        {k:'wish',icon:'💝',label:'Ước muốn'},{k:'music',icon:'🎵',label:'Nhạc đôi'},
+        {k:'food',icon:'🍜',label:'Quán & Món'},{k:'checkin',icon:'📸',label:'Check-in ảnh'},
+        {k:'wish',icon:'💝',label:'Ước mơ chung'},
       ]} menuId="date"/>
       {seg==='idea' && <><WeatherCard/><DateIdeas people={people} me={me}/></>}
       {seg==='hanoi' && <HanoiCatalog me={me} flash={flash}/>}
@@ -2694,9 +2694,7 @@ function DateTab({people,me,flash}){
       {seg==='food' && <SimpleList skey="ju.food" people={people} me={me} addLabel="quán/món" doneLabel="Đã thử"
         fields={['photo','address','rating','link','note']} suggest={FOOD_SUGGEST} empty={{icon:'🍜',text:'Quán ăn, món muốn thử cùng nhau. Bấm 💡 để xem gợi ý!'}} flash={flash}/>}
       {seg==='checkin' && <CheckIns people={people} me={me}/>}
-      {seg==='game' && <GameBets people={people} me={me} flash={flash}/>}
       {seg==='wish' && <WishTab people={people} me={me} flash={flash}/>}
-      {seg==='music' && <MusicPlaylists people={people} me={me}/>}
     </div>
   );
 }
@@ -3730,19 +3728,20 @@ function TalkTab({people,me,flash}){
     <div>
       <SegGrid value={seg} onChange={setSeg} items={[
         {k:'notes',icon:'💌',label:'Nhắn nhau'},{k:'question',icon:'❓',label:'Câu hỏi'},
-        {k:'wishes',icon:'💛',label:'Mong nhau'},{k:'guide',icon:'🕊️',label:'Giao tiếp'},
-        {k:'parenting',icon:'🤝',label:'Dạy con'},
-        {k:'quiz',icon:'💞',label:'Đố vui'},{k:'checkin',icon:'📝',label:'Check-in'},
-        {k:'topics',icon:'🗣️',label:'Chủ đề'},
+        {k:'wishes',icon:'💛',label:'Mong nhau'},{k:'topics',icon:'🗣️',label:'Chủ đề'},
+        {k:'quiz',icon:'💞',label:'Đố vui'},{k:'game',icon:'🎲',label:'Trò chơi'},
+        {k:'checkin',icon:'📝',label:'Check-in tuần'},{k:'guide',icon:'🕊️',label:'Giao tiếp'},
+        {k:'privacy',icon:'🔒',label:'Riêng tư'},
       ]} menuId="talk"/>
       {seg==='notes' && <Notes people={people} me={me}/>}
       {seg==='question' && <DailyQuestion people={people} me={me}/>}
       {seg==='wishes' && <PartnerWishes people={people} me={me}/>}
-      {seg==='guide' && <CommGuide/>}
-      {seg==='parenting' && <ParentingAgreement/>}
-      {seg==='quiz' && <CoupleQuiz people={people} me={me}/>}
-      {seg==='checkin' && <WeeklyCheckin people={people} me={me}/>}
       {seg==='topics' && <TalkTopics/>}
+      {seg==='quiz' && <CoupleQuiz people={people} me={me}/>}
+      {seg==='game' && <GameBets people={people} me={me} flash={flash}/>}
+      {seg==='checkin' && <WeeklyCheckin people={people} me={me}/>}
+      {seg==='guide' && <CommGuide/>}
+      {seg==='privacy' && <IntimacyTab people={people} me={me} flash={flash}/>}
     </div>
   );
 }
@@ -5241,6 +5240,9 @@ function ChildCare({people,me}){
       </div>}
 
       {tab==='parent' && <div>
+        <Collapse id="child-parenting" defaultOpen={false} title="🤝 Thống nhất cách dạy con">
+          <ParentingAgreement/>
+        </Collapse>
         <Collapse id="child-skillguides" defaultOpen={false} title="🌱 Dạy kỹ năng tự túc đầu tiên">
         <div className="muted center" style={{fontSize:11,margin:'0 14px 6px'}}>Bấm từng kỹ năng để xem cách dạy theo bước. Mỗi bé một nhịp — cứ từ từ, khen nhiều 💛</div>
         {SKILL_GUIDES.filter(g=>!gDone[g.name]).map(g=><SkillGuide key={g.name} g={g} done={false} onTick={()=>setGDone({...gDone,[g.name]:true})}/>)}
@@ -5936,19 +5938,19 @@ const US_SEGS=[
 const US_GROUPS=[
   {k:'daily',icon:'📆',label:'Hàng ngày',items:['todos','routine','chores','menu','shop','rules']},
   {k:'money',icon:'💰',label:'Tiền nong',items:['fund','goals','budget','moneylover']},
-  {k:'plan',icon:'📅',label:'Kế hoạch & Lịch',items:['events','dates','timeline']},
-  {k:'bigfam',icon:'🏡',label:'Gia đình lớn',items:['projects','spirit','family']},
-  {k:'health',icon:'🩺',label:'Sức khỏe',items:['health','period']},
+  {k:'plan',icon:'📅',label:'Lịch & Kỷ niệm',items:['events','dates','timeline']},
   {k:'kho',icon:'📦',label:'Nhà & Kho',items:['expiry','stash','docs']},
-  {k:'trabai',icon:'💗',label:'Trả bài',items:['ibLog','ibSig','ibWant','ibHealth','ibGame','ibDate','ibKnow','ibLock']},
+  {k:'bigfam',icon:'🏡',label:'Gia đình lớn',items:['family','projects']},
 ];
 const US_SEG_MAP=Object.fromEntries(US_SEGS.map(s=>[s.k,s]));
 const MENU_REGISTRY=[
-  {id:'us-groups',label:'Tụi Mình · nhóm chính',items:US_GROUPS.map(g=>({k:g.k,icon:g.icon,label:g.label}))},
-  ...US_GROUPS.map(g=>({id:'us-'+g.k,label:'Tụi Mình · '+g.label,items:g.items.map(k=>US_SEG_MAP[k]).filter(Boolean)})),
-  {id:'date',label:'Hẹn hò',items:[{k:'idea',icon:'💡',label:'Ý tưởng'},{k:'hanoi',icon:'📍',label:'Gợi ý HN'},{k:'events',icon:'🎪',label:'Sự kiện HN'},{k:'food',icon:'🍜',label:'Quán & Món'},{k:'checkin',icon:'📸',label:'Check-in'},{k:'game',icon:'🎲',label:'Trò chơi'},{k:'wish',icon:'💝',label:'Ước muốn'},{k:'music',icon:'🎵',label:'Nhạc đôi'}]},
-  {id:'wish',label:'Ước muốn',items:[{k:'gift',icon:'🎁',label:'Quà tặng'},{k:'bucket',icon:'🎯',label:'Muốn làm cùng'},{k:'watch',icon:'🎬',label:'Xem·Đọc·Nghe'},{k:'coupon',icon:'🎟️',label:'Phiếu yêu thương'},{k:'link',icon:'🔗',label:'Link hay'}]},
-  {id:'talk',label:'Trò chuyện',items:[{k:'notes',icon:'💌',label:'Nhắn nhau'},{k:'question',icon:'❓',label:'Câu hỏi'},{k:'wishes',icon:'💛',label:'Mong nhau'},{k:'guide',icon:'🕊️',label:'Giao tiếp'},{k:'parenting',icon:'🤝',label:'Dạy con'},{k:'quiz',icon:'💞',label:'Đố vui'},{k:'checkin',icon:'📝',label:'Check-in'},{k:'topics',icon:'🗣️',label:'Chủ đề'}]},
+  {id:'us-groups',label:'Nhà mình · nhóm chính',items:US_GROUPS.map(g=>({k:g.k,icon:g.icon,label:g.label}))},
+  ...US_GROUPS.map(g=>({id:'us-'+g.k,label:'Nhà mình · '+g.label,items:g.items.map(k=>US_SEG_MAP[k]).filter(Boolean)})),
+  {id:'date',label:'Hẹn hò',items:[{k:'idea',icon:'💡',label:'Ý tưởng'},{k:'hanoi',icon:'📍',label:'Gợi ý HN'},{k:'events',icon:'🎪',label:'Sự kiện HN'},{k:'food',icon:'🍜',label:'Quán & Món'},{k:'checkin',icon:'📸',label:'Check-in ảnh'},{k:'wish',icon:'💝',label:'Ước mơ chung'}]},
+  {id:'wish',label:'Ước mơ chung',items:[{k:'gift',icon:'🎁',label:'Quà tặng'},{k:'bucket',icon:'🎯',label:'Muốn làm cùng'},{k:'watch',icon:'🎬',label:'Xem·Đọc·Nghe'},{k:'music',icon:'🎵',label:'Nhạc đôi'},{k:'coupon',icon:'🎟️',label:'Phiếu yêu thương'},{k:'link',icon:'🔗',label:'Link hay'}]},
+  {id:'talk',label:'Chúng mình',items:[{k:'notes',icon:'💌',label:'Nhắn nhau'},{k:'question',icon:'❓',label:'Câu hỏi'},{k:'wishes',icon:'💛',label:'Mong nhau'},{k:'topics',icon:'🗣️',label:'Chủ đề'},{k:'quiz',icon:'💞',label:'Đố vui'},{k:'game',icon:'🎲',label:'Trò chơi'},{k:'checkin',icon:'📝',label:'Check-in tuần'},{k:'guide',icon:'🕊️',label:'Giao tiếp'},{k:'privacy',icon:'🔒',label:'Riêng tư'}]},
+  {id:'intimacy',label:'Chúng mình · Riêng tư',items:[{k:'ibLog',icon:'📝',label:'Nhật ký'},{k:'ibSig',icon:'😏',label:'Tín hiệu'},{k:'ibWant',icon:'🌟',label:'Muốn thử'},{k:'ibHealth',icon:'💛',label:'Cảm xúc'},{k:'ibGame',icon:'🎲',label:'Chơi'},{k:'ibDate',icon:'📅',label:'Hẹn hò'},{k:'ibKnow',icon:'📖',label:'Kiến thức'},{k:'ibLock',icon:'🔒',label:'Riêng tư'}]},
+  {id:'health',label:'Cá nhân · Sức khỏe',items:[{k:'health',icon:'🩺',label:'Bệnh nền'},{k:'period',icon:'🌸',label:'Chu kỳ'}]},
   {id:'comm',label:'Cẩm nang giao tiếp',items:[{k:'principles',icon:'🕊️',label:'Nguyên tắc'},{k:'say',icon:'💬',label:'Nói khéo'},{k:'love',icon:'💖',label:'NN yêu thương'},{k:'fight',icon:'⚖️',label:'Cãi lành mạnh'},{k:'connect',icon:'🔗',label:'Câu hỏi kết nối'}]},
   {id:'spirit',label:'Tâm linh',items:[{k:'le',icon:'📅',label:'Ngày lễ'},{k:'kinh',icon:'📿',label:'Kinh Phật'},{k:'khan',icon:'📜',label:'Văn khấn'},{k:'tuvi',icon:'🔮',label:'Tử vi'},{k:'thanso',icon:'🔢',label:'Thần số'},{k:'chay',icon:'🍃',label:'Quán chay'},{k:'co',icon:'🍲',label:'Mâm cỗ'}]},
   {id:'child',label:'Nuôi con',items:[{k:'develop',icon:'🌱',label:'Phát triển'},{k:'play',icon:'🎲',label:'Chơi với con'},{k:'health',icon:'🏥',label:'Sức khoẻ'},{k:'eat',icon:'🍎',label:'Ăn uống'},{k:'school',icon:'🎒',label:'Đi học'},{k:'parent',icon:'💞',label:'Nuôi dạy'}]},
@@ -6178,6 +6180,41 @@ function UsMenu({group,seg,onPickGroup,onSeg}){
     </div>
   );
 }
+/* Riêng tư 🔒 (chuyển từ "Trả bài" của Tụi mình → Chúng mình) */
+function IntimacyTab({people,me,flash}){
+  const [seg,setSeg]=useState('ibLog');
+  return (
+    <div>
+      <SegGrid value={seg} onChange={setSeg} items={[
+        {k:'ibLog',icon:'📝',label:'Nhật ký'},{k:'ibSig',icon:'😏',label:'Tín hiệu'},
+        {k:'ibWant',icon:'🌟',label:'Muốn thử'},{k:'ibHealth',icon:'💛',label:'Cảm xúc'},
+        {k:'ibGame',icon:'🎲',label:'Chơi'},{k:'ibDate',icon:'📅',label:'Hẹn hò'},
+        {k:'ibKnow',icon:'📖',label:'Kiến thức'},{k:'ibLock',icon:'🔒',label:'Riêng tư'},
+      ]} menuId="intimacy"/>
+      {seg==='ibLog' && <IntimacySection people={people} me={me} flash={flash} view="log"/>}
+      {seg==='ibSig' && <IntimacySection people={people} me={me} flash={flash} view="signal"/>}
+      {seg==='ibWant' && <IntimacySection people={people} me={me} flash={flash} view="want"/>}
+      {seg==='ibHealth' && <IntimacySection people={people} me={me} flash={flash} view="health"/>}
+      {seg==='ibGame' && <IntimacySection people={people} me={me} flash={flash} view="games"/>}
+      {seg==='ibDate' && <IntimacySection people={people} me={me} flash={flash} view="date"/>}
+      {seg==='ibKnow' && <IntimacySection people={people} me={me} flash={flash} view="know"/>}
+      {seg==='ibLock' && <IntimacySection people={people} me={me} flash={flash} view="privacy"/>}
+    </div>
+  );
+}
+/* Sức khỏe (chuyển từ Tụi mình → Cá nhân): bệnh nền + chu kỳ */
+function HealthTab({people,me}){
+  const [seg,setSeg]=useState('health');
+  return (
+    <div>
+      <SegGrid value={seg} onChange={setSeg} items={[
+        {k:'health',icon:'🩺',label:'Bệnh nền'},{k:'period',icon:'🌸',label:'Chu kỳ'},
+      ]} menuId="health"/>
+      {seg==='health' && <FamilyHealth people={people} me={me}/>}
+      {seg==='period' && <PeriodTracker people={people}/>}
+    </div>
+  );
+}
 function UsTab({people,me,flash}){
   const [group,setGroup]=useState('daily');
   const grp=US_GROUPS.find(g=>g.k===group)||US_GROUPS[0];
@@ -6188,18 +6225,7 @@ function UsTab({people,me,flash}){
       <UsMenu group={group} seg={seg} onPickGroup={pickGroup} onSeg={setSeg}/>
       {seg==='routine' && <RoutineTab people={people} me={me}/>}
       {seg==='family' && <FamilyTree people={people} me={me} flash={flash}/>}
-      {seg==='health' && <FamilyHealth people={people} me={me}/>}
       {seg==='projects' && <FamilyProjects people={people} me={me}/>}
-      {seg==='spirit' && <SpiritualSection/>}
-      {seg==='period' && <PeriodTracker people={people}/>}
-      {seg==='ibLog' && <IntimacySection people={people} me={me} flash={flash} view="log"/>}
-      {seg==='ibSig' && <IntimacySection people={people} me={me} flash={flash} view="signal"/>}
-      {seg==='ibWant' && <IntimacySection people={people} me={me} flash={flash} view="want"/>}
-      {seg==='ibHealth' && <IntimacySection people={people} me={me} flash={flash} view="health"/>}
-      {seg==='ibGame' && <IntimacySection people={people} me={me} flash={flash} view="games"/>}
-      {seg==='ibDate' && <IntimacySection people={people} me={me} flash={flash} view="date"/>}
-      {seg==='ibKnow' && <IntimacySection people={people} me={me} flash={flash} view="know"/>}
-      {seg==='ibLock' && <IntimacySection people={people} me={me} flash={flash} view="privacy"/>}
       {seg==='menu' && <WeeklyMenu me={me} people={people}/>}
       {seg==='events' && <Events people={people} me={me}/>}
       {seg==='dates' && <ImportantDates people={people} me={me}/>}
@@ -7827,6 +7853,16 @@ function Profile({setup,setSetup,people,me,setMe,flash}){
         </div>
       )}
 
+      {/* Sức khỏe (chuyển từ Tụi mình) */}
+      <Collapse id="prof-health" title="🩺 Sức khỏe" defaultOpen={false}>
+        <HealthTab people={people} me={me}/>
+      </Collapse>
+
+      {/* Tâm linh (chuyển từ Tụi mình) */}
+      <Collapse id="prof-spirit" title="🪷 Tâm linh" defaultOpen={false}>
+        <SpiritualSection/>
+      </Collapse>
+
       {/* Theme */}
       <Collapse id="prof-theme" title="🎨 Giao diện đôi" defaultOpen={false}>
       <div className="card" style={{marginBottom:8}}>
@@ -8182,7 +8218,7 @@ function KnowledgeQuiz({onClose}){
     </div>
   );
 }
-const MAIN_TABS=[['home','🏠','Tổ ấm'],['child','🐿️','Sóc'],['date','🗺️','Hẹn hò'],['us','📅','Tụi mình'],['talk','💬','Nói chuyện'],['me','💞','Hồ sơ']];
+const MAIN_TABS=[['home','🏠','Tổ ấm'],['us','🏡','Nhà mình'],['talk','💞','Chúng mình'],['date','🗺️','Hẹn hò'],['child','🐿️','Sóc'],['me','🙋','Cá nhân']];
 function App(){
   const [setup,setSetup]=useLocal('ju.setup',null);
   const [tab,setTab]=useState(()=>(setup&&setup.defaultTab)||'home');
