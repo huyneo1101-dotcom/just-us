@@ -347,19 +347,8 @@ body.theme-sotay .homev3 .hero:not(.hascover) .names{
 body.theme-sotay .homev3 .hero:not(.hascover) .sub{
   font-family:'Patrick Hand',"Segoe Script",cursive; font-size:13.5px;
 }
-/* Washi tape trên các thẻ trang chủ (màu luân phiên, góc khác nhau) */
-body.theme-sotay .homev3 .card{ position:relative; overflow:visible; }
-body.theme-sotay .homev3 .card::before{
-  content:""; position:absolute; top:-9px; left:22px;
-  width:58px; height:17px; transform:rotate(-4deg);
-  background:repeating-linear-gradient(45deg, rgba(216,169,79,.55) 0 7px, rgba(216,169,79,.32) 7px 14px);
-  border:1px solid rgba(190,140,60,.32); pointer-events:none;
-}
-body.theme-sotay .homev3 .card:nth-of-type(even)::before{
-  left:auto; right:22px; transform:rotate(4deg);
-  background:repeating-linear-gradient(45deg, rgba(214,109,109,.42) 0 7px, rgba(214,109,109,.26) 7px 14px);
-  border-color:rgba(180,90,90,.3);
-}
+/* (Đã bỏ tape trên các thẻ trang chủ cho đỡ rối — chỉ nhấn nhá ở măng-sét
+   và thẻ "Bây giờ nên làm".) */
 </style>
 </head>
 <body>
