@@ -5,7 +5,7 @@
    - Thư viện CDN (jsdelivr) cố định theo version: CACHE-FIRST.
    - Supabase: KHÔNG cache (luôn ra mạng).
 */
-const CACHE = 'justus-v16';
+const CACHE = 'justus-v17';
 const NOTI_CACHE = 'justus-noti';
 const CDN = ['https://cdn.jsdelivr.net'];
 
