@@ -287,16 +287,24 @@ body.theme-sotay .ju-now{
 body.theme-sotay .homev3 .card,
 body.theme-sotay .homev3 .item{ margin:13px 16px; padding:13px 14px; }
 body.theme-sotay .ju-now{ border:1px dashed var(--line) !important; border-radius:6px !important; }
-/* Nghiêng rõ hơn, luân phiên như ảnh dán trong sổ */
+/* Nghiêng "ngẫu nhiên" như ảnh dán tay: nhiều góc khác nhau, cả 2 chiều,
+   độ lớn không đều, chu kỳ 6 để không lộ quy luật. */
 body.theme-sotay .card,
-body.theme-sotay .homev3 .card{ transform:rotate(-1.4deg); }
-body.theme-sotay .ju-now{ transform:rotate(-1.2deg); }
-body.theme-sotay .card:nth-of-type(even),
-body.theme-sotay .homev3 .card:nth-of-type(even){ transform:rotate(1.3deg); }
 body.theme-sotay .item,
-body.theme-sotay .homev3 .item{ transform:rotate(.9deg); }
-body.theme-sotay .item:nth-of-type(even),
-body.theme-sotay .homev3 .item:nth-of-type(even){ transform:rotate(-.9deg); }
+body.theme-sotay .ju-now{ transform-origin:50% 50%; }
+body.theme-sotay .card:nth-of-type(6n+1){ transform:rotate(-1.7deg); }
+body.theme-sotay .card:nth-of-type(6n+2){ transform:rotate(0.9deg); }
+body.theme-sotay .card:nth-of-type(6n+3){ transform:rotate(-0.4deg); }
+body.theme-sotay .card:nth-of-type(6n+4){ transform:rotate(1.6deg); }
+body.theme-sotay .card:nth-of-type(6n+5){ transform:rotate(-1.1deg); }
+body.theme-sotay .card:nth-of-type(6n+6){ transform:rotate(0.5deg); }
+body.theme-sotay .item:nth-of-type(6n+1){ transform:rotate(0.8deg); }
+body.theme-sotay .item:nth-of-type(6n+2){ transform:rotate(-1.5deg); }
+body.theme-sotay .item:nth-of-type(6n+3){ transform:rotate(0.3deg); }
+body.theme-sotay .item:nth-of-type(6n+4){ transform:rotate(-0.7deg); }
+body.theme-sotay .item:nth-of-type(6n+5){ transform:rotate(1.3deg); }
+body.theme-sotay .item:nth-of-type(6n+6){ transform:rotate(-0.4deg); }
+body.theme-sotay .ju-now{ transform:rotate(-1.3deg); }
 /* Washi tape trên thẻ "Bây giờ nên làm" */
 body.theme-sotay .ju-now{ position:relative; overflow:visible; }
 body.theme-sotay .ju-now::before{
