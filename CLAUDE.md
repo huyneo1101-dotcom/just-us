@@ -50,4 +50,4 @@ App tĩnh một-file: UI + logic + CSS đều nằm trong `index.html` (~7977 d�
 - Deploy xong nhắc chủ repo **đóng hẳn app rồi mở lại** để service worker nhận bản mới.
 
 ## Skills dùng chung
-Repo có `.claude/skills/` (11 skill từ plugin vibe-pwa-kit): `bigfile-nav`, `data-backup`, `deploy-static`, `doc-single-file-app`, `local-store`, `lock-static-app`, `pwa-healthcheck`, `scaffold-vibe-pwa`, `supabase-sync`, `theme-pack`, `web-push`.
+Repo có `.claude/skills/` (13 skill từ plugin vibe-pwa-kit): `bigfile-nav`, `data-backup`, `deploy-static`, `doc-single-file-app`, `local-store`, `lock-static-app`, `pwa-healthcheck`, `scaffold-vibe-pwa`, `smoke-test`, `supabase-security-audit`, `supabase-sync`, `theme-pack`, `web-push`.
