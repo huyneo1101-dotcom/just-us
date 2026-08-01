@@ -672,7 +672,10 @@ function applySotayTilt(root){
   for(let i=0;i<els.length;i++){ const el=els[i];
     if(el.classList.contains('ju-now')) continue;
     if(el.dataset.rot){ n++; continue; }
-    const mag=(0.9+Math.random()*1.4);          // 0.9°–2.3°: luôn thấy rõ, độ lớn ngẫu nhiên
+    // Thẻ dashboard Trang chủ (dưới măng-sét, gồm Thực đơn hôm nay…) nghiêng nhè nhẹ;
+    // còn lại (dòng danh sách, thẻ ở các tab) nghiêng rõ hơn.
+    const gentle=el.classList.contains('card') && el.closest('.homev3');
+    const mag=gentle ? (0.35+Math.random()*0.65) : (0.9+Math.random()*1.4);
     const sign=(n%2===0)?-1:1;                    // luân phiên chiều theo thứ tự → không dồn 1 bên
     el.dataset.rot='1';
     el.style.setProperty('--rot',(sign*mag).toFixed(2)+'deg');
