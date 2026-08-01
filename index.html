@@ -258,40 +258,54 @@ textarea.inp{resize:vertical;min-height:64px}
 .linkout{color:var(--primary);font-weight:700;font-size:13px;text-decoration:none;word-break:break-all}
 
 /* ============================================================
-   Skin "Sổ tay" (scrapbook) — theme riêng, chỉ áp khi body.theme-sotay,
-   không ảnh hưởng các theme khác.
+   Skin "Sổ tay" (scrapbook) v2 — theme riêng, chỉ áp khi body.theme-sotay.
+   Chữ ký: giấy · thẻ hơi nghiêng · bóng cứng lệch · viền đứt · washi tape.
    ============================================================ */
 body.theme-sotay{
   --bg:#efe7db; --bg2:#e7ddca; --card:#fffdf7; --text:#3d352c; --muted:#95896f;
-  --line:#ddd0b6; --primary:#c65b52; --primary2:#e0906f; --on-primary:#fff;
+  --line:#cdba97; --primary:#c65b52; --primary2:#e0906f; --on-primary:#fff;
   --accent:#a8553f; --chip:#f2e7cf; --chip-tx:#96682f; --good:#5f8a5a; --warn:#d99a3a;
-  --heart:#d76a6a; --shadow:2px 3px 0 rgba(90,72,48,.12); --radius:8px;
+  --heart:#d76a6a; --shadow:3px 4px 0 rgba(74,58,40,.16); --radius:6px;
   background:
-    repeating-linear-gradient(0deg, transparent 0 28px, rgba(150,120,80,.05) 28px 29px),
+    repeating-linear-gradient(0deg, transparent 0 28px, rgba(150,120,80,.06) 28px 29px),
     linear-gradient(180deg,var(--bg),var(--bg2));
   background-attachment:fixed;
 }
-/* Thẻ = mảnh giấy dán: viền mảnh + bóng cứng lệch, bo góc nhỏ */
+/* Thẻ & dòng danh sách = mảnh giấy: viền đứt + bóng cứng lệch rõ, bo góc nhỏ */
 body.theme-sotay .card,
 body.theme-sotay .item,
-body.theme-sotay .stat{
-  background:var(--card); border:1px solid var(--line); border-radius:8px;
-  box-shadow:2px 3px 0 rgba(90,72,48,.12);
-}
-/* Trang chủ (homev3) vốn phẳng → trả lại dạng thẻ giấy cho đồng bộ */
+body.theme-sotay .stat,
 body.theme-sotay .homev3 .card,
-body.theme-sotay .homev3 .item{
-  background:var(--card); border:1px solid var(--line);
-  border-radius:8px; box-shadow:2px 3px 0 rgba(90,72,48,.12);
-  margin:10px 16px; padding:13px 14px;
+body.theme-sotay .homev3 .item,
+body.theme-sotay .ju-now{
+  background:var(--card); border:1px dashed var(--line); border-radius:6px;
+  box-shadow:3px 4px 0 rgba(74,58,40,.16);
 }
-/* Tiêu đề mục = chữ serif nghiêng, tông mực ấm */
-body.theme-sotay .sec-title,
-body.theme-sotay .homev3 .sec-title{
-  font-family:Georgia,"Times New Roman",serif; font-style:italic; font-weight:600;
-  text-transform:none; letter-spacing:0; color:var(--primary); font-size:14.5px;
+body.theme-sotay .homev3 .card,
+body.theme-sotay .homev3 .item{ margin:13px 16px; padding:13px 14px; }
+body.theme-sotay .ju-now{ border:1px dashed var(--line) !important; border-radius:6px !important; }
+/* Nghiêng nhẹ luân phiên như ảnh dán trong sổ */
+body.theme-sotay .card,
+body.theme-sotay .homev3 .card,
+body.theme-sotay .ju-now{ transform:rotate(-.55deg); }
+body.theme-sotay .card:nth-of-type(even),
+body.theme-sotay .homev3 .card:nth-of-type(even){ transform:rotate(.55deg); }
+body.theme-sotay .item,
+body.theme-sotay .homev3 .item{ transform:rotate(.4deg); }
+body.theme-sotay .item:nth-of-type(even),
+body.theme-sotay .homev3 .item:nth-of-type(even){ transform:rotate(-.4deg); }
+/* Washi tape trên thẻ "Bây giờ nên làm" */
+body.theme-sotay .ju-now{ position:relative; overflow:visible; }
+body.theme-sotay .ju-now::before{
+  content:""; position:absolute; top:-10px; left:50%;
+  width:70px; height:19px; transform:translateX(-50%) rotate(-3deg);
+  background:repeating-linear-gradient(45deg, rgba(216,169,79,.55) 0 7px, rgba(216,169,79,.34) 7px 14px);
+  border:1px solid rgba(190,140,60,.35); pointer-events:none;
 }
-body.theme-sotay .homev3 .hc-title{ color:var(--primary); }
+/* Tiêu đề mục = mực ấm */
+body.theme-sotay .sec-title{ color:var(--primary); }
+body.theme-sotay .homev3 .hc-title,
+body.theme-sotay .homev3 .sec-title{ color:var(--primary); }
 /* Chip / pill / nút lọc = mẩu băng giấy (góc gần vuông) */
 body.theme-sotay .pill{ border-radius:2px; }
 body.theme-sotay .filters button{ border-radius:3px; }
@@ -299,18 +313,17 @@ body.theme-sotay .seg{ border-radius:6px; }
 body.theme-sotay .seg button{ border-radius:4px; }
 /* Thanh điều hướng = mép giấy khâu (gạch đứt) */
 body.theme-sotay .nav{ background:var(--card); border-top:1px dashed var(--line); }
-/* Washi tape trên "măng-sét" trang chủ */
-body.theme-sotay .homev3 .hero:not(.hascover){ position:relative; padding-top:28px; }
+/* Washi tape + tên viết tay trên "măng-sét" trang chủ */
+body.theme-sotay .homev3 .hero:not(.hascover){ position:relative; padding-top:30px; }
 body.theme-sotay .homev3 .hero:not(.hascover)::before{
-  content:""; position:absolute; top:4px; left:50%;
-  width:74px; height:20px; transform:translateX(-50%) rotate(-2.5deg);
-  background:repeating-linear-gradient(45deg, rgba(216,169,79,.5) 0 7px, rgba(216,169,79,.34) 7px 14px);
+  content:""; position:absolute; top:5px; left:50%;
+  width:80px; height:20px; transform:translateX(-50%) rotate(-2.5deg);
+  background:repeating-linear-gradient(45deg, rgba(216,169,79,.55) 0 7px, rgba(216,169,79,.34) 7px 14px);
   border:1px solid rgba(190,140,60,.35); pointer-events:none;
 }
-/* Tên hai người = nét viết tay (thiếu font thì lùi về serif nghiêng/cursive hệ thống) */
 body.theme-sotay .homev3 .hero:not(.hascover) .names{
   font-family:"Segoe Script","Bradley Hand","Snell Roundhand",cursive;
-  text-transform:none; letter-spacing:.4px; font-size:13px; color:var(--accent);
+  text-transform:none; letter-spacing:.4px; font-size:14px; color:var(--accent);
 }
 </style>
 </head>
@@ -7623,7 +7636,7 @@ function NowCard({people,go}){
   for(let i=0;i<list.length;i++){ if(toMin(list[i].t)<=nm) cur=list[i]; else { next=list[i]; break; } }
   const nextTxt=(b)=> b? (b.both||[b.a,b.b].filter(Boolean).join(' / ')||'') : '';
   return (
-    <div onClick={()=>go('us')} style={{cursor:'pointer',margin:'12px 16px',padding:'14px 16px 14px 17px',borderRadius:16,background:'var(--card)',color:'var(--text)',border:'1px solid var(--line)',borderLeft:'3px solid var(--primary)'}}>
+    <div className="ju-now" onClick={()=>go('us')} style={{cursor:'pointer',margin:'12px 16px',padding:'14px 16px 14px 17px',borderRadius:16,background:'var(--card)',color:'var(--text)',border:'1px solid var(--line)',borderLeft:'3px solid var(--primary)'}}>
       <div style={{display:'flex',alignItems:'center',gap:6}}><span style={{fontSize:11,fontWeight:700,letterSpacing:'.09em',textTransform:'uppercase',color:'var(--muted)'}}>Bây giờ nên làm</span><span style={{flex:1}}></span><span style={{fontSize:12,fontWeight:600,color:'var(--muted)'}}>{nowHM}{cur?' · khung '+cur.t:''}</span></div>
       {cur ? (
         (cur.both!=null && cur.both!=='')
