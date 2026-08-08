@@ -411,7 +411,7 @@ const store={
 const SB_URL='https://vvgkjgvzjeklaadusbne.supabase.co';
 const SB_KEY='sb_publishable_DMMPv5L2kGhrHTxeQ72iKw_dIh13iT1';
 // Các key được đồng bộ (KHÔNG gồm ju.me/ju.device/ju.sync — đó là riêng từng máy)
-const SYNC_KEYS=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood','ju.qa','ju.timeline','ju.coupons','ju.chores','ju.lovejar','ju.quiz','ju.city','ju.goals','ju.checkin','ju.challengeDone','ju.homecfg','ju.diary','ju.projects','ju.vinhaUrl','ju.checkins','ju.menu','ju.period','ju.menuPlan','ju.accuKey','ju.habits','ju.hiddenSpots','ju.usOrder','ju.eventPrefs','ju.child','ju.childGrowth','ju.childVaccines','ju.childMilestones','ju.childDiary','ju.partnerWishes','ju.todos','ju.spotify','ju.dishPrefs','ju.favDishes','ju.childPack','ju.childSkills','ju.childMed','ju.childIllness','ju.childWords','ju.childTantrum','ju.childParenting','ju.saveTips','ju.saveCustom','ju.funPrefs','ju.routine','ju.routineIssues','ju.noti','ju.family','ju.health','ju.transfers','ju.skillGuidesDone','ju.expenses','ju.budget','ju.vinhaSync','ju.menuOrder','ju.notesSeen','ju.intimacy','ju.intimacySeen','ju.quizKnow','ju.familyRules','ju.expiry','ju.stash','ju.docs','ju.tuvi','ju.thanso','ju.checkinSeen','ju.menuHidden','ju.gameBets','ju.cook','ju.cookLogs','ju.cookRewards','ju.cookHelp','ju.cookPantry'];
+const SYNC_KEYS=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood','ju.qa','ju.timeline','ju.coupons','ju.chores','ju.lovejar','ju.quiz','ju.city','ju.goals','ju.checkin','ju.challengeDone','ju.homecfg','ju.diary','ju.projects','ju.vinhaUrl','ju.checkins','ju.menu','ju.period','ju.menuPlan','ju.accuKey','ju.habits','ju.hiddenSpots','ju.usOrder','ju.eventPrefs','ju.child','ju.childGrowth','ju.childVaccines','ju.childMilestones','ju.childDiary','ju.partnerWishes','ju.todos','ju.spotify','ju.dishPrefs','ju.favDishes','ju.childPack','ju.childSkills','ju.childMed','ju.childIllness','ju.childWords','ju.childTantrum','ju.childParenting','ju.saveTips','ju.saveCustom','ju.funPrefs','ju.routine','ju.routineIssues','ju.noti','ju.family','ju.health','ju.transfers','ju.skillGuidesDone','ju.expenses','ju.budget','ju.vinhaSync','ju.menuOrder','ju.notesSeen','ju.intimacy','ju.intimacySeen','ju.quizKnow','ju.familyRules','ju.expiry','ju.stash','ju.docs','ju.tuvi','ju.thanso','ju.checkinSeen','ju.menuHidden','ju.gameBets','ju.cook','ju.cookLogs','ju.cookRewards','ju.cookHelp','ju.cookPantry','ju.docsLock'];
 let _sb=null;
 function sbClient(){
   if(_sb) return _sb;
@@ -521,13 +521,34 @@ const Cloud={
     if(error) throw error;
     return path;
   },
+  /* Tải lên một khối bytes bất kỳ (dùng cho ảnh đã mã hoá của mục Giấy tờ) */
+  async uploadBlob(blob,ext,contentType){
+    const c=this.client(); if(!this.connected()||!c) throw new Error('not_connected');
+    const path=this.coupleId+'/'+this.device()+'-'+Date.now()+'-'+Math.random().toString(36).slice(2,6)+'.'+(ext||'bin');
+    const {error}=await c.storage.from('justus-photos').upload(path,blob,{upsert:false,contentType:contentType||'application/octet-stream'});
+    if(error) throw error;
+    return path;
+  },
+  /* Tải về bytes qua phiên đăng nhập — KHÔNG sinh link, dùng cho ảnh đã mã hoá */
+  async downloadBytes(path){
+    const c=this.client(); if(!c||!path) return null;
+    const {data,error}=await c.storage.from('justus-photos').download(path);
+    if(error||!data) return null;
+    return new Uint8Array(await data.arrayBuffer());
+  },
+  /* Link ảnh sống 1 giờ (trước là 7 ngày — link lỡ rò ra ngoài thì xem được cả tuần).
+     Tự xin link mới khi sắp hết hạn để ảnh không đứt giữa lúc đang dùng. */
   async signedUrl(path){
     const c=this.client(); if(!c||!path) return null;
-    if(this._urlCache[path]) return this._urlCache[path];
-    const {data,error}=await c.storage.from('justus-photos').createSignedUrl(path,60*60*24*7);
+    const hit=this._urlCache[path];
+    if(hit&&hit.exp>Date.now()+60*1000) return hit.url;
+    const ttl=60*60;
+    const {data,error}=await c.storage.from('justus-photos').createSignedUrl(path,ttl);
     if(error||!data) return null;
-    this._urlCache[path]=data.signedUrl; return data.signedUrl;
+    this._urlCache[path]={url:data.signedUrl,exp:Date.now()+ttl*1000};
+    return data.signedUrl;
   },
+  forgetUrl(path){ if(path) delete this._urlCache[path]; },
   async deletePhoto(path){ const c=this.client(); if(!c||!path) return; try{ await c.storage.from('justus-photos').remove([path]); delete this._urlCache[path]; }catch(e){} },
 
   _stamp(){ try{ store.set('ju.synced', Date.now()); }catch(e){} }
@@ -6090,7 +6111,7 @@ function computeDueNotis(noti){
     }catch(_){} }
   if(on('nganSach')){ const vs=store.get('ju.vinhaSync',null); if(vs&&vs.budgets&&vs.budgets.length){ const ym=todayISO().slice(0,7); const sp={}; (vs.rows||[]).filter(x=>x.type==='expense'&&(x.date||'').slice(0,7)===ym).forEach(x=>{ if(x.catId) sp[x.catId]=(sp[x.catId]||0)+x.amount; }); const over=vs.budgets.filter(b=>(sp[b.catId]||0)>b.amount); const near=vs.budgets.filter(b=>{ const s=sp[b.catId]||0; return s<=b.amount&&s>=b.amount*0.8; }); if(over.length) out.push({id:'budover',cat:'nganSach',title:'💰 Vượt ngân sách: '+over.slice(0,3).map(b=>b.cn).join(', ')}); else if(near.length) out.push({id:'budnear',cat:'nganSach',title:'💰 Sắp hết ngân sách: '+near.slice(0,3).map(b=>b.cn).join(', ')}); } }
   if(on('hanDung')) (store.get('ju.expiry',[])||[]).forEach(x=>{ const d=daysFromToday(x.date); if(d!=null&&d<=3) out.push({id:'exp'+(x.id||x.name),cat:'hanDung',title:'🗓️ '+x.name+(d<0?' — đã hết hạn':d===0?' — hết hạn hôm nay':' — còn '+d+' ngày')}); });
-  if(on('giayTo')) (store.get('ju.docs',[])||[]).forEach(x=>{ if(!x.expiry) return; const d=daysFromToday(x.expiry); if(d!=null&&d<=30) out.push({id:'doc'+(x.id||x.name),cat:'giayTo',title:'🗂️ '+x.name+(d<0?' — giấy tờ đã hết hạn':d===0?' — hết hạn hôm nay':' — hết hạn sau '+d+' ngày')}); });
+  if(on('giayTo')) (store.get('ju.docs',[])||[]).forEach(x=>{ if(!x.expiry) return; const d=daysFromToday(x.expiry); if(d!=null&&d<=30){ /* tên giấy tờ đã mã hoá → chỉ nhắc chung, mở mục Giấy tờ mới thấy */ const nm=x.name||'Một giấy tờ (mở mục Giấy tờ để xem)'; out.push({id:'doc'+(x.id||nm),cat:'giayTo',title:'🗂️ '+nm+(d<0?' — giấy tờ đã hết hạn':d===0?' — hết hạn hôm nay':' — hết hạn sau '+d+' ngày')}); } });
   if(on('yeuThuong')) out.push({id:'love',cat:'yeuThuong',title:'💌 Gửi nửa kia một lời yêu thương hôm nay nhé 💞'});
   if(on('nhanNhau')){ const me=store.get('ju.me',setup.me||'a'); const unread=unseenByPartner('ju.notes','ju.notesSeen',me); if(unread.length) out.push({id:'notes'+unread.length,cat:'nhanNhau',title:'💌 Nửa kia gửi bạn '+unread.length+' lời nhắn mới ("Nhắn nhau")'}); }
   if(on('checkin')){ const me=store.get('ju.me',setup.me||'a'); const newCk=unseenByPartner('ju.checkins','ju.checkinSeen',me); if(newCk.length){ const names=newCk.slice(0,2).map(c=>c.name).filter(Boolean).join(', '); out.push({id:'checkin'+newCk.length,cat:'checkin',title:'📸 Nửa kia vừa check-in quán mới'+(names?': '+names:'')}); } }
@@ -6621,19 +6642,188 @@ function StashItems({people,me}){
   );
 }
 /* ============ Giấy tờ quan trọng (kèm ảnh) ============ */
+/* ---------- Mã hoá đầu-cuối cho mục Giấy tờ (AES-256-GCM + PBKDF2-SHA256) ----------
+   Khoá chỉ tồn tại trong RAM khi đã nhập mật khẩu. Chưa mở thì cả máy này lẫn máy chủ
+   Supabase đều chỉ thấy khối bytes vô nghĩa. `salt` và `check` KHÔNG phải bí mật nên
+   đồng bộ được qua ju.docsLock để máy kia mở bằng cùng mật khẩu.
+   MẤT MẬT KHẨU = MẤT DỮ LIỆU: không có cửa sau, không ai lấy lại được. */
+const DOCS_ITER=210000, DOCS_MAGIC='just-us-docs-v1';
+const B64={
+  enc(buf){ const b=new Uint8Array(buf); let s=''; for(let i=0;i<b.length;i+=0x8000) s+=String.fromCharCode.apply(null,b.subarray(i,i+0x8000)); return btoa(s); },
+  dec(str){ const s=atob(str); const b=new Uint8Array(s.length); for(let i=0;i<s.length;i++) b[i]=s.charCodeAt(i); return b; },
+};
+const DocsCrypto={
+  key:null, _subs:[],
+  ready(){ return !!(window.crypto&&window.crypto.subtle); },
+  hasPass(){ const c=store.get('ju.docsLock',null); return !!(c&&c.salt&&c.check); },
+  locked(){ return !this.key; },
+  onChange(fn){ this._subs.push(fn); return ()=>{ this._subs=this._subs.filter(f=>f!==fn); }; },
+  _emit(){ this._subs.slice().forEach(f=>{ try{ f(); }catch(_){} }); },
+  lock(){ this.key=null; this._emit(); },
+  async _derive(pass,saltB64,iter){
+    const base=await crypto.subtle.importKey('raw',new TextEncoder().encode(pass),'PBKDF2',false,['deriveKey']);
+    return crypto.subtle.deriveKey({name:'PBKDF2',salt:B64.dec(saltB64),iterations:iter||DOCS_ITER,hash:'SHA-256'},
+      base,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);
+  },
+  async encBytes(bytes,key){
+    const iv=crypto.getRandomValues(new Uint8Array(12));
+    const ct=await crypto.subtle.encrypt({name:'AES-GCM',iv},key||this.key,bytes);
+    const out=new Uint8Array(12+ct.byteLength); out.set(iv,0); out.set(new Uint8Array(ct),12); return out;
+  },
+  async decBytes(bytes,key){
+    const b=new Uint8Array(bytes);
+    return new Uint8Array(await crypto.subtle.decrypt({name:'AES-GCM',iv:b.subarray(0,12)},key||this.key,b.subarray(12)));
+  },
+  async encJSON(obj){ return B64.enc(await this.encBytes(new TextEncoder().encode(JSON.stringify(obj)))); },
+  async decJSON(b64,key){ return JSON.parse(new TextDecoder().decode(await this.decBytes(B64.dec(b64),key))); },
+  /* Đặt mật khẩu lần đầu */
+  async setup(pass){
+    const salt=B64.enc(crypto.getRandomValues(new Uint8Array(16)));
+    const key=await this._derive(pass,salt,DOCS_ITER);
+    const check=B64.enc(await this.encBytes(new TextEncoder().encode(DOCS_MAGIC),key));
+    store.set('ju.docsLock',{v:1,salt,iter:DOCS_ITER,check});
+    this.key=key; this._emit(); return true;
+  },
+  /* Mở bằng mật khẩu đã đặt — sai mật khẩu thì decrypt ném lỗi, trả về false */
+  async unlock(pass){
+    const cfg=store.get('ju.docsLock',null); if(!cfg||!cfg.salt||!cfg.check) return false;
+    const key=await this._derive(pass,cfg.salt,cfg.iter||DOCS_ITER);
+    try{
+      const txt=new TextDecoder().decode(await this.decBytes(B64.dec(cfg.check),key));
+      if(txt!==DOCS_MAGIC) return false;
+    }catch(_){ return false; }
+    this.key=key; this._emit(); return true;
+  },
+};
+/* Ảnh giấy tờ: nén rồi MÃ HOÁ trước khi rời máy. Đã ghép cloud thì đẩy khối bytes đã mã
+   hoá lên Storage ({epath}); chưa ghép thì để dataURL trong bản ghi — mà bản ghi thì
+   cũng đã được mã hoá cả khối, nên vẫn kín. */
+async function docPhotoFromFile(file){
+  const src=await compressToDataURL(file,1400,0.72); if(!src) return null;
+  if(!DocsCrypto.locked() && typeof Cloud!=='undefined' && Cloud.connected && Cloud.connected()){
+    try{
+      const enc=await DocsCrypto.encBytes(new TextEncoder().encode(src));
+      const path=await Cloud.uploadBlob(new Blob([enc]),'enc','application/octet-stream');
+      if(path) return {epath:path};
+    }catch(_){}
+  }
+  return {src};
+}
 const DOC_CATS=[{k:'cccd',icon:'🪪',label:'CCCD / CMND'},{k:'passport',icon:'🛂',label:'Hộ chiếu'},{k:'khaisinh',icon:'📄',label:'Khai sinh'},{k:'hokhau',icon:'🏠',label:'Hộ khẩu / cư trú'},{k:'sodo',icon:'🏡',label:'Sổ đỏ / nhà đất'},{k:'xe',icon:'🚗',label:'Xe (đăng ký, bằng lái)'},{k:'baohiem',icon:'🩺',label:'Bảo hiểm'},{k:'hocvan',icon:'🎓',label:'Bằng cấp'},{k:'hopdong',icon:'📑',label:'Hợp đồng'},{k:'other',icon:'🗂️',label:'Khác'}];
+/* Cổng mật khẩu của mục Giấy tờ: đặt lần đầu, hoặc mở khoá để giải mã */
+function DocsLock({count,encCount}){
+  const has=DocsCrypto.hasPass();
+  const [p1,setP1]=useState(''); const [p2,setP2]=useState('');
+  const [busy,setBusy]=useState(false); const [note,setNote]=useState('');
+  /* Máy này có dữ liệu đã mã hoá nhưng chưa nhận được ju.docsLock từ máy kia:
+     đặt mật khẩu mới ở đây sẽ thay salt → ciphertext cũ thành rác không mở lại được. */
+  const orphan=!has&&encCount>0;
+  const doSetup=async()=>{
+    if(p1.length<8){ setNote('Mật khẩu cần ít nhất 8 ký tự.'); return; }
+    if(p1!==p2){ setNote('Hai lần nhập chưa khớp.'); return; }
+    if(orphan&&!confirm('Máy này đang có '+encCount+' giấy tờ đã mã hoá bằng mật khẩu đặt ở máy kia.\n\nĐặt mật khẩu MỚI ở đây sẽ làm '+encCount+' giấy tờ đó KHÔNG MỞ LẠI ĐƯỢC BAO GIỜ.\n\nVẫn tiếp tục?')) return;
+    setBusy(true); setNote('');
+    try{ await DocsCrypto.setup(p1); }catch(e){ setNote('Không đặt được mật khẩu: '+(e&&e.message||e)); }
+    setBusy(false);
+  };
+  const doUnlock=async()=>{
+    setBusy(true); setNote('');
+    let ok=false; try{ ok=await DocsCrypto.unlock(p1); }catch(_){ ok=false; }
+    setBusy(false); if(!ok) setNote('Mật khẩu không đúng.');
+  };
+  return (
+    <div>
+      <div className="empty" style={{marginBottom:0}}><span className="big">🔐</span>
+        {has?'Mục Giấy tờ đã được mã hoá. Nhập mật khẩu để mở.':'Đặt mật khẩu cho mục Giấy tờ trước khi lưu.'}
+      </div>
+      <div className="item" style={{margin:'10px 14px'}}>
+        {orphan && <div className="muted" style={{fontSize:12.5,lineHeight:1.6,marginBottom:10,color:'#d9534f'}}>
+          ⚠️ Máy này đang giữ <b>{encCount} giấy tờ đã mã hoá</b> nhưng chưa nhận được cấu hình mật khẩu từ máy kia.
+          Hãy <b>mở app khi có mạng</b> để đồng bộ xong rồi quay lại nhập mật khẩu cũ.
+          Đặt mật khẩu mới ở đây sẽ làm mất hẳn {encCount} giấy tờ đó.
+        </div>}
+        {!has && <div className="muted" style={{fontSize:12.5,lineHeight:1.6,marginBottom:10}}>
+          Ảnh và thông tin giấy tờ sẽ được mã hoá <b>AES-256-GCM</b> ngay trên máy, <b>trước khi</b> rời máy.
+          Máy chủ chỉ giữ khối bytes vô nghĩa — kể cả người quản trị Supabase cũng không đọc được.<br/>
+          <b style={{color:'#d9534f'}}>Mất mật khẩu là mất dữ liệu.</b> Không có cửa sau, không ai lấy lại được cho anh chị.
+          Hai người dùng <b>cùng một mật khẩu</b>; nói trực tiếp cho nhau, đừng nhắn qua app.
+        </div>}
+        <div className="field"><label>{has?'Mật khẩu mục Giấy tờ':'Mật khẩu (ít nhất 8 ký tự)'}</label>
+          <input className="inp" type="password" autoFocus value={p1} onChange={e=>setP1(e.target.value)}
+            onKeyDown={e=>{ if(e.key==='Enter'&&has) doUnlock(); }} placeholder="••••••••"/></div>
+        {!has && <div className="field"><label>Nhập lại mật khẩu</label>
+          <input className="inp" type="password" value={p2} onChange={e=>setP2(e.target.value)} placeholder="••••••••"/></div>}
+        {note && <div className="muted" style={{fontSize:12.5,color:'#d9534f',marginBottom:8}}>{note}</div>}
+        <button className="btn" disabled={busy} onClick={has?doUnlock:doSetup}>
+          {busy?'Đang xử lý…':(has?'🔓 Mở khoá':'🔐 Đặt mật khẩu')}</button>
+        {has && count>0 && <div className="muted center" style={{fontSize:11.5,marginTop:8}}>Đang giữ {count} giấy tờ đã mã hoá.</div>}
+      </div>
+    </div>
+  );
+}
 function DocsVault({people,me}){
   const [items,setItems]=useLocal('ju.docs',[]);
   const [open,setOpen]=useState(false); const [edit,setEdit]=useState(null);
   const [q,setQ]=useState(''); const [cat,setCat]=useState('all'); const [view,setView]=useState(null);
-  const save=(d)=>{ if(!d.name||!d.name.trim())return; const rec={...d,name:d.name.trim()}; if(rec.id) setItems(items.map(x=>x.id===rec.id?rec:x)); else setItems([{...rec,id:uid(),by:me,createdAt:Date.now()},...items]); setOpen(false);setEdit(null); celebrate(['🗂️']); };
-  const del=(id)=>{ if(confirm('Xoá giấy tờ này? (ảnh cũng bị xoá)')) setItems(items.filter(x=>x.id!==id)); };
+  const [locked,setLocked]=useState(()=>DocsCrypto.locked());
+  const [plain,setPlain]=useState(null);
+  useEffect(()=>DocsCrypto.onChange(()=>setLocked(DocsCrypto.locked())),[]);
+  /* Giải mã ra RAM để hiện & tìm kiếm. Khoá lại là bản rõ mất sạch. */
+  useEffect(()=>{
+    let on=true;
+    if(locked){ setPlain(null); return; }
+    (async()=>{
+      const out=[];
+      for(const x of items){
+        if(!x.enc){ out.push(x); continue; }
+        try{ const d=await DocsCrypto.decJSON(x.enc); out.push({...d,id:x.id,expiry:x.expiry}); }
+        catch(_){ out.push({id:x.id,expiry:x.expiry,name:'⚠️ Không giải mã được',photos:[],_bad:true}); }
+      }
+      if(on) setPlain(out);
+    })();
+    return ()=>{ on=false; };
+  },[items,locked]);
+  /* Chỉ id + expiry để thô — vừa đủ cho mục nhắc hạn ngoài Trang chủ chạy khi đang khoá.
+     Mọi thứ còn lại (kể cả LOẠI giấy tờ) đều nằm trong khối mã hoá. */
+  const encRec=async(x)=>{ const {id,expiry,...rest}=x; return {id,expiry,enc:await DocsCrypto.encJSON(rest)}; };
+  /* Bản ghi cũ còn lưu thô → mã hoá ngay khi vừa mở khoá */
+  useEffect(()=>{
+    if(locked||!items.some(x=>!x.enc)) return;
+    let on=true;
+    (async()=>{ const conv=[]; for(const x of items) conv.push(x.enc?x:await encRec(x)); if(on) setItems(conv); })();
+    return ()=>{ on=false; };
+  },[locked,items]);
+  const save=async(d)=>{
+    if(!d.name||!d.name.trim())return;
+    const base=d.id?d:{...d,id:uid(),by:me,createdAt:Date.now()};
+    const rec=await encRec({...base,name:d.name.trim()});
+    setItems(d.id?items.map(x=>x.id===rec.id?rec:x):[rec,...items]);
+    setOpen(false);setEdit(null); celebrate(['🗂️']);
+  };
+  const del=(id)=>{
+    if(!confirm('Xoá giấy tờ này? (ảnh cũng bị xoá)')) return;
+    const rec=(plain||[]).find(x=>x.id===id);
+    ((rec&&rec.photos)||[]).forEach(p=>{ const path=p&&(p.epath||p.path); if(path) Cloud.deletePhoto(path); });
+    setItems(items.filter(x=>x.id!==id));
+  };
   const catOf=(k)=>DOC_CATS.find(x=>x.k===k)||DOC_CATS[DOC_CATS.length-1];
   const ql=q.trim().toLowerCase();
-  const shown=items.filter(x=>(cat==='all'||x.cat===cat)&&(!ql||(x.name+' '+(x.number||'')+' '+(x.owner||'')+' '+(x.place||'')).toLowerCase().includes(ql)));
+  if(!DocsCrypto.ready()) return <div className="empty"><span className="big">🚫</span>Trình duyệt này không có WebCrypto nên không mã hoá được giấy tờ. Hãy mở app bằng Chrome/Safari bản mới qua HTTPS.</div>;
+  if(locked) return <DocsLock count={items.length} encCount={items.filter(x=>x.enc).length}/>;
+  if(plain===null) return <div className="empty"><span className="big">🔓</span>Đang giải mã…</div>;
+  const shown=plain.filter(x=>(cat==='all'||x.cat===cat)&&(!ql||((x.name||'')+' '+(x.number||'')+' '+(x.owner||'')+' '+(x.place||'')).toLowerCase().includes(ql)));
+  /* ảnh cũ đã đẩy lên Storage dạng thô trước khi có mã hoá — bytes vẫn nằm đó, phải nói thật */
+  const legacy=plain.reduce((n,x)=>n+((x.photos||[]).filter(p=>p&&p.path).length),0);
   return (
     <div>
-      <div className="muted center" style={{fontSize:12.5,margin:'10px 14px'}}>🗂️ Lưu ảnh & thông tin giấy tờ quan trọng — tra cứu nhanh, khỏi lục tung nhà. <span style={{opacity:.85}}>Ảnh lưu ngay trên máy bạn.</span></div>
+      <div className="muted center" style={{fontSize:12.5,margin:'10px 14px'}}>🗂️ Lưu ảnh & thông tin giấy tờ quan trọng — tra cứu nhanh, khỏi lục tung nhà. <span style={{opacity:.85}}>Đã mã hoá đầu-cuối: máy chủ không đọc được.</span></div>
+      <div className="row" style={{margin:'0 14px 8px'}}>
+        <span className="grow muted" style={{fontSize:11.5}}>🔓 Đang mở — tự khoá lại khi đóng app.</span>
+        <button className="btn sm soft" onClick={()=>DocsCrypto.lock()}>🔒 Khoá lại</button>
+      </div>
+      {legacy>0 && <div className="item" style={{margin:'0 14px 10px',borderColor:'var(--warn)'}}>
+        <div className="muted" style={{fontSize:12.5,lineHeight:1.6}}>⚠️ Có <b>{legacy} ảnh cũ</b> đã tải lên từ trước khi bật mã hoá — phần thông tin quanh nó nay đã kín, nhưng <b>bytes ảnh trên máy chủ vẫn ở dạng thô</b>. Muốn kín hẳn thì bấm ✏️ sửa, xoá ảnh đó rồi chụp/chọn lại.</div>
+      </div>}
       <div className="row" style={{margin:'0 14px',gap:8}}>
         <input className="inp grow" placeholder="🔎 Tìm: tên, số, của ai…" value={q} onChange={e=>setQ(e.target.value)}/>
         <button className="btn sm" onClick={()=>{setEdit(null);setOpen(true);}}>＋ Thêm</button>
@@ -6656,8 +6846,9 @@ function DocsVault({people,me}){
             {(x.photos||[]).map((p,i)=><span key={i} style={{cursor:'pointer',lineHeight:0}} onClick={()=>setView(p)}><PhotoImg photo={p} style={{width:78,height:56,borderRadius:8,objectFit:'cover'}}/></span>)}
           </div>}
           {x.note && <div className="muted" style={{fontSize:12.5,marginTop:6}}>{x.note}</div>}
+          {x._bad && <div className="muted" style={{fontSize:12,marginTop:6,color:'#d9534f',lineHeight:1.55}}>Bản ghi này mã hoá bằng mật khẩu khác. Không sửa được — sửa & lưu sẽ ghi đè mất bản gốc. Nếu nhớ ra mật khẩu cũ thì 🔒 khoá lại rồi mở bằng mật khẩu đó.</div>}
           <div className="it-meta"><span className="grow"></span>
-            <button className="iconbtn" onClick={()=>{setEdit(x);setOpen(true);}}>✏️</button>
+            {!x._bad && <button className="iconbtn" onClick={()=>{setEdit(x);setOpen(true);}}>✏️</button>}
             <button className="iconbtn" onClick={()=>del(x.id)}>🗑️</button></div>
         </div>; })}
       {open && <DocForm init={edit} onClose={()=>{setOpen(false);setEdit(null);}} onSave={save}/>}
@@ -6684,8 +6875,9 @@ function DocForm({init,onClose,onSave}){
     <div className="field"><label>Ảnh chụp giấy tờ (mặt trước / sau…)</label>
       <div style={{display:'flex',flexWrap:'wrap',gap:8,alignItems:'center'}}>
         {(f.photos||[]).map((p,i)=><div key={i} style={{position:'relative'}}><PhotoImg photo={p} style={{width:66,height:66,borderRadius:8,objectFit:'cover'}}/><button className="muted" style={{position:'absolute',top:-7,right:-7,background:'var(--card)',border:'1px solid var(--line)',borderRadius:'50%',width:20,height:20,fontSize:11}} onClick={()=>rmPhoto(i)}>✕</button></div>)}
-        <PhotoAddBtn size={66} onAdd={addPhoto}/>
+        <PhotoAddBtn size={66} onAdd={addPhoto} make={docPhotoFromFile}/>
       </div>
+      <div className="muted" style={{fontSize:11.5,marginTop:6,lineHeight:1.55}}>🔐 Ảnh được mã hoá ngay trên máy trước khi tải lên. Dù vậy vẫn nên cân nhắc: đừng để <b>ảnh giấy tờ + số hiệu + nơi cất bản gốc</b> đủ cả ba trong một mục.</div>
     </div>
     <div className="field"><label>🔗 Link Google Photos (tuỳ chọn — khỏi tải ảnh)</label><input className="inp" value={f.link||''} onChange={e=>set('link',e.target.value)} placeholder="Dán link album/ảnh Google Photos…"/></div>
     <div className="field"><label>Ghi chú</label><textarea className="inp" value={f.note} onChange={e=>set('note',e.target.value)} placeholder="(tuỳ chọn)"/></div>
@@ -8009,13 +8201,28 @@ function Achievements({setup}){
 /* Ảnh: lấy URL ký tạm nếu là ảnh trên Storage; nếu là base64/link thì dùng trực tiếp */
 function PhotoImg({photo,style}){
   const [url,setUrl]=useState(photo.src||null);
+  const [retry,setRetry]=useState(0);
   useEffect(()=>{
     let on=true;
-    if(photo.path){ Cloud.signedUrl(photo.path).then(u=>{ if(on&&u) setUrl(u); }); }
+    if(photo.epath){
+      /* ảnh đã mã hoá (mục Giấy tờ): tải bytes qua phiên đăng nhập rồi giải mã trong máy */
+      if(DocsCrypto.locked()) setUrl(null);
+      else (async()=>{ try{
+        const raw=await Cloud.downloadBytes(photo.epath); if(!raw) return;
+        const txt=new TextDecoder().decode(await DocsCrypto.decBytes(raw));
+        if(on) setUrl(txt);
+      }catch(_){} })();
+    }
+    else if(photo.path){ Cloud.signedUrl(photo.path).then(u=>{ if(on&&u) setUrl(u); }); }
     else setUrl(photo.src||null);
     return ()=>{ on=false; };
-  },[photo.path,photo.src]);
-  return <img src={url||''} alt="" style={style} onError={e=>{e.target.style.opacity=.3;}}/>;
+  },[photo.path,photo.src,photo.epath,retry]);
+  /* link 1 giờ có thể hết hạn khi app mở lâu — xin link mới một lần rồi thử lại */
+  const onErr=(e)=>{
+    if(photo.path&&retry<1){ Cloud.forgetUrl(photo.path); setRetry(retry+1); return; }
+    e.target.style.opacity=.3;
+  };
+  return <img src={url||''} alt="" style={style} onError={onErr}/>;
 }
 // Nén ảnh về tối đa maxDim px, JPEG — tránh phình localStorage
 function compressToDataURL(file,maxDim,quality){
@@ -8024,10 +8231,11 @@ function compressToDataURL(file,maxDim,quality){
     r.onerror=()=>resolve(null); r.readAsDataURL(file); });
 }
 async function photoFromFile(file){ try{ if(typeof Cloud!=='undefined'&&Cloud.connected&&Cloud.connected()){ const path=await Cloud.uploadPhoto(file); if(path) return {path}; } }catch(_){} const src=await compressToDataURL(file,1400,0.72); return src?{src}:null; }
-function PhotoAddBtn({onAdd,size,label,multiple}){
+function PhotoAddBtn({onAdd,size,label,multiple,make}){
   const ref=useRef(null); const [busy,setBusy]=useState(false);
   const pick=async(e)=>{ const files=Array.from(e.target.files||[]); if(!files.length)return; e.target.value=''; setBusy(true);
-    for(let i=0;i<files.length;i++){ try{ const p=await photoFromFile(files[i]); if(p) onAdd(p); }catch(_){} }
+    const mk=make||photoFromFile;
+    for(let i=0;i<files.length;i++){ try{ const p=await mk(files[i]); if(p) onAdd(p); }catch(_){} }
     setBusy(false); };
   const s=size||64;
   return <><button className="btn sm soft" style={{width:label?'auto':s,height:s,fontSize:label?13:20,padding:label?'0 12px':0}} onClick={()=>ref.current&&ref.current.click()}>{busy?'…':(label||'📷')}</button><input ref={ref} type="file" accept="image/*" multiple={!!multiple} style={{display:'none'}} onChange={pick}/></>;
