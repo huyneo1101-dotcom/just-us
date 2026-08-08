@@ -680,22 +680,28 @@ function applyDarkMode(mode){
 }
 // Skin "Sổ tay": gán góc nghiêng NGẪU NHIÊN thật cho từng thẻ/dòng (biến --rot).
 // Mỗi phần tử chỉ gán 1 lần (nhớ qua data-rot) nên góc ổn định, không nhảy khi re-render.
+let sotayLastSign=0, sotayRunLen=0;
+function sotayTiltSign(){
+  // Chiều nghiêng NGẪU NHIÊN (không luân phiên máy móc), nhưng chặn không cho
+  // quá 2 thẻ liền nhau cùng chiều → vẫn tự nhiên mà không dồn hết về một bên.
+  let sign = Math.random()<0.5 ? -1 : 1;
+  if(sign===sotayLastSign && sotayRunLen>=2) sign=-sign;
+  sotayRunLen = (sign===sotayLastSign) ? sotayRunLen+1 : 1;
+  sotayLastSign = sign;
+  return sign;
+}
 function applySotayTilt(root){
   if(!document.body.classList.contains('theme-sotay')) return;
   const scope=root||document;
   const els=scope.querySelectorAll('.card, .item');
-  let n=0;
   for(let i=0;i<els.length;i++){ const el=els[i];
     if(el.classList.contains('ju-now')) continue;
-    if(el.dataset.rot){ n++; continue; }
-    // Thẻ dashboard Trang chủ (dưới măng-sét, gồm Thực đơn hôm nay…) nghiêng nhè nhẹ;
-    // còn lại (dòng danh sách, thẻ ở các tab) nghiêng rõ hơn.
-    const gentle=el.classList.contains('card') && el.closest('.homev3');
-    const mag=gentle ? (0.35+Math.random()*0.65) : (0.9+Math.random()*1.4);
-    const sign=(n%2===0)?-1:1;                    // luân phiên chiều theo thứ tự → không dồn 1 bên
+    if(el.dataset.rot) continue;
+    // Mọi thẻ/dòng (Trang chủ lẫn các tab khác) dùng chung độ nghiêng nhè nhẹ 0.35–1°
+    // để cả app cùng một chất "sổ tay", chiều nghiêng thì ngẫu nhiên.
+    const mag=0.35+Math.random()*0.65;
     el.dataset.rot='1';
-    el.style.setProperty('--rot',(sign*mag).toFixed(2)+'deg');
-    n++;
+    el.style.setProperty('--rot',(sotayTiltSign()*mag).toFixed(2)+'deg');
   }
 }
 const HOME_FONTS=[
