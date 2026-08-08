@@ -5,7 +5,7 @@
    - Thư viện CDN (jsdelivr) cố định theo version: CACHE-FIRST.
    - Supabase: KHÔNG cache (luôn ra mạng).
 */
-const CACHE = 'justus-v24';
+const CACHE = 'justus-v25';
 const NOTI_CACHE = 'justus-noti';
 const CDN = ['https://cdn.jsdelivr.net'];
 
@@ -13,7 +13,11 @@ self.addEventListener('install', (e) => { self.skipWaiting(); });
 
 self.addEventListener('activate', (e) => {
   e.waitUntil(
-    caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE && k !== NOTI_CACHE).map(k => caches.delete(k))))
+    // CHỈ dọn cache của chính app này: app Tâm linh (tam-linh/) dùng chung origin,
+    // xoá theo kiểu "khác CACHE thì xoá" sẽ xoá luôn cache 'tamlinh-*' của nó.
+    caches.keys().then(keys => Promise.all(
+      keys.filter(k => k.startsWith('justus-') && k !== CACHE && k !== NOTI_CACHE).map(k => caches.delete(k))
+    ))
       .then(() => self.clients.claim())
   );
 });
@@ -29,6 +33,17 @@ self.addEventListener('fetch', (e) => {
 
   // Thư viện CDN cố định: cache-first
   if (CDN.some(c => req.url.startsWith(c))) {
+    e.respondWith(
+      caches.open(CACHE).then(c => c.match(req).then(hit =>
+        hit || fetch(req).then(resp => { if (resp && resp.ok) c.put(req, resp.clone()); return resp; })
+      ))
+    );
+    return;
+  }
+
+  // Dữ liệu tĩnh tách rời (data/*.json) + font: đổi rất hiếm và khá nặng → CACHE-FIRST.
+  // Muốn đẩy nội dung mới thì bump CACHE ở trên (đúng nếp đã có của repo).
+  if (url.origin === location.origin && (url.pathname.includes('/data/') || url.pathname.endsWith('fonts.css'))) {
     e.respondWith(
       caches.open(CACHE).then(c => c.match(req).then(hit =>
         hit || fetch(req).then(resp => { if (resp && resp.ok) c.put(req, resp.clone()); return resp; })
