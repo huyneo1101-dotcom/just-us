@@ -4,6 +4,10 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 <meta name="theme-color" content="#e85d8a" />
+<!-- Chặn trình duyệt tự bôi đen app (Chrome Android "Chủ đề tối → Làm tối trang web",
+     Samsung Internet dark mode…): app tự lo màu sáng/tối, đừng đảo màu giúp.
+     JS đổi sang 'dark' khi CHÍNH app bật chế độ tối — xem applyDarkMode. -->
+<meta name="color-scheme" content="only light" />
 <title>Just Us — Của riêng hai đứa</title>
 
 <!-- PWA: cài lên màn hình điện thoại + chạy offline -->
@@ -717,14 +721,29 @@ const THEMES=[
   {k:'sky', name:'Trời xanh', c:'#3b82f6'},
   {k:'mocha', name:'Mocha', c:'#b07a4f'},
 ];
+// Báo cho trình duyệt biết app ĐANG sáng hay tối, để nó đừng tự bôi đen giúp
+// (Chrome Android "Làm tối trang web" / Samsung Internet). Đọc thẳng màu nền
+// thật đang áp dụng nên tự đúng với mọi theme, kể cả skin Sổ tay.
+function syncColorScheme(){
+  try{
+    const v=getComputedStyle(document.body).getPropertyValue('--bg').trim();
+    const m=/^#([0-9a-f]{6})$/i.exec(v);
+    let dark=false;
+    if(m){ const n=parseInt(m[1],16);
+      dark = ((((n>>16)&255)*0.299 + (((n>>8)&255))*0.587 + (n&255)*0.114)/255) < 0.5; }
+    document.documentElement.style.colorScheme = dark ? 'dark' : 'only light';
+  }catch(_){}
+}
 function applyTheme(k){
   [...document.body.classList].forEach(c=>{ if(c.indexOf('theme-')===0) document.body.classList.remove(c); });
   document.body.classList.add('theme-'+k);
+  syncColorScheme();
 }
 // mode: 'light' | 'dark' | 'system' (theo cài đặt sáng/tối của điện thoại)
 function applyDarkMode(mode){
   const dark = mode==='dark' || (mode==='system' && typeof window.matchMedia==='function' && window.matchMedia('(prefers-color-scheme: dark)').matches);
   document.body.classList.toggle('dark', dark);
+  syncColorScheme();
 }
 // Skin "Sổ tay": gán góc nghiêng NGẪU NHIÊN thật cho từng thẻ/dòng (biến --rot).
 // Mỗi phần tử chỉ gán 1 lần (nhớ qua data-rot) nên góc ổn định, không nhảy khi re-render.
