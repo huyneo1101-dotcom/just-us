@@ -19,53 +19,53 @@ kia** rồi gửi push → `sw.js` trên máy B hiện thông báo, kể cả kh
 
 ---
 
-## 1. Chuẩn bị cặp khoá VAPID
+## Cách nhanh: chạy một lệnh
 
-Public key đang dùng trong `index.html` (`VAPID_PUBLIC`, dòng ~5189):
-
-```
-BBGZe7N9CydCcQhvky9O2oVqzHPnV5Xbhcn7QBGGEFykxsDCoTI1nFpCJtaXkaG3wTH0xQM98RSaJlQNky795EM
-```
-
-**Còn giữ private key khớp với nó** → dùng luôn, sang bước 2.
-
-**Mất rồi** → tạo cặp mới:
+Cần [Supabase CLI](https://supabase.com/docs/guides/cli) và đã `supabase login`.
 
 ```bash
-npx web-push generate-vapid-keys
+VAPID_PRIVATE='<khoá bí mật>' bash supabase/setup-push.sh
 ```
 
-rồi thay `VAPID_PUBLIC` trong `index.html` bằng public key mới.
-Không phải làm gì thêm: `subscribePush()` đã tự phát hiện máy đang giữ
-subscription của khoá cũ, tự `unsubscribe`, xoá dòng cũ trong `justus_push_subs`
-rồi đăng ký lại bằng khoá mới.
+Script tự làm hết: kiểm khoá có khớp không → nạp secret → deploy function →
+lấy service_role key → sinh file SQL đã điền sẵn để dán vào SQL Editor.
 
-## 2. Nạp secret cho Edge Function
+Muốn nó chạy nốt cả bước SQL thì đưa thêm chuỗi kết nối database:
 
 ```bash
+DB_URL='postgresql://postgres:<mật khẩu>@db.<PROJECT_REF>.supabase.co:5432/postgres' \
+  VAPID_PRIVATE='<khoá bí mật>' bash supabase/setup-push.sh
+```
+
+Public key hiện dùng nằm ở `VAPID_PUBLIC` trong `index.html` (dòng ~5191).
+Muốn đổi cặp khoá khác thì tạo `npx web-push generate-vapid-keys`, thay
+`VAPID_PUBLIC` trong `index.html`, rồi chạy lại script với private key mới —
+`subscribePush()` đã tự huỷ subscription cũ và đăng ký lại, không phải làm gì thêm.
+
+---
+
+## Làm tay (nếu không muốn dùng script)
+
+```bash
+# 1. secret
 supabase secrets set \
   VAPID_PUBLIC="<public key>" \
   VAPID_PRIVATE="<private key>" \
   VAPID_SUBJECT="mailto:huyneo1101@gmail.com"
+
+# 2. function
+supabase functions deploy push-notify
 ```
 
 `SUPABASE_URL` và `SUPABASE_SERVICE_ROLE_KEY` Supabase tự cấp, không cần set.
 
-## 3. Deploy function
-
-```bash
-supabase functions deploy push-notify
-```
-
-## 4. Chạy migration
-
-Mở **Supabase Dashboard → SQL Editor**, dán cả file
-`supabase/migrations/20260808120000_push_notify.sql`, **sửa 2 dòng dưới mục
-`-- CẤU HÌNH`** (project ref + service_role key) rồi Run.
+3. Mở **Dashboard → SQL Editor**, dán cả file
+   `supabase/migrations/20260808120000_push_notify.sql`, **sửa 2 dòng dưới mục
+   `-- CẤU HÌNH`** (project ref + service_role key) rồi Run.
 
 > Service role key là bí mật — chỉ dán trong SQL Editor. **Đừng commit vào repo.**
 
-## 5. Thử
+## Thử
 
 1. Cả hai máy: **Cá nhân → 🔔 Thông báo** → bật công tắc chính, cho phép quyền,
    và bật mục **Nhắn nhau**. (Công tắc chính mặc định **tắt** — không bật thì

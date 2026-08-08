@@ -4728,7 +4728,9 @@ function RoutineTab({people,me}){
   );
 }
 /* ============ Thông báo điện thoại ============ */
-const VAPID_PUBLIC='BBGZe7N9CydCcQhvky9O2oVqzHPnV5Xbhcn7QBGGEFykxsDCoTI1nFpCJtaXkaG3wTH0xQM98RSaJlQNky795EM';
+// Khoá công khai VAPID — cặp với VAPID_PRIVATE cất trong secret của Supabase (không bao giờ commit).
+// Đổi khoá này = mọi subscription cũ chết, nhưng subscribePush() bên dưới đã tự đăng ký lại.
+const VAPID_PUBLIC='BFj7hLMvv3G60I0gTYNAvblUBtL4QaYgwV3Go6nzNQDpvkhrhsDxAEOaz8AMaBgU-yrNy6HQo0_ad_5qCZ7bqog';
 function urlB64ToU8(s){ const pad='='.repeat((4-s.length%4)%4); const b=(s+pad).replace(/-/g,'+').replace(/_/g,'/'); const raw=atob(b); const arr=new Uint8Array(raw.length); for(let i=0;i<raw.length;i++)arr[i]=raw.charCodeAt(i); return arr; }
 function u8ToUrlB64(buf){ const b=new Uint8Array(buf); let s=''; for(let i=0;i<b.length;i++) s+=String.fromCharCode(b[i]); return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''); }
 // Đăng ký web-push để nhận thông báo CẢ KHI ĐÓNG APP (cần đã đăng nhập + ghép đôi)
