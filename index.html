@@ -147,13 +147,13 @@ textarea.inp{resize:vertical;min-height:64px}
 .segpill{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:9px 3px;border-radius:12px;background:var(--card);border:1px solid var(--line);color:var(--text);font-weight:600;font-size:11px;line-height:1.15;text-align:center;cursor:pointer;min-height:54px}
 .segpill .segic{font-size:19px;line-height:1}
 .segpill.on{background:var(--primary);color:var(--on-primary);border-color:var(--primary);box-shadow:var(--shadow)}
-/* Menu Tụi Mình (Mẫu 4): 5 icon tròn chọn nhóm + tab gạch chân cho mục con */
+/* Menu Nhà mình (Mẫu 4): 6 icon tròn chọn nhóm + tab gạch chân cho mục con */
 .usm4{padding:10px 14px 2px}
-.usm4-groups{display:flex;justify-content:space-between;gap:8px;max-width:322px;margin:0 auto}
+.usm4-groups{display:flex;justify-content:space-between;gap:8px;max-width:360px;margin:0 auto}
 .usm4-dot{flex:0 0 auto;width:48px;height:48px;border-radius:50%;background:var(--card);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:20px;line-height:1;padding:0;cursor:pointer}
 .usm4-dot.on{background:var(--primary);border-color:var(--primary);box-shadow:0 0 0 3px rgba(0,0,0,.06),var(--shadow)}
 .usm4-name{text-align:center;font-weight:700;font-size:15px;color:var(--text);margin:11px 0 2px}
-.usm4-tabs{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 16px;border-top:1px solid var(--line);padding-top:9px;margin-top:8px}
+.usm4-tabs{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 12px;border-top:1px solid var(--line);padding-top:9px;margin-top:8px}
 .usm4-tab{display:inline-flex;align-items:center;gap:5px;background:none;border:0;border-bottom:2px solid transparent;color:var(--muted);font-weight:700;font-size:12.5px;line-height:1;padding:2px 1px 6px;cursor:pointer}
 .usm4-tab .segic{font-size:14px;line-height:1}
 .usm4-tab.on{color:var(--primary);border-bottom-color:var(--primary)}
@@ -6087,10 +6087,11 @@ const US_SEGS=[
   {k:'moneylover',icon:'💵',label:'Money Lover'},
 ];
 const US_GROUPS=[
-  {k:'daily',icon:'📆',label:'Hàng ngày',items:['todos','routine','chores','menu','shop','rules']},
-  {k:'money',icon:'💰',label:'Tiền nong',items:['fund','goals','budget','moneylover']},
-  {k:'plan',icon:'📅',label:'Lịch & Kỷ niệm',items:['events','dates','timeline']},
-  {k:'kho',icon:'📦',label:'Nhà & Kho',items:['expiry','stash','docs']},
+  {k:'daily',icon:'☀️',label:'Hôm nay',items:['todos','routine','chores']},
+  {k:'kitchen',icon:'🍜',label:'Bếp & Chợ',items:['menu','shop','expiry']},
+  {k:'money',icon:'💰',label:'Tiền nong',items:['fund','budget','moneylover']},
+  {k:'plan',icon:'🛣️',label:'Chặng đường',items:['events','dates','timeline','goals']},
+  {k:'kho',icon:'🗄️',label:'Hồ sơ nhà',items:['docs','stash','rules']},
   {k:'bigfam',icon:'🏡',label:'Gia đình lớn',items:['family','projects']},
 ];
 const US_SEG_MAP=Object.fromEntries(US_SEGS.map(s=>[s.k,s]));
@@ -6367,13 +6368,17 @@ function HealthTab({people,me}){
   );
 }
 function UsTab({people,me,flash}){
-  const [group,setGroup]=useState('daily');
-  const grp=US_GROUPS.find(g=>g.k===group)||US_GROUPS[0];
-  const [seg,setSeg]=useState(grp.items[0]);
-  const pickGroup=(gk)=>{ if(gk===group) return; const g=US_GROUPS.find(x=>x.k===gk)||US_GROUPS[0]; setGroup(gk); setSeg(g.items[0]); };
+  /* nhớ nhóm + mục đang mở (riêng từng máy, không đồng bộ) */
+  const nav0=store.get('ju.usNav',null)||{};
+  const grp0=US_GROUPS.find(g=>g.k===nav0.g)||US_GROUPS[0];
+  const [group,setGroup]=useState(grp0.k);
+  const [seg,setSeg]=useState(grp0.items.indexOf(nav0.s)>=0?nav0.s:grp0.items[0]);
+  const goTo=(gk,sk)=>{ setGroup(gk); setSeg(sk); store.set('ju.usNav',{g:gk,s:sk}); };
+  const pickGroup=(gk)=>{ if(gk===group) return; const g=US_GROUPS.find(x=>x.k===gk)||US_GROUPS[0]; goTo(gk,g.items[0]); };
+  const pickSeg=(sk)=>goTo(group,sk);
   return (
     <div>
-      <UsMenu group={group} seg={seg} onPickGroup={pickGroup} onSeg={setSeg}/>
+      <UsMenu group={group} seg={seg} onPickGroup={pickGroup} onSeg={pickSeg}/>
       {seg==='routine' && <RoutineTab people={people} me={me}/>}
       {seg==='family' && <FamilyTree people={people} me={me} flash={flash}/>}
       {seg==='projects' && <FamilyProjects people={people} me={me}/>}
