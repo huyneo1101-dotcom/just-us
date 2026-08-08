@@ -5,7 +5,7 @@
    - Thư viện CDN (jsdelivr) cố định theo version: CACHE-FIRST.
    - Supabase: KHÔNG cache (luôn ra mạng).
 */
-const CACHE = 'justus-v25';
+const CACHE = 'justus-v26';
 const NOTI_CACHE = 'justus-noti';
 const CDN = ['https://cdn.jsdelivr.net'];
 
@@ -13,8 +13,8 @@ self.addEventListener('install', (e) => { self.skipWaiting(); });
 
 self.addEventListener('activate', (e) => {
   e.waitUntil(
-    // CHỈ dọn cache của chính app này: app Tâm linh (tam-linh/) dùng chung origin,
-    // xoá theo kiểu "khác CACHE thì xoá" sẽ xoá luôn cache 'tamlinh-*' của nó.
+    // CHỈ dọn cache của chính app này: app Tâm linh (tam-linh/) và app Sóc (soc/) dùng chung
+    // origin, xoá theo kiểu "khác CACHE thì xoá" sẽ xoá luôn cache 'tamlinh-*' / 'soc-*' của chúng.
     caches.keys().then(keys => Promise.all(
       keys.filter(k => k.startsWith('justus-') && k !== CACHE && k !== NOTI_CACHE).map(k => caches.delete(k))
     ))

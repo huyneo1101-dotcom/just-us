@@ -1,10 +1,10 @@
 # Just Us — Của riêng hai đứa (app riêng cho một cặp đôi/vợ chồng)
 
-App tĩnh: UI + logic + CSS nằm trong `index.html` (~8290 dòng, ~710KB — vẫn RẤT LỚN), React 18 + Babel Standalone qua CDN, KHÔNG build step. Deploy tĩnh (GitHub Pages qua Actions + Netlify).
+App tĩnh: UI + logic + CSS nằm trong `index.html` (~7810 dòng, ~676KB — vẫn RẤT LỚN), React 18 + Babel Standalone qua CDN, KHÔNG build step. Deploy tĩnh (GitHub Pages qua Actions + Netlify).
 
 ## Quy tắc làm việc với file này
-- **KHÔNG đọc cả `index.html` (~710KB, ~8290 dòng)** — LUÔN grep định vị rồi Read cửa sổ nhỏ (xem skill `bigfile-nav`).
-- Sửa nội dung đáng kể → **bump `CACHE` trong `sw.js`** (hiện: `justus-v25`; có thêm cache phụ `justus-noti`).
+- **KHÔNG đọc cả `index.html` (~676KB, ~7810 dòng)** — LUÔN grep định vị rồi Read cửa sổ nhỏ (xem skill `bigfile-nav`).
+- Sửa nội dung đáng kể → **bump `CACHE` trong `sw.js`** (hiện: `justus-v26`; có thêm cache phụ `justus-noti`).
 - Babel transpile trong trình duyệt: lỗi cú pháp = trắng màn hình. Kiểm tra Console sau khi sửa.
 
 ## Dữ liệu tĩnh tách rời (`data/*.json`)
@@ -16,6 +16,7 @@ Các mảng nội dung lớn KHÔNG còn nằm trong `index.html` — sửa nộ
 | `data/dishes.json` | `MENU_GOALS` `EASY_DISHES` `DISHES` (232 món) |
 | `data/prompts.json` | `QUESTIONS` `QUIZ_Q` `CHALLENGES` `TALK_TOPICS` |
 | `data/hanoi.json` | `HANOI_CATS` `HANOI_SPOTS` |
+| `data/child.json` | `CHILD_VACCINES` `CHILD_MILESTONES` `CHILD_TIPS` `CHILD_PACK` `CHILD_SKILLS` `PLAY_LIB` `WEAN_MENU` `PARENTING_QS` `ILL_SYMPTOMS` `KIDS_CAFES` `SKILL_GUIDES` `CHILD_ISSUES` — **dùng chung** cho app Sóc (`soc/`) và trang chủ Just Us |
 
 Cách hoạt động: một `<script>` ngay trước khối `text/babel` tạo `window.JUD` với mảng/object RỖNG rồi `fetch` các JSON và **đổ dữ liệu vào đúng chỗ cũ** (giữ nguyên identity, vì trong khối babel viết `const DISHES=JUD.DISHES;` chạy ngay lập tức). App chỉ vẽ sau khi dữ liệu về (tối đa chờ 5s rồi vẽ trước, dữ liệu về muộn thì vẽ lại).
 - Thêm mảng dữ liệu mới → thêm khoá vào JSON **và** thêm placeholder rỗng đúng kiểu trong `window.JUD`.
@@ -39,6 +40,33 @@ ngày lễ âm lịch · kinh Phật · văn khấn · tử vi · thần số ·
 `ImportantDates`, dấu ngày lễ ở `MiniCalendar`, nhắc việc ở `Reminders` và thông báo nhóm `tamLinh`.
 App `tam-linh/` giữ **bản sao** các hàm này.
 
+## App con: Sóc / Nuôi con (`soc/`)
+Phần Nuôi con **đã tách khỏi `index.html`** thành app tĩnh độc lập trong thư mục `soc/`
+(`index.html` + `manifest.json` + `sw.js` + `icon.svg`, cài được như PWA riêng): mốc phát triển ·
+mốc ngôn ngữ · trò chơi theo kỹ năng · cafe/khu vui chơi cho bé ở HN · tiêm chủng · cân nặng chiều cao ·
+nhật ký ốm · hồ sơ y tế gửi cô · mẹo ăn uống · thực đơn ăn dặm · đếm ngược ngày nhập học · đồ mang đi lớp ·
+kỹ năng tự lập · thống nhất cách dạy con · dạy kỹ năng tự túc · nhật ký "điều đầu tiên" & "cơn ăn vạ".
+
+- Vào từ Just Us: tab dưới **🐿️ Sóc** giờ chỉ là **màn cửa vào** (`ChildLauncher`, ~dòng 4463) với nút
+  "Mở app Sóc →" (`href="soc/"`). Component `ChildCare` KHÔNG còn trong `index.html`.
+- Dữ liệu tĩnh **không nhân bản**: `soc/index.html` fetch `../data/child.json`, còn `index.html` cũng nạp
+  chính file đó nhưng chỉ dùng `PLAY_LIB` + `WEAN_MENU` (thẻ trang chủ "Chơi với con hôm nay" và phần của
+  bé trong "Thực đơn hôm nay"). Sửa nội dung nuôi con → sửa `data/child.json`, cả hai app cùng đổi.
+- **Cùng origin** với Just Us → chung `localStorage`, mọi khoá `ju.child*` + `ju.skillGuidesDone` giữ nguyên.
+- **Đồng bộ đám mây**: khác Tâm linh, `soc/` CÓ lớp `Cloud` gọn riêng — nó dùng lại **phiên Supabase đã có
+  của Just Us** (không tự đăng nhập / ghép cặp) và chỉ đụng vào `CHILD_KEYS`: kéo về thì chỉ ghi đè khoá của
+  Sóc, đẩy lên thì **trộn** khoá Sóc vào hàng `justus_data` đang có. Nhờ vậy ghi bên này không đè mất dữ
+  liệu khác, và `Cloud.start()` của Just Us (vốn `pull()` đè localStorage khi mở app) không nuốt mất phần
+  vừa ghi bên Sóc. `last_writer` ghi là `<device>.soc` để máy kia (và tab Just Us) nhận realtime.
+  Chưa đăng nhập/ghép cặp thì app vẫn chạy, chỉ lưu máy này (có dòng báo "📴 Chưa nối đám mây").
+- Cache riêng `soc-v1`. **Ba service worker dùng chung origin**: mỗi `sw.js` chỉ được xoá cache có tiền tố
+  của chính nó (`justus-*` / `tamlinh-*` / `soc-*`). `soc/sw.js` cache cả `../data/child.json` + `../fonts.css`
+  (scope chỉ giới hạn TRANG được điều khiển, không giới hạn URL được chặn) → đổi 2 file đó phải bump `soc-v*`.
+- Deploy: Pages và Netlify đều publish cả thư mục nên `soc/` tự lên, không cần sửa CI.
+
+**Vẫn nằm trong `index.html` (KHÔNG tách):** `ju.child` còn được đọc ở `ChildPlayCard`, `TodayMenuCard`
+(phần của bé) và mục Sức khỏe gia đình; `DEFAULT_ROUTINE` / lịch sinh hoạt vẫn nhắc việc liên quan tới bé.
+
 ## Dữ liệu (localStorage, tiền tố `ju.`)
 | Khoá | Ý nghĩa | Kiểu |
 |---|---|---|
@@ -50,7 +78,7 @@ App `tam-linh/` giữ **bản sao** các hàm này.
 | `ju.wish` / `ju.bucket` / `ju.watch` / `ju.coupons` | Quà · muốn làm cùng · xem·đọc·nghe · phiếu yêu thương | array |
 | `ju.ideas` / `ju.food` / `ju.checkins` | Ý tưởng hẹn hò · quán & món · check-in ảnh | array |
 | ↳ mục của `ju.food` / `ju.checkins` | nhiều ảnh ở `photos[]` + ảnh menu ở `menuPhotos[]` (khoá cũ 1 ảnh `photo` vẫn đọc được qua helper `photoList()`, tự gộp khi sửa) | array |
-| `ju.child*` (diary, growth, milestones, vaccines…) | Nhóm dữ liệu "Nuôi con / Sóc" | array/object |
+| `ju.child*` (diary, growth, milestones, vaccines…) | Nhóm dữ liệu "Nuôi con / Sóc" — nay do **app `soc/`** ghi (Just Us chỉ đọc `ju.child`) | array/object |
 | `ju.routine` | Lịch sinh hoạt để nhắc trong ngày | array |
 | `ju.diary` / `ju.mood` / `ju.checkin(s)` | Nhật ký · cảm xúc · weekly check-in | array |
 | `ju.docs` | Giấy tờ — **mã hoá đầu-cuối**: mỗi mục chỉ để thô `id` + `expiry`, phần còn lại (tên, số hiệu, loại, nơi cất, ghi chú, ảnh) nằm trong `enc` (AES-256-GCM base64) | array |
@@ -64,8 +92,8 @@ App `tam-linh/` giữ **bản sao** các hàm này.
 - Đồng bộ Supabase: **có** — **ghép cặp bằng mã mời** (RLS giới hạn dữ liệu cho đúng 2 tài khoản trong pair). Object `Cloud` (dòng ~318) dùng RPC `ju_create_couple` / `ju_join_couple(p_code)` / `ju_my_couple` / `ju_leave_couple`; toàn bộ state ghi 1 hàng vào bảng `justus_data` theo `couple_id`, realtime qua `postgres_changes`, ảnh lưu ở storage bucket `justus-photos`. Xem skill `supabase-sync` (pattern B). Migration: skill `local-store`.
 
 ## Bản đồ component chính
-- `App` — dòng ~7855; 6 tab dưới (`MAIN_TABS`, dòng 7854): 🏠 Tổ ấm (`home`) · 🐿️ Sóc (`child`, nuôi con) · 🗺️ Hẹn hò (`date`) · 📅 Tụi mình (`us`) · 💬 Nói chuyện (`talk`) · 💞 Hồ sơ (`me`).
-- `Cloud` (~318) — lớp Supabase. `MENU_REGISTRY` (~5645) — cấu hình sub-tab/segment của từng màn. Nhiều component con: `Home`, `DateTab`, `UsTab`, `TalkTab`, `Profile`, `ChildCare`, `LoveJar`, `DailyQuestion`, `WeeklyCheckin`, `CheckIns`, `Timeline`, `Coupons`, `WishTab`, `HanoiCatalog`, `Reminders`…
+- `App` — dòng ~7668; 6 tab dưới (`MAIN_TABS`, dòng 7648): 🏠 Tổ ấm (`home`) · 🏡 Nhà mình (`us`) · 💞 Chúng mình (`talk`) · 🗺️ Hẹn hò (`date`) · 🐿️ Sóc (`child` — chỉ là cửa vào app `soc/`) · 🙋 Cá nhân (`me`).
+- `Cloud` (~452) — lớp Supabase. `MENU_REGISTRY` (~5145) — cấu hình sub-tab/segment của từng màn. Nhiều component con: `Home`, `DateTab`, `UsTab`, `TalkTab`, `Profile`, `ChildLauncher`, `LoveJar`, `DailyQuestion`, `WeeklyCheckin`, `CheckIns`, `Timeline`, `Coupons`, `WishTab`, `HanoiCatalog`, `Reminders`…
 
 ## PWA / Thông báo
 - Service worker + manifest đầy đủ (`manifest.json`, `sw.js`, icon SVG).
