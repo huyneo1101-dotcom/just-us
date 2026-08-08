@@ -403,7 +403,7 @@ setTimeout(function(){
      để index.html nhẹ đi ~450KB và Babel transpile ít hơn. Nạp xong mới vẽ App. -->
 <script>
 (function(){
-  var FILES=['data/suggest.json','data/dishes.json','data/prompts.json','data/hanoi.json'];
+  var FILES=['data/suggest.json','data/dishes.json','data/prompts.json','data/hanoi.json','data/child.json'];
   // Giữ NGUYÊN identity của mảng/object: code trong khối babel làm "const X=JUD.X" ngay khi chạy,
   // nên dữ liệu về sau phải đổ vào chính chỗ cũ chứ không gán đè.
   window.JUD={
@@ -411,7 +411,9 @@ setTimeout(function(){
     BUCKET_SUGGEST:[], FOOD_SUGGEST:[], GIFT_SUGGEST:[], WATCH_SUGGEST:[], COUPON_SUGGEST:[], LOVEJAR_SUGGEST:[],
     MENU_GOALS:[], EASY_DISHES:[], DISHES:[],
     QUESTIONS:[], QUIZ_Q:[], CHALLENGES:[], TALK_TOPICS:[],
-    HANOI_CATS:[], HANOI_SPOTS:[]
+    HANOI_CATS:[], HANOI_SPOTS:[],
+    // Dùng chung data/child.json với app Sóc (soc/) — ở đây chỉ cần 2 mảng cho trang chủ
+    PLAY_LIB:[], WEAN_MENU:[]
   };
   function fill(dst,src){
     if(Array.isArray(dst)&&Array.isArray(src)){ dst.length=0; Array.prototype.push.apply(dst,src); }
@@ -3204,22 +3206,7 @@ function MusicPlaylists({people,me}){
     </div>
   );
 }
-/* ============ Thống nhất cách dạy con ============ */
-function ParentingAgreement(){
-  const [pq,setPq]=useLocal('ju.childParenting',{});
-  const done=PARENTING_QS.filter((q,i)=>(pq[i]||{}).agreed).length;
-  return (
-    <div>
-      <div className="muted center" style={{fontSize:12.5,margin:'10px 14px'}}>🤝 Hai vợ chồng cùng thống nhất cách dạy con để nhất quán — tránh “bố một kiểu, mẹ một kiểu”. <b>{done}/{PARENTING_QS.length}</b> đã thống nhất.</div>
-      {PARENTING_QS.map((q,i)=>{ const st=pq[i]||{};
-        return <div key={i} className="item">
-          <div className="row"><span style={{fontSize:16}}>{st.agreed?'✅':'❓'}</span><b className="grow" style={{fontSize:14}}>{q}</b></div>
-          <textarea className="inp" style={{marginTop:6,minHeight:48,fontSize:12.5}} placeholder="Hai đứa thống nhất là…" value={st.note||''} onChange={e=>setPq({...pq,[i]:{...st,note:e.target.value}})}/>
-          <button className="pill" style={{marginTop:6,background:st.agreed?'var(--good)':'var(--chip)',color:st.agreed?'#fff':'var(--chip-tx)'}} onClick={()=>setPq({...pq,[i]:{...st,agreed:!st.agreed}})}>{st.agreed?'✓ Đã thống nhất':'Đánh dấu đã thống nhất'}</button>
-        </div>; })}
-    </div>
-  );
-}
+/* (Mục "Thống nhất cách dạy con" đã chuyển sang app Sóc — soc/index.html) */
 /* ============ Quy tắc / giao ước gia đình ============ */
 const FAMILY_RULES_SUGGEST=[
   {group:'💛 Ứng xử với nhau',items:['Nói cảm ơn và xin lỗi với nhau mỗi ngày','Không to tiếng, không nói nặng lời — nhất là trước mặt con','Giận nhau không quá một ngày, làm lành trước khi ngủ','Ôm / hôn tạm biệt khi ra khỏi nhà','Khó chịu thì nói thẳng, không im lặng dỗi','Mỗi ngày nói với nhau ít nhất một lời khen / động viên','Không nhắc lại lỗi cũ khi đang tranh luận','Không so sánh bạn đời với người khác','Lắng nghe hết ý người kia rồi mới nói','Cảm ơn khi người kia làm việc nhà / chăm con']},
@@ -4471,514 +4458,49 @@ function WeeklyMenu({me,people}){
     </div>
   );
 }
-const CHILD_VACCINES=[
-  {age:'Sơ sinh',items:['Lao (BCG)','Viêm gan B (trong 24h)']},
-  {age:'2 tháng',items:['6in1 mũi 1','Rota mũi 1','Phế cầu mũi 1']},
-  {age:'3 tháng',items:['6in1 mũi 2','Rota mũi 2','Phế cầu mũi 2']},
-  {age:'4 tháng',items:['6in1 mũi 3','Rota mũi 3','Phế cầu mũi 3']},
-  {age:'6 tháng',items:['Cúm mùa mũi 1','Não mô cầu B mũi 1']},
-  {age:'9 tháng',items:['Sởi mũi 1','Não mô cầu A+C','Viêm não NB (Imojev)']},
-  {age:'12 tháng',items:['Sởi–Quai bị–Rubella (MMR)','Thuỷ đậu mũi 1','Viêm gan A mũi 1','Phế cầu nhắc']},
-  {age:'18 tháng',items:['6in1/DPT mũi 4 (nhắc)','Sởi mũi 2','Viêm gan A mũi 2']},
-  {age:'24 tháng',items:['Viêm não NB nhắc','Thương hàn','Não mô cầu nhắc']},
-];
-const CHILD_MILESTONES=[
-  {band:'0–6 tháng',lo:0,hi:6,items:['Cười, hóng chuyện','Lẫy, giữ đầu vững','Với & nắm đồ vật','Phát âm ê a']},
-  {band:'6–12 tháng',lo:6,hi:12,items:['Ngồi vững, bò','Cầm nắm chuyền tay','Bập bẹ ba–ma','Vịn đứng lên']},
-  {band:'12–18 tháng',lo:12,hi:18,items:['Đi vững','Nói vài từ đơn','Chỉ tay đòi đồ','Cầm thìa, uống cốc']},
-  {band:'18–24 tháng',lo:18,hi:24,items:['Chạy, leo cầu thang có vịn','Nói 10–25 từ, ghép 2 từ','Chỉ được bộ phận cơ thể','Tự xúc ăn, xếp 3–4 khối','Bắt chước việc nhà','Đá được bóng']},
-  {band:'24–36 tháng',lo:24,hi:36,items:['Nói câu 3–4 từ','Chạy nhảy tốt','Tự cởi/mặc đồ đơn giản','Vẽ nguệch ngoạc','Chơi giả vờ']},
-];
-const CHILD_TIPS=[
-  '🍽️ Mỗi ngày: 3 bữa chính + 2 bữa phụ + khoảng 500–600ml sữa.',
-  '🥦 Đủ 4 nhóm: tinh bột, đạm (thịt/cá/trứng/đậu), rau củ, dầu mỡ.',
-  '🥄 Tập tự xúc thìa, ăn cùng gia đình để học nhai & bắt chước.',
-  '🚫 Hạn chế đồ ngọt, nước có ga, đồ chiên mặn; tránh hạt cứng nguyên (dễ hóc).',
-  '📚 Đọc sách, gọi tên đồ vật mỗi ngày để kích thích ngôn ngữ.',
-  '😴 Ngủ 11–14h/ngày (gồm 1 giấc trưa); vận động ngoài trời mỗi ngày.',
-  '🦷 Đánh răng 2 lần/ngày, kem fluor lượng bằng hạt gạo.',"💧 Cho uống nước đều trong ngày, hạn chế nước ngọt/nước ép đóng hộp.","🦷 Đánh răng 2 lần/ngày, kem có fluor lượng bằng hạt gạo.","😴 Ngủ đủ 11–14 tiếng/ngày (gồm 1 giấc trưa); cố định giờ ngủ.","🚫 Dưới 2 tuổi hạn chế tối đa màn hình; ưu tiên chơi vận động.","🥄 Cho con tự xúc ăn để rèn vận động tinh, chấp nhận rơi vãi.","🧴 Giữ ẩm da mùa hanh; tắm nước ấm vừa, không quá lâu.","🔌 Che chắn ổ điện, góc bàn, cất hóa chất khỏi tầm với của con.","🌡️ Sốt trên 38.5°C hoặc li bì/bỏ bú kéo dài — đưa đi khám sớm.","👟 Cho đi chân trần/đế mềm trong nhà để phát triển bàn chân.","📚 Đọc sách cùng con 10–15 phút mỗi ngày để phát triển ngôn ngữ.",'🥗 Cho con làm quen nhiều loại rau củ từ sớm để đỡ kén ăn về sau.','🤗 Ôm và khen con mỗi ngày — cảm giác an toàn giúp con mạnh dạn khám phá.','🧸 Cho con chơi tự do, để con tự nghĩ trò thay vì lúc nào cũng bày sẵn.','🕐 Giữ giờ ăn, giờ ngủ đều đặn để con có nhịp sinh hoạt ổn định.','👐 Dạy con nói “cảm ơn”, “xin lỗi” bằng cách bố mẹ làm gương mỗi ngày.','🎨 Cho con vẽ, nặn, dán để rèn vận động tinh và trí tưởng tượng.','🌳 Mỗi ngày cho con ra ngoài vận động, tắm nắng sớm để cứng cáp.','🗣️ Lắng nghe và gọi tên cảm xúc của con (“con đang giận à?”) để con học điều tiết.'];
-const vacAgeMonths=(label)=>{ if(/sơ sinh/i.test(label)) return 0; const m=label.match(/\d+/); return m?Number(m[0]):0; };
-const CHILD_PACK=['Bỉm (3–4 cái)','Quần áo dự phòng (1–2 bộ)','Bình / cốc nước','Khăn xô lau','Khăn ướt','Sữa / bình sữa','Mũ + áo khoác','Dép / giày','Túi đựng đồ bẩn','Thuốc riêng (nếu có)','Đồ trấn an quen thuộc'];
-const CHILD_SKILLS=['Tự xúc ăn bằng thìa','Tự cầm cốc uống nước','Báo khi muốn đi vệ sinh','Tự cởi giày / dép','Tự rửa & lau tay','Tự cất đồ chơi','Tự cởi áo khoác','Ngủ trưa không cần bế','Gọi tên cô & bạn','Xa bố mẹ không quấy lâu'];
-const PLAY_LIB=[
-  {c:'🤸 Vận động',n:'Đá & ném bóng',d:'Lăn, đá, ném bóng vào rổ — rèn phối hợp tay chân.'},
-  {c:'🤸 Vận động',n:'Leo trèo có giám sát',d:'Bò qua gối, leo cầu thang có vịn, chui ống vải.'},
-  {c:'🤸 Vận động',n:'Nhảy theo nhạc',d:'Bật nhạc cùng nhảy, dậm chân, vỗ tay theo nhịp.'},
-  {c:'🤸 Vận động',n:'Kéo – đẩy xe đồ chơi',d:'Đẩy xe, kéo đồ chơi có dây đi quanh nhà.'},
-  {c:'🧩 Tư duy',n:'Xếp khối / lồng cốc',d:'Xếp 3–6 khối, lồng cốc to – nhỏ, học kích thước.'},
-  {c:'🧩 Tư duy',n:'Phân loại theo màu / hình',d:'Bỏ đồ vật cùng màu vào một rổ.'},
-  {c:'🧩 Tư duy',n:'Trốn tìm đồ vật',d:'Giấu đồ chơi dưới khăn rồi hỏi “đâu rồi?”.'},
-  {c:'🧩 Tư duy',n:'Ghép hình 2–4 mảnh',d:'Bộ ghép gỗ núm to, hình con vật quen thuộc.'},
-  {c:'🗣️ Ngôn ngữ',n:'Đọc sách tranh',d:'Chỉ & gọi tên đồ vật, hỏi “con gì đây?”.'},
-  {c:'🗣️ Ngôn ngữ',n:'Hát bài có động tác',d:'“Năm ngón tay”, “Con cò” — học từ qua bài hát.'},
-  {c:'🗣️ Ngôn ngữ',n:'Gọi tên bộ phận cơ thể',d:'“Mũi đâu? Tai đâu?” — chỉ đúng & nói tên.'},
-  {c:'🎨 Khéo tay',n:'Tô màu sáp to',d:'Vẽ nguệch ngoạc trên giấy lớn — rèn cầm bút.'},
-  {c:'🎨 Khéo tay',n:'Nặn đất nặn',d:'Bóp, lăn, ấn đất nặn an toàn — khéo ngón tay.'},
-  {c:'🎨 Khéo tay',n:'Dán sticker',d:'Bóc & dán sticker vào ô — rèn ngón tay khéo.'},
-{c:'🤸 Vận động',n:'Đi thăng bằng trên vạch',d:'Dán băng dính một đường thẳng trên sàn cho bé bước theo — rèn giữ thăng bằng.'},{c:'🤸 Vận động',n:'Ném túi đậu vào rổ',d:'Tự khâu túi vải nhỏ đựng đậu, cho bé ném vào rổ ở các khoảng cách.'},{c:'🧩 Tư duy',n:'Tìm cặp giống nhau',d:'Bày 3-4 cặp đồ vật giống nhau, đố bé tìm và ghép đôi.'},{c:'🧩 Tư duy',n:'Thả hình vào đúng lỗ',d:'Hộp thả hình khối — học hình dạng và phối hợp tay mắt.'},{c:'🗣️ Ngôn ngữ',n:'Kể chuyện theo tranh',d:'Lật sách tranh, hỏi bé con gì đây, bạn ấy đang làm gì.'},{c:'🗣️ Ngôn ngữ',n:'Hát và làm động tác',d:'Hát Một con vịt, Cá vàng bơi… kèm động tác tay cho bé bắt chước.'},{c:'🎨 Khéo tay',n:'Xé và dán giấy màu',d:'Cho bé xé giấy màu thành mẩu nhỏ rồi dán lên hình — rèn ngón tay.'},{c:'🎨 Khéo tay',n:'In hình bằng rau củ',d:'Cắt đôi củ cải/ớt chuông, chấm màu nước cho bé in hình lên giấy.'},{c:'🤸 Vận động',n:'Vượt chướng ngại vật',d:'Xếp gối/hộp thành đường để con bò, trèo, bước qua.'},{c:'🤸 Vận động',n:'Nhảy theo nhạc',d:'Bật nhạc vui, cùng con lắc lư, nhảy, vỗ tay theo nhịp.'},{c:'🤸 Vận động',n:'Đẩy xe đồ chơi',d:'Cho con đẩy xe quanh nhà để luyện đi vững.'},{c:'🧩 Tư duy',n:'Thả hình khối',d:'Cho con thả đúng khối vào lỗ tương ứng — nhận dạng hình.'},{c:'🧩 Tư duy',n:'Trốn tìm đồ vật',d:'Giấu đồ chơi dưới khăn rồi hỏi con nó đâu — rèn trí nhớ.'},{c:'🧩 Tư duy',n:'Phân loại theo màu',d:'Cho con bỏ đồ cùng màu vào một rổ — học màu sắc.'},{c:'🗣️ Ngôn ngữ',n:'Gọi tên bộ phận cơ thể',d:'Chỉ và gọi tên mắt, mũi, tai… rồi hỏi con chỉ lại.'},{c:'🗣️ Ngôn ngữ',n:'Kể chuyện qua tranh',d:'Lật sách tranh, chỉ và mô tả để con lặp lại từ mới.'},{c:'🗣️ Ngôn ngữ',n:'Hát bài có động tác',d:'Hát đồng dao có động tác tay để con bắt chước.'},{c:'🎨 Khéo tay',n:'Dán sticker',d:'Cho con bóc và dán sticker lên giấy — rèn ngón tay.'},{c:'🎨 Khéo tay',n:'Xé giấy dán tranh',d:'Cho con xé giấy màu thành mảnh rồi dán thành tranh.'},{c:'🎨 Khéo tay',n:'Xâu vòng hạt to',d:'Xâu hạt/ống to vào dây — phối hợp tay mắt (có giám sát).'}];
-const WEAN_MENU=[
-  {d:'Thứ 2',sang:'Cháo gà bí đỏ',phu:'Chuối + sữa chua',trua:'Cơm nát · cá hồi áp chảo · canh rau ngót',toi:'Cơm nát · trứng hấp thịt · canh bí đỏ'},
-  {d:'Thứ 3',sang:'Súp khoai tây thịt bò',phu:'Đu đủ + phô mai',trua:'Cơm nát · gà xé · canh mồng tơi',toi:'Nui sốt cà thịt bằm · bông cải hấp'},
-  {d:'Thứ 4',sang:'Cháo tôm rau cải',phu:'Sữa + bánh ăn dặm',trua:'Cơm nát · cá kho nhạt · canh bầu',toi:'Cơm nát · đậu hũ sốt thịt · canh rau dền'},
-  {d:'Thứ 5',sang:'Yến mạch sữa chuối',phu:'Xoài + sữa chua',trua:'Cơm nát · bò xào mềm · canh khoai',toi:'Cháo lươn rau ngót'},
-  {d:'Thứ 6',sang:'Bánh mì trứng + sữa',phu:'Lê hấp + phô mai',trua:'Cơm nát · cá hấp · canh cải thịt bằm',toi:'Cơm nát · trứng cút sốt cà · canh bí xanh'},
-  {d:'Thứ 7',sang:'Bún / phở thịt mềm',phu:'Chuối + sữa',trua:'Cơm nát · gà hấp · canh rau củ',toi:'Cháo cá cà rốt'},
-  {d:'Chủ nhật',sang:'Cháo sườn rau củ',phu:'Sữa chua + việt quất',trua:'Cơm nát · tôm rim nhạt · canh mướp',toi:'Súp gà ngô non · bánh mì mềm'},
-];
-const PARENTING_QS=[
-  'Khi con ăn vạ thì xử lý thế nào (lờ đi / ôm dỗ / nghiêm khắc)?',
-  'Có cho xem điện thoại / TV không, bao lâu mỗi ngày?',
-  'Cho ăn vặt & đồ ngọt ở mức nào?',
-  'Ai dỗ khi con khóc đêm, có bế không?',
-  'Thưởng – phạt thế nào cho nhất quán giữa bố và mẹ?',
-  'Khi ông bà chiều khác ý mình thì thống nhất ra sao?',
-  'Cho con ngủ riêng hay ngủ chung tới khi nào?',
-  'Dạy chữ / số sớm hay để con chơi là chính?',
-  'Quy tắc an toàn (ổ điện, cầu thang, đồ nhỏ) đã thống nhất chưa?',
-  'Phân công ai đưa đón / cho ăn / tắm cho con?','Khi con bám mẹ/bố quá thì xử lý ra sao cho cân bằng?','Cho con dùng đồ điện tử (iPad/TV) từ mấy tuổi, bao lâu?','Quy tắc về đồ ngọt và ăn vặt trong nhà là gì?','Khi con đánh/cắn bạn thì dạy con thế nào?','Thưởng cho con bằng đồ vật hay bằng lời khen/thời gian?','Ai sẽ đưa đón và lịch phân công ra sao khi con đi học?','Khi ông bà và bố mẹ bất đồng cách dạy thì giải quyết sao?','Cho con tự lập đến đâu (tự xúc, tự ngủ) ở tuổi này?',"Khi con ngã/đau nhẹ, mình phản ứng thế nào để con tự tin?","Có phạt con không, phạt kiểu gì (ngồi yên/nói chuyện)?","Cho con dùng ti giả/bình đến khi nào?","Tập cho con tự ngủ hay ru/bế ngủ?","Ai đưa đón con đi lớp, lịch thế nào?","Con ốm thì ai nghỉ chăm, luân phiên ra sao?","Tiền lì xì/mừng của con quản lý thế nào?","Dạy con về tiền từ mấy tuổi và bằng cách nào?","Quan điểm về cho con học thêm/năng khiếu sớm?","Muốn con nói được mấy thứ tiếng, bắt đầu khi nào?","Cho con tự lập việc gì theo tuổi (tự xúc, tự mặc, dọn đồ)?","Khi bố mẹ bất đồng cách dạy, xử lý trước mặt con thế nào?",'Khi con biếng ăn, mình kiên nhẫn tới đâu và có ép không?','Mình muốn con học trường công hay tư, tiêu chí chọn là gì?','Cho con tiền tiêu vặt từ mấy tuổi và bao nhiêu là hợp?','Khi con hỏi những câu khó (về giới tính, cái chết), mình trả lời thế nào?'];
-const ILL_SYMPTOMS=['Sốt','Ho','Sổ mũi','Tiêu chảy','Nôn trớ','Phát ban','Biếng ăn','Khó ngủ'];
-// Cafe / khu vui chơi cho bé ở Hà Nội (giá tham khảo 2025; toạ độ gần đúng theo khu vực)
-const KIDS_CAFES=[
-  {n:'Khu vui chơi Lotte Center',a:'54 Liễu Giai, Ba Đình',p:'~50–100k/bé (tham khảo)',lat:21.0330,lng:105.8130},
-  {n:'LOLLI FOX Mini Kids Cafe',a:'Đống Đa (gần Xã Đàn)',p:'60k ngày thường · 70k cuối tuần',lat:21.0155,lng:105.8300},
-  {n:'ABU Premium Kids Café',a:'Tầng 3, 195 Khâm Thiên, Đống Đa',p:'140k (T2–6) · 160k cuối tuần',lat:21.0170,lng:105.8340},
-  {n:'Doo Doo Premium Kids Café',a:'66 Quán Sứ, Hoàn Kiếm',p:'100k (T2–6) · 120k cuối tuần',lat:21.0245,lng:105.8455,note:'miễn phí bé <12 tháng'},
-  {n:'Kuri Kuri Cup & Cake (Nhật)',a:'Tầng 4, 17 Lý Thường Kiệt, Hoàn Kiếm',p:'đồ uống 25–55k, bé tự làm trân châu',lat:21.0240,lng:105.8500},
-  {n:'tiNiWorld Royal City',a:'72A Nguyễn Trãi, Thanh Xuân',p:'~90–150k/bé · bé <75cm miễn phí',lat:20.9995,lng:105.8150},
-  {n:'tiNiWorld BigC Thăng Long',a:'222 Trần Duy Hưng, Cầu Giấy',p:'~90–100k/bé · bé <75cm miễn phí',lat:21.0065,lng:105.7995},
-  {n:'tiNiWorld Vincom Bà Triệu',a:'191 Bà Triệu, Hai Bà Trưng',p:'~90–150k/bé',lat:21.0110,lng:105.8490},
-  {n:'Kitomo Kids Café (Lego)',a:'Golden Palace, Mễ Trì, Nam Từ Liêm',p:'100k (T2,4,5,6) · 120k (T7,CN) kèm 1 phụ huynh',lat:21.0135,lng:105.7770},
-  {n:'Lalina Kids Café',a:'9 Tây Hồ, Quảng An, Tây Hồ',p:'~120–150k/bé (tham khảo)',lat:21.0680,lng:105.8225},
-  {n:'VinKE & Thủy cung Times City',a:'458 Minh Khai, Hai Bà Trưng',p:'~150–250k (game + thủy cung)',lat:20.9950,lng:105.8675},
-  {n:'tiNiWorld Aeon Long Biên',a:'27 Cổ Linh, Long Biên',p:'~90–150k/bé',lat:21.0280,lng:105.8985},
-  {n:'Babiland (view Hồ Tây)',a:'Khu vực Tây Hồ',p:'140k (T2–6) · 160k cuối tuần',lat:21.0680,lng:105.8180},
-  {n:'Playtown',a:'601 Lạc Long Quân, Tây Hồ',p:'100k ngày thường · 120k cuối tuần (kèm 1 phụ huynh)',lat:21.0720,lng:105.8095},
-  {n:'Kidzoona Royal City',a:'B2 Vincom Royal City, Nguyễn Trãi, Thanh Xuân',p:'120k ngày thường · 150–180k cuối tuần',lat:20.9995,lng:105.8150},
-  {n:'Kidzoona Aeon Hà Đông',a:'Tầng 3 AEON MALL Hà Đông',p:'120–150k ngày thường · 150–180k cuối tuần',lat:20.9835,lng:105.7480},
-  {n:'AM Kidzone',a:'Tầng 2 Dreamland Bonanza, 23 Duy Tân, Cầu Giấy',p:'~90–130k/bé (tham khảo)',lat:21.0300,lng:105.7830},
-  {n:'The Loop Kids (IPH)',a:'Tầng 3 TTTM IPH, 241 Xuân Thủy, Cầu Giấy',p:'~90–130k/bé (tham khảo)',lat:21.0370,lng:105.7825},
-  {n:'Chimi Farm (nông trại trong nhà)',a:'1 Nguyễn Văn Huyên, Cầu Giấy',p:'~90–120k/bé (tham khảo)',lat:21.0430,lng:105.8000},
-  {n:'Laika Cafe (có khu bé)',a:'91 Trung Hòa, Cầu Giấy',p:'nước ~40–70k · khu chơi nhỏ',lat:21.0105,lng:105.7975},
-  {n:'Beanie Land Coffee (có khu bé)',a:'63 Tô Hiệu, Hà Đông',p:'nước ~40–70k · có khu chơi',lat:20.9720,lng:105.7770},
-];
-// Taxi khứ hồi ước tính từ nhà (Núi Trúc): mở cửa ~12k + ~13.5k/km, đường thực ~1.3× đường chim bay, ×2 chiều
-function taxiRoundK(km){ const road=km*1.3; const one=12000+13500*road; return Math.round(one*2/1000); }
-/* ============ Dạy con kỹ năng tự túc đầu tiên ============ */
-const SKILL_GUIDES=[
-  {icon:'🥄',name:'Tự xúc ăn bằng thìa',age:'~10–18 tháng bắt đầu',steps:[
-    'Cho bé thìa riêng khi cả nhà ăn để bé bắt chước.',
-    'Bắt đầu với món đặc, dính (cháo đặc, cơm nát, khoai nghiền) — dễ múc, ít rơi.',
-    'Chấp nhận bừa bộn: lót khăn/thảm dưới ghế, mặc yếm to.',
-    'Cầm tay bé múc vài lần rồi để bé tự làm; khen khi bé thử.',
-    'Không tranh thìa đút cho nhanh — kiên nhẫn để bé luyện.',
-    'Bữa gọn dưới 30 phút, đói mới ăn; không ép, không vừa ăn vừa xem TV.']},
-  {icon:'🚽',name:'Bỏ bỉm / tập ngồi bô',age:'~18–30 tháng khi bé sẵn sàng',steps:[
-    'Dấu hiệu sẵn sàng: bỉm khô lâu hơn, biết báo/khó chịu khi ướt, tự kéo quần, ngồi vững.',
-    'Cho bé làm quen cái bô: đặt nơi bé hay chơi, ngồi thử (mặc quần cũng được).',
-    'Lịch cho ngồi bô: sau ngủ dậy, sau ăn 20–30 phút, trước khi ngủ.',
-    'Dạy bé báo "tè / ị"; khen ngay khi đi đúng bô, KHÔNG mắng khi lỡ.',
-    'Ban ngày bỏ bỉm trước (mặc quần chip để bé cảm nhận ướt), ban đêm bỏ sau.',
-    'Chuẩn bị nhiều quần dự phòng; tè dầm lúc đầu là bình thường.',
-    'Tránh ép khi bé ốm hoặc xáo trộn (chuyển nhà, có em) — dễ căng thẳng.']},
-  {icon:'🥤',name:'Tự cầm cốc uống nước',age:'~9–15 tháng',steps:[
-    'Bắt đầu với cốc tập uống 2 quai / cốc có ống hút, đổ ít nước.',
-    'Cầm tay bé nâng cốc vài lần cho quen động tác.',
-    'Chuyển dần sang cốc thường miệng nhỏ, đổ ít để bớt sặc / đổ.',
-    'Cho tập lúc bé tỉnh táo, không quá khát để bé không cáu.',
-    'Khen khi bé uống được; lau khô, không trách khi đổ.']},
-  {icon:'👕',name:'Tự cởi / mặc quần áo',age:'~18–36 tháng (cởi trước, mặc sau)',steps:[
-    'Bắt đầu bằng CỞI (dễ hơn mặc): tất, mũ, quần chun.',
-    'Chọn đồ rộng, chun co giãn, ít nút / khoá.',
-    'Chia nhỏ: mẹ mặc gần xong, để bé kéo nốt (kéo quần lên, chui đầu qua cổ áo).',
-    'Ngồi cạnh hướng dẫn "chui tay vào đây", làm mẫu thật chậm.',
-    'Cho bé chọn 1 trong 2 bộ để bé hứng thú và thấy được quyết định.']},
-  {icon:'👟',name:'Tự đi giày / dép',age:'~2–3 tuổi',steps:[
-    'Chọn dép quai dán (velcro) hoặc giày không dây — dễ tự đi.',
-    'Đánh dấu trái / phải (dán nửa sticker vào 2 chiếc) để bé ghép đúng.',
-    'Làm mẫu: xỏ chân, dán quai; rồi để bé tự làm.',
-    'Khen khi bé tự đi được, kể cả khi ngược bên — sửa nhẹ nhàng.']},
-  {icon:'🧼',name:'Tự rửa & lau tay',age:'~18–30 tháng',steps:[
-    'Kê ghế/bục để bé với tới vòi; chỉ các bước: làm ướt → xoa xà phòng → kỳ → rửa → lau.',
-    'Hát một bài khoảng 20 giây để bé xoa đủ lâu.',
-    'Nhắc rửa tay các mốc: trước ăn, sau vệ sinh, sau khi chơi / về nhà.',
-    'Để khăn riêng trong tầm với để bé tự lau.']},
-  {icon:'🧸',name:'Tự cất đồ chơi',age:'~18 tháng trở đi',steps:[
-    'Có giỏ / hộp đựng cố định, dán hình để bé biết loại nào vào đâu.',
-    'Biến thành trò chơi: "mình thi cất nhanh nào", vừa cất vừa hát.',
-    'Cất cùng bé lúc đầu, giảm dần phần mẹ làm.',
-    'Cố định "giờ dọn" trước khi chuyển hoạt động (trước ăn, trước ngủ).']},
-  {icon:'🦷',name:'Tự đánh răng (có hỗ trợ)',age:'~18 tháng (khi mọc răng)',steps:[
-    'Bàn chải mềm cỡ bé + kem có fluor lượng bằng hạt gạo.',
-    'Để bé tự chải trước cho quen, rồi bố/mẹ chải lại kỹ (bé chưa sạch được).',
-    'Đánh 2 lần/ngày: sáng và trước khi ngủ; làm cùng bé để bé bắt chước.',
-    'Hát / đếm cho đủ khoảng 2 phút; cho bé chọn bàn chải màu bé thích.']},
-  {icon:'😴',name:'Tự ngủ (không cần bế ru)',age:'~6 tháng trở đi, củng cố dần',steps:[
-    'Trình tự ngủ cố định 20–30 phút: tắm → thay đồ → đọc sách / hát ru → tắt đèn.',
-    'Đặt bé xuống khi bé buồn ngủ nhưng còn thức, để bé tự chìm vào giấc.',
-    'Có đồ trấn an quen thuộc (gấu bông / khăn).',
-    'Nếu bé tỉnh, vỗ về nhẹ tại chỗ thay vì bế lên ngay.',
-    'Giữ giờ ngủ đều; tránh màn hình trước giờ ngủ.']},
-  {icon:'🍼',name:'Bỏ ti bình / ti giả',age:'~12–24 tháng',steps:[
-    'Chuyển dần sang cốc; giảm cữ bình, bỏ cữ ban ngày trước, cữ đêm sau.',
-    'Không cho ngậm bình / ti giả cả ngày; chỉ lúc ngủ rồi bỏ nốt.',
-    'Thay bằng cách an ủi khác (ôm, gấu bông, đọc sách).',
-    'Làm từ từ, chọn lúc bé khỏe; khen khi bé uống cốc như anh / chị lớn.']},
-];
-function SkillGuide({g,done,onTick}){
-  const [open,setOpen]=useState(false);
-  return (
-    <div className="card" style={{padding:'10px 13px',opacity:done?.6:1}}>
-      <div className="row" style={{gap:8}}>
-        <span style={{fontSize:20,flex:'0 0 auto',cursor:'pointer'}} onClick={()=>setOpen(o=>!o)}>{g.icon}</span>
-        <div className="grow" style={{minWidth:0,cursor:'pointer'}} onClick={()=>setOpen(o=>!o)}>
-          <div style={{fontSize:14,fontWeight:700,textDecoration:done?'line-through':'none'}}>{g.name}</div>
-          <div className="muted" style={{fontSize:11}}>{open?'':'Bấm để xem cách dạy · '}{g.age}</div></div>
-        {onTick && <button className="pill" style={{flex:'0 0 auto',background:done?'var(--good)':'var(--chip)',color:done?'#fff':'var(--chip-tx)'}} onClick={onTick}>{done?'✓ Đã biết':'Bé đã biết'}</button>}
-      </div>
-      {open && <ol style={{margin:'8px 0 0',paddingLeft:20,fontSize:12.5,lineHeight:1.6}}>{g.steps.map((s,i)=><li key={i} style={{marginBottom:5}}>{s}</li>)}</ol>}
-    </div>
-  );
-}
-const CHILD_ISSUES=[
-  {icon:'😴',title:'Con ngủ muộn / khó ngủ',tips:[
-    'Cố định giờ đi ngủ mỗi tối (vd 20:30–21:00) và lặp lại đều để tạo nếp.',
-    'Trình tự "hạ nhiệt" 30 phút trước ngủ: tắm ấm → thay đồ ngủ → đọc sách/hát ru, giảm đèn.',
-    'Tắt màn hình (TV/điện thoại) ít nhất 1 giờ trước giờ ngủ của bé.',
-    'Giữ giấc trưa hợp lý (bé ~20 tháng ngủ trưa 1 giấc ~1.5–2h, tránh ngủ sau 15:30).',
-    'Phòng tối, yên, mát ~26–28°C; có thể bật tiếng ồn trắng nhẹ.']},
-  {icon:'🍚',title:'Con biếng ăn',tips:['Cho ăn đúng bữa, đúng giờ; không ăn vặt sát bữa.','Bữa ăn gọn trong 30 phút, hết giờ dọn đi, không ép.','Cho con tự xúc, chấp nhận bừa bộn để con hứng thú.','Đa dạng màu sắc và kết cấu món; nêm nhạt riêng cho con.','Không dụ ăn bằng tivi/điện thoại; ăn cùng cả nhà để con bắt chước.']},
-  {icon:'🤱',title:'Con bám mẹ, không theo bố',tips:['Bố dành thời gian chơi riêng với con mỗi ngày, việc con thích.','Mẹ lùi lại để bố xử lý tắm/ăn/ngủ cho con.','Không lén đi khi con không để ý — chào tạm biệt rõ ràng, ngắn gọn.','Kiên nhẫn: giai đoạn bám mẹ là bình thường, sẽ qua.','Cả nhà cùng chơi để con thấy bố mẹ là một đội.']},
-  {icon:'👵',title:'Ông bà can thiệp cách dạy con',tips:['Hai vợ chồng thống nhất nguyên tắc trước rồi mới nói với ông bà.','Ghi nhận công ông bà trước khi góp ý, tránh chê trách.','Chọn 2–3 điều quan trọng nhất để giữ, việc nhỏ thì linh hoạt.','Để người con ruột nói với bố mẹ mình sẽ dễ hơn.','Nhất quán giữa bố mẹ là điều quan trọng nhất với con.']},
-  {icon:'📺',title:'Con xem tivi/điện thoại quá nhiều',tips:[
-    'Bé dưới 2 tuổi: hạn chế tối đa màn hình; 2–5 tuổi tối đa ~1 giờ/ngày và xem cùng người lớn.',
-    'Đặt khung giờ và chỗ xem cố định, tắt là tắt — báo trước "còn 1 tập nữa".',
-    'Không dùng màn hình khi ăn và trong 1 giờ trước giờ con ngủ.',
-    'Chuẩn bị sẵn hoạt động thay thế: tô màu, xếp hình, ra ngoài chơi.',
-    'Bố mẹ làm gương — giảm lướt điện thoại trước mặt con.']},
-  {icon:'😤',title:'Con ăn vạ, không nghe lời',tips:[
-    'Giữ bình tĩnh, hạ giọng; con càng gào thì mình càng nhẹ nhàng và chậm lại.',
-    'Gọi tên cảm xúc của con ("con đang giận vì…") rồi mới đặt giới hạn.',
-    'Thống nhất giữa bố mẹ: một luật, không người cấm người cho.',
-    'Cho con vài lựa chọn nhỏ ("mặc áo đỏ hay áo xanh") để con thấy được tự quyết.',
-    'Khen ngay khi con hợp tác; nhất quán quan trọng hơn nghiêm khắc.']},
-  {icon:'🤧',title:'Con hay ốm vặt',tips:[
-    'Ngủ đủ và đúng giờ giúp con tăng đề kháng — ưu tiên giấc ngủ.',
-    'Rửa tay trước khi ăn và sau khi về nhà; vệ sinh đồ chơi định kỳ.',
-    'Ăn đa dạng rau củ, uống đủ nước; tiêm phòng đúng lịch.',
-    'Tránh khói thuốc, giữ nhà thoáng; mặc đủ ấm theo thời tiết.',
-    'Ghi lại triệu chứng và ngày ốm (mục 🩺 Sức khỏe) để trao đổi với bác sĩ.']},
-  {icon:'🏫',title:'Con quấy khóc khi đi lớp',tips:[
-    'Chào tạm biệt ngắn gọn, dứt khoát và luôn giữ đúng lời hứa đón con.',
-    'Tạo "nghi thức chia tay" cố định (ôm một cái, vẫy tay) để con thấy an toàn.',
-    'Cho con mang theo món quen thuộc (gấu bông, khăn) trong tuần đầu.',
-    'Đến lớp đúng giờ, tránh vội vã; tối trước nói nhẹ nhàng về việc mai đi lớp.',
-    'Phối hợp với cô giáo để nắm con có ổn định lại sau khi bố mẹ đi.']},
-  {icon:'🧸',title:'Con tranh đồ chơi với bạn',tips:[
-    'Giữ bình tĩnh, không mắng ngay — quan sát trước xem hai bé có tự giải quyết được không.',
-    'Gọi tên cảm xúc của con ("con đang muốn chơi món đó nên buồn/giận") trước khi dạy cách xử lý.',
-    'Dạy câu nói thay cho giành giật: "Cho tớ chơi cùng với" hoặc "Đợi một chút nhé".',
-    'Tập thay phiên: dùng đồng hồ/đếm số để mỗi bé chơi một lượt, hết giờ thì đổi.',
-    'Chuẩn bị sẵn 2 món giống/tương tự nhau khi hẹn bạn đến chơi để giảm tranh giành.',
-    'Khen ngay khi con biết nhường hoặc rủ bạn chơi chung, để con thấy hành vi tốt được ghi nhận.',
-    'Không ép con nhường mọi lúc — cũng dạy con quyền giữ đồ của mình và cách từ chối lịch sự.']},
-];
-function ChildCare({people,me}){
-  const [child,setChild]=useLocal('ju.child',{name:'',dob:'',gender:''});
-  const [growth,setGrowth]=useLocal('ju.childGrowth',[]);
-  const [vac,setVac]=useLocal('ju.childVaccines',{});
-  const [mile,setMile]=useLocal('ju.childMilestones',{});
-  const [diary,setDiary]=useLocal('ju.childDiary',[]);
-  const [pack,setPack]=useLocal('ju.childPack',{});
-  const [skills,setSkills]=useLocal('ju.childSkills',{});
-  const [gDone,setGDone]=useLocal('ju.skillGuidesDone',{});
-  const [med,setMed]=useLocal('ju.childMed',{allergy:'',meds:'',sleep:'',note:''});
-  const [ill,setIll]=useLocal('ju.childIllness',[]);
-  const [words,setWords]=useLocal('ju.childWords',[]);
-  const [tantrum,setTantrum]=useLocal('ju.childTantrum',[]);
-  const [showAllVac,setShowAllVac]=useState(false);
-  const [tab,setTab]=useState('develop');
-  const [editChild,setEditChild]=useState(false);
-  const [gw,setGw]=useState(''); const [gh,setGh]=useState('');
-  const [dtext,setDtext]=useState(''); const [wordIn,setWordIn]=useState('');
-  const [illForm,setIllForm]=useState({symptoms:[],meds:'',note:''});
-  const [tanForm,setTanForm]=useState({situation:'',handling:''});
-  const [browseIssue,setBrowseIssue]=useState(null);
-  const months=child.dob? Math.max(0, Math.round((new Date(todayISO()+'T00:00:00')-new Date(child.dob+'T00:00:00'))/(30.44*86400000))) : null;
-  const ageLabel = months==null?'chưa đặt ngày sinh' : months<24? months+' tháng tuổi' : Math.floor(months/12)+' tuổi'+(months%12?(' '+(months%12)+' th'):'');
-  const tg=(obj,set,key)=>{ const n={...obj}; if(n[key]) delete n[key]; else n[key]=true; set(n); };
-  const addGrowth=()=>{ const w=parseFloat(gw), h=parseFloat(gh); if(!w&&!h) return; setGrowth([{id:uid(),date:todayISO(),w:w||null,h:h||null},...growth]); setGw('');setGh(''); celebrate(['📏']); };
-  const addDiary=()=>{ if(!dtext.trim()) return; setDiary([{id:uid(),date:todayISO(),text:dtext.trim()},...diary]); setDtext(''); celebrate(['📔','💞']); };
-  const addWord=()=>{ const w=wordIn.trim(); if(!w) return; if(!words.find(x=>x.word.toLowerCase()===w.toLowerCase())) setWords([{id:uid(),word:w,date:todayISO()},...words]); setWordIn(''); celebrate(['🗣️']); };
-  const toggleSym=(s)=> setIllForm(f=>({...f,symptoms:f.symptoms.indexOf(s)>=0?f.symptoms.filter(x=>x!==s):[...f.symptoms,s]}));
-  const addIll=()=>{ if(!illForm.symptoms.length&&!illForm.note.trim()) return; setIll([{id:uid(),date:todayISO(),symptoms:illForm.symptoms,meds:illForm.meds.trim(),note:illForm.note.trim(),recovered:''},...ill]); setIllForm({symptoms:[],meds:'',note:''}); celebrate(['💊']); };
-  const recover=(id)=> setIll(ill.map(x=>x.id===id?{...x,recovered:x.recovered?'':todayISO()}:x));
-  const addTantrum=()=>{ if(!tanForm.situation.trim()) return; setTantrum([{id:uid(),date:todayISO(),situation:tanForm.situation.trim(),handling:tanForm.handling.trim(),worked:null},...tantrum]); setTanForm({situation:'',handling:''}); };
-  const setTanWorked=(id,v)=> setTantrum(tantrum.map(x=>x.id===id?{...x,worked:x.worked===v?null:v}:x));
-  const schoolDays=child.schoolDate? daysFromToday(child.schoolDate) : null;
-  const packDone=CHILD_PACK.filter(it=>pack[it]).length;
-  const skillDone=CHILD_SKILLS.filter(it=>skills[it]).length;
-  const wordsThisWeek=words.filter(w=>{ const d=Math.round((new Date(todayISO()+'T00:00:00')-new Date(w.date+'T00:00:00'))/86400000); return d>=0&&d<7; }).length;
-  const exportMed=()=>{ const lines=['HỒ SƠ Y TẾ — '+(child.name||'Bé'),
-    'Ngày sinh: '+(child.dob?fmtDateVN(child.dob):'—')+(months!=null?(' ('+ageLabel+')'):''),
-    'Giới tính: '+(child.gender==='nam'?'Bé trai':child.gender==='nu'?'Bé gái':'—'),'',
-    'Dị ứng: '+(med.allergy||'Không rõ'),'Thuốc đang dùng: '+(med.meds||'Không'),
-    'Thói quen ngủ: '+(med.sleep||'—'),'Ghi chú cho cô: '+(med.note||'—'),'',
-    'Liên hệ bố/mẹ: '+[people.a.name,people.b.name].filter(Boolean).join(' / ')];
-    const txt=lines.join('\n');
-    try{ const w=window.open('','_blank'); if(w){ w.document.write('<title>Hồ sơ y tế</title><pre style="font-family:system-ui,sans-serif;font-size:15px;white-space:pre-wrap;padding:24px;line-height:1.8">'+txt.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</pre>'); w.document.close(); w.focus(); setTimeout(()=>{ try{w.print();}catch(e){} },350); return; } }catch(e){}
-    if(navigator.share) navigator.share({title:'Hồ sơ y tế',text:txt}).catch(()=>{}); else { navigator.clipboard.writeText(txt); alert('Đã copy hồ sơ — dán để gửi cô nhé!'); } };
-  const last=growth[0];
+/* ============ Nuôi con (🐿️ Sóc) — ĐÃ TÁCH thành app riêng ở thư mục soc/ ============
+   Toàn bộ màn Nuôi con (mốc phát triển, tiêm chủng, ăn dặm, đi lớp, dạy con…) cùng dữ
+   liệu tĩnh của nó đã chuyển sang soc/index.html + data/child.json.
+   Ở đây chỉ giữ 2 mảng mà TRANG CHỦ còn dùng: thẻ "Chơi với con hôm nay" (PLAY_LIB) và
+   phần của bé trong thẻ "Thực đơn hôm nay" (WEAN_MENU) — đọc từ chính data/child.json
+   nên sửa nội dung một chỗ là cả hai app cùng đổi. */
+const PLAY_LIB=JUD.PLAY_LIB;
+const WEAN_MENU=JUD.WEAN_MENU;
+// Tab 🐿️ Sóc giờ là cửa vào app riêng (giữ tab cho quen tay, vẫn một chạm là tới).
+function ChildLauncher(){
+  const [child]=useLocal('ju.child',{});
+  const months=(child&&child.dob)? Math.max(0, Math.round((new Date(todayISO()+'T00:00:00')-new Date(child.dob+'T00:00:00'))/(30.44*86400000))) : null;
+  const ageLabel = months==null?null : months<24? months+' tháng tuổi' : Math.floor(months/12)+' tuổi'+(months%12?(' '+(months%12)+' th'):'');
+  const MUC=[
+    ['🌱','Phát triển','Mốc theo tuổi · từ mới bé nói được'],
+    ['🎲','Chơi với con','Trò chơi theo nhóm kỹ năng · cafe & khu vui chơi ở Hà Nội'],
+    ['🏥','Sức khoẻ','Tiêm chủng · cân nặng chiều cao · nhật ký ốm · hồ sơ gửi cô'],
+    ['🍎','Ăn uống','Mẹo chăm sóc · thực đơn ăn dặm cả tuần'],
+    ['🎒','Đi học','Đếm ngược ngày nhập học · đồ mang đi lớp · kỹ năng tự lập'],
+    ['💞','Nuôi dạy','Thống nhất cách dạy · dạy kỹ năng tự túc · nhật ký "đầu tiên" & ăn vạ'],
+  ];
   return (
     <div>
-      <div className="card" style={{background:'linear-gradient(135deg,var(--chip),var(--card))'}}>
-        <div className="row"><span style={{fontSize:24}}>👶</span>
-          <div className="grow"><b style={{fontSize:15}}>{child.name||'Bé yêu'}</b>
-            <div className="muted" style={{fontSize:12.5}}>{ageLabel}{child.gender?(' · '+(child.gender==='nam'?'bé trai':'bé gái')):''}</div></div>
-          {(child.name&&child.dob&&!editChild) && <button className="muted" style={{fontSize:12.5}} onClick={()=>setEditChild(true)}>✎ Sửa</button>}
+      <div className="card center" style={{background:'linear-gradient(135deg,var(--chip),var(--card))'}}>
+        <div style={{fontSize:44,lineHeight:1}}>🐿️</div>
+        <div style={{fontSize:16,fontWeight:800,marginTop:6}}>{(child&&child.name)||'Sóc'}</div>
+        {ageLabel && <div className="muted" style={{fontSize:12.5,marginTop:2}}>{ageLabel}</div>}
+        <div className="muted" style={{fontSize:12.5,margin:'10px 0 0',lineHeight:1.6}}>
+          Phần <b>Nuôi con</b> giờ là một app riêng — mở nhanh hơn và cài được ra màn hình chính như một app độc lập.
         </div>
-        {(!child.name||!child.dob||editChild) && <>
-          <div className="row" style={{gap:8,marginTop:8}}>
-            <input className="inp grow" placeholder="Tên bé" value={child.name||''} onChange={e=>setChild({...child,name:e.target.value})} style={{padding:'7px 10px',fontSize:12.5}}/>
-            <select className="inp" value={child.gender||''} onChange={e=>setChild({...child,gender:e.target.value})} style={{width:90,padding:'7px',fontSize:12.5}}>
-              <option value="">—</option><option value="nam">Trai</option><option value="nu">Gái</option></select>
-          </div>
-          <div className="field" style={{margin:'8px 0 0'}}><label>Ngày sinh</label>
-            <input className="inp" type="date" max={todayISO()} value={child.dob||''} onChange={e=>setChild({...child,dob:e.target.value})}/></div>
-          {editChild && child.name && child.dob && <button className="btn sm" style={{marginTop:8}} onClick={()=>setEditChild(false)}>✓ Xong</button>}
-        </>}
+        <a className="btn" style={{marginTop:12,textDecoration:'none'}} href="soc/">Mở app Sóc →</a>
       </div>
-      <FilterBar value={tab} onChange={setTab} menuId="child" items={[
-        {k:'develop',icon:'🌱',label:'Phát triển'},{k:'play',icon:'🎲',label:'Chơi với con'},{k:'health',icon:'🏥',label:'Sức khoẻ'},
-        {k:'eat',icon:'🍎',label:'Ăn uống'},{k:'school',icon:'🎒',label:'Đi học'},{k:'parent',icon:'💞',label:'Nuôi dạy'},
-      ]}/>
-
-      {tab==='develop' && <div>
-        <div className="sec-title">🎯 Mốc phát triển</div>
-        <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>Chỉ hiện mốc đúng độ tuổi của bé — tích mốc bé đã làm được.</div>
-        {months==null
-          ? <div className="empty muted">Nhập ngày sinh bé ở trên để hiện mốc đúng tuổi.</div>
-          : (()=>{ const b=CHILD_MILESTONES.find(x=>months>=x.lo&&months<x.hi)||CHILD_MILESTONES[CHILD_MILESTONES.length-1];
-              return <div className="item" style={{borderLeft:'4px solid var(--primary)'}}>
-                <div className="it-top"><h4>⭐ {b.band} <span className="muted" style={{fontSize:11,fontWeight:400}}>(bé {months} tháng)</span></h4></div>
-                <div>{b.items.map(it=>{ const k=b.band+'|'+it; const on=!!mile[k];
-                  return <button key={it} className="pill" style={{margin:'3px 6px 3px 0',padding:'7px 11px',fontSize:12.5,background:on?'var(--good)':'var(--chip)',color:on?'#fff':'var(--chip-tx)'}} onClick={()=>tg(mile,setMile,k)}>{on?'✓ ':''}{it}</button>; })}</div>
-              </div>; })()}
-        <div className="sec-title">🗣️ Mốc ngôn ngữ <span className="grow"></span><span className="muted" style={{fontSize:12.5}}>{words.length} từ · +{wordsThisWeek} tuần này</span></div>
-        <div className="card">
-          <div className="row" style={{gap:6}}>
-            <input className="inp grow" placeholder="Thêm từ bé mới nói được…" value={wordIn} onChange={e=>setWordIn(e.target.value)} onKeyDown={e=>{ if(e.key==='Enter') addWord(); }}/>
-            <button className="btn sm" onClick={addWord}>＋</button>
-          </div>
-          {words.length===0 && <div className="muted" style={{fontSize:12.5,marginTop:8}}>Ghi lại mỗi từ mới — vài tháng nhìn lại sẽ rất đáng yêu 💕</div>}
-          {words.length>0 && <div style={{marginTop:8}}>{words.slice(0,40).map(w=>(
-            <span key={w.id} className="pill" style={{margin:'3px 6px 3px 0',padding:'6px 10px',fontSize:12.5}}>{w.word} <span onClick={()=>{ if(confirm('Xoá từ này?')) setWords(words.filter(x=>x.id!==w.id)); }} style={{cursor:'pointer',marginLeft:3,opacity:.6}}>✕</span></span>
-          ))}</div>}
-        </div>
-        <Collapse id="child-speech-delay" defaultOpen={false} title="🗣️ Con chậm nói? Xem gợi ý xử lý">
-          <ul style={{margin:'4px 0 0',paddingLeft:18,fontSize:12.5,lineHeight:1.65}}>
-            <li style={{marginBottom:4}}>Nói chuyện & mô tả mọi việc đang làm cùng con mỗi ngày; hỏi rồi chờ con phản hồi thay vì tự trả lời luôn.</li>
-            <li style={{marginBottom:4}}>Đọc sách tranh, gọi tên đồ vật, hát cùng con hằng ngày để tăng vốn từ một cách tự nhiên.</li>
-            <li style={{marginBottom:4}}>Hạn chế tối đa màn hình (tivi/điện thoại) — màn hình không thay thế được tương tác trực tiếp với con.</li>
-            <li style={{marginBottom:4}}>Chờ đợi, tạo cơ hội để con chủ động nói/ra hiệu trước, tránh đoán ý và đáp ứng ngay khi con chỉ cần chỉ tay.</li>
-            <li style={{marginBottom:4}}>Để ý thêm dấu hiệu đi kèm: ít giao tiếp mắt, không phản ứng khi gọi tên, không bắt chước âm thanh/cử chỉ.</li>
-            <li style={{marginBottom:4}}>Nếu 18–24 tháng con nói rất ít từ, hoặc 2 tuổi chưa ghép được 2 từ, nên cho con khám chuyên khoa (nhi khoa/âm ngữ trị liệu) sớm — can thiệp càng sớm càng hiệu quả.</li>
-          </ul>
-        </Collapse>
-      </div>}
-
-      {tab==='play' && <div>
-        <div className="muted center" style={{fontSize:11,margin:'10px 14px'}}>🎲 Trò chơi giúp bé phát triển (~20–24 tháng), chia theo nhóm kỹ năng. Trang chủ có thẻ <b>Chơi với con hôm nay</b> để gợi ý ngẫu nhiên.</div>
-        <Collapse id="child-play" defaultOpen={false} title="🎲 Trò chơi theo nhóm kỹ năng">
-        {['🤸 Vận động','🧩 Tư duy','🗣️ Ngôn ngữ','🎨 Khéo tay'].map(cat=>(
-          <div key={cat}>
-            <div className="sec-title">{cat}</div>
-            {PLAY_LIB.filter(p=>p.c===cat).map((p,i)=>(
-              <div key={i} className="item" style={{padding:'9px 13px'}}>
-                <div className="it-top"><h4 style={{fontSize:14}}>{p.n}</h4></div>
-                <div className="muted" style={{fontSize:12.5,marginTop:2,lineHeight:1.5}}>{p.d}</div>
-              </div>
-            ))}
+      <div className="muted center" style={{fontSize:11,margin:'0 14px'}}>Vẫn là dữ liệu cũ của bé (chung máy, chung tài khoản) và vẫn đồng bộ hai máy như trước.</div>
+      <div className="sec-title">📦 Trong app Sóc có gì</div>
+      <div className="card" style={{padding:'4px 13px'}}>
+        {MUC.map(m=>(
+          <div key={m[1]} className="row" style={{padding:'9px 0',borderBottom:'1px solid var(--line)',alignItems:'flex-start'}}>
+            <span style={{fontSize:19,flex:'0 0 auto'}}>{m[0]}</span>
+            <div className="grow"><div style={{fontSize:14,fontWeight:700}}>{m[1]}</div>
+              <div className="muted" style={{fontSize:12}}>{m[2]}</div></div>
           </div>
         ))}
-        </Collapse>
-        <div className="muted center" style={{fontSize:11,margin:'6px 14px 8px'}}>Chơi cùng con 15–20 phút mỗi ngày giúp bé gắn kết & phát triển toàn diện 💛</div>
-        <Collapse id="child-cafe" defaultOpen={false} title="☕ Cafe / khu vui chơi cho bé ở Hà Nội">
-        <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>Gần → xa tính từ nhà (Núi Trúc). Giá & taxi khứ hồi là ước tính (taxi ~13.5k/km, 2 chiều).</div>
-        {KIDS_CAFES.map(c=>({...c,km:haversine(NHA.lat,NHA.lng,c.lat,c.lng)})).sort((a,b)=>a.km-b.km).map((c,i)=>(
-          <div key={i} className="item" style={{padding:'9px 13px'}}>
-            <div className="it-top"><h4 style={{fontSize:14}}>☕ {c.n}</h4><span className="pill" style={{flex:'0 0 auto'}}>{c.km.toFixed(1)} km</span></div>
-            <div className="muted" style={{fontSize:12.5,marginTop:3}}>📍 {c.a}</div>
-            <div style={{fontSize:12.5,marginTop:3}}>💵 {c.p}{c.note?' · '+c.note:''}</div>
-            <div className="muted" style={{fontSize:12.5,marginTop:3}}>🚕 Taxi khứ hồi ~<b>{taxiRoundK(c.km)}k</b> <span style={{opacity:.7}}>(ước tính 2 chiều)</span></div>
-            <div style={{marginTop:6}}><a className="pill" style={{textDecoration:'none'}} href={'https://www.google.com/maps/dir/?api=1&origin='+encodeURIComponent('Núi Trúc, Ba Đình, Hà Nội')+'&destination='+encodeURIComponent(c.n+', '+c.a+', Hà Nội')} target="_blank" rel="noreferrer">🗺️ Chỉ đường</a></div>
-          </div>
-        ))}
-        </Collapse>
-      </div>}
-
-      {tab==='health' && <div>
-        <Collapse id="child-vac" defaultOpen={false} title="💉 Lịch tiêm chủng" right={months!=null && <button className="muted" style={{fontSize:11}} onClick={()=>setShowAllVac(v=>!v)}>{showAllVac?'Theo tuổi bé':'Xem tất cả'}</button>}>
-        <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>{months!=null&&!showAllVac?`Chỉ hiện mốc hợp tuổi ${child.name||'bé'} (~${months} tháng) — tích mũi đã tiêm.`:'Tham khảo (TCMR + dịch vụ) — tích mũi đã tiêm.'}</div>
-        {(()=>{ const vacList=CHILD_VACCINES.filter(v=> showAllVac||months==null||(vacAgeMonths(v.age)>=months-3&&vacAgeMonths(v.age)<=months+12));
-          if(!vacList.length) return <div className="empty muted">Không có mốc tiêm nào quanh tuổi này — bấm “Xem tất cả”.</div>;
-          return vacList.map(v=>{ const due=months!=null&&vacAgeMonths(v.age)<=months; const allDone=v.items.every(it=>vac[v.age+'|'+it]);
-          return <div key={v.age} className="item" style={due&&!allDone?{borderLeft:'4px solid var(--primary)'}:null}>
-            <div className="it-top"><h4>{v.age}{due&&!allDone?' · đến hạn':''}{allDone?' ✅':''}</h4></div>
-            <div>{v.items.map(it=>{ const k=v.age+'|'+it; const on=!!vac[k];
-              return <button key={it} className="pill" style={{margin:'3px 6px 3px 0',padding:'7px 11px',fontSize:12.5,background:on?'var(--good)':'var(--chip)',color:on?'#fff':'var(--chip-tx)'}} onClick={()=>tg(vac,setVac,k)}>{on?'✓ ':''}{it}</button>; })}</div>
-          </div>; }); })()}
-        </Collapse>
-        <div className="sec-title">📏 Chiều cao & cân nặng</div>
-        <div className="card">
-          <div className="row" style={{gap:8}}>
-            <div className="field grow" style={{margin:0}}><label>Cân nặng (kg)</label><input className="inp" type="number" value={gw} onChange={e=>setGw(e.target.value)} placeholder="vd 11.5"/></div>
-            <div className="field grow" style={{margin:0}}><label>Chiều cao (cm)</label><input className="inp" type="number" value={gh} onChange={e=>setGh(e.target.value)} placeholder="vd 82"/></div>
-          </div>
-          <button className="btn" style={{marginTop:8}} onClick={addGrowth}>📏 Ghi hôm nay</button>
-          {last && <div className="muted" style={{fontSize:12.5,marginTop:8}}>Gần nhất ({fmtDateVN(last.date)}): {last.w?last.w+'kg':''}{last.w&&last.h?' · ':''}{last.h?last.h+'cm':''}</div>}
-        </div>
-        {months!=null && months>=18 && months<=24 && <div className="muted center" style={{fontSize:11,margin:'2px 14px 8px'}}>Tham khảo ~20 tháng (WHO): bé trai ~10.5–12.5kg / 81–86cm; bé gái ~10–12kg / 80–85cm.</div>}
-        {growth.map(e=>(
-          <div key={e.id} className="row" style={{padding:'6px 14px',borderBottom:'1px solid var(--line)',fontSize:12.5}}>
-            <span className="muted grow">{fmtDateVN(e.date)}</span>
-            <span>{e.w?'⚖️ '+e.w+'kg':''}{e.w&&e.h?'  ':''}{e.h?'📐 '+e.h+'cm':''}</span>
-            <button className="iconbtn" onClick={()=>{ if(confirm('Xoá lần đo này?')) setGrowth(growth.filter(x=>x.id!==e.id)); }}>🗑️</button>
-          </div>
-        ))}
-        <div className="sec-title">🤒 Nhật ký ốm</div>
-        <div className="card">
-          <div style={{display:'flex',flexWrap:'wrap',gap:6}}>{ILL_SYMPTOMS.map(s=>{ const on=illForm.symptoms.indexOf(s)>=0;
-            return <button key={s} className="pill" style={{padding:'6px 10px',fontSize:12.5,background:on?'var(--primary)':'var(--chip)',color:on?'#fff':'var(--chip-tx)'}} onClick={()=>toggleSym(s)}>{on?'✓ ':''}{s}</button>; })}</div>
-          <input className="inp" style={{marginTop:8}} placeholder="Thuốc đã dùng (vd: hạ sốt Hapacol…)" value={illForm.meds} onChange={e=>setIllForm({...illForm,meds:e.target.value})}/>
-          <input className="inp" style={{marginTop:8}} placeholder="Ghi chú thêm (nhiệt độ, bác sĩ dặn…)" value={illForm.note} onChange={e=>setIllForm({...illForm,note:e.target.value})}/>
-          <button className="btn" style={{marginTop:8}} onClick={addIll}>＋ Ghi đợt ốm (hôm nay)</button>
-        </div>
-        {ill.map(x=>(
-          <div key={x.id} className="item" style={x.recovered?{opacity:.7}:{borderLeft:'4px solid #e0a341'}}>
-            <div className="it-top"><h4>{x.recovered?'✅ Đã khỏi':'🤒 Đang ốm'}</h4>
-              <button className="muted" onClick={()=>{ if(confirm('Xoá đợt ốm này?')) setIll(ill.filter(y=>y.id!==x.id)); }}>✕</button></div>
-            <div className="muted" style={{fontSize:12.5,marginTop:2}}>Bắt đầu {fmtDateVN(x.date)}{x.recovered?` · khỏi ${fmtDateVN(x.recovered)} (${Math.max(1,Math.round((new Date(x.recovered)-new Date(x.date))/86400000))} ngày)`:''}</div>
-            {x.symptoms.length>0 && <div style={{fontSize:12.5,marginTop:4}}>{x.symptoms.join(' · ')}</div>}
-            {x.meds && <div className="muted" style={{fontSize:12.5,marginTop:2}}>💊 {x.meds}</div>}
-            {x.note && <div className="muted" style={{fontSize:12.5,marginTop:2}}>{x.note}</div>}
-            <button className="pill" style={{marginTop:6}} onClick={()=>recover(x.id)}>{x.recovered?'↩︎ Đánh dấu chưa khỏi':'✅ Đã khỏi hôm nay'}</button>
-          </div>
-        ))}
-        <div className="sec-title">🩺 Hồ sơ y tế gửi cô</div>
-        <div className="card">
-          <div className="field" style={{margin:0}}><label>Dị ứng</label><input className="inp" value={med.allergy||''} onChange={e=>setMed({...med,allergy:e.target.value})} placeholder="Thức ăn / thuốc bé dị ứng…"/></div>
-          <div className="field" style={{margin:'8px 0 0'}}><label>Thuốc đang dùng</label><input className="inp" value={med.meds||''} onChange={e=>setMed({...med,meds:e.target.value})} placeholder="Nếu có"/></div>
-          <div className="field" style={{margin:'8px 0 0'}}><label>Thói quen ngủ</label><input className="inp" value={med.sleep||''} onChange={e=>setMed({...med,sleep:e.target.value})} placeholder="vd: ngủ trưa 12h30, cần ôm gối…"/></div>
-          <div className="field" style={{margin:'8px 0 0'}}><label>Ghi chú cho cô</label><textarea className="inp" value={med.note||''} onChange={e=>setMed({...med,note:e.target.value})} placeholder="Tính cách, món sợ, cách dỗ…"/></div>
-          <button className="btn" style={{marginTop:10}} onClick={exportMed}>🖨️ Xuất để in / gửi cô</button>
-        </div>
-      </div>}
-
-      {tab==='eat' && <div>
-        <div className="sec-title">🍎 Ăn uống & chăm sóc {months!=null?`(~${months} tháng)`:''}</div>
-        <div className="card"><div className="muted" style={{fontSize:14,lineHeight:1.8}}>{CHILD_TIPS.map((t,i)=><div key={i}>{t}</div>)}</div></div>
-        <Collapse id="child-wean" defaultOpen={false} title="🍚 Thực đơn ăn dặm / ăn thô cả tuần">
-        <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>Gợi ý cho bé ~18–24 tháng (cơm nát + món mềm). Điều chỉnh theo khẩu vị bé nhé.</div>
-        {WEAN_MENU.map((m,i)=>(
-          <div key={i} className="item">
-            <div className="it-top"><h4>{m.d}</h4></div>
-            <div style={{fontSize:12.5,lineHeight:1.7,marginTop:2}}>
-              <div>🌅 <b>Sáng:</b> {m.sang}</div>
-              <div>🍎 <b>Phụ:</b> {m.phu}</div>
-              <div>🍚 <b>Trưa:</b> {m.trua}</div>
-              <div>🌙 <b>Tối:</b> {m.toi}</div>
-            </div>
-          </div>
-        ))}
-        </Collapse>
-      </div>}
-
-      {tab==='school' && <div>
-        <div className="sec-title">⏳ Đếm ngược ngày nhập học</div>
-        <div className="card">
-          <div className="field" style={{margin:0}}><label>Ngày bé đi học</label>
-            <input className="inp" type="date" value={child.schoolDate||''} onChange={e=>setChild({...child,schoolDate:e.target.value})}/></div>
-          {schoolDays!=null && <div className="center" style={{marginTop:10}}>
-            {schoolDays>0 ? <><div style={{fontSize:26,fontWeight:800,color:'var(--primary)'}}>{schoolDays} ngày</div><div className="muted" style={{fontSize:12.5}}>nữa là bé tới lớp — {fmtDateVN(child.schoolDate)} 🎒</div></>
-              : schoolDays===0 ? <div style={{fontSize:18,fontWeight:700}}>🎉 Hôm nay bé đi học!</div>
-              : <div className="muted">Bé đã đi học được {Math.abs(schoolDays)} ngày 💪</div>}
-          </div>}
-        </div>
-        <Collapse id="child-pack" defaultOpen={false} title="🎒 Đồ mang đi lớp" right={<span className="muted" style={{fontSize:12.5}}>{packDone}/{CHILD_PACK.length}</span>}>
-        <div className="card" style={{padding:'4px 13px'}}>
-          {CHILD_PACK.map(it=>(
-            <div key={it} className="row" style={{padding:'8px 0',borderBottom:'1px solid var(--line)'}}>
-              <button onClick={()=>tg(pack,setPack,it)} style={{fontSize:19}}>{pack[it]?'✅':'⬜'}</button>
-              <span className="grow" style={{fontSize:14,textDecoration:pack[it]?'line-through':'none',opacity:pack[it]?.6:1}}>{it}</span>
-            </div>
-          ))}
-          <button className="muted" style={{fontSize:11,margin:'8px 0'}} onClick={()=>{ if(confirm('Bỏ đánh dấu tất cả để chuẩn bị cho hôm sau?')) setPack({}); }}>↻ Đặt lại cho hôm sau</button>
-        </div>
-        </Collapse>
-        <Collapse id="child-skills" defaultOpen={false} title="🌟 Kỹ năng tự lập" right={<span className="muted" style={{fontSize:12.5}}>{skillDone}/{CHILD_SKILLS.length}</span>}>
-        <div className="prog" style={{margin:'0 14px'}}><i style={{width:(skillDone/CHILD_SKILLS.length*100)+'%'}}></i></div>
-        <div className="card" style={{padding:'4px 13px',marginTop:8}}>
-          {CHILD_SKILLS.map(it=>(
-            <div key={it} className="row" style={{padding:'8px 0',borderBottom:'1px solid var(--line)'}}>
-              <button onClick={()=>tg(skills,setSkills,it)} style={{fontSize:19}}>{skills[it]?'✅':'⬜'}</button>
-              <span className="grow" style={{fontSize:14,textDecoration:skills[it]?'line-through':'none',opacity:skills[it]?.6:1}}>{it}</span>
-            </div>
-          ))}
-        </div>
-        </Collapse>
-      </div>}
-
-      {tab==='parent' && <div>
-        <Collapse id="child-parenting" defaultOpen={false} title="🤝 Thống nhất cách dạy con">
-          <ParentingAgreement/>
-        </Collapse>
-        <Collapse id="child-skillguides" defaultOpen={false} title="🌱 Dạy kỹ năng tự túc đầu tiên">
-        <div className="muted center" style={{fontSize:11,margin:'0 14px 6px'}}>Bấm từng kỹ năng để xem cách dạy theo bước. Mỗi bé một nhịp — cứ từ từ, khen nhiều 💛</div>
-        {SKILL_GUIDES.filter(g=>!gDone[g.name]).map(g=><SkillGuide key={g.name} g={g} done={false} onTick={()=>setGDone({...gDone,[g.name]:true})}/>)}
-        {SKILL_GUIDES.some(g=>gDone[g.name]) && <div className="muted" style={{fontSize:11,margin:'10px 14px 4px'}}>✅ Bé đã biết ({SKILL_GUIDES.filter(g=>gDone[g.name]).length}) — bấm nút xanh để bỏ đánh dấu:</div>}
-        {SKILL_GUIDES.filter(g=>gDone[g.name]).map(g=><SkillGuide key={g.name} g={g} done={true} onTick={()=>{ const n={...gDone}; delete n[g.name]; setGDone(n); }}/>)}
-        </Collapse>
-        <Collapse id="child-issues" defaultOpen={false} title="🧩 Vấn đề thường gặp & cách xử lý">
-          <div className="muted center" style={{fontSize:11,margin:'0 14px 6px'}}>Bấm vào chủ đề để xem gợi ý.</div>
-          <div className="card">
-            <div style={{display:'flex',flexWrap:'wrap',gap:6}}>
-              {CHILD_ISSUES.map(f=><button key={f.title} className="pill" onClick={()=>setBrowseIssue(f)}>{f.icon} {f.title}</button>)}
-            </div>
-          </div>
-        </Collapse>
-        {browseIssue && <Sheet title={browseIssue.icon+' '+browseIssue.title} onClose={()=>setBrowseIssue(null)}>
-          <ul style={{margin:'4px 0 0',paddingLeft:18,fontSize:14,lineHeight:1.7}}>{browseIssue.tips.map((t,i)=><li key={i} style={{marginBottom:7}}>{t}</li>)}</ul>
-        </Sheet>}
-        <div className="sec-title">📔 Nhật ký “điều đầu tiên”</div>
-        <div className="row" style={{margin:'0 14px 4px',gap:8}}>
-          <input className="inp grow" placeholder="Hôm nay bé… (lần đầu nói, bước đi…)" value={dtext} onChange={e=>setDtext(e.target.value)} onKeyDown={e=>{ if(e.key==='Enter') addDiary(); }}/>
-          <button className="btn sm" onClick={addDiary}>＋</button>
-        </div>
-        {diary.slice(0,6).map(d=>(
-          <div key={d.id} className="item">
-            <div className="row"><span className="muted grow" style={{fontSize:12.5}}>{fmtDateVN(d.date)}</span>
-              <button className="iconbtn" onClick={()=>{ if(confirm('Xoá ghi chú này?')) setDiary(diary.filter(x=>x.id!==d.id)); }}>🗑️</button></div>
-            <div style={{fontSize:14,marginTop:2}}>{d.text}</div>
-          </div>
-        ))}
-        <div className="sec-title">😤 Nhật ký “cơn ăn vạ”</div>
-        <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>Ghi tình huống + cách xử lý hiệu quả để lần sau rút kinh nghiệm.</div>
-        <div className="card">
-          <input className="inp" placeholder="Tình huống (vd: không cho xem TV thì khóc)" value={tanForm.situation} onChange={e=>setTanForm({...tanForm,situation:e.target.value})}/>
-          <input className="inp" style={{marginTop:8}} placeholder="Cách mình đã xử lý" value={tanForm.handling} onChange={e=>setTanForm({...tanForm,handling:e.target.value})}/>
-          <button className="btn" style={{marginTop:8}} onClick={addTantrum}>＋ Ghi lại</button>
-        </div>
-        {tantrum.map(x=>(
-          <div key={x.id} className="item">
-            <div className="it-top"><h4 style={{fontSize:14}}>😤 {x.situation}</h4>
-              <button className="muted" onClick={()=>{ if(confirm('Xoá ghi chép này?')) setTantrum(tantrum.filter(y=>y.id!==x.id)); }}>✕</button></div>
-            {x.handling && <div className="muted" style={{fontSize:12.5,marginTop:3}}>💡 Cách xử lý: {x.handling}</div>}
-            <div className="row" style={{marginTop:6,gap:6}}><span className="muted" style={{fontSize:11}}>{fmtDateVN(x.date)} · Hiệu quả?</span>
-              <button className="pill" style={{background:x.worked===true?'var(--good)':'var(--chip)',color:x.worked===true?'#fff':'var(--chip-tx)'}} onClick={()=>setTanWorked(x.id,true)}>👍 Có</button>
-              <button className="pill" style={{background:x.worked===false?'#b06b6b':'var(--chip)',color:x.worked===false?'#fff':'var(--chip-tx)'}} onClick={()=>setTanWorked(x.id,false)}>👎 Không</button></div>
-          </div>
-        ))}
-      </div>}
+      </div>
     </div>
   );
 }
@@ -5662,7 +5184,6 @@ const MENU_REGISTRY=[
   {id:'intimacy',label:'Chúng mình · Riêng tư',items:[{k:'ibLog',icon:'📝',label:'Nhật ký'},{k:'ibSig',icon:'😏',label:'Tín hiệu'},{k:'ibWant',icon:'🌟',label:'Muốn thử'},{k:'ibHealth',icon:'💛',label:'Cảm xúc'},{k:'ibGame',icon:'🎲',label:'Chơi'},{k:'ibDate',icon:'📅',label:'Hẹn hò'},{k:'ibKnow',icon:'📖',label:'Kiến thức'},{k:'ibLock',icon:'🔒',label:'Riêng tư'}]},
   {id:'health',label:'Cá nhân · Sức khỏe',items:[{k:'health',icon:'🩺',label:'Bệnh nền'},{k:'period',icon:'🌸',label:'Chu kỳ'}]},
   {id:'comm',label:'Cẩm nang giao tiếp',items:[{k:'principles',icon:'🕊️',label:'Nguyên tắc'},{k:'say',icon:'💬',label:'Nói khéo'},{k:'love',icon:'💖',label:'NN yêu thương'},{k:'fight',icon:'⚖️',label:'Cãi lành mạnh'},{k:'connect',icon:'🔗',label:'Câu hỏi kết nối'}]},
-  {id:'child',label:'Nuôi con',items:[{k:'develop',icon:'🌱',label:'Phát triển'},{k:'play',icon:'🎲',label:'Chơi với con'},{k:'health',icon:'🏥',label:'Sức khoẻ'},{k:'eat',icon:'🍎',label:'Ăn uống'},{k:'school',icon:'🎒',label:'Đi học'},{k:'parent',icon:'💞',label:'Nuôi dạy'}]},
 ];
 function LongSectionsControl({flash}){
   const setAll=(open)=>{ try{ Object.keys(localStorage).forEach(k=>{ if(k.indexOf('ju.col.')===0) localStorage.removeItem(k); }); }catch(_){}; store.set('ju.colDefault',open?1:0); flash&&flash(open?'Đã mở tất cả mục dài ✓':'Đã thu gọn tất cả mục dài ✓'); };
@@ -8260,7 +7781,7 @@ function App(){
       {showQuiz && <KnowledgeQuiz onClose={()=>setShowQuiz(false)}/>}
 
       {tab==='home' && <Home setup={setup} setSetup={setSetup} people={people} me={me} go={setTab}/>}
-      {tab==='child' && <ChildCare people={people} me={me}/>}
+      {tab==='child' && <ChildLauncher/>}
       {tab==='date' && <DateTab people={people} me={me} flash={flash}/>}
       {tab==='us' && <UsTab people={people} me={me} flash={flash}/>}
       {tab==='talk' && <TalkTab people={people} me={me} flash={flash}/>}

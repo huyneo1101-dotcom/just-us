@@ -1,0 +1,966 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>Sóc · Nuôi con</title>
+<!-- Chặn trình duyệt tự bôi đen app (Chrome Android "Chủ đề tối → Làm tối trang web",
+     Samsung Internet dark mode…): app tự lo màu sáng/tối, đừng đảo màu giúp.
+     Script dưới đổi sang 'dark' khi theme đang dùng thật sự là nền tối. -->
+<meta name="color-scheme" content="only light" />
+<meta name="theme-color" content="#c65b52" />
+<link rel="manifest" href="manifest.json" />
+<link rel="icon" href="icon.svg" />
+<link rel="apple-touch-icon" href="icon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet" />
+<!-- Font viết tay Patrick Hand (dùng chung với Just Us) cho theme "Sổ tay" -->
+<link rel="stylesheet" href="../fonts.css" />
+
+<script crossorigin src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.production.min.js"></script>
+<script crossorigin src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.23.6/babel.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.js"></script>
+
+<style>
+:root{
+  --bg:#fbf7f6; --bg2:#f6eef0; --card:#ffffff; --text:#2a2228; --muted:#8a7c82;
+  --line:#efe6ea; --primary:#d6446e; --primary2:#f2789d; --on-primary:#fff;
+  --accent:#b65cff; --chip:#fbedf2; --chip-tx:#a83458; --good:#2bb673; --warn:#e8a13a;
+  --heart:#ff4d76; --shadow:0 1px 2px rgba(40,20,30,.05),0 6px 18px rgba(40,20,30,.05); --radius:16px;
+}
+/* ===== Themes ===== */
+body.theme-rose{ }
+body.theme-peach{
+  --bg:#fff4ec; --bg2:#ffe7d6; --card:#fff; --text:#4a3326; --muted:#a98a76;
+  --line:#f6d9c4; --primary:#f0803c; --primary2:#ffb27a; --accent:#e85d5d;
+  --chip:#ffe3cf; --chip-tx:#b85b22; --heart:#ff6a4d;
+}
+body.theme-lavender{
+  --bg:#f4f0ff; --bg2:#e9e1ff; --card:#fff; --text:#352a4a; --muted:#8d7fae;
+  --line:#e2d7f7; --primary:#8b5cf6; --primary2:#b794ff; --accent:#e85d8a;
+  --chip:#ebe1ff; --chip-tx:#6d3fc0; --heart:#c44dff;
+}
+body.theme-ocean{
+  --bg:#eef9fb; --bg2:#d9f0f5; --card:#fff; --text:#1f3a42; --muted:#6f97a1;
+  --line:#cdeaef; --primary:#119cb0; --primary2:#5fd0dd; --accent:#1f6feb;
+  --chip:#d4f1f5; --chip-tx:#0a7080; --heart:#ff5a8a;
+}
+body.theme-forest{
+  --bg:#eef7ef; --bg2:#dcefe0; --card:#fff; --text:#26392b; --muted:#74917a;
+  --line:#cfe9d3; --primary:#2f9e57; --primary2:#74d28d; --accent:#d98a2b;
+  --chip:#d7f0db; --chip-tx:#1f7a42; --heart:#ff5a7a;
+}
+body.theme-night{
+  --bg:#171221; --bg2:#221a30; --card:#241b33; --text:#f3e9f5; --muted:#a892b8;
+  --line:#3a2c4d; --primary:#ff6f9d; --primary2:#c277ff; --accent:#7aa2ff;
+  --chip:#3a2740; --chip-tx:#ffb3cd; --heart:#ff6f9d; --on-primary:#1a1024;
+  --shadow:0 12px 34px rgba(0,0,0,.45);
+}
+body.theme-cherry{
+  --bg:#fff1f0; --bg2:#ffe0dd; --card:#fff; --text:#43282a; --muted:#b08a8a;
+  --line:#f6d3cf; --primary:#e03131; --primary2:#ff7a7a; --accent:#d6336c;
+  --chip:#ffe0dd; --chip-tx:#c92a2a; --heart:#ff3b5c;
+}
+body.theme-sky{
+  --bg:#eef5ff; --bg2:#dbe9ff; --card:#fff; --text:#23344a; --muted:#7d93ad;
+  --line:#d3e2f7; --primary:#3b82f6; --primary2:#7cb0ff; --accent:#7048e8;
+  --chip:#dbe9ff; --chip-tx:#1c5bd6; --heart:#ff5a8a;
+}
+body.theme-mocha{
+  --bg:#f6efe9; --bg2:#ece0d4; --card:#fffaf6; --text:#3e2f25; --muted:#a08a78;
+  --line:#e6d6c7; --primary:#b07a4f; --primary2:#d6a878; --accent:#c0392b;
+  --chip:#ecdccd; --chip-tx:#8a5a36; --heart:#e0607a;
+}
+/* Chế độ tối — phủ lên bất kỳ theme màu nào đang chọn, giữ nguyên màu nhấn (--primary/--accent) của theme đó */
+body.dark{
+  --bg:#171221; --bg2:#221a30; --card:#241b33; --text:#f3e9f5; --muted:#a892b8;
+  --line:#3a2c4d; --chip:#3a2740; --chip-tx:#ffb3cd;
+  --shadow:0 12px 34px rgba(0,0,0,.45);
+}
+
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  font-family:'Be Vietnam Pro','Segoe UI',system-ui,-apple-system,Roboto,Arial,sans-serif;
+  font-size:14px; line-height:1.5; letter-spacing:.1px;
+  -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; text-rendering:optimizeLegibility;
+  background:linear-gradient(180deg,var(--bg),var(--bg2));
+  color:var(--text); min-height:100vh; transition:background .3s,color .3s;
+}
+#root{max-width:480px;margin:0 auto;min-height:100vh;position:relative}
+.app{padding:0 0 calc(96px + env(safe-area-inset-bottom,0px))}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,textarea,select{font-family:inherit;font-size:15px}
+a{color:var(--primary)}
+
+/* Header */
+.topbar{position:sticky;top:0;z-index:40;backdrop-filter:blur(10px);
+  background:linear-gradient(180deg,rgba(255,255,255,.85),rgba(255,255,255,.4));
+  border-bottom:1px solid var(--line);padding:10px 14px;display:flex;align-items:center;gap:10px}
+body.theme-night .topbar{background:linear-gradient(180deg,rgba(36,27,51,.9),rgba(36,27,51,.5))}
+.brand{font-weight:700;font-size:18px;letter-spacing:.3px;display:flex;align-items:center;gap:6px}
+.brand .heart{color:var(--heart)}
+.who{margin-left:auto;display:flex;align-items:center;gap:6px;background:var(--chip);
+  color:var(--chip-tx);border-radius:999px;padding:5px 10px;font-size:12.5px;font-weight:700}
+.who .av{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:#fff;font-size:14px}
+
+/* Cards & generic */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:none;padding:14px;margin:12px 14px}
+.sec-title{font-weight:700;font-size:14px;margin:18px 14px 6px;display:flex;align-items:center;gap:8px}
+.muted{color:var(--muted)}
+/* Đồng bộ định dạng text các thẻ Trang chủ: tiêu đề (.hc-title) + nội dung (.hc-lead nổi bật / .hc-body phụ) */
+.hc-title{font-size:14px;font-weight:700;color:var(--text);line-height:1.35}
+.hc-act{font-size:11px;color:var(--muted);font-weight:500;flex:0 0 auto;white-space:nowrap}
+.hc-lead{font-size:14px;font-weight:600;color:var(--text);line-height:1.45;margin:6px 0 9px}
+.hc-body{font-size:12.5px;color:var(--muted);line-height:1.55}
+.row{display:flex;gap:10px;align-items:center}
+.pill{display:inline-flex;align-items:center;gap:5px;background:var(--chip);color:var(--chip-tx);
+  border-radius:999px;padding:3px 10px;font-size:11px;font-weight:600}
+.btn{background:linear-gradient(135deg,var(--primary),var(--primary2));color:var(--on-primary);
+  border-radius:14px;padding:11px 14px;font-weight:700;font-size:14px;display:inline-flex;
+  align-items:center;justify-content:center;gap:7px;box-shadow:var(--shadow);width:100%}
+.btn.sm{padding:8px 12px;font-size:13px;width:auto}
+.btn.ghost{background:transparent;color:var(--primary);border:1.5px solid var(--primary);box-shadow:none}
+.btn.soft{background:var(--chip);color:var(--chip-tx);box-shadow:none}
+.iconbtn{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;background:var(--chip);color:var(--chip-tx);font-size:15px}
+
+/* Inputs */
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:10px}
+.field label{font-size:12.5px;font-weight:700;color:var(--muted)}
+.inp{background:var(--bg);border:1.5px solid var(--line);border-radius:14px;padding:11px 12px;width:100%;color:var(--text)}
+textarea.inp{resize:vertical;min-height:64px}
+.seg{display:flex;gap:6px;background:var(--chip);border-radius:14px;padding:5px;margin:12px 14px;overflow:auto}
+.seg button{flex:0 0 auto;padding:8px 13px;border-radius:10px;font-weight:700;font-size:13px;color:var(--chip-tx);white-space:nowrap}
+.seg button.on{background:var(--card);color:var(--primary);box-shadow:0 3px 10px rgba(0,0,0,.08)}
+/* Thanh menu gọn: cuộn ngang, mỗi mục 1 viên nhỏ (icon + chữ cùng dòng) */
+/* Menu Mẫu C: lưới ô, icon trên — chữ dưới, KHÔNG cuộn ngang */
+.segbar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;padding:8px 14px 2px}
+.segpill{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:9px 3px;border-radius:12px;background:var(--card);border:1px solid var(--line);color:var(--text);font-weight:600;font-size:11px;line-height:1.15;text-align:center;cursor:pointer;min-height:54px}
+.segpill .segic{font-size:19px;line-height:1}
+.segpill.on{background:var(--primary);color:var(--on-primary);border-color:var(--primary);box-shadow:var(--shadow)}
+/* Menu Nhà mình (Mẫu 4): 6 icon tròn chọn nhóm + tab gạch chân cho mục con */
+.usm4{padding:10px 14px 2px}
+.usm4-groups{display:flex;justify-content:space-between;gap:8px;max-width:360px;margin:0 auto}
+.usm4-dot{flex:0 0 auto;width:48px;height:48px;border-radius:50%;background:var(--card);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:20px;line-height:1;padding:0;cursor:pointer}
+.usm4-dot.on{background:var(--primary);border-color:var(--primary);box-shadow:0 0 0 3px rgba(0,0,0,.06),var(--shadow)}
+.usm4-name{text-align:center;font-weight:700;font-size:15px;color:var(--text);margin:11px 0 2px}
+.usm4-tabs{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 12px;border-top:1px solid var(--line);padding-top:9px;margin-top:8px}
+.usm4-tab{display:inline-flex;align-items:center;gap:5px;background:none;border:0;border-bottom:2px solid transparent;color:var(--muted);font-weight:700;font-size:12.5px;line-height:1;padding:2px 1px 6px;cursor:pointer}
+.usm4-tab .segic{font-size:14px;line-height:1}
+.usm4-tab.on{color:var(--primary);border-bottom-color:var(--primary)}
+.segpill.seg-ro{color:var(--muted);border-style:dashed;font-weight:600}
+.filters .flt-ro{border-style:dashed;color:var(--muted)}
+.usm4-dot.usm4-ro{border-style:dashed;color:var(--muted);font-size:16px}
+.usm4-tab.usm4-ro{color:var(--muted)}
+/* Mục gập gọn (Collapse) */
+.col-h{cursor:pointer;user-select:none;display:inline-flex;align-items:center;gap:5px}
+.col-chev{font-size:11px;color:var(--muted);width:11px;display:inline-block;text-align:center}
+
+/* Filter chips */
+.filters{display:flex;gap:7px;margin:10px 14px 0;flex-wrap:wrap}
+.filters button{font-size:12.5px;font-weight:600;padding:7px 13px;border-radius:999px;background:var(--card);
+  border:1.5px solid var(--line);color:var(--muted)}
+.filters button.on{background:var(--primary);color:var(--on-primary);border-color:var(--primary)}
+
+/* List item card */
+.item{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 13px;margin:10px 14px;box-shadow:none}
+.item .it-top{display:flex;align-items:flex-start;gap:8px}
+.item h4{margin:0;font-size:14px;font-weight:700;flex:1;line-height:1.35}
+.item.dn h4{text-decoration:line-through;opacity:.6}
+.it-note{font-size:13px;color:var(--text);opacity:.92;margin:6px 0 0;white-space:pre-wrap}
+.it-meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;align-items:center}
+.av-sm{width:20px;height:20px;border-radius:50%;background:var(--chip);display:grid;place-items:center;font-size:12px}
+.heartbtn{font-size:18px;line-height:1}
+.heartbtn.on{color:var(--heart)}
+.stars{font-size:14px;letter-spacing:1px;color:var(--warn)}
+.empty{text-align:center;color:var(--muted);padding:30px 20px;font-size:13px;line-height:1.55}
+.empty .big{font-size:38px;display:block;margin-bottom:8px}
+
+/* Home */
+.hero{margin:14px;border-radius:22px;overflow:hidden;position:relative;min-height:188px;display:flex;flex-direction:column;justify-content:flex-end;
+  background:linear-gradient(135deg,var(--primary),var(--accent));color:#fff;padding:15px 18px;box-shadow:var(--shadow)}
+.hero .names{font-size:15px;font-weight:700;display:flex;align-items:center;gap:6px;flex-wrap:wrap;text-shadow:0 1px 5px rgba(0,0,0,.4)}
+.hero .count{font-size:36px;font-weight:800;margin-top:2px;line-height:1.04;text-shadow:0 1px 7px rgba(0,0,0,.45)}
+.hero .sub{opacity:.96;font-size:12.5px;margin-top:3px;text-shadow:0 1px 5px rgba(0,0,0,.45)}
+.hero .cover{position:absolute;inset:0;background-size:cover;background-position:center;opacity:1;z-index:0}
+.hero .scrim{position:absolute;inset:0;z-index:0;background:linear-gradient(to top,rgba(35,8,35,.66),rgba(35,8,35,.10) 58%,rgba(35,8,35,.30))}
+.hero .badges{position:absolute;top:12px;right:12px;z-index:1;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;max-width:62%}
+.hero .badges .b{background:rgba(255,255,255,.92);color:#993556;font-size:11px;font-weight:700;padding:4px 9px;border-radius:20px;white-space:nowrap}
+.hero .inner{position:relative;z-index:1}
+.stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:12px 14px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px;box-shadow:none}
+.stat .n{font-size:22px;font-weight:700;color:var(--primary)}
+.stat .l{font-size:12.5px;color:var(--muted);font-weight:600}
+/* ===== Trang chủ · phong cách tối giản thanh lịch (mẫu 3) — chỉ áp cho .homev3 ===== */
+.homev3{font-family:var(--home-font,inherit)}
+.homev3 .hero:not(.hascover){background:none;color:var(--text);box-shadow:none;min-height:0;border-radius:0;margin:8px 20px 2px;padding:16px 0 2px;text-align:center;align-items:center}
+.homev3 .hero:not(.hascover) > button{display:none}
+.homev3 .hero:not(.hascover) .inner{order:1}
+.homev3 .hero:not(.hascover) .names{text-shadow:none;justify-content:center;color:var(--muted);font-weight:600;font-size:11px;letter-spacing:2.5px;text-transform:uppercase}
+.homev3 .hero:not(.hascover) .count{text-shadow:none;font-family:Georgia,"Times New Roman",serif;font-weight:500;font-size:44px;letter-spacing:-1px;color:var(--text);margin-top:6px;line-height:1.05}
+.homev3 .hero:not(.hascover) .sub{text-shadow:none;color:var(--muted)}
+.homev3 .hero:not(.hascover) .badges{order:3;position:static;max-width:none;justify-content:center;margin:12px 0 0}
+.homev3 .hero:not(.hascover) .badges .b{background:transparent;border:1px solid var(--line);color:var(--primary);box-shadow:none;font-weight:600}
+.homev3 .card{box-shadow:none;border:none;border-top:1px solid var(--line);border-radius:0;background:transparent;margin:0 20px;padding:15px 0}
+.homev3 .item{box-shadow:none;border:none;border-top:1px solid var(--line);border-radius:0;background:transparent;margin:0 20px;padding:11px 0}
+.homev3 .stat{box-shadow:none}
+.homev3 .stat .n{font-family:Georgia,"Times New Roman",serif;font-weight:500}
+.homev3 .hc-title{font-size:11px;font-weight:600;letter-spacing:1.3px;text-transform:uppercase;color:var(--primary)}
+.homev3 .item h4{font-weight:600;font-size:14px}
+.homev3 .sec-title{font-size:11px;font-weight:600;letter-spacing:1.3px;text-transform:uppercase;color:var(--primary)}
+.mood-pick{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.mood-pick button{font-size:22px;width:42px;height:42px;border-radius:12px;background:var(--bg);border:1.5px solid var(--line)}
+.mood-pick button.on{border-color:var(--primary);background:var(--chip)}
+
+/* Progress */
+.prog{height:10px;border-radius:999px;background:var(--chip);overflow:hidden;margin-top:8px}
+.prog > i{display:block;height:100%;background:linear-gradient(90deg,var(--primary),var(--primary2))}
+
+/* Photos */
+.gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:10px 14px}
+.gallery .ph{position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;background:var(--chip)}
+.gallery .ph img{width:100%;height:100%;object-fit:cover;display:block}
+.gallery .ph .cap{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(transparent,rgba(0,0,0,.6));
+  color:#fff;font-size:10px;padding:10px 6px 4px}
+/* Nhiều ảnh: dải thumbnail + khung chọn ảnh */
+.phrow{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:6px}
+.phrow .th{position:relative;line-height:0;cursor:pointer;border-radius:8px;overflow:hidden;background:var(--chip);flex:0 0 auto}
+.phrow .th img{display:block}
+.phrow .more{width:56px;height:56px;border-radius:8px;background:var(--chip);color:var(--chip-tx);
+  display:grid;place-items:center;font-size:12.5;font-weight:700;cursor:pointer;flex:0 0 auto}
+.phlab{font-size:11.5;color:var(--muted);margin-top:8px}
+.phpick{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.phpick .cell{position:relative}
+.phpick .cell img{border-radius:8px;object-fit:cover;display:block}
+.phpick .cell .x{position:absolute;top:-7px;right:-7px;background:var(--card);border:1px solid var(--line);
+  border-radius:50%;width:20px;height:20px;font-size:11;color:var(--muted);line-height:1;padding:0}
+
+/* Map */
+#map{height:340px;border-radius:16px;margin:10px 14px;border:1px solid var(--line);overflow:hidden}
+
+/* Bottom nav */
+/* Floating Dock (phong cách #3): thanh nổi tách rời, tab đang chọn nhô lên thành nút tròn */
+.nav{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(12px + env(safe-area-inset-bottom,0px));
+  width:calc(100% - 28px);max-width:452px;z-index:50;display:flex;align-items:flex-end;padding:8px 6px;
+  background:var(--card);border:1px solid var(--line);border-radius:26px;
+  box-shadow:0 14px 32px -10px rgba(40,20,30,.30),0 4px 12px -6px rgba(40,20,30,.14)}
+.nav button{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--muted);font-size:10px;font-weight:600;white-space:nowrap;background:none;transition:color .2s ease}
+.nav button .ic{font-size:20px;line-height:1;height:38px;width:38px;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:transform .26s cubic-bezier(.34,1.4,.5,1),background .2s ease,box-shadow .26s ease}
+.nav button .ic svg{display:block;width:22px;height:22px}
+.nav button.on{color:var(--primary)}
+.nav button.on .ic{background:linear-gradient(145deg,var(--primary2),var(--primary));color:var(--on-primary,#fff);transform:translateY(-12px);box-shadow:0 10px 18px -4px color-mix(in srgb,var(--primary) 55%,transparent)}
+
+/* Modal */
+.ov{position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--card);width:100%;max-width:480px;border-radius:22px 22px 0 0;padding:16px 16px 22px;max-height:88vh;overflow:auto;animation:up .25s ease}
+@keyframes up{from{transform:translateY(40px);opacity:.5}to{transform:translateY(0);opacity:1}}
+.sheet h3{margin:2px 0 14px;font-size:18px}
+.sheet .x{position:absolute;right:16px;top:14px;font-size:22px;color:var(--muted)}
+.flash{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:99;background:var(--text);color:var(--card);
+  padding:10px 16px;border-radius:999px;font-size:13px;font-weight:700;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.emoji-row{display:flex;gap:6px;flex-wrap:wrap}
+.emoji-row button{font-size:22px;width:40px;height:40px;border-radius:10px;background:var(--bg);border:1.5px solid var(--line)}
+.emoji-row button.on{border-color:var(--primary);background:var(--chip)}
+.dim{opacity:.55}
+.center{text-align:center}
+.grow{flex:1}
+.danger{color:#e0436b}
+.linkout{color:var(--primary);font-weight:700;font-size:13px;text-decoration:none;word-break:break-all}
+
+/* ============================================================
+   Skin "Sổ tay" (scrapbook) v2 — theme riêng, chỉ áp khi body.theme-sotay.
+   Chữ ký: giấy · thẻ hơi nghiêng · bóng cứng lệch · viền đứt · washi tape.
+   ============================================================ */
+body.theme-sotay{
+  --bg:#efe7db; --bg2:#e7ddca; --card:#fffdf7; --text:#3d352c; --muted:#95896f;
+  --line:#cdba97; --primary:#c65b52; --primary2:#e0906f; --on-primary:#fff;
+  --accent:#a8553f; --chip:#f2e7cf; --chip-tx:#96682f; --good:#5f8a5a; --warn:#d99a3a;
+  --heart:#d76a6a; --shadow:3px 4px 0 rgba(74,58,40,.16); --radius:6px;
+  background:
+    repeating-linear-gradient(0deg, transparent 0 28px, rgba(150,120,80,.06) 28px 29px),
+    linear-gradient(180deg,var(--bg),var(--bg2));
+  background-attachment:fixed;
+}
+/* Thẻ & dòng danh sách = mảnh giấy: viền đứt + bóng cứng lệch rõ, bo góc nhỏ */
+body.theme-sotay .card,
+body.theme-sotay .item,
+body.theme-sotay .stat,
+body.theme-sotay .homev3 .card,
+body.theme-sotay .homev3 .item,
+body.theme-sotay .ju-now{
+  background:var(--card); border:1px dashed var(--line); border-radius:6px;
+  box-shadow:3px 4px 0 rgba(74,58,40,.16);
+}
+body.theme-sotay .homev3 .card,
+body.theme-sotay .homev3 .item{ margin:13px 16px; padding:13px 14px; }
+body.theme-sotay .ju-now{ border:1px dashed var(--line) !important; border-radius:6px !important; }
+/* Nghiêng ngẫu nhiên THẬT: góc gán riêng cho từng thẻ bằng JS qua biến --rot
+   (xem hàm applySotayTilt). Mỗi thẻ một góc, cả 2 chiều → không dồn một bên. */
+body.theme-sotay .card,
+body.theme-sotay .item{ transform:rotate(var(--rot,0deg)); transform-origin:50% 50%; }
+body.theme-sotay .ju-now{ transform:rotate(-1.3deg); transform-origin:50% 50%; }
+/* Washi tape trên thẻ "Bây giờ nên làm" */
+body.theme-sotay .ju-now{ position:relative; overflow:visible; }
+body.theme-sotay .ju-now::before{
+  content:""; position:absolute; top:-10px; left:50%;
+  width:70px; height:19px; transform:translateX(-50%) rotate(-3deg);
+  background:repeating-linear-gradient(45deg, rgba(216,169,79,.55) 0 7px, rgba(216,169,79,.34) 7px 14px);
+  border:1px solid rgba(190,140,60,.35); pointer-events:none;
+}
+/* Tiêu đề mục = chữ viết tay + vệt bút dạ quang */
+body.theme-sotay .sec-title,
+body.theme-sotay .homev3 .sec-title,
+body.theme-sotay .homev3 .hc-title{
+  font-family:'Patrick Hand',"Segoe Script",cursive; font-weight:400;
+  text-transform:none; letter-spacing:.2px; color:var(--accent); font-size:16px;
+}
+body.theme-sotay .homev3 .hc-title{
+  display:inline; background:linear-gradient(180deg,transparent 55%, rgba(224,169,79,.42) 55% 92%, transparent 92%);
+  padding:0 2px;
+}
+body.theme-sotay .homev3 .sec-title{
+  background:linear-gradient(180deg,transparent 58%, rgba(224,169,79,.38) 58% 92%, transparent 92%);
+}
+/* Nhãn "Bây giờ nên làm" (inline) cũng nét viết tay cho đồng bộ */
+body.theme-sotay .now-lbl{
+  font-family:'Patrick Hand',"Segoe Script",cursive !important; text-transform:none !important;
+  letter-spacing:.2px !important; font-size:15px !important; font-weight:400 !important; color:var(--accent) !important;
+}
+/* Chip / pill / nút lọc = mẩu băng giấy (góc gần vuông) */
+body.theme-sotay .pill{ border-radius:2px; }
+body.theme-sotay .filters button{ border-radius:3px; }
+body.theme-sotay .seg{ border-radius:6px; }
+body.theme-sotay .seg button{ border-radius:4px; }
+/* Thanh điều hướng = mép giấy khâu (gạch đứt) */
+body.theme-sotay .nav{ background:var(--card); border:1px dashed var(--line); }
+/* Washi tape + tên viết tay trên "măng-sét" trang chủ */
+body.theme-sotay .homev3 .hero:not(.hascover){ position:relative; padding-top:30px; }
+body.theme-sotay .homev3 .hero:not(.hascover)::before{
+  content:""; position:absolute; top:5px; left:50%;
+  width:80px; height:20px; transform:translateX(-50%) rotate(-2.5deg);
+  background:repeating-linear-gradient(45deg, rgba(216,169,79,.55) 0 7px, rgba(216,169,79,.34) 7px 14px);
+  border:1px solid rgba(190,140,60,.35); pointer-events:none;
+}
+body.theme-sotay .homev3 .hero:not(.hascover) .names{
+  font-family:'Patrick Hand',"Segoe Script",cursive;
+  text-transform:none; letter-spacing:.4px; font-size:17px; color:var(--accent);
+}
+/* Đơn vị "ngày" & phụ đề dưới số cũng nét viết tay cho ăn nhập */
+body.theme-sotay .homev3 .hero:not(.hascover) .sub{
+  font-family:'Patrick Hand',"Segoe Script",cursive; font-size:13.5px;
+}
+/* (Đã bỏ tape trên các thẻ trang chủ cho đỡ rối — chỉ nhấn nhá ở măng-sét
+   và thẻ "Bây giờ nên làm".) */
+/* ===== Riêng cho app Sóc ===== */
+.sc-head{padding:18px 16px 6px;text-align:center}
+.sc-head h1{margin:0;font-size:22px;color:var(--primary)}
+.sc-head p{margin:4px 0 0;font-size:12.5px;color:var(--muted)}
+.sc-back{display:block;text-align:center;margin:18px 14px 30px;text-decoration:none}
+.sc-sync{margin:0 14px 4px;font-size:11px;color:var(--muted);text-align:center}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<!-- Chống nháy theme: lấy đúng theme đang chọn bên Just Us (cùng origin, chung localStorage) -->
+<script>
+(function(){
+  try{
+    var raw=localStorage.getItem('ju.setup');
+    var s=raw?JSON.parse(raw):{};
+    var t=s.theme||'sotay';
+    var mode=s.darkMode||'light';
+    var dark=mode==='dark'||(mode==='system'&&typeof window.matchMedia==='function'&&window.matchMedia('(prefers-color-scheme: dark)').matches);
+    document.body.className='theme-'+t+(dark?' dark':'');
+  }catch(e){document.body.className='theme-sotay';}
+  // Đọc màu nền THẬT đang áp dụng rồi báo cho trình duyệt biết app đang sáng hay tối
+  try{
+    var v=getComputedStyle(document.body).getPropertyValue('--bg').trim();
+    var m=/^#([0-9a-f]{6})$/i.exec(v), isDark=false;
+    if(m){ var n=parseInt(m[1],16);
+      isDark=((((n>>16)&255)*0.299+(((n>>8)&255))*0.587+(n&255)*0.114)/255)<0.5; }
+    document.documentElement.style.colorScheme=isDark?'dark':'only light';
+  }catch(e){}
+})();
+</script>
+
+<!-- Dữ liệu tĩnh dùng chung với Just Us: ../data/child.json -->
+<script>
+(function(){
+  window.JUD={ CHILD_VACCINES:[], CHILD_MILESTONES:[], CHILD_TIPS:[], CHILD_PACK:[], CHILD_SKILLS:[],
+    PLAY_LIB:[], WEAN_MENU:[], PARENTING_QS:[], ILL_SYMPTOMS:[], KIDS_CAFES:[], SKILL_GUIDES:[], CHILD_ISSUES:[] };
+  function fill(dst,src){ if(Array.isArray(dst)&&Array.isArray(src)){ dst.length=0; Array.prototype.push.apply(dst,src); } }
+  window.__JU_DATA_READY=fetch('../data/child.json').then(function(r){ if(!r.ok) throw 0; return r.json(); })
+    .then(function(d){ Object.keys(d).forEach(function(k){ if(window.JUD[k]) fill(window.JUD[k],d[k]); }); })
+    .catch(function(){});
+})();
+</script>
+
+<!-- Chẩn đoán: nếu app không chạy thì hiện lý do thay vì màn trắng -->
+<script>
+window.__SC_OK=false;
+setTimeout(function(){
+  if(!window.__SC_OK){
+    var miss=[];
+    if(!window.React) miss.push('React');
+    if(!window.ReactDOM) miss.push('ReactDOM');
+    if(!window.Babel) miss.push('Babel');
+    var r=document.getElementById('root');
+    if(r&&!r.firstChild) r.innerHTML='<div style="padding:40px 22px;font-family:sans-serif"><h2>🐿️ App chưa khởi động</h2><p>'+(miss.length?'Thiếu thư viện: <b>'+miss.join(', ')+'</b> — kiểm tra mạng rồi tải lại.':'Có lỗi cú pháp, mở Console (F12) để xem.')+'</p></div>';
+  }
+},8000);
+</script>
+
+<script type="text/babel" data-presets="react">
+const {useState,useEffect,useRef,useMemo} = React;
+
+/* ============ store — DÙNG CHUNG khoá 'ju.*' với app Just Us (cùng origin),
+   nên dữ liệu Sóc đã lưu trước đây vẫn còn nguyên ============ */
+const mem={};
+const store={
+  get(k,d){ try{ const v=localStorage.getItem(k); return v==null?d:JSON.parse(v); }catch(e){ return (k in mem)?mem[k]:d; } },
+  set(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){ mem[k]=v; } },
+  del(k){ try{ localStorage.removeItem(k); }catch(e){ delete mem[k]; } }
+};
+
+/* ============ Đồng bộ đám mây (bản gọn)
+   App này KHÔNG tự đăng nhập / ghép cặp — nó dùng lại phiên Supabase mà Just Us
+   đã lưu trong localStorage (cùng origin). Nó chỉ đụng vào ĐÚNG các khoá của Sóc:
+   kéo về thì chỉ ghi đè khoá Sóc, đẩy lên thì trộn khoá Sóc vào hàng dữ liệu đang có.
+   Nhờ vậy ghi ở app này không đè mất dữ liệu khác của Just Us, và ngược lại
+   khi Just Us mở lên nó cũng không kéo bản cũ đè lên phần Sóc mình vừa ghi. ============ */
+const SB_URL='https://vvgkjgvzjeklaadusbne.supabase.co';
+const SB_KEY='sb_publishable_DMMPv5L2kGhrHTxeQ72iKw_dIh13iT1';
+const CHILD_KEYS=['ju.child','ju.childGrowth','ju.childVaccines','ju.childMilestones','ju.childDiary',
+  'ju.childPack','ju.childSkills','ju.childMed','ju.childIllness','ju.childWords','ju.childTantrum',
+  'ju.childParenting','ju.skillGuidesDone'];
+let _sb=null;
+function sbClient(){
+  if(_sb) return _sb;
+  if(window.supabase && window.supabase.createClient){
+    _sb=window.supabase.createClient(SB_URL,SB_KEY,{ auth:{ persistSession:true, autoRefreshToken:true, detectSessionInUrl:false } });
+  }
+  return _sb;
+}
+const Cloud={
+  ready:false, coupleId:null, pushTimer:null, onChange:null, status:'off',
+  client(){ return sbClient(); },
+  writer(){ let d=store.get('ju.device',null); if(!d){ d=Math.random().toString(36).slice(2)+Date.now().toString(36); store.set('ju.device',d); } return d+'.soc'; },
+  async init(){
+    const c=this.client(); if(!c) return this._set('off');
+    try{
+      const {data}=await c.auth.getSession();
+      if(!data||!data.session) return this._set('off');
+      const r=await c.rpc('ju_my_couple');
+      if(r.error||!r.data||!r.data.id) return this._set('off');
+      this.coupleId=r.data.id;
+      await this.pull();
+      this.ready=true; this._set('on');
+      // Có sửa gì trong lúc đang nối máy chủ thì đẩy nốt lên (lúc đó schedulePush chưa chạy được)
+      if(this._pending) this.push();
+    }catch(e){ this._set('off'); }
+  },
+  _set(s){ this.status=s; if(this.onChange) this.onChange(s); },
+  async pull(){
+    const c=this.client(); if(!c||!this.coupleId) return;
+    try{
+      const {data,error}=await c.from('justus_data').select('data').eq('couple_id',this.coupleId).maybeSingle();
+      if(error||!data||!data.data) return;
+      let changed=false;
+      CHILD_KEYS.forEach(k=>{ if(k in data.data){ store.set(k,data.data[k]); changed=true; } });
+      if(changed) window.dispatchEvent(new CustomEvent('ju:remote'));
+    }catch(e){}
+  },
+  schedulePush(){ this._pending=true; if(!this.ready) return; clearTimeout(this.pushTimer); this.pushTimer=setTimeout(()=>this.push(),700); },
+  async push(){
+    const c=this.client(); if(!c||!this.coupleId||!this.ready) return;
+    this._pending=false;
+    try{
+      const {data,error}=await c.from('justus_data').select('data').eq('couple_id',this.coupleId).maybeSingle();
+      if(error) return;
+      const merged=Object.assign({},(data&&data.data)||{});
+      CHILD_KEYS.forEach(k=>{ const v=store.get(k,null); if(v!=null) merged[k]=v; });
+      await c.from('justus_data').upsert({couple_id:this.coupleId,data:merged,last_writer:this.writer(),updated_at:new Date().toISOString()});
+      store.set('ju.synced',Date.now());
+    }catch(e){}
+  }
+};
+
+function useLocal(key,initial){
+  const [v,setV]=useState(()=>store.get(key,initial));
+  const first=useRef(true);
+  useEffect(()=>{ store.set(key,v); if(first.current){ first.current=false; return; } Cloud.schedulePush(); },[key,v]);
+  useEffect(()=>{
+    const h=()=>{ const nv=store.get(key,initial); setV(prev=> JSON.stringify(prev)===JSON.stringify(nv)?prev:nv); };
+    window.addEventListener('ju:remote',h);
+    return ()=>window.removeEventListener('ju:remote',h);
+  },[key]);
+  return [v,setV];
+}
+
+/* ============ helpers (bản sao gọn từ Just Us) ============ */
+const uid=()=> Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const pad=(n)=> n<10?'0'+n:''+n;
+function todayISO(){ const d=new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+function fmtDateVN(s){ if(!s) return ''; const [y,m,d]=s.split('-'); return d+'/'+m+'/'+y; }
+function daysFromToday(iso){
+  if(!iso) return null;
+  const t=new Date(); t.setHours(0,0,0,0);
+  const d=new Date(iso+'T00:00:00');
+  return Math.round((d-t)/86400000);
+}
+function celebrate(emojis){
+  try{ if(navigator.vibrate) navigator.vibrate([28,40,28]); }catch(e){}
+  const set=emojis||['❤️','💖','🎉','✨','💞','💕'];
+  for(let i=0;i<26;i++){
+    const el=document.createElement('div');
+    el.textContent=set[Math.floor(Math.random()*set.length)];
+    el.style.cssText='position:fixed;z-index:200;left:'+(Math.random()*100)+'vw;top:-30px;font-size:'+(16+Math.random()*18)+'px;pointer-events:none;will-change:transform,opacity;transition:transform 1.7s cubic-bezier(.3,.7,.4,1), opacity 1.7s;';
+    document.body.appendChild(el);
+    requestAnimationFrame(()=>{ el.style.transform='translateY('+(105+Math.random()*15)+'vh) rotate('+(Math.random()*540-270)+'deg)'; el.style.opacity='0'; });
+    setTimeout(()=>{ try{el.remove();}catch(e){} },1800);
+  }
+}
+const NHA={lat:21.0301,lng:105.8210,name:'Núi Trúc, Ba Đình, Hà Nội'};
+function haversine(la1,lo1,la2,lo2){ const R=6371,toR=x=>x*Math.PI/180;
+  const dLa=toR(la2-la1),dLo=toR(lo2-lo1);
+  const a=Math.sin(dLa/2)**2+Math.cos(toR(la1))*Math.cos(toR(la2))*Math.sin(dLo/2)**2;
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)); }
+// Taxi khứ hồi ước tính từ nhà (Núi Trúc): mở cửa ~12k + ~13.5k/km, đường thực ~1.3× đường chim bay, ×2 chiều
+function taxiRoundK(km){ const road=km*1.3; const one=12000+13500*road; return Math.round(one*2/1000); }
+const vacAgeMonths=(label)=>{ if(/sơ sinh/i.test(label)) return 0; const m=label.match(/\d+/); return m?Number(m[0]):0; };
+
+/* ============ UI dùng chung ============ */
+function Collapse({id,title,defaultOpen=true,right,children}){
+  const k='ju.col.'+id;
+  const [open,setOpen]=useState(()=>{ const v=store.get(k,null); if(v!=null) return !!v; const gd=store.get('ju.colDefault',null); return gd!=null?!!gd:defaultOpen; });
+  const toggle=()=>setOpen(o=>{ store.set(k,!o); return !o; });
+  return (
+    <div className="collapse">
+      <div className="sec-title">
+        <span className="col-h" onClick={toggle}><span className="col-chev">{open?'▾':'▸'}</span> {title}</span>
+        <span className="grow"></span>{right}
+      </div>
+      {open && <div className="col-body">{children}</div>}
+    </div>
+  );
+}
+function Sheet({title,onClose,children}){
+  return (
+    <div className="ov" onClick={onClose}>
+      <div className="sheet" onClick={e=>e.stopPropagation()}>
+        <div className="x" onClick={onClose}>✕</div>
+        {title && <h3>{title}</h3>}
+        {children}
+      </div>
+    </div>
+  );
+}
+// Bản gọn của FilterBar bên Just Us: app này không có phần sắp xếp lại menu.
+function FilterBar({items, value, onChange}){
+  return (
+    <div className="segbar">
+      {items.map(it=>(
+        <button key={it.k} className={'segpill'+(value===it.k?' on':'')} onClick={()=>onChange(it.k)}>
+          <span className="segic">{it.icon}</span>{it.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+/* ============ Dữ liệu tĩnh (từ ../data/child.json) ============ */
+const CHILD_VACCINES=JUD.CHILD_VACCINES;
+const CHILD_MILESTONES=JUD.CHILD_MILESTONES;
+const CHILD_TIPS=JUD.CHILD_TIPS;
+const CHILD_PACK=JUD.CHILD_PACK;
+const CHILD_SKILLS=JUD.CHILD_SKILLS;
+const PLAY_LIB=JUD.PLAY_LIB;
+const WEAN_MENU=JUD.WEAN_MENU;
+const PARENTING_QS=JUD.PARENTING_QS;
+const ILL_SYMPTOMS=JUD.ILL_SYMPTOMS;
+const KIDS_CAFES=JUD.KIDS_CAFES;
+const SKILL_GUIDES=JUD.SKILL_GUIDES;
+const CHILD_ISSUES=JUD.CHILD_ISSUES;
+
+/* ============ Thống nhất cách dạy con ============ */
+function ParentingAgreement(){
+  const [pq,setPq]=useLocal('ju.childParenting',{});
+  const done=PARENTING_QS.filter((q,i)=>(pq[i]||{}).agreed).length;
+  return (
+    <div>
+      <div className="muted center" style={{fontSize:12.5,margin:'10px 14px'}}>🤝 Hai vợ chồng cùng thống nhất cách dạy con để nhất quán — tránh “bố một kiểu, mẹ một kiểu”. <b>{done}/{PARENTING_QS.length}</b> đã thống nhất.</div>
+      {PARENTING_QS.map((q,i)=>{ const st=pq[i]||{};
+        return <div key={i} className="item">
+          <div className="row"><span style={{fontSize:16}}>{st.agreed?'✅':'❓'}</span><b className="grow" style={{fontSize:14}}>{q}</b></div>
+          <textarea className="inp" style={{marginTop:6,minHeight:48,fontSize:12.5}} placeholder="Hai đứa thống nhất là…" value={st.note||''} onChange={e=>setPq({...pq,[i]:{...st,note:e.target.value}})}/>
+          <button className="pill" style={{marginTop:6,background:st.agreed?'var(--good)':'var(--chip)',color:st.agreed?'#fff':'var(--chip-tx)'}} onClick={()=>setPq({...pq,[i]:{...st,agreed:!st.agreed}})}>{st.agreed?'✓ Đã thống nhất':'Đánh dấu đã thống nhất'}</button>
+        </div>; })}
+    </div>
+  );
+}
+
+/* ============ Dạy con kỹ năng tự túc đầu tiên ============ */
+function SkillGuide({g,done,onTick}){
+  const [open,setOpen]=useState(false);
+  return (
+    <div className="card" style={{padding:'10px 13px',opacity:done?.6:1}}>
+      <div className="row" style={{gap:8}}>
+        <span style={{fontSize:20,flex:'0 0 auto',cursor:'pointer'}} onClick={()=>setOpen(o=>!o)}>{g.icon}</span>
+        <div className="grow" style={{minWidth:0,cursor:'pointer'}} onClick={()=>setOpen(o=>!o)}>
+          <div style={{fontSize:14,fontWeight:700,textDecoration:done?'line-through':'none'}}>{g.name}</div>
+          <div className="muted" style={{fontSize:11}}>{open?'':'Bấm để xem cách dạy · '}{g.age}</div></div>
+        {onTick && <button className="pill" style={{flex:'0 0 auto',background:done?'var(--good)':'var(--chip)',color:done?'#fff':'var(--chip-tx)'}} onClick={onTick}>{done?'✓ Đã biết':'Bé đã biết'}</button>}
+      </div>
+      {open && <ol style={{margin:'8px 0 0',paddingLeft:20,fontSize:12.5,lineHeight:1.6}}>{g.steps.map((s,i)=><li key={i} style={{marginBottom:5}}>{s}</li>)}</ol>}
+    </div>
+  );
+}
+/* ============ Nuôi con (chuyển nguyên từ Just Us sang) ============ */
+function ChildCare({people,me}){
+  const [child,setChild]=useLocal('ju.child',{name:'',dob:'',gender:''});
+  const [growth,setGrowth]=useLocal('ju.childGrowth',[]);
+  const [vac,setVac]=useLocal('ju.childVaccines',{});
+  const [mile,setMile]=useLocal('ju.childMilestones',{});
+  const [diary,setDiary]=useLocal('ju.childDiary',[]);
+  const [pack,setPack]=useLocal('ju.childPack',{});
+  const [skills,setSkills]=useLocal('ju.childSkills',{});
+  const [gDone,setGDone]=useLocal('ju.skillGuidesDone',{});
+  const [med,setMed]=useLocal('ju.childMed',{allergy:'',meds:'',sleep:'',note:''});
+  const [ill,setIll]=useLocal('ju.childIllness',[]);
+  const [words,setWords]=useLocal('ju.childWords',[]);
+  const [tantrum,setTantrum]=useLocal('ju.childTantrum',[]);
+  const [showAllVac,setShowAllVac]=useState(false);
+  const [tab,setTab]=useState('develop');
+  const [editChild,setEditChild]=useState(false);
+  const [gw,setGw]=useState(''); const [gh,setGh]=useState('');
+  const [dtext,setDtext]=useState(''); const [wordIn,setWordIn]=useState('');
+  const [illForm,setIllForm]=useState({symptoms:[],meds:'',note:''});
+  const [tanForm,setTanForm]=useState({situation:'',handling:''});
+  const [browseIssue,setBrowseIssue]=useState(null);
+  const months=child.dob? Math.max(0, Math.round((new Date(todayISO()+'T00:00:00')-new Date(child.dob+'T00:00:00'))/(30.44*86400000))) : null;
+  const ageLabel = months==null?'chưa đặt ngày sinh' : months<24? months+' tháng tuổi' : Math.floor(months/12)+' tuổi'+(months%12?(' '+(months%12)+' th'):'');
+  const tg=(obj,set,key)=>{ const n={...obj}; if(n[key]) delete n[key]; else n[key]=true; set(n); };
+  const addGrowth=()=>{ const w=parseFloat(gw), h=parseFloat(gh); if(!w&&!h) return; setGrowth([{id:uid(),date:todayISO(),w:w||null,h:h||null},...growth]); setGw('');setGh(''); celebrate(['📏']); };
+  const addDiary=()=>{ if(!dtext.trim()) return; setDiary([{id:uid(),date:todayISO(),text:dtext.trim()},...diary]); setDtext(''); celebrate(['📔','💞']); };
+  const addWord=()=>{ const w=wordIn.trim(); if(!w) return; if(!words.find(x=>x.word.toLowerCase()===w.toLowerCase())) setWords([{id:uid(),word:w,date:todayISO()},...words]); setWordIn(''); celebrate(['🗣️']); };
+  const toggleSym=(s)=> setIllForm(f=>({...f,symptoms:f.symptoms.indexOf(s)>=0?f.symptoms.filter(x=>x!==s):[...f.symptoms,s]}));
+  const addIll=()=>{ if(!illForm.symptoms.length&&!illForm.note.trim()) return; setIll([{id:uid(),date:todayISO(),symptoms:illForm.symptoms,meds:illForm.meds.trim(),note:illForm.note.trim(),recovered:''},...ill]); setIllForm({symptoms:[],meds:'',note:''}); celebrate(['💊']); };
+  const recover=(id)=> setIll(ill.map(x=>x.id===id?{...x,recovered:x.recovered?'':todayISO()}:x));
+  const addTantrum=()=>{ if(!tanForm.situation.trim()) return; setTantrum([{id:uid(),date:todayISO(),situation:tanForm.situation.trim(),handling:tanForm.handling.trim(),worked:null},...tantrum]); setTanForm({situation:'',handling:''}); };
+  const setTanWorked=(id,v)=> setTantrum(tantrum.map(x=>x.id===id?{...x,worked:x.worked===v?null:v}:x));
+  const schoolDays=child.schoolDate? daysFromToday(child.schoolDate) : null;
+  const packDone=CHILD_PACK.filter(it=>pack[it]).length;
+  const skillDone=CHILD_SKILLS.filter(it=>skills[it]).length;
+  const wordsThisWeek=words.filter(w=>{ const d=Math.round((new Date(todayISO()+'T00:00:00')-new Date(w.date+'T00:00:00'))/86400000); return d>=0&&d<7; }).length;
+  const exportMed=()=>{ const lines=['HỒ SƠ Y TẾ — '+(child.name||'Bé'),
+    'Ngày sinh: '+(child.dob?fmtDateVN(child.dob):'—')+(months!=null?(' ('+ageLabel+')'):''),
+    'Giới tính: '+(child.gender==='nam'?'Bé trai':child.gender==='nu'?'Bé gái':'—'),'',
+    'Dị ứng: '+(med.allergy||'Không rõ'),'Thuốc đang dùng: '+(med.meds||'Không'),
+    'Thói quen ngủ: '+(med.sleep||'—'),'Ghi chú cho cô: '+(med.note||'—'),'',
+    'Liên hệ bố/mẹ: '+[people.a.name,people.b.name].filter(Boolean).join(' / ')];
+    const txt=lines.join('\n');
+    try{ const w=window.open('','_blank'); if(w){ w.document.write('<title>Hồ sơ y tế</title><pre style="font-family:system-ui,sans-serif;font-size:15px;white-space:pre-wrap;padding:24px;line-height:1.8">'+txt.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</pre>'); w.document.close(); w.focus(); setTimeout(()=>{ try{w.print();}catch(e){} },350); return; } }catch(e){}
+    if(navigator.share) navigator.share({title:'Hồ sơ y tế',text:txt}).catch(()=>{}); else { navigator.clipboard.writeText(txt); alert('Đã copy hồ sơ — dán để gửi cô nhé!'); } };
+  const last=growth[0];
+  return (
+    <div>
+      <div className="card" style={{background:'linear-gradient(135deg,var(--chip),var(--card))'}}>
+        <div className="row"><span style={{fontSize:24}}>👶</span>
+          <div className="grow"><b style={{fontSize:15}}>{child.name||'Bé yêu'}</b>
+            <div className="muted" style={{fontSize:12.5}}>{ageLabel}{child.gender?(' · '+(child.gender==='nam'?'bé trai':'bé gái')):''}</div></div>
+          {(child.name&&child.dob&&!editChild) && <button className="muted" style={{fontSize:12.5}} onClick={()=>setEditChild(true)}>✎ Sửa</button>}
+        </div>
+        {(!child.name||!child.dob||editChild) && <>
+          <div className="row" style={{gap:8,marginTop:8}}>
+            <input className="inp grow" placeholder="Tên bé" value={child.name||''} onChange={e=>setChild({...child,name:e.target.value})} style={{padding:'7px 10px',fontSize:12.5}}/>
+            <select className="inp" value={child.gender||''} onChange={e=>setChild({...child,gender:e.target.value})} style={{width:90,padding:'7px',fontSize:12.5}}>
+              <option value="">—</option><option value="nam">Trai</option><option value="nu">Gái</option></select>
+          </div>
+          <div className="field" style={{margin:'8px 0 0'}}><label>Ngày sinh</label>
+            <input className="inp" type="date" max={todayISO()} value={child.dob||''} onChange={e=>setChild({...child,dob:e.target.value})}/></div>
+          {editChild && child.name && child.dob && <button className="btn sm" style={{marginTop:8}} onClick={()=>setEditChild(false)}>✓ Xong</button>}
+        </>}
+      </div>
+      <FilterBar value={tab} onChange={setTab} items={[
+        {k:'develop',icon:'🌱',label:'Phát triển'},{k:'play',icon:'🎲',label:'Chơi với con'},{k:'health',icon:'🏥',label:'Sức khoẻ'},
+        {k:'eat',icon:'🍎',label:'Ăn uống'},{k:'school',icon:'🎒',label:'Đi học'},{k:'parent',icon:'💞',label:'Nuôi dạy'},
+      ]}/>
+
+      {tab==='develop' && <div>
+        <div className="sec-title">🎯 Mốc phát triển</div>
+        <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>Chỉ hiện mốc đúng độ tuổi của bé — tích mốc bé đã làm được.</div>
+        {months==null
+          ? <div className="empty muted">Nhập ngày sinh bé ở trên để hiện mốc đúng tuổi.</div>
+          : (()=>{ const b=CHILD_MILESTONES.find(x=>months>=x.lo&&months<x.hi)||CHILD_MILESTONES[CHILD_MILESTONES.length-1];
+              return <div className="item" style={{borderLeft:'4px solid var(--primary)'}}>
+                <div className="it-top"><h4>⭐ {b.band} <span className="muted" style={{fontSize:11,fontWeight:400}}>(bé {months} tháng)</span></h4></div>
+                <div>{b.items.map(it=>{ const k=b.band+'|'+it; const on=!!mile[k];
+                  return <button key={it} className="pill" style={{margin:'3px 6px 3px 0',padding:'7px 11px',fontSize:12.5,background:on?'var(--good)':'var(--chip)',color:on?'#fff':'var(--chip-tx)'}} onClick={()=>tg(mile,setMile,k)}>{on?'✓ ':''}{it}</button>; })}</div>
+              </div>; })()}
+        <div className="sec-title">🗣️ Mốc ngôn ngữ <span className="grow"></span><span className="muted" style={{fontSize:12.5}}>{words.length} từ · +{wordsThisWeek} tuần này</span></div>
+        <div className="card">
+          <div className="row" style={{gap:6}}>
+            <input className="inp grow" placeholder="Thêm từ bé mới nói được…" value={wordIn} onChange={e=>setWordIn(e.target.value)} onKeyDown={e=>{ if(e.key==='Enter') addWord(); }}/>
+            <button className="btn sm" onClick={addWord}>＋</button>
+          </div>
+          {words.length===0 && <div className="muted" style={{fontSize:12.5,marginTop:8}}>Ghi lại mỗi từ mới — vài tháng nhìn lại sẽ rất đáng yêu 💕</div>}
+          {words.length>0 && <div style={{marginTop:8}}>{words.slice(0,40).map(w=>(
+            <span key={w.id} className="pill" style={{margin:'3px 6px 3px 0',padding:'6px 10px',fontSize:12.5}}>{w.word} <span onClick={()=>{ if(confirm('Xoá từ này?')) setWords(words.filter(x=>x.id!==w.id)); }} style={{cursor:'pointer',marginLeft:3,opacity:.6}}>✕</span></span>
+          ))}</div>}
+        </div>
+        <Collapse id="child-speech-delay" defaultOpen={false} title="🗣️ Con chậm nói? Xem gợi ý xử lý">
+          <ul style={{margin:'4px 0 0',paddingLeft:18,fontSize:12.5,lineHeight:1.65}}>
+            <li style={{marginBottom:4}}>Nói chuyện & mô tả mọi việc đang làm cùng con mỗi ngày; hỏi rồi chờ con phản hồi thay vì tự trả lời luôn.</li>
+            <li style={{marginBottom:4}}>Đọc sách tranh, gọi tên đồ vật, hát cùng con hằng ngày để tăng vốn từ một cách tự nhiên.</li>
+            <li style={{marginBottom:4}}>Hạn chế tối đa màn hình (tivi/điện thoại) — màn hình không thay thế được tương tác trực tiếp với con.</li>
+            <li style={{marginBottom:4}}>Chờ đợi, tạo cơ hội để con chủ động nói/ra hiệu trước, tránh đoán ý và đáp ứng ngay khi con chỉ cần chỉ tay.</li>
+            <li style={{marginBottom:4}}>Để ý thêm dấu hiệu đi kèm: ít giao tiếp mắt, không phản ứng khi gọi tên, không bắt chước âm thanh/cử chỉ.</li>
+            <li style={{marginBottom:4}}>Nếu 18–24 tháng con nói rất ít từ, hoặc 2 tuổi chưa ghép được 2 từ, nên cho con khám chuyên khoa (nhi khoa/âm ngữ trị liệu) sớm — can thiệp càng sớm càng hiệu quả.</li>
+          </ul>
+        </Collapse>
+      </div>}
+
+      {tab==='play' && <div>
+        <div className="muted center" style={{fontSize:11,margin:'10px 14px'}}>🎲 Trò chơi giúp bé phát triển (~20–24 tháng), chia theo nhóm kỹ năng. Trang chủ có thẻ <b>Chơi với con hôm nay</b> để gợi ý ngẫu nhiên.</div>
+        <Collapse id="child-play" defaultOpen={false} title="🎲 Trò chơi theo nhóm kỹ năng">
+        {['🤸 Vận động','🧩 Tư duy','🗣️ Ngôn ngữ','🎨 Khéo tay'].map(cat=>(
+          <div key={cat}>
+            <div className="sec-title">{cat}</div>
+            {PLAY_LIB.filter(p=>p.c===cat).map((p,i)=>(
+              <div key={i} className="item" style={{padding:'9px 13px'}}>
+                <div className="it-top"><h4 style={{fontSize:14}}>{p.n}</h4></div>
+                <div className="muted" style={{fontSize:12.5,marginTop:2,lineHeight:1.5}}>{p.d}</div>
+              </div>
+            ))}
+          </div>
+        ))}
+        </Collapse>
+        <div className="muted center" style={{fontSize:11,margin:'6px 14px 8px'}}>Chơi cùng con 15–20 phút mỗi ngày giúp bé gắn kết & phát triển toàn diện 💛</div>
+        <Collapse id="child-cafe" defaultOpen={false} title="☕ Cafe / khu vui chơi cho bé ở Hà Nội">
+        <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>Gần → xa tính từ nhà (Núi Trúc). Giá & taxi khứ hồi là ước tính (taxi ~13.5k/km, 2 chiều).</div>
+        {KIDS_CAFES.map(c=>({...c,km:haversine(NHA.lat,NHA.lng,c.lat,c.lng)})).sort((a,b)=>a.km-b.km).map((c,i)=>(
+          <div key={i} className="item" style={{padding:'9px 13px'}}>
+            <div className="it-top"><h4 style={{fontSize:14}}>☕ {c.n}</h4><span className="pill" style={{flex:'0 0 auto'}}>{c.km.toFixed(1)} km</span></div>
+            <div className="muted" style={{fontSize:12.5,marginTop:3}}>📍 {c.a}</div>
+            <div style={{fontSize:12.5,marginTop:3}}>💵 {c.p}{c.note?' · '+c.note:''}</div>
+            <div className="muted" style={{fontSize:12.5,marginTop:3}}>🚕 Taxi khứ hồi ~<b>{taxiRoundK(c.km)}k</b> <span style={{opacity:.7}}>(ước tính 2 chiều)</span></div>
+            <div style={{marginTop:6}}><a className="pill" style={{textDecoration:'none'}} href={'https://www.google.com/maps/dir/?api=1&origin='+encodeURIComponent('Núi Trúc, Ba Đình, Hà Nội')+'&destination='+encodeURIComponent(c.n+', '+c.a+', Hà Nội')} target="_blank" rel="noreferrer">🗺️ Chỉ đường</a></div>
+          </div>
+        ))}
+        </Collapse>
+      </div>}
+
+      {tab==='health' && <div>
+        <Collapse id="child-vac" defaultOpen={false} title="💉 Lịch tiêm chủng" right={months!=null && <button className="muted" style={{fontSize:11}} onClick={()=>setShowAllVac(v=>!v)}>{showAllVac?'Theo tuổi bé':'Xem tất cả'}</button>}>
+        <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>{months!=null&&!showAllVac?`Chỉ hiện mốc hợp tuổi ${child.name||'bé'} (~${months} tháng) — tích mũi đã tiêm.`:'Tham khảo (TCMR + dịch vụ) — tích mũi đã tiêm.'}</div>
+        {(()=>{ const vacList=CHILD_VACCINES.filter(v=> showAllVac||months==null||(vacAgeMonths(v.age)>=months-3&&vacAgeMonths(v.age)<=months+12));
+          if(!vacList.length) return <div className="empty muted">Không có mốc tiêm nào quanh tuổi này — bấm “Xem tất cả”.</div>;
+          return vacList.map(v=>{ const due=months!=null&&vacAgeMonths(v.age)<=months; const allDone=v.items.every(it=>vac[v.age+'|'+it]);
+          return <div key={v.age} className="item" style={due&&!allDone?{borderLeft:'4px solid var(--primary)'}:null}>
+            <div className="it-top"><h4>{v.age}{due&&!allDone?' · đến hạn':''}{allDone?' ✅':''}</h4></div>
+            <div>{v.items.map(it=>{ const k=v.age+'|'+it; const on=!!vac[k];
+              return <button key={it} className="pill" style={{margin:'3px 6px 3px 0',padding:'7px 11px',fontSize:12.5,background:on?'var(--good)':'var(--chip)',color:on?'#fff':'var(--chip-tx)'}} onClick={()=>tg(vac,setVac,k)}>{on?'✓ ':''}{it}</button>; })}</div>
+          </div>; }); })()}
+        </Collapse>
+        <div className="sec-title">📏 Chiều cao & cân nặng</div>
+        <div className="card">
+          <div className="row" style={{gap:8}}>
+            <div className="field grow" style={{margin:0}}><label>Cân nặng (kg)</label><input className="inp" type="number" value={gw} onChange={e=>setGw(e.target.value)} placeholder="vd 11.5"/></div>
+            <div className="field grow" style={{margin:0}}><label>Chiều cao (cm)</label><input className="inp" type="number" value={gh} onChange={e=>setGh(e.target.value)} placeholder="vd 82"/></div>
+          </div>
+          <button className="btn" style={{marginTop:8}} onClick={addGrowth}>📏 Ghi hôm nay</button>
+          {last && <div className="muted" style={{fontSize:12.5,marginTop:8}}>Gần nhất ({fmtDateVN(last.date)}): {last.w?last.w+'kg':''}{last.w&&last.h?' · ':''}{last.h?last.h+'cm':''}</div>}
+        </div>
+        {months!=null && months>=18 && months<=24 && <div className="muted center" style={{fontSize:11,margin:'2px 14px 8px'}}>Tham khảo ~20 tháng (WHO): bé trai ~10.5–12.5kg / 81–86cm; bé gái ~10–12kg / 80–85cm.</div>}
+        {growth.map(e=>(
+          <div key={e.id} className="row" style={{padding:'6px 14px',borderBottom:'1px solid var(--line)',fontSize:12.5}}>
+            <span className="muted grow">{fmtDateVN(e.date)}</span>
+            <span>{e.w?'⚖️ '+e.w+'kg':''}{e.w&&e.h?'  ':''}{e.h?'📐 '+e.h+'cm':''}</span>
+            <button className="iconbtn" onClick={()=>{ if(confirm('Xoá lần đo này?')) setGrowth(growth.filter(x=>x.id!==e.id)); }}>🗑️</button>
+          </div>
+        ))}
+        <div className="sec-title">🤒 Nhật ký ốm</div>
+        <div className="card">
+          <div style={{display:'flex',flexWrap:'wrap',gap:6}}>{ILL_SYMPTOMS.map(s=>{ const on=illForm.symptoms.indexOf(s)>=0;
+            return <button key={s} className="pill" style={{padding:'6px 10px',fontSize:12.5,background:on?'var(--primary)':'var(--chip)',color:on?'#fff':'var(--chip-tx)'}} onClick={()=>toggleSym(s)}>{on?'✓ ':''}{s}</button>; })}</div>
+          <input className="inp" style={{marginTop:8}} placeholder="Thuốc đã dùng (vd: hạ sốt Hapacol…)" value={illForm.meds} onChange={e=>setIllForm({...illForm,meds:e.target.value})}/>
+          <input className="inp" style={{marginTop:8}} placeholder="Ghi chú thêm (nhiệt độ, bác sĩ dặn…)" value={illForm.note} onChange={e=>setIllForm({...illForm,note:e.target.value})}/>
+          <button className="btn" style={{marginTop:8}} onClick={addIll}>＋ Ghi đợt ốm (hôm nay)</button>
+        </div>
+        {ill.map(x=>(
+          <div key={x.id} className="item" style={x.recovered?{opacity:.7}:{borderLeft:'4px solid #e0a341'}}>
+            <div className="it-top"><h4>{x.recovered?'✅ Đã khỏi':'🤒 Đang ốm'}</h4>
+              <button className="muted" onClick={()=>{ if(confirm('Xoá đợt ốm này?')) setIll(ill.filter(y=>y.id!==x.id)); }}>✕</button></div>
+            <div className="muted" style={{fontSize:12.5,marginTop:2}}>Bắt đầu {fmtDateVN(x.date)}{x.recovered?` · khỏi ${fmtDateVN(x.recovered)} (${Math.max(1,Math.round((new Date(x.recovered)-new Date(x.date))/86400000))} ngày)`:''}</div>
+            {x.symptoms.length>0 && <div style={{fontSize:12.5,marginTop:4}}>{x.symptoms.join(' · ')}</div>}
+            {x.meds && <div className="muted" style={{fontSize:12.5,marginTop:2}}>💊 {x.meds}</div>}
+            {x.note && <div className="muted" style={{fontSize:12.5,marginTop:2}}>{x.note}</div>}
+            <button className="pill" style={{marginTop:6}} onClick={()=>recover(x.id)}>{x.recovered?'↩︎ Đánh dấu chưa khỏi':'✅ Đã khỏi hôm nay'}</button>
+          </div>
+        ))}
+        <div className="sec-title">🩺 Hồ sơ y tế gửi cô</div>
+        <div className="card">
+          <div className="field" style={{margin:0}}><label>Dị ứng</label><input className="inp" value={med.allergy||''} onChange={e=>setMed({...med,allergy:e.target.value})} placeholder="Thức ăn / thuốc bé dị ứng…"/></div>
+          <div className="field" style={{margin:'8px 0 0'}}><label>Thuốc đang dùng</label><input className="inp" value={med.meds||''} onChange={e=>setMed({...med,meds:e.target.value})} placeholder="Nếu có"/></div>
+          <div className="field" style={{margin:'8px 0 0'}}><label>Thói quen ngủ</label><input className="inp" value={med.sleep||''} onChange={e=>setMed({...med,sleep:e.target.value})} placeholder="vd: ngủ trưa 12h30, cần ôm gối…"/></div>
+          <div className="field" style={{margin:'8px 0 0'}}><label>Ghi chú cho cô</label><textarea className="inp" value={med.note||''} onChange={e=>setMed({...med,note:e.target.value})} placeholder="Tính cách, món sợ, cách dỗ…"/></div>
+          <button className="btn" style={{marginTop:10}} onClick={exportMed}>🖨️ Xuất để in / gửi cô</button>
+        </div>
+      </div>}
+
+      {tab==='eat' && <div>
+        <div className="sec-title">🍎 Ăn uống & chăm sóc {months!=null?`(~${months} tháng)`:''}</div>
+        <div className="card"><div className="muted" style={{fontSize:14,lineHeight:1.8}}>{CHILD_TIPS.map((t,i)=><div key={i}>{t}</div>)}</div></div>
+        <Collapse id="child-wean" defaultOpen={false} title="🍚 Thực đơn ăn dặm / ăn thô cả tuần">
+        <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>Gợi ý cho bé ~18–24 tháng (cơm nát + món mềm). Điều chỉnh theo khẩu vị bé nhé.</div>
+        {WEAN_MENU.map((m,i)=>(
+          <div key={i} className="item">
+            <div className="it-top"><h4>{m.d}</h4></div>
+            <div style={{fontSize:12.5,lineHeight:1.7,marginTop:2}}>
+              <div>🌅 <b>Sáng:</b> {m.sang}</div>
+              <div>🍎 <b>Phụ:</b> {m.phu}</div>
+              <div>🍚 <b>Trưa:</b> {m.trua}</div>
+              <div>🌙 <b>Tối:</b> {m.toi}</div>
+            </div>
+          </div>
+        ))}
+        </Collapse>
+      </div>}
+
+      {tab==='school' && <div>
+        <div className="sec-title">⏳ Đếm ngược ngày nhập học</div>
+        <div className="card">
+          <div className="field" style={{margin:0}}><label>Ngày bé đi học</label>
+            <input className="inp" type="date" value={child.schoolDate||''} onChange={e=>setChild({...child,schoolDate:e.target.value})}/></div>
+          {schoolDays!=null && <div className="center" style={{marginTop:10}}>
+            {schoolDays>0 ? <><div style={{fontSize:26,fontWeight:800,color:'var(--primary)'}}>{schoolDays} ngày</div><div className="muted" style={{fontSize:12.5}}>nữa là bé tới lớp — {fmtDateVN(child.schoolDate)} 🎒</div></>
+              : schoolDays===0 ? <div style={{fontSize:18,fontWeight:700}}>🎉 Hôm nay bé đi học!</div>
+              : <div className="muted">Bé đã đi học được {Math.abs(schoolDays)} ngày 💪</div>}
+          </div>}
+        </div>
+        <Collapse id="child-pack" defaultOpen={false} title="🎒 Đồ mang đi lớp" right={<span className="muted" style={{fontSize:12.5}}>{packDone}/{CHILD_PACK.length}</span>}>
+        <div className="card" style={{padding:'4px 13px'}}>
+          {CHILD_PACK.map(it=>(
+            <div key={it} className="row" style={{padding:'8px 0',borderBottom:'1px solid var(--line)'}}>
+              <button onClick={()=>tg(pack,setPack,it)} style={{fontSize:19}}>{pack[it]?'✅':'⬜'}</button>
+              <span className="grow" style={{fontSize:14,textDecoration:pack[it]?'line-through':'none',opacity:pack[it]?.6:1}}>{it}</span>
+            </div>
+          ))}
+          <button className="muted" style={{fontSize:11,margin:'8px 0'}} onClick={()=>{ if(confirm('Bỏ đánh dấu tất cả để chuẩn bị cho hôm sau?')) setPack({}); }}>↻ Đặt lại cho hôm sau</button>
+        </div>
+        </Collapse>
+        <Collapse id="child-skills" defaultOpen={false} title="🌟 Kỹ năng tự lập" right={<span className="muted" style={{fontSize:12.5}}>{skillDone}/{CHILD_SKILLS.length}</span>}>
+        <div className="prog" style={{margin:'0 14px'}}><i style={{width:(skillDone/CHILD_SKILLS.length*100)+'%'}}></i></div>
+        <div className="card" style={{padding:'4px 13px',marginTop:8}}>
+          {CHILD_SKILLS.map(it=>(
+            <div key={it} className="row" style={{padding:'8px 0',borderBottom:'1px solid var(--line)'}}>
+              <button onClick={()=>tg(skills,setSkills,it)} style={{fontSize:19}}>{skills[it]?'✅':'⬜'}</button>
+              <span className="grow" style={{fontSize:14,textDecoration:skills[it]?'line-through':'none',opacity:skills[it]?.6:1}}>{it}</span>
+            </div>
+          ))}
+        </div>
+        </Collapse>
+      </div>}
+
+      {tab==='parent' && <div>
+        <Collapse id="child-parenting" defaultOpen={false} title="🤝 Thống nhất cách dạy con">
+          <ParentingAgreement/>
+        </Collapse>
+        <Collapse id="child-skillguides" defaultOpen={false} title="🌱 Dạy kỹ năng tự túc đầu tiên">
+        <div className="muted center" style={{fontSize:11,margin:'0 14px 6px'}}>Bấm từng kỹ năng để xem cách dạy theo bước. Mỗi bé một nhịp — cứ từ từ, khen nhiều 💛</div>
+        {SKILL_GUIDES.filter(g=>!gDone[g.name]).map(g=><SkillGuide key={g.name} g={g} done={false} onTick={()=>setGDone({...gDone,[g.name]:true})}/>)}
+        {SKILL_GUIDES.some(g=>gDone[g.name]) && <div className="muted" style={{fontSize:11,margin:'10px 14px 4px'}}>✅ Bé đã biết ({SKILL_GUIDES.filter(g=>gDone[g.name]).length}) — bấm nút xanh để bỏ đánh dấu:</div>}
+        {SKILL_GUIDES.filter(g=>gDone[g.name]).map(g=><SkillGuide key={g.name} g={g} done={true} onTick={()=>{ const n={...gDone}; delete n[g.name]; setGDone(n); }}/>)}
+        </Collapse>
+        <Collapse id="child-issues" defaultOpen={false} title="🧩 Vấn đề thường gặp & cách xử lý">
+          <div className="muted center" style={{fontSize:11,margin:'0 14px 6px'}}>Bấm vào chủ đề để xem gợi ý.</div>
+          <div className="card">
+            <div style={{display:'flex',flexWrap:'wrap',gap:6}}>
+              {CHILD_ISSUES.map(f=><button key={f.title} className="pill" onClick={()=>setBrowseIssue(f)}>{f.icon} {f.title}</button>)}
+            </div>
+          </div>
+        </Collapse>
+        {browseIssue && <Sheet title={browseIssue.icon+' '+browseIssue.title} onClose={()=>setBrowseIssue(null)}>
+          <ul style={{margin:'4px 0 0',paddingLeft:18,fontSize:14,lineHeight:1.7}}>{browseIssue.tips.map((t,i)=><li key={i} style={{marginBottom:7}}>{t}</li>)}</ul>
+        </Sheet>}
+        <div className="sec-title">📔 Nhật ký “điều đầu tiên”</div>
+        <div className="row" style={{margin:'0 14px 4px',gap:8}}>
+          <input className="inp grow" placeholder="Hôm nay bé… (lần đầu nói, bước đi…)" value={dtext} onChange={e=>setDtext(e.target.value)} onKeyDown={e=>{ if(e.key==='Enter') addDiary(); }}/>
+          <button className="btn sm" onClick={addDiary}>＋</button>
+        </div>
+        {diary.slice(0,6).map(d=>(
+          <div key={d.id} className="item">
+            <div className="row"><span className="muted grow" style={{fontSize:12.5}}>{fmtDateVN(d.date)}</span>
+              <button className="iconbtn" onClick={()=>{ if(confirm('Xoá ghi chú này?')) setDiary(diary.filter(x=>x.id!==d.id)); }}>🗑️</button></div>
+            <div style={{fontSize:14,marginTop:2}}>{d.text}</div>
+          </div>
+        ))}
+        <div className="sec-title">😤 Nhật ký “cơn ăn vạ”</div>
+        <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>Ghi tình huống + cách xử lý hiệu quả để lần sau rút kinh nghiệm.</div>
+        <div className="card">
+          <input className="inp" placeholder="Tình huống (vd: không cho xem TV thì khóc)" value={tanForm.situation} onChange={e=>setTanForm({...tanForm,situation:e.target.value})}/>
+          <input className="inp" style={{marginTop:8}} placeholder="Cách mình đã xử lý" value={tanForm.handling} onChange={e=>setTanForm({...tanForm,handling:e.target.value})}/>
+          <button className="btn" style={{marginTop:8}} onClick={addTantrum}>＋ Ghi lại</button>
+        </div>
+        {tantrum.map(x=>(
+          <div key={x.id} className="item">
+            <div className="it-top"><h4 style={{fontSize:14}}>😤 {x.situation}</h4>
+              <button className="muted" onClick={()=>{ if(confirm('Xoá ghi chép này?')) setTantrum(tantrum.filter(y=>y.id!==x.id)); }}>✕</button></div>
+            {x.handling && <div className="muted" style={{fontSize:12.5,marginTop:3}}>💡 Cách xử lý: {x.handling}</div>}
+            <div className="row" style={{marginTop:6,gap:6}}><span className="muted" style={{fontSize:11}}>{fmtDateVN(x.date)} · Hiệu quả?</span>
+              <button className="pill" style={{background:x.worked===true?'var(--good)':'var(--chip)',color:x.worked===true?'#fff':'var(--chip-tx)'}} onClick={()=>setTanWorked(x.id,true)}>👍 Có</button>
+              <button className="pill" style={{background:x.worked===false?'#b06b6b':'var(--chip)',color:x.worked===false?'#fff':'var(--chip-tx)'}} onClick={()=>setTanWorked(x.id,false)}>👎 Không</button></div>
+          </div>
+        ))}
+      </div>}
+    </div>
+  );
+}
+
+/* ============ Vỏ app ============ */
+function SyncBadge(){
+  const [st,setSt]=useState(Cloud.status);
+  useEffect(()=>{ Cloud.onChange=setSt; return ()=>{ Cloud.onChange=null; }; },[]);
+  if(st!=='on') return <div className="sc-sync">📴 Chưa nối đám mây — dữ liệu lưu trên máy này. Mở <b>Just Us</b> đăng nhập &amp; ghép cặp là app này tự đồng bộ theo.</div>;
+  return <div className="sc-sync">☁️ Đang đồng bộ với nửa kia</div>;
+}
+function App(){
+  const setup=store.get('ju.setup',{})||{};
+  const people={a:setup.a||{name:'Bố',avatar:'🧑'}, b:setup.b||{name:'Mẹ',avatar:'👩'}};
+  const me=store.get('ju.me',setup.me||'a');
+  return (
+    <div className="app">
+      <div className="sc-head">
+        <h1>🐿️ Sóc</h1>
+        <p>Phát triển · chơi với con · sức khoẻ · ăn uống · đi học · nuôi dạy</p>
+      </div>
+      <SyncBadge/>
+      <ChildCare people={people} me={me}/>
+      <a className="btn soft sc-back" href="../index.html">← Về Just Us 💞</a>
+    </div>
+  );
+}
+
+window.__SC_OK=true;
+const __root=ReactDOM.createRoot(document.getElementById('root'));
+const __mount=()=>{ try{ __root.render(<App/>); }catch(e){ console.error(e); } };
+const __ready=window.__JU_DATA_READY||Promise.resolve();
+Promise.race([__ready,new Promise(r=>setTimeout(r,5000))]).then(__mount,__mount);
+__ready.then(__mount,()=>{});
+// Nối đám mây sau khi đã vẽ xong (không chặn màn hình)
+Cloud.init();
+window.addEventListener('ju:remote',()=>{});
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden && Cloud.ready) Cloud.pull(); });
+</script>
+
+<script>
+if('serviceWorker' in navigator){
+  window.addEventListener('load',function(){ navigator.serviceWorker.register('sw.js').catch(function(){}); });
+}
+</script>
+</body>
+</html>

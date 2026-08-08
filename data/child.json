@@ -1,0 +1,829 @@
+{
+ "CHILD_VACCINES": [
+  {
+   "age": "Sơ sinh",
+   "items": [
+    "Lao (BCG)",
+    "Viêm gan B (trong 24h)"
+   ]
+  },
+  {
+   "age": "2 tháng",
+   "items": [
+    "6in1 mũi 1",
+    "Rota mũi 1",
+    "Phế cầu mũi 1"
+   ]
+  },
+  {
+   "age": "3 tháng",
+   "items": [
+    "6in1 mũi 2",
+    "Rota mũi 2",
+    "Phế cầu mũi 2"
+   ]
+  },
+  {
+   "age": "4 tháng",
+   "items": [
+    "6in1 mũi 3",
+    "Rota mũi 3",
+    "Phế cầu mũi 3"
+   ]
+  },
+  {
+   "age": "6 tháng",
+   "items": [
+    "Cúm mùa mũi 1",
+    "Não mô cầu B mũi 1"
+   ]
+  },
+  {
+   "age": "9 tháng",
+   "items": [
+    "Sởi mũi 1",
+    "Não mô cầu A+C",
+    "Viêm não NB (Imojev)"
+   ]
+  },
+  {
+   "age": "12 tháng",
+   "items": [
+    "Sởi–Quai bị–Rubella (MMR)",
+    "Thuỷ đậu mũi 1",
+    "Viêm gan A mũi 1",
+    "Phế cầu nhắc"
+   ]
+  },
+  {
+   "age": "18 tháng",
+   "items": [
+    "6in1/DPT mũi 4 (nhắc)",
+    "Sởi mũi 2",
+    "Viêm gan A mũi 2"
+   ]
+  },
+  {
+   "age": "24 tháng",
+   "items": [
+    "Viêm não NB nhắc",
+    "Thương hàn",
+    "Não mô cầu nhắc"
+   ]
+  }
+ ],
+ "CHILD_MILESTONES": [
+  {
+   "band": "0–6 tháng",
+   "lo": 0,
+   "hi": 6,
+   "items": [
+    "Cười, hóng chuyện",
+    "Lẫy, giữ đầu vững",
+    "Với & nắm đồ vật",
+    "Phát âm ê a"
+   ]
+  },
+  {
+   "band": "6–12 tháng",
+   "lo": 6,
+   "hi": 12,
+   "items": [
+    "Ngồi vững, bò",
+    "Cầm nắm chuyền tay",
+    "Bập bẹ ba–ma",
+    "Vịn đứng lên"
+   ]
+  },
+  {
+   "band": "12–18 tháng",
+   "lo": 12,
+   "hi": 18,
+   "items": [
+    "Đi vững",
+    "Nói vài từ đơn",
+    "Chỉ tay đòi đồ",
+    "Cầm thìa, uống cốc"
+   ]
+  },
+  {
+   "band": "18–24 tháng",
+   "lo": 18,
+   "hi": 24,
+   "items": [
+    "Chạy, leo cầu thang có vịn",
+    "Nói 10–25 từ, ghép 2 từ",
+    "Chỉ được bộ phận cơ thể",
+    "Tự xúc ăn, xếp 3–4 khối",
+    "Bắt chước việc nhà",
+    "Đá được bóng"
+   ]
+  },
+  {
+   "band": "24–36 tháng",
+   "lo": 24,
+   "hi": 36,
+   "items": [
+    "Nói câu 3–4 từ",
+    "Chạy nhảy tốt",
+    "Tự cởi/mặc đồ đơn giản",
+    "Vẽ nguệch ngoạc",
+    "Chơi giả vờ"
+   ]
+  }
+ ],
+ "CHILD_TIPS": [
+  "🍽️ Mỗi ngày: 3 bữa chính + 2 bữa phụ + khoảng 500–600ml sữa.",
+  "🥦 Đủ 4 nhóm: tinh bột, đạm (thịt/cá/trứng/đậu), rau củ, dầu mỡ.",
+  "🥄 Tập tự xúc thìa, ăn cùng gia đình để học nhai & bắt chước.",
+  "🚫 Hạn chế đồ ngọt, nước có ga, đồ chiên mặn; tránh hạt cứng nguyên (dễ hóc).",
+  "📚 Đọc sách, gọi tên đồ vật mỗi ngày để kích thích ngôn ngữ.",
+  "😴 Ngủ 11–14h/ngày (gồm 1 giấc trưa); vận động ngoài trời mỗi ngày.",
+  "🦷 Đánh răng 2 lần/ngày, kem fluor lượng bằng hạt gạo.",
+  "💧 Cho uống nước đều trong ngày, hạn chế nước ngọt/nước ép đóng hộp.",
+  "🦷 Đánh răng 2 lần/ngày, kem có fluor lượng bằng hạt gạo.",
+  "😴 Ngủ đủ 11–14 tiếng/ngày (gồm 1 giấc trưa); cố định giờ ngủ.",
+  "🚫 Dưới 2 tuổi hạn chế tối đa màn hình; ưu tiên chơi vận động.",
+  "🥄 Cho con tự xúc ăn để rèn vận động tinh, chấp nhận rơi vãi.",
+  "🧴 Giữ ẩm da mùa hanh; tắm nước ấm vừa, không quá lâu.",
+  "🔌 Che chắn ổ điện, góc bàn, cất hóa chất khỏi tầm với của con.",
+  "🌡️ Sốt trên 38.5°C hoặc li bì/bỏ bú kéo dài — đưa đi khám sớm.",
+  "👟 Cho đi chân trần/đế mềm trong nhà để phát triển bàn chân.",
+  "📚 Đọc sách cùng con 10–15 phút mỗi ngày để phát triển ngôn ngữ.",
+  "🥗 Cho con làm quen nhiều loại rau củ từ sớm để đỡ kén ăn về sau.",
+  "🤗 Ôm và khen con mỗi ngày — cảm giác an toàn giúp con mạnh dạn khám phá.",
+  "🧸 Cho con chơi tự do, để con tự nghĩ trò thay vì lúc nào cũng bày sẵn.",
+  "🕐 Giữ giờ ăn, giờ ngủ đều đặn để con có nhịp sinh hoạt ổn định.",
+  "👐 Dạy con nói “cảm ơn”, “xin lỗi” bằng cách bố mẹ làm gương mỗi ngày.",
+  "🎨 Cho con vẽ, nặn, dán để rèn vận động tinh và trí tưởng tượng.",
+  "🌳 Mỗi ngày cho con ra ngoài vận động, tắm nắng sớm để cứng cáp.",
+  "🗣️ Lắng nghe và gọi tên cảm xúc của con (“con đang giận à?”) để con học điều tiết."
+ ],
+ "CHILD_PACK": [
+  "Bỉm (3–4 cái)",
+  "Quần áo dự phòng (1–2 bộ)",
+  "Bình / cốc nước",
+  "Khăn xô lau",
+  "Khăn ướt",
+  "Sữa / bình sữa",
+  "Mũ + áo khoác",
+  "Dép / giày",
+  "Túi đựng đồ bẩn",
+  "Thuốc riêng (nếu có)",
+  "Đồ trấn an quen thuộc"
+ ],
+ "CHILD_SKILLS": [
+  "Tự xúc ăn bằng thìa",
+  "Tự cầm cốc uống nước",
+  "Báo khi muốn đi vệ sinh",
+  "Tự cởi giày / dép",
+  "Tự rửa & lau tay",
+  "Tự cất đồ chơi",
+  "Tự cởi áo khoác",
+  "Ngủ trưa không cần bế",
+  "Gọi tên cô & bạn",
+  "Xa bố mẹ không quấy lâu"
+ ],
+ "PLAY_LIB": [
+  {
+   "c": "🤸 Vận động",
+   "n": "Đá & ném bóng",
+   "d": "Lăn, đá, ném bóng vào rổ — rèn phối hợp tay chân."
+  },
+  {
+   "c": "🤸 Vận động",
+   "n": "Leo trèo có giám sát",
+   "d": "Bò qua gối, leo cầu thang có vịn, chui ống vải."
+  },
+  {
+   "c": "🤸 Vận động",
+   "n": "Nhảy theo nhạc",
+   "d": "Bật nhạc cùng nhảy, dậm chân, vỗ tay theo nhịp."
+  },
+  {
+   "c": "🤸 Vận động",
+   "n": "Kéo – đẩy xe đồ chơi",
+   "d": "Đẩy xe, kéo đồ chơi có dây đi quanh nhà."
+  },
+  {
+   "c": "🧩 Tư duy",
+   "n": "Xếp khối / lồng cốc",
+   "d": "Xếp 3–6 khối, lồng cốc to – nhỏ, học kích thước."
+  },
+  {
+   "c": "🧩 Tư duy",
+   "n": "Phân loại theo màu / hình",
+   "d": "Bỏ đồ vật cùng màu vào một rổ."
+  },
+  {
+   "c": "🧩 Tư duy",
+   "n": "Trốn tìm đồ vật",
+   "d": "Giấu đồ chơi dưới khăn rồi hỏi “đâu rồi?”."
+  },
+  {
+   "c": "🧩 Tư duy",
+   "n": "Ghép hình 2–4 mảnh",
+   "d": "Bộ ghép gỗ núm to, hình con vật quen thuộc."
+  },
+  {
+   "c": "🗣️ Ngôn ngữ",
+   "n": "Đọc sách tranh",
+   "d": "Chỉ & gọi tên đồ vật, hỏi “con gì đây?”."
+  },
+  {
+   "c": "🗣️ Ngôn ngữ",
+   "n": "Hát bài có động tác",
+   "d": "“Năm ngón tay”, “Con cò” — học từ qua bài hát."
+  },
+  {
+   "c": "🗣️ Ngôn ngữ",
+   "n": "Gọi tên bộ phận cơ thể",
+   "d": "“Mũi đâu? Tai đâu?” — chỉ đúng & nói tên."
+  },
+  {
+   "c": "🎨 Khéo tay",
+   "n": "Tô màu sáp to",
+   "d": "Vẽ nguệch ngoạc trên giấy lớn — rèn cầm bút."
+  },
+  {
+   "c": "🎨 Khéo tay",
+   "n": "Nặn đất nặn",
+   "d": "Bóp, lăn, ấn đất nặn an toàn — khéo ngón tay."
+  },
+  {
+   "c": "🎨 Khéo tay",
+   "n": "Dán sticker",
+   "d": "Bóc & dán sticker vào ô — rèn ngón tay khéo."
+  },
+  {
+   "c": "🤸 Vận động",
+   "n": "Đi thăng bằng trên vạch",
+   "d": "Dán băng dính một đường thẳng trên sàn cho bé bước theo — rèn giữ thăng bằng."
+  },
+  {
+   "c": "🤸 Vận động",
+   "n": "Ném túi đậu vào rổ",
+   "d": "Tự khâu túi vải nhỏ đựng đậu, cho bé ném vào rổ ở các khoảng cách."
+  },
+  {
+   "c": "🧩 Tư duy",
+   "n": "Tìm cặp giống nhau",
+   "d": "Bày 3-4 cặp đồ vật giống nhau, đố bé tìm và ghép đôi."
+  },
+  {
+   "c": "🧩 Tư duy",
+   "n": "Thả hình vào đúng lỗ",
+   "d": "Hộp thả hình khối — học hình dạng và phối hợp tay mắt."
+  },
+  {
+   "c": "🗣️ Ngôn ngữ",
+   "n": "Kể chuyện theo tranh",
+   "d": "Lật sách tranh, hỏi bé con gì đây, bạn ấy đang làm gì."
+  },
+  {
+   "c": "🗣️ Ngôn ngữ",
+   "n": "Hát và làm động tác",
+   "d": "Hát Một con vịt, Cá vàng bơi… kèm động tác tay cho bé bắt chước."
+  },
+  {
+   "c": "🎨 Khéo tay",
+   "n": "Xé và dán giấy màu",
+   "d": "Cho bé xé giấy màu thành mẩu nhỏ rồi dán lên hình — rèn ngón tay."
+  },
+  {
+   "c": "🎨 Khéo tay",
+   "n": "In hình bằng rau củ",
+   "d": "Cắt đôi củ cải/ớt chuông, chấm màu nước cho bé in hình lên giấy."
+  },
+  {
+   "c": "🤸 Vận động",
+   "n": "Vượt chướng ngại vật",
+   "d": "Xếp gối/hộp thành đường để con bò, trèo, bước qua."
+  },
+  {
+   "c": "🤸 Vận động",
+   "n": "Nhảy theo nhạc",
+   "d": "Bật nhạc vui, cùng con lắc lư, nhảy, vỗ tay theo nhịp."
+  },
+  {
+   "c": "🤸 Vận động",
+   "n": "Đẩy xe đồ chơi",
+   "d": "Cho con đẩy xe quanh nhà để luyện đi vững."
+  },
+  {
+   "c": "🧩 Tư duy",
+   "n": "Thả hình khối",
+   "d": "Cho con thả đúng khối vào lỗ tương ứng — nhận dạng hình."
+  },
+  {
+   "c": "🧩 Tư duy",
+   "n": "Trốn tìm đồ vật",
+   "d": "Giấu đồ chơi dưới khăn rồi hỏi con nó đâu — rèn trí nhớ."
+  },
+  {
+   "c": "🧩 Tư duy",
+   "n": "Phân loại theo màu",
+   "d": "Cho con bỏ đồ cùng màu vào một rổ — học màu sắc."
+  },
+  {
+   "c": "🗣️ Ngôn ngữ",
+   "n": "Gọi tên bộ phận cơ thể",
+   "d": "Chỉ và gọi tên mắt, mũi, tai… rồi hỏi con chỉ lại."
+  },
+  {
+   "c": "🗣️ Ngôn ngữ",
+   "n": "Kể chuyện qua tranh",
+   "d": "Lật sách tranh, chỉ và mô tả để con lặp lại từ mới."
+  },
+  {
+   "c": "🗣️ Ngôn ngữ",
+   "n": "Hát bài có động tác",
+   "d": "Hát đồng dao có động tác tay để con bắt chước."
+  },
+  {
+   "c": "🎨 Khéo tay",
+   "n": "Dán sticker",
+   "d": "Cho con bóc và dán sticker lên giấy — rèn ngón tay."
+  },
+  {
+   "c": "🎨 Khéo tay",
+   "n": "Xé giấy dán tranh",
+   "d": "Cho con xé giấy màu thành mảnh rồi dán thành tranh."
+  },
+  {
+   "c": "🎨 Khéo tay",
+   "n": "Xâu vòng hạt to",
+   "d": "Xâu hạt/ống to vào dây — phối hợp tay mắt (có giám sát)."
+  }
+ ],
+ "WEAN_MENU": [
+  {
+   "d": "Thứ 2",
+   "sang": "Cháo gà bí đỏ",
+   "phu": "Chuối + sữa chua",
+   "trua": "Cơm nát · cá hồi áp chảo · canh rau ngót",
+   "toi": "Cơm nát · trứng hấp thịt · canh bí đỏ"
+  },
+  {
+   "d": "Thứ 3",
+   "sang": "Súp khoai tây thịt bò",
+   "phu": "Đu đủ + phô mai",
+   "trua": "Cơm nát · gà xé · canh mồng tơi",
+   "toi": "Nui sốt cà thịt bằm · bông cải hấp"
+  },
+  {
+   "d": "Thứ 4",
+   "sang": "Cháo tôm rau cải",
+   "phu": "Sữa + bánh ăn dặm",
+   "trua": "Cơm nát · cá kho nhạt · canh bầu",
+   "toi": "Cơm nát · đậu hũ sốt thịt · canh rau dền"
+  },
+  {
+   "d": "Thứ 5",
+   "sang": "Yến mạch sữa chuối",
+   "phu": "Xoài + sữa chua",
+   "trua": "Cơm nát · bò xào mềm · canh khoai",
+   "toi": "Cháo lươn rau ngót"
+  },
+  {
+   "d": "Thứ 6",
+   "sang": "Bánh mì trứng + sữa",
+   "phu": "Lê hấp + phô mai",
+   "trua": "Cơm nát · cá hấp · canh cải thịt bằm",
+   "toi": "Cơm nát · trứng cút sốt cà · canh bí xanh"
+  },
+  {
+   "d": "Thứ 7",
+   "sang": "Bún / phở thịt mềm",
+   "phu": "Chuối + sữa",
+   "trua": "Cơm nát · gà hấp · canh rau củ",
+   "toi": "Cháo cá cà rốt"
+  },
+  {
+   "d": "Chủ nhật",
+   "sang": "Cháo sườn rau củ",
+   "phu": "Sữa chua + việt quất",
+   "trua": "Cơm nát · tôm rim nhạt · canh mướp",
+   "toi": "Súp gà ngô non · bánh mì mềm"
+  }
+ ],
+ "PARENTING_QS": [
+  "Khi con ăn vạ thì xử lý thế nào (lờ đi / ôm dỗ / nghiêm khắc)?",
+  "Có cho xem điện thoại / TV không, bao lâu mỗi ngày?",
+  "Cho ăn vặt & đồ ngọt ở mức nào?",
+  "Ai dỗ khi con khóc đêm, có bế không?",
+  "Thưởng – phạt thế nào cho nhất quán giữa bố và mẹ?",
+  "Khi ông bà chiều khác ý mình thì thống nhất ra sao?",
+  "Cho con ngủ riêng hay ngủ chung tới khi nào?",
+  "Dạy chữ / số sớm hay để con chơi là chính?",
+  "Quy tắc an toàn (ổ điện, cầu thang, đồ nhỏ) đã thống nhất chưa?",
+  "Phân công ai đưa đón / cho ăn / tắm cho con?",
+  "Khi con bám mẹ/bố quá thì xử lý ra sao cho cân bằng?",
+  "Cho con dùng đồ điện tử (iPad/TV) từ mấy tuổi, bao lâu?",
+  "Quy tắc về đồ ngọt và ăn vặt trong nhà là gì?",
+  "Khi con đánh/cắn bạn thì dạy con thế nào?",
+  "Thưởng cho con bằng đồ vật hay bằng lời khen/thời gian?",
+  "Ai sẽ đưa đón và lịch phân công ra sao khi con đi học?",
+  "Khi ông bà và bố mẹ bất đồng cách dạy thì giải quyết sao?",
+  "Cho con tự lập đến đâu (tự xúc, tự ngủ) ở tuổi này?",
+  "Khi con ngã/đau nhẹ, mình phản ứng thế nào để con tự tin?",
+  "Có phạt con không, phạt kiểu gì (ngồi yên/nói chuyện)?",
+  "Cho con dùng ti giả/bình đến khi nào?",
+  "Tập cho con tự ngủ hay ru/bế ngủ?",
+  "Ai đưa đón con đi lớp, lịch thế nào?",
+  "Con ốm thì ai nghỉ chăm, luân phiên ra sao?",
+  "Tiền lì xì/mừng của con quản lý thế nào?",
+  "Dạy con về tiền từ mấy tuổi và bằng cách nào?",
+  "Quan điểm về cho con học thêm/năng khiếu sớm?",
+  "Muốn con nói được mấy thứ tiếng, bắt đầu khi nào?",
+  "Cho con tự lập việc gì theo tuổi (tự xúc, tự mặc, dọn đồ)?",
+  "Khi bố mẹ bất đồng cách dạy, xử lý trước mặt con thế nào?",
+  "Khi con biếng ăn, mình kiên nhẫn tới đâu và có ép không?",
+  "Mình muốn con học trường công hay tư, tiêu chí chọn là gì?",
+  "Cho con tiền tiêu vặt từ mấy tuổi và bao nhiêu là hợp?",
+  "Khi con hỏi những câu khó (về giới tính, cái chết), mình trả lời thế nào?"
+ ],
+ "ILL_SYMPTOMS": [
+  "Sốt",
+  "Ho",
+  "Sổ mũi",
+  "Tiêu chảy",
+  "Nôn trớ",
+  "Phát ban",
+  "Biếng ăn",
+  "Khó ngủ"
+ ],
+ "KIDS_CAFES": [
+  {
+   "n": "Khu vui chơi Lotte Center",
+   "a": "54 Liễu Giai, Ba Đình",
+   "p": "~50–100k/bé (tham khảo)",
+   "lat": 21.033,
+   "lng": 105.813
+  },
+  {
+   "n": "LOLLI FOX Mini Kids Cafe",
+   "a": "Đống Đa (gần Xã Đàn)",
+   "p": "60k ngày thường · 70k cuối tuần",
+   "lat": 21.0155,
+   "lng": 105.83
+  },
+  {
+   "n": "ABU Premium Kids Café",
+   "a": "Tầng 3, 195 Khâm Thiên, Đống Đa",
+   "p": "140k (T2–6) · 160k cuối tuần",
+   "lat": 21.017,
+   "lng": 105.834
+  },
+  {
+   "n": "Doo Doo Premium Kids Café",
+   "a": "66 Quán Sứ, Hoàn Kiếm",
+   "p": "100k (T2–6) · 120k cuối tuần",
+   "lat": 21.0245,
+   "lng": 105.8455,
+   "note": "miễn phí bé <12 tháng"
+  },
+  {
+   "n": "Kuri Kuri Cup & Cake (Nhật)",
+   "a": "Tầng 4, 17 Lý Thường Kiệt, Hoàn Kiếm",
+   "p": "đồ uống 25–55k, bé tự làm trân châu",
+   "lat": 21.024,
+   "lng": 105.85
+  },
+  {
+   "n": "tiNiWorld Royal City",
+   "a": "72A Nguyễn Trãi, Thanh Xuân",
+   "p": "~90–150k/bé · bé <75cm miễn phí",
+   "lat": 20.9995,
+   "lng": 105.815
+  },
+  {
+   "n": "tiNiWorld BigC Thăng Long",
+   "a": "222 Trần Duy Hưng, Cầu Giấy",
+   "p": "~90–100k/bé · bé <75cm miễn phí",
+   "lat": 21.0065,
+   "lng": 105.7995
+  },
+  {
+   "n": "tiNiWorld Vincom Bà Triệu",
+   "a": "191 Bà Triệu, Hai Bà Trưng",
+   "p": "~90–150k/bé",
+   "lat": 21.011,
+   "lng": 105.849
+  },
+  {
+   "n": "Kitomo Kids Café (Lego)",
+   "a": "Golden Palace, Mễ Trì, Nam Từ Liêm",
+   "p": "100k (T2,4,5,6) · 120k (T7,CN) kèm 1 phụ huynh",
+   "lat": 21.0135,
+   "lng": 105.777
+  },
+  {
+   "n": "Lalina Kids Café",
+   "a": "9 Tây Hồ, Quảng An, Tây Hồ",
+   "p": "~120–150k/bé (tham khảo)",
+   "lat": 21.068,
+   "lng": 105.8225
+  },
+  {
+   "n": "VinKE & Thủy cung Times City",
+   "a": "458 Minh Khai, Hai Bà Trưng",
+   "p": "~150–250k (game + thủy cung)",
+   "lat": 20.995,
+   "lng": 105.8675
+  },
+  {
+   "n": "tiNiWorld Aeon Long Biên",
+   "a": "27 Cổ Linh, Long Biên",
+   "p": "~90–150k/bé",
+   "lat": 21.028,
+   "lng": 105.8985
+  },
+  {
+   "n": "Babiland (view Hồ Tây)",
+   "a": "Khu vực Tây Hồ",
+   "p": "140k (T2–6) · 160k cuối tuần",
+   "lat": 21.068,
+   "lng": 105.818
+  },
+  {
+   "n": "Playtown",
+   "a": "601 Lạc Long Quân, Tây Hồ",
+   "p": "100k ngày thường · 120k cuối tuần (kèm 1 phụ huynh)",
+   "lat": 21.072,
+   "lng": 105.8095
+  },
+  {
+   "n": "Kidzoona Royal City",
+   "a": "B2 Vincom Royal City, Nguyễn Trãi, Thanh Xuân",
+   "p": "120k ngày thường · 150–180k cuối tuần",
+   "lat": 20.9995,
+   "lng": 105.815
+  },
+  {
+   "n": "Kidzoona Aeon Hà Đông",
+   "a": "Tầng 3 AEON MALL Hà Đông",
+   "p": "120–150k ngày thường · 150–180k cuối tuần",
+   "lat": 20.9835,
+   "lng": 105.748
+  },
+  {
+   "n": "AM Kidzone",
+   "a": "Tầng 2 Dreamland Bonanza, 23 Duy Tân, Cầu Giấy",
+   "p": "~90–130k/bé (tham khảo)",
+   "lat": 21.03,
+   "lng": 105.783
+  },
+  {
+   "n": "The Loop Kids (IPH)",
+   "a": "Tầng 3 TTTM IPH, 241 Xuân Thủy, Cầu Giấy",
+   "p": "~90–130k/bé (tham khảo)",
+   "lat": 21.037,
+   "lng": 105.7825
+  },
+  {
+   "n": "Chimi Farm (nông trại trong nhà)",
+   "a": "1 Nguyễn Văn Huyên, Cầu Giấy",
+   "p": "~90–120k/bé (tham khảo)",
+   "lat": 21.043,
+   "lng": 105.8
+  },
+  {
+   "n": "Laika Cafe (có khu bé)",
+   "a": "91 Trung Hòa, Cầu Giấy",
+   "p": "nước ~40–70k · khu chơi nhỏ",
+   "lat": 21.0105,
+   "lng": 105.7975
+  },
+  {
+   "n": "Beanie Land Coffee (có khu bé)",
+   "a": "63 Tô Hiệu, Hà Đông",
+   "p": "nước ~40–70k · có khu chơi",
+   "lat": 20.972,
+   "lng": 105.777
+  }
+ ],
+ "SKILL_GUIDES": [
+  {
+   "icon": "🥄",
+   "name": "Tự xúc ăn bằng thìa",
+   "age": "~10–18 tháng bắt đầu",
+   "steps": [
+    "Cho bé thìa riêng khi cả nhà ăn để bé bắt chước.",
+    "Bắt đầu với món đặc, dính (cháo đặc, cơm nát, khoai nghiền) — dễ múc, ít rơi.",
+    "Chấp nhận bừa bộn: lót khăn/thảm dưới ghế, mặc yếm to.",
+    "Cầm tay bé múc vài lần rồi để bé tự làm; khen khi bé thử.",
+    "Không tranh thìa đút cho nhanh — kiên nhẫn để bé luyện.",
+    "Bữa gọn dưới 30 phút, đói mới ăn; không ép, không vừa ăn vừa xem TV."
+   ]
+  },
+  {
+   "icon": "🚽",
+   "name": "Bỏ bỉm / tập ngồi bô",
+   "age": "~18–30 tháng khi bé sẵn sàng",
+   "steps": [
+    "Dấu hiệu sẵn sàng: bỉm khô lâu hơn, biết báo/khó chịu khi ướt, tự kéo quần, ngồi vững.",
+    "Cho bé làm quen cái bô: đặt nơi bé hay chơi, ngồi thử (mặc quần cũng được).",
+    "Lịch cho ngồi bô: sau ngủ dậy, sau ăn 20–30 phút, trước khi ngủ.",
+    "Dạy bé báo \"tè / ị\"; khen ngay khi đi đúng bô, KHÔNG mắng khi lỡ.",
+    "Ban ngày bỏ bỉm trước (mặc quần chip để bé cảm nhận ướt), ban đêm bỏ sau.",
+    "Chuẩn bị nhiều quần dự phòng; tè dầm lúc đầu là bình thường.",
+    "Tránh ép khi bé ốm hoặc xáo trộn (chuyển nhà, có em) — dễ căng thẳng."
+   ]
+  },
+  {
+   "icon": "🥤",
+   "name": "Tự cầm cốc uống nước",
+   "age": "~9–15 tháng",
+   "steps": [
+    "Bắt đầu với cốc tập uống 2 quai / cốc có ống hút, đổ ít nước.",
+    "Cầm tay bé nâng cốc vài lần cho quen động tác.",
+    "Chuyển dần sang cốc thường miệng nhỏ, đổ ít để bớt sặc / đổ.",
+    "Cho tập lúc bé tỉnh táo, không quá khát để bé không cáu.",
+    "Khen khi bé uống được; lau khô, không trách khi đổ."
+   ]
+  },
+  {
+   "icon": "👕",
+   "name": "Tự cởi / mặc quần áo",
+   "age": "~18–36 tháng (cởi trước, mặc sau)",
+   "steps": [
+    "Bắt đầu bằng CỞI (dễ hơn mặc): tất, mũ, quần chun.",
+    "Chọn đồ rộng, chun co giãn, ít nút / khoá.",
+    "Chia nhỏ: mẹ mặc gần xong, để bé kéo nốt (kéo quần lên, chui đầu qua cổ áo).",
+    "Ngồi cạnh hướng dẫn \"chui tay vào đây\", làm mẫu thật chậm.",
+    "Cho bé chọn 1 trong 2 bộ để bé hứng thú và thấy được quyết định."
+   ]
+  },
+  {
+   "icon": "👟",
+   "name": "Tự đi giày / dép",
+   "age": "~2–3 tuổi",
+   "steps": [
+    "Chọn dép quai dán (velcro) hoặc giày không dây — dễ tự đi.",
+    "Đánh dấu trái / phải (dán nửa sticker vào 2 chiếc) để bé ghép đúng.",
+    "Làm mẫu: xỏ chân, dán quai; rồi để bé tự làm.",
+    "Khen khi bé tự đi được, kể cả khi ngược bên — sửa nhẹ nhàng."
+   ]
+  },
+  {
+   "icon": "🧼",
+   "name": "Tự rửa & lau tay",
+   "age": "~18–30 tháng",
+   "steps": [
+    "Kê ghế/bục để bé với tới vòi; chỉ các bước: làm ướt → xoa xà phòng → kỳ → rửa → lau.",
+    "Hát một bài khoảng 20 giây để bé xoa đủ lâu.",
+    "Nhắc rửa tay các mốc: trước ăn, sau vệ sinh, sau khi chơi / về nhà.",
+    "Để khăn riêng trong tầm với để bé tự lau."
+   ]
+  },
+  {
+   "icon": "🧸",
+   "name": "Tự cất đồ chơi",
+   "age": "~18 tháng trở đi",
+   "steps": [
+    "Có giỏ / hộp đựng cố định, dán hình để bé biết loại nào vào đâu.",
+    "Biến thành trò chơi: \"mình thi cất nhanh nào\", vừa cất vừa hát.",
+    "Cất cùng bé lúc đầu, giảm dần phần mẹ làm.",
+    "Cố định \"giờ dọn\" trước khi chuyển hoạt động (trước ăn, trước ngủ)."
+   ]
+  },
+  {
+   "icon": "🦷",
+   "name": "Tự đánh răng (có hỗ trợ)",
+   "age": "~18 tháng (khi mọc răng)",
+   "steps": [
+    "Bàn chải mềm cỡ bé + kem có fluor lượng bằng hạt gạo.",
+    "Để bé tự chải trước cho quen, rồi bố/mẹ chải lại kỹ (bé chưa sạch được).",
+    "Đánh 2 lần/ngày: sáng và trước khi ngủ; làm cùng bé để bé bắt chước.",
+    "Hát / đếm cho đủ khoảng 2 phút; cho bé chọn bàn chải màu bé thích."
+   ]
+  },
+  {
+   "icon": "😴",
+   "name": "Tự ngủ (không cần bế ru)",
+   "age": "~6 tháng trở đi, củng cố dần",
+   "steps": [
+    "Trình tự ngủ cố định 20–30 phút: tắm → thay đồ → đọc sách / hát ru → tắt đèn.",
+    "Đặt bé xuống khi bé buồn ngủ nhưng còn thức, để bé tự chìm vào giấc.",
+    "Có đồ trấn an quen thuộc (gấu bông / khăn).",
+    "Nếu bé tỉnh, vỗ về nhẹ tại chỗ thay vì bế lên ngay.",
+    "Giữ giờ ngủ đều; tránh màn hình trước giờ ngủ."
+   ]
+  },
+  {
+   "icon": "🍼",
+   "name": "Bỏ ti bình / ti giả",
+   "age": "~12–24 tháng",
+   "steps": [
+    "Chuyển dần sang cốc; giảm cữ bình, bỏ cữ ban ngày trước, cữ đêm sau.",
+    "Không cho ngậm bình / ti giả cả ngày; chỉ lúc ngủ rồi bỏ nốt.",
+    "Thay bằng cách an ủi khác (ôm, gấu bông, đọc sách).",
+    "Làm từ từ, chọn lúc bé khỏe; khen khi bé uống cốc như anh / chị lớn."
+   ]
+  }
+ ],
+ "CHILD_ISSUES": [
+  {
+   "icon": "😴",
+   "title": "Con ngủ muộn / khó ngủ",
+   "tips": [
+    "Cố định giờ đi ngủ mỗi tối (vd 20:30–21:00) và lặp lại đều để tạo nếp.",
+    "Trình tự \"hạ nhiệt\" 30 phút trước ngủ: tắm ấm → thay đồ ngủ → đọc sách/hát ru, giảm đèn.",
+    "Tắt màn hình (TV/điện thoại) ít nhất 1 giờ trước giờ ngủ của bé.",
+    "Giữ giấc trưa hợp lý (bé ~20 tháng ngủ trưa 1 giấc ~1.5–2h, tránh ngủ sau 15:30).",
+    "Phòng tối, yên, mát ~26–28°C; có thể bật tiếng ồn trắng nhẹ."
+   ]
+  },
+  {
+   "icon": "🍚",
+   "title": "Con biếng ăn",
+   "tips": [
+    "Cho ăn đúng bữa, đúng giờ; không ăn vặt sát bữa.",
+    "Bữa ăn gọn trong 30 phút, hết giờ dọn đi, không ép.",
+    "Cho con tự xúc, chấp nhận bừa bộn để con hứng thú.",
+    "Đa dạng màu sắc và kết cấu món; nêm nhạt riêng cho con.",
+    "Không dụ ăn bằng tivi/điện thoại; ăn cùng cả nhà để con bắt chước."
+   ]
+  },
+  {
+   "icon": "🤱",
+   "title": "Con bám mẹ, không theo bố",
+   "tips": [
+    "Bố dành thời gian chơi riêng với con mỗi ngày, việc con thích.",
+    "Mẹ lùi lại để bố xử lý tắm/ăn/ngủ cho con.",
+    "Không lén đi khi con không để ý — chào tạm biệt rõ ràng, ngắn gọn.",
+    "Kiên nhẫn: giai đoạn bám mẹ là bình thường, sẽ qua.",
+    "Cả nhà cùng chơi để con thấy bố mẹ là một đội."
+   ]
+  },
+  {
+   "icon": "👵",
+   "title": "Ông bà can thiệp cách dạy con",
+   "tips": [
+    "Hai vợ chồng thống nhất nguyên tắc trước rồi mới nói với ông bà.",
+    "Ghi nhận công ông bà trước khi góp ý, tránh chê trách.",
+    "Chọn 2–3 điều quan trọng nhất để giữ, việc nhỏ thì linh hoạt.",
+    "Để người con ruột nói với bố mẹ mình sẽ dễ hơn.",
+    "Nhất quán giữa bố mẹ là điều quan trọng nhất với con."
+   ]
+  },
+  {
+   "icon": "📺",
+   "title": "Con xem tivi/điện thoại quá nhiều",
+   "tips": [
+    "Bé dưới 2 tuổi: hạn chế tối đa màn hình; 2–5 tuổi tối đa ~1 giờ/ngày và xem cùng người lớn.",
+    "Đặt khung giờ và chỗ xem cố định, tắt là tắt — báo trước \"còn 1 tập nữa\".",
+    "Không dùng màn hình khi ăn và trong 1 giờ trước giờ con ngủ.",
+    "Chuẩn bị sẵn hoạt động thay thế: tô màu, xếp hình, ra ngoài chơi.",
+    "Bố mẹ làm gương — giảm lướt điện thoại trước mặt con."
+   ]
+  },
+  {
+   "icon": "😤",
+   "title": "Con ăn vạ, không nghe lời",
+   "tips": [
+    "Giữ bình tĩnh, hạ giọng; con càng gào thì mình càng nhẹ nhàng và chậm lại.",
+    "Gọi tên cảm xúc của con (\"con đang giận vì…\") rồi mới đặt giới hạn.",
+    "Thống nhất giữa bố mẹ: một luật, không người cấm người cho.",
+    "Cho con vài lựa chọn nhỏ (\"mặc áo đỏ hay áo xanh\") để con thấy được tự quyết.",
+    "Khen ngay khi con hợp tác; nhất quán quan trọng hơn nghiêm khắc."
+   ]
+  },
+  {
+   "icon": "🤧",
+   "title": "Con hay ốm vặt",
+   "tips": [
+    "Ngủ đủ và đúng giờ giúp con tăng đề kháng — ưu tiên giấc ngủ.",
+    "Rửa tay trước khi ăn và sau khi về nhà; vệ sinh đồ chơi định kỳ.",
+    "Ăn đa dạng rau củ, uống đủ nước; tiêm phòng đúng lịch.",
+    "Tránh khói thuốc, giữ nhà thoáng; mặc đủ ấm theo thời tiết.",
+    "Ghi lại triệu chứng và ngày ốm (mục 🩺 Sức khỏe) để trao đổi với bác sĩ."
+   ]
+  },
+  {
+   "icon": "🏫",
+   "title": "Con quấy khóc khi đi lớp",
+   "tips": [
+    "Chào tạm biệt ngắn gọn, dứt khoát và luôn giữ đúng lời hứa đón con.",
+    "Tạo \"nghi thức chia tay\" cố định (ôm một cái, vẫy tay) để con thấy an toàn.",
+    "Cho con mang theo món quen thuộc (gấu bông, khăn) trong tuần đầu.",
+    "Đến lớp đúng giờ, tránh vội vã; tối trước nói nhẹ nhàng về việc mai đi lớp.",
+    "Phối hợp với cô giáo để nắm con có ổn định lại sau khi bố mẹ đi."
+   ]
+  },
+  {
+   "icon": "🧸",
+   "title": "Con tranh đồ chơi với bạn",
+   "tips": [
+    "Giữ bình tĩnh, không mắng ngay — quan sát trước xem hai bé có tự giải quyết được không.",
+    "Gọi tên cảm xúc của con (\"con đang muốn chơi món đó nên buồn/giận\") trước khi dạy cách xử lý.",
+    "Dạy câu nói thay cho giành giật: \"Cho tớ chơi cùng với\" hoặc \"Đợi một chút nhé\".",
+    "Tập thay phiên: dùng đồng hồ/đếm số để mỗi bé chơi một lượt, hết giờ thì đổi.",
+    "Chuẩn bị sẵn 2 món giống/tương tự nhau khi hẹn bạn đến chơi để giảm tranh giành.",
+    "Khen ngay khi con biết nhường hoặc rủ bạn chơi chung, để con thấy hành vi tốt được ghi nhận.",
+    "Không ép con nhường mọi lúc — cũng dạy con quyền giữ đồ của mình và cách từ chối lịch sự."
+   ]
+  }
+ ]
+}
