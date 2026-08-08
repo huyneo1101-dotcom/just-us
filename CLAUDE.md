@@ -69,7 +69,16 @@ App `tam-linh/` giữ **bản sao** các hàm này.
 
 ## PWA / Thông báo
 - Service worker + manifest đầy đủ (`manifest.json`, `sw.js`, icon SVG).
-- **Có thông báo đẩy + digest hằng ngày**: `sw.js` xử lý `push` (VAPID, hỗ trợ backend web-push) và `periodicsync` tag `ju-daily` → `showDailyDigest()` đọc cache `/__digest`. `index.html` (~5222+) xin quyền `Notification`, đăng ký `pushManager.subscribe`, lưu subscription vào bảng `justus_push_subs`, đăng ký `periodicSync('ju-daily')`, và nhắc lịch `ju.routine` trong ngày. Xem skill `web-push`.
+- **Có thông báo đẩy + digest hằng ngày**: `sw.js` xử lý `push` (VAPID) và `periodicsync` tag `ju-daily` → `showDailyDigest()` đọc cache `/__digest`. `index.html` (~5189+) xin quyền `Notification`, đăng ký `pushManager.subscribe`, lưu subscription vào bảng `justus_push_subs`, đăng ký `periodicSync('ju-daily')`, và nhắc lịch `ju.routine` trong ngày. Xem skill `web-push`.
+- **Hai đường thông báo, đừng lẫn:**
+  1. `NotiRunner` (~5243) — `computeDueNotis()` + `showNotification`, **chỉ chạy khi app đang mở**
+     (`setInterval` 15 phút + `visibilitychange`). Đây là toàn bộ thông báo "trong app".
+  2. **web-push khi app đóng** — cần **server** giữ VAPID private key. Nằm ở
+     `supabase/functions/push-notify/` + trigger `ju_notify_push` trên `justus_data`
+     (`supabase/migrations/20260808120000_push_notify.sql`). Trigger lọc lời nhắn mới ngay
+     trong SQL rồi mới gọi function, nên payload nhỏ. Hướng dẫn deploy: **`docs/push-setup.md`**.
+  - Đổi `VAPID_PUBLIC` = mọi subscription cũ chết; `subscribePush()` đã tự huỷ và đăng ký lại.
+  - `justus_push_subs` khoá chính là `endpoint`; function tự xoá dòng khi push trả 404/410.
 
 ## Thư viện (đã pin version, qua cdn.jsdelivr.net)
 - `react@18.2.0` + `react-dom@18.2.0` (production UMD)

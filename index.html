@@ -5188,6 +5188,7 @@ function RoutineTab({people,me}){
 /* ============ Thông báo điện thoại ============ */
 const VAPID_PUBLIC='BBGZe7N9CydCcQhvky9O2oVqzHPnV5Xbhcn7QBGGEFykxsDCoTI1nFpCJtaXkaG3wTH0xQM98RSaJlQNky795EM';
 function urlB64ToU8(s){ const pad='='.repeat((4-s.length%4)%4); const b=(s+pad).replace(/-/g,'+').replace(/_/g,'/'); const raw=atob(b); const arr=new Uint8Array(raw.length); for(let i=0;i<raw.length;i++)arr[i]=raw.charCodeAt(i); return arr; }
+function u8ToUrlB64(buf){ const b=new Uint8Array(buf); let s=''; for(let i=0;i<b.length;i++) s+=String.fromCharCode(b[i]); return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''); }
 // Đăng ký web-push để nhận thông báo CẢ KHI ĐÓNG APP (cần đã đăng nhập + ghép đôi)
 async function subscribePush(){
   try{
@@ -5195,6 +5196,18 @@ async function subscribePush(){
     if(!Cloud.connected||!Cloud.connected()) return {ok:false,reason:'notconnected'};
     const reg=await navigator.serviceWorker.ready;
     let sub=await reg.pushManager.getSubscription();
+    // Nếu máy đang giữ subscription của CẶP KHOÁ VAPID CŨ thì server mới không đẩy tới được
+    // (trình duyệt cũng không cho subscribe đè khoá khác) → huỷ rồi đăng ký lại bằng khoá hiện tại.
+    if(sub){
+      try{
+        const cur=sub.options&&sub.options.applicationServerKey;
+        if(cur && u8ToUrlB64(cur)!==VAPID_PUBLIC){
+          const old=sub.endpoint;
+          await sub.unsubscribe(); sub=null;
+          try{ const c0=sbClient(); if(c0&&old) await c0.from('justus_push_subs').delete().eq('endpoint',old); }catch(_){}
+        }
+      }catch(_){}
+    }
     if(!sub){ sub=await reg.pushManager.subscribe({userVisibleOnly:true, applicationServerKey:urlB64ToU8(VAPID_PUBLIC)}); }
     const j=sub.toJSON(); const c=sbClient(); const cp=Cloud.couple&&Cloud.couple();
     const {data:ud}=await c.auth.getUser(); const user=ud&&ud.user;
