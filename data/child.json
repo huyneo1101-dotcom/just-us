@@ -825,5 +825,979 @@
     "Không ép con nhường mọi lúc — cũng dạy con quyền giữ đồ của mình và cách từ chối lịch sự."
    ]
   }
+ ],
+ "EMERGENCY": [
+  {
+   "icon": "🫁",
+   "title": "Hóc dị vật, tắc đường thở",
+   "lead": "Nhìn trước đã: bé còn ho được, còn khóc thành tiếng thì đường thở CHƯA tắc hẳn — để bé tự ho là tốt nhất.",
+   "do": [
+    "Còn ho, còn khóc to: đứng cạnh trấn an, khuyến khích bé ho. Không vỗ lưng, không móc họng.",
+    "Không ho được, không kêu ra tiếng, ôm cổ, mặt tím: gọi 115 ngay rồi bắt tay làm.",
+    "Vỗ lưng 5 cái: cho bé cúi người ra trước, dùng gót bàn tay vỗ dứt khoát vào giữa hai bả vai.",
+    "Ấn bụng 5 cái: đứng sau bé, nắm tay đặt trên rốn — dưới mũi ức, ấn giật mạnh vào trong và lên trên.",
+    "Lặp lại 5 vỗ lưng – 5 ấn bụng cho tới khi dị vật ra hoặc xe cấp cứu tới.",
+    "Bé lịm đi: đặt xuống nền cứng, gọi 115, ép tim 30 lần rồi 2 lần thổi ngạt, lặp lại."
+   ],
+   "dont": [
+    "KHÔNG thò tay móc họng khi không nhìn thấy dị vật — dễ đẩy vào sâu hơn.",
+    "KHÔNG dốc ngược bé lên rồi rung.",
+    "KHÔNG cho uống nước để \"trôi xuống\"."
+   ],
+   "er": [
+    "Ra được dị vật rồi vẫn nên đi khám nếu bé còn ho dai, khò khè hoặc khàn tiếng."
+   ]
+  },
+  {
+   "icon": "🌡️",
+   "title": "Sốt co giật",
+   "lead": "Phần lớn cơn co giật do sốt ở trẻ 1–5 tuổi tự hết trong 1–3 phút và không để lại di chứng. Việc của mình là giữ bé an toàn và tính giờ.",
+   "do": [
+    "Đặt bé nằm nghiêng một bên trên mặt phẳng, dọn hết vật cứng quanh người.",
+    "Nới lỏng quần áo, nhất là quanh cổ.",
+    "Bấm giờ ngay từ lúc bắt đầu — bác sĩ sẽ hỏi cơn kéo dài bao lâu.",
+    "Nếu có người thứ hai thì quay video — rất có ích cho bác sĩ.",
+    "Hết cơn: để bé nằm nghiêng nghỉ, lau người bằng nước ấm, cho hạ sốt khi bé đã tỉnh táo."
+   ],
+   "dont": [
+    "KHÔNG nhét bất cứ thứ gì vào miệng bé (thìa, khăn, ngón tay) — bé không cắn vào lưỡi như lời đồn.",
+    "KHÔNG ghì chặt tay chân để giữ bé lại.",
+    "KHÔNG vắt chanh, đổ nước hay thuốc vào miệng khi đang giật."
+   ],
+   "er": [
+    "Cơn kéo dài quá 5 phút",
+    "Giật lại lần thứ hai trong cùng đợt sốt",
+    "Chỉ giật một bên người",
+    "Sau cơn bé vẫn lơ mơ, khó đánh thức quá 30 phút",
+    "Kèm cứng gáy, nôn vọt hoặc phát ban",
+    "Đây là cơn co giật đầu tiên — nên đi khám dù cơn rất ngắn"
+   ]
+  },
+  {
+   "icon": "🔥",
+   "title": "Bỏng",
+   "lead": "20 phút đầu quyết định vết bỏng nông hay sâu. Làm mát ngay, đừng đi tìm thuốc trước.",
+   "do": [
+    "Đưa vùng bỏng dưới vòi nước MÁT (không lạnh buốt, không nước đá) trong 20 phút.",
+    "Cởi quần áo, tháo vòng/dây quanh vùng bỏng trước khi sưng — trừ phần đã dính chặt vào da.",
+    "Che bằng gạc sạch hoặc màng bọc thực phẩm; giữ ấm phần còn lại của người bé."
+   ],
+   "dont": [
+    "KHÔNG bôi kem đánh răng, nước mắm, mỡ trăn, lòng trắng trứng, đắp lá.",
+    "KHÔNG chườm đá — làm tổn thương sâu thêm.",
+    "KHÔNG chọc vỡ bọng nước."
+   ],
+   "er": [
+    "Bỏng ở mặt, cổ, bàn tay, bàn chân, bộ phận sinh dục hoặc quanh khớp",
+    "Vùng bỏng rộng hơn lòng bàn tay của bé",
+    "Da trắng bệch, đen, hoặc bé không thấy đau (dấu bỏng sâu)",
+    "Bỏng điện, bỏng hoá chất, hoặc có hít phải khói"
+   ]
+  },
+  {
+   "icon": "🤕",
+   "title": "Ngã đập đầu",
+   "lead": "Phần lớn cú ngã của trẻ tập đi là lành. Cái cần làm là theo dõi kỹ 24–48 giờ đầu.",
+   "do": [
+    "Chườm mát chỗ sưng 10–15 phút.",
+    "Cho bé nghỉ và quan sát; đêm đầu có thể đánh thức nhẹ 1–2 lần xem bé tỉnh có bình thường không.",
+    "Ghi lại giờ ngã, độ cao và ngã xuống nền gì — bác sĩ sẽ hỏi."
+   ],
+   "dont": [
+    "KHÔNG cho uống thuốc giảm đau mạnh trước khi khám (che mất triệu chứng).",
+    "KHÔNG để bé ngủ liền mạch mà không kiểm tra trong đêm đầu."
+   ],
+   "er": [
+    "Bất tỉnh dù chỉ vài giây",
+    "Nôn từ 2 lần trở lên",
+    "Lơ mơ, khó đánh thức, đi loạng choạng khác thường",
+    "Co giật",
+    "Chảy máu hoặc dịch trong từ tai, mũi",
+    "Khóc thét không dỗ được, hoặc bỏ ăn bỏ bú",
+    "Ngã từ cao hơn 1 m hoặc ngã xuống nền cứng (gạch, bê tông)"
+   ]
+  },
+  {
+   "icon": "🔋",
+   "title": "Nuốt dị vật — pin cúc áo, nam châm",
+   "urgent": true,
+   "lead": "Ba thứ nuốt vào là ĐI VIỆN NGAY dù bé vẫn chơi bình thường: pin cúc áo, từ 2 viên nam châm trở lên, và vật sắc nhọn.",
+   "do": [
+    "Pin cúc áo: đi viện ngay lập tức — pin có thể ăn thủng thực quản trong vòng 2 giờ.",
+    "Nhiều viên nam châm: đi viện ngay — chúng hút nhau xuyên qua thành ruột gây thủng.",
+    "Mang theo vật cùng loại (viên pin còn lại, món đồ chơi) để bác sĩ biết kích cỡ.",
+    "Vật tròn nhẵn (đồng xu) mà bé vẫn ăn uống bình thường: vẫn nên đi khám để chụp xác định vị trí."
+   ],
+   "dont": [
+    "KHÔNG gây nôn.",
+    "KHÔNG cho ăn uống gì trước khi bác sĩ khám."
+   ],
+   "er": [
+    "Bé nôn, chảy dãi nhiều, không nuốt được, đau ngực hoặc đau bụng — đi viện ngay không chờ."
+   ]
+  },
+  {
+   "icon": "🧪",
+   "title": "Uống nhầm hoá chất hoặc thuốc",
+   "lead": "Mang theo cái vỏ. Bác sĩ cần biết bé uống đúng thứ gì.",
+   "do": [
+    "Gọi 115 hoặc đưa đi viện ngay, cầm theo vỏ chai/lọ thuốc.",
+    "Lau sạch miệng bé, thay quần áo dính hoá chất.",
+    "Hoá chất bắn vào mắt: rửa mắt dưới vòi nước sạch chảy nhẹ 15–20 phút rồi đi viện."
+   ],
+   "dont": [
+    "KHÔNG gây nôn — chất ăn mòn và xăng dầu trào ngược lên còn hại hơn.",
+    "KHÔNG cho uống sữa hay lòng trắng trứng để \"trung hoà\" khi chưa có chỉ định."
+   ],
+   "er": [
+    "Bất kể lượng nhiều hay ít, uống nhầm hoá chất hay thuốc của người lớn đều nên đi viện."
+   ]
+  },
+  {
+   "icon": "🩸",
+   "title": "Chảy máu",
+   "do": [
+    "Ép trực tiếp lên vết thương bằng gạc hoặc khăn sạch, giữ nguyên 10 phút — đừng nhấc lên xem liên tục.",
+    "Máu thấm ướt thì đắp thêm lớp mới lên trên, không gỡ lớp cũ ra.",
+    "Nâng cao vùng chảy máu nếu ở tay hoặc chân.",
+    "Chảy máu cam: cho bé ngồi hơi cúi ra trước, bóp hai cánh mũi 10 phút."
+   ],
+   "dont": [
+    "KHÔNG ngửa đầu ra sau khi chảy máu cam — máu chảy xuống họng gây nôn.",
+    "KHÔNG rắc bột, thuốc lào hay lá lên vết thương."
+   ],
+   "er": [
+    "Máu không cầm sau 10 phút ép, vết sâu/rộng/hở miệng, vết do vật bẩn hoặc do động vật cắn."
+   ]
+  },
+  {
+   "icon": "🌊",
+   "title": "Đuối nước",
+   "lead": "Trẻ 2 tuổi có thể đuối trong vài centimet nước — chậu, xô, bồn tắm — và thường KHÔNG kêu được tiếng nào.",
+   "do": [
+    "Đưa bé ra khỏi nước ngay, gọi 115.",
+    "Bé không thở: đặt nằm ngửa trên nền cứng, thổi ngạt 5 lần rồi ép tim 30 lần – 2 lần thổi, lặp lại.",
+    "Bé còn thở: đặt nằm nghiêng, ủ ấm, vẫn phải đưa đi viện."
+   ],
+   "dont": [
+    "KHÔNG dốc ngược bé lên xốc nước — mất thời gian vàng của hô hấp nhân tạo."
+   ],
+   "er": [
+    "Mọi trường hợp đuối nước đều phải đi viện, kể cả khi bé tỉnh lại và có vẻ bình thường."
+   ]
+  }
+ ],
+ "RED_FLAGS": [
+  "Khó thở: thở rít, rút lõm lồng ngực, cánh mũi phập phồng, môi hoặc đầu ngón tím",
+  "Li bì, khó đánh thức, không nhận ra bố mẹ",
+  "Co giật",
+  "Sốt kèm cứng gáy, nôn vọt, hoặc phát ban chấm đỏ không mất khi ấn kính trong vào",
+  "Nôn liên tục, không uống được gì",
+  "Dấu mất nước: không tiểu 6–8 giờ, mắt trũng, khóc không có nước mắt, môi khô",
+  "Sốt cao liên tục quá 3 ngày không hạ",
+  "Đau bụng dữ dội, bụng chướng cứng, hoặc nôn ra dịch xanh",
+  "Da tái, lạnh, vã mồ hôi"
+ ],
+ "DANGER_ITEMS": [
+  {
+   "icon": "🔋",
+   "n": "Pin cúc áo",
+   "why": "Nằm trong điều khiển, cân điện tử, đèn LED nhỏ, thiệp nhạc, đồ chơi phát sáng. Nuốt phải là cấp cứu — ăn thủng thực quản trong vài giờ."
+  },
+  {
+   "icon": "🧲",
+   "n": "Nam châm nhỏ",
+   "why": "Bộ hạt nam châm xếp hình. Nuốt từ 2 viên là chúng hút nhau xuyên qua thành ruột gây thủng."
+  },
+  {
+   "icon": "🫧",
+   "n": "Hạt nở (orbeez)",
+   "why": "Hạt khô nhìn như kẹo, vào ruột nở gấp nhiều lần gây tắc ruột."
+  },
+  {
+   "icon": "🎈",
+   "n": "Bóng bay",
+   "why": "Bóng chưa thổi và mảnh bóng vỡ là thứ gây ngạt hay gặp nhất trong nhóm đồ chơi."
+  },
+  {
+   "icon": "🍮",
+   "n": "Thạch rau câu",
+   "why": "Trơn và vừa cỡ khí quản, hút vào là bịt kín. Cắt nhỏ hoặc bỏ hẳn ở tuổi này."
+  },
+  {
+   "icon": "🥜",
+   "n": "Hạt cứng & miếng tròn",
+   "why": "Lạc, điều, hướng dương, nhãn, nho nguyên quả, kẹo cứng, xúc xích cắt khoanh tròn. Bổ dọc hoặc cắt tư."
+  },
+  {
+   "icon": "💊",
+   "n": "Thuốc của người lớn",
+   "why": "Nhất là thuốc huyết áp, tiểu đường của ông bà để trong túi xách hoặc đầu giường."
+  },
+  {
+   "icon": "🧼",
+   "n": "Viên giặt, nước tẩy",
+   "why": "Viên giặt màu bắt mắt như kẹo. Sang chiết hoá chất vào chai nước ngọt là cái bẫy nguy hiểm nhất trong nhà."
+  },
+  {
+   "icon": "🪟",
+   "n": "Dây rèm, dây rút áo",
+   "why": "Gây thắt cổ. Buộc dây rèm cao khỏi tầm với, cắt bỏ dây rút ở mũ và áo của bé."
+  },
+  {
+   "icon": "🛍️",
+   "n": "Túi nilon",
+   "why": "Bịt kín mũi miệng chỉ trong vài giây."
+  },
+  {
+   "icon": "🪙",
+   "n": "Đồng xu, cúc áo, nắp bút",
+   "why": "Thử nhanh: lọt qua lõi giấy vệ sinh nghĩa là bé nuốt được — cất hết."
+  },
+  {
+   "icon": "🧴",
+   "n": "Cồn, nước rửa tay khô",
+   "why": "Bé liếm tay ngay sau khi xịt, hoặc tu nhầm cả chai."
+  }
+ ],
+ "HOME_SAFETY": [
+  {
+   "g": "🚪 Cửa & lối đi",
+   "items": [
+    "Chắn cầu thang cả đầu trên và đầu dưới",
+    "Cửa sổ, ban công có lưới hoặc chốt khoá",
+    "Không kê ghế, thùng, giường sát cửa sổ",
+    "Chặn lối vào bếp khi đang nấu"
+   ]
+  },
+  {
+   "g": "⚡ Điện & lửa",
+   "items": [
+    "Bịt kín các ổ điện trong tầm với",
+    "Giấu và cố định dây điện",
+    "Bật lửa, diêm, nến cất lên cao",
+    "Quay cán xoong chảo vào phía trong bếp",
+    "Nước nóng ở vòi không quá 49°C"
+   ]
+  },
+  {
+   "g": "🧴 Hoá chất & thuốc",
+   "items": [
+    "Tủ thuốc có khoá hoặc để thật cao",
+    "Hoá chất luôn giữ trong chai gốc, không sang chai nước",
+    "Nước rửa bát, viên giặt cất trong tủ có chốt"
+   ]
+  },
+  {
+   "g": "🪑 Đồ đạc",
+   "items": [
+    "Cố định tủ, kệ sách, TV vào tường",
+    "Bọc góc bàn và cạnh sắc",
+    "Bỏ khăn trải bàn dài mà bé kéo được"
+   ]
+  },
+  {
+   "g": "🚿 Nước",
+   "items": [
+    "Không để xô, chậu đọng nước trong nhà",
+    "Đậy nắp bồn cầu",
+    "Thảm chống trượt trong nhà tắm",
+    "Không rời bé dù một giây khi bé đang trong bồn tắm"
+   ]
+  },
+  {
+   "g": "🧸 Đồ nhỏ",
+   "items": [
+    "Cất đồ nhỏ khỏi tầm với, kiểm tra sàn trước giờ bé chơi",
+    "Đồ chơi của anh chị lớn để riêng khu"
+   ]
+  },
+  {
+   "g": "📋 Sẵn sàng",
+   "items": [
+    "Dán số điện thoại khẩn lên tủ lạnh",
+    "Nhà luôn có nhiệt kế, gạc sạch, nước muối sinh lý",
+    "Cả nhà thuộc địa chỉ nhà để đọc trôi chảy khi gọi 115"
+   ]
+  }
+ ],
+ "CONTACT_SUGGEST": [
+  {
+   "icon": "🩺",
+   "label": "Bác sĩ nhi quen"
+  },
+  {
+   "icon": "🏥",
+   "label": "Phòng khám gần nhà"
+  },
+  {
+   "icon": "🚑",
+   "label": "Bệnh viện nhi"
+  },
+  {
+   "icon": "💊",
+   "label": "Nhà thuốc mở đêm"
+  },
+  {
+   "icon": "👩‍🏫",
+   "label": "Cô giáo của bé"
+  },
+  {
+   "icon": "👵",
+   "label": "Ông bà"
+  },
+  {
+   "icon": "🚕",
+   "label": "Taxi hay đi"
+  }
+ ],
+ "TANTRUM_SCRIPTS": [
+  {
+   "icon": "👕",
+   "sit": "Không chịu mặc quần áo",
+   "why": "Bé đang tập khẳng định \"con tự quyết\", chứ không phải ghét cái áo.",
+   "say": [
+    "\"Con muốn mặc áo xanh hay áo vàng?\" — cho hai lựa chọn đều được.",
+    "\"Mẹ đếm đến ba rồi mình chui đầu qua nhé: một… hai… ba!\"",
+    "\"Con tự kéo quần lên nhé, phần khó để mẹ làm.\""
+   ],
+   "avoid": [
+    "\"Mặc vào ngay!\" — càng ép càng cứng.",
+    "Giật áo mặc cho nhanh khi bé đang gào."
+   ]
+  },
+  {
+   "icon": "🏃",
+   "sit": "Không chịu về khi đang chơi",
+   "why": "Bé chưa hình dung được thời gian, bị cắt ngang đột ngột là hụt hẫng thật.",
+   "say": [
+    "Báo trước: \"Còn chơi cầu trượt hai lần nữa rồi mình về nhé.\"",
+    "\"Con chào cái cầu trượt đi, mai mình quay lại.\"",
+    "\"Về nhà con muốn đi bộ hay để bố cõng?\""
+   ],
+   "avoid": [
+    "Đùng một cái bế thốc lên rồi đi.",
+    "\"Ở lại đây một mình nhé\" rồi giả vờ bỏ đi — bé sợ thật, không phải học được."
+   ]
+  },
+  {
+   "icon": "🛒",
+   "sit": "Đòi mua đồ ở siêu thị",
+   "why": "Hàng bày ngang tầm mắt bé là cố ý. Bé chưa có khái niệm \"để lần sau\".",
+   "say": [
+    "\"Mẹ biết con rất thích cái đó. Hôm nay mình không mua.\"",
+    "\"Con cầm giúp mẹ hộp sữa nhé\" — chuyển việc cho tay bé bận.",
+    "\"Mình chụp ảnh lại, ghi vào danh sách sinh nhật nhé.\""
+   ],
+   "avoid": [
+    "Mua cho xong chuyện — lần sau bé sẽ gào to hơn vì biết là có tác dụng.",
+    "Mặc cả dài dòng giữa lối đi."
+   ]
+  },
+  {
+   "icon": "🍽️",
+   "sit": "Ném đồ ăn, hất bát",
+   "why": "Phần lớn là bé đã no hoặc đang thử xem \"ném thì có chuyện gì xảy ra\".",
+   "say": [
+    "\"Con no rồi à? No thì mình cất bát nhé.\" rồi cất thật.",
+    "\"Đồ ăn không phải để ném. Con muốn xuống thì nói với mẹ.\""
+   ],
+   "avoid": [
+    "Cười hoặc phản ứng to — với bé đó là trò vui, sẽ ném tiếp.",
+    "Đút cố cho hết bát."
+   ]
+  },
+  {
+   "icon": "✋",
+   "sit": "Đánh bố mẹ hoặc đánh bạn",
+   "why": "Hai tuổi có cảm xúc lớn hơn vốn từ. Đánh là cách nói khi chưa có chữ để nói.",
+   "say": [
+    "Giữ tay bé lại nhẹ nhàng: \"Mẹ không cho con đánh. Đánh làm đau.\"",
+    "\"Con đang giận đúng không? Giận thì nói 'con giận' hoặc giậm chân này.\"",
+    "Quay sang bạn bị đánh trước: \"Bạn có đau không?\" — bé học được ai mới là người cần quan tâm."
+   ],
+   "avoid": [
+    "Đánh lại để \"cho biết đau\" — dạy đúng cái mình đang cấm.",
+    "Bắt xin lỗi lấy lệ khi bé chưa hiểu vì sao."
+   ]
+  },
+  {
+   "icon": "🦷",
+   "sit": "Không chịu đánh răng",
+   "why": "Bé thấy bị giữ đầu, bị chọc vào miệng — mất kiểm soát.",
+   "say": [
+    "\"Con chải trước, rồi mẹ chải nốt phía trong nhé.\"",
+    "\"Mình đi tìm con sâu răng nào, nó trốn ở răng nào nhỉ?\"",
+    "\"Con muốn đứng hay ngồi lên bồn rửa?\""
+   ],
+   "avoid": [
+    "Ghì đầu chải cho nhanh — bé sẽ sợ thêm nhiều tháng.",
+    "Bỏ luôn cho đỡ mệt."
+   ]
+  },
+  {
+   "icon": "🛁",
+   "sit": "Không chịu tắm, hoặc không chịu ra khỏi bồn",
+   "why": "Chuyển hoạt động là việc khó nhất với tuổi này, cả hai chiều.",
+   "say": [
+    "\"Con mang bạn vịt vào tắm cùng nhé.\"",
+    "Trước khi ra: \"Con vớt nốt năm ca nước nữa rồi mình lên.\"",
+    "\"Con muốn mẹ quấn khăn kiểu cuốn bánh hay kiểu áo choàng?\""
+   ],
+   "avoid": [
+    "Rút nút xả nước đột ngột.",
+    "Doạ \"không tắm thì bẩn, bạn không chơi cùng\"."
+   ]
+  },
+  {
+   "icon": "😴",
+   "sit": "Không chịu đi ngủ",
+   "why": "Bé sợ bỏ lỡ cuộc vui đang diễn ra ngoài phòng, và giờ ngủ hôm nay lệch nếp.",
+   "say": [
+    "Giữ đúng một trình tự mỗi tối: tắm → thay đồ → hai quyển sách → tắt đèn.",
+    "\"Đọc xong hai quyển là tắt đèn nhé. Con chọn quyển nào?\"",
+    "\"Mẹ ngồi đây cho tới khi con nhắm mắt.\""
+   ],
+   "avoid": [
+    "Cho xem điện thoại để bé chịu nằm im.",
+    "Đổi luật mỗi tối — hôm ba quyển hôm một quyển."
+   ]
+  },
+  {
+   "icon": "📺",
+   "sit": "Đòi xem tivi, điện thoại",
+   "why": "Màn hình cho phần thưởng nhanh hơn mọi trò chơi khác, nên dứt ra là khó thật.",
+   "say": [
+    "Báo trước khi tắt: \"Hết bài hát này là mình tắt nhé.\"",
+    "\"Tắt rồi. Giờ mình chơi thả hình hay ra ban công tưới cây?\"",
+    "\"Tivi đi ngủ rồi, mai nó dậy.\""
+   ],
+   "avoid": [
+    "Tắt phụt không báo trước.",
+    "Thương lượng thêm tập nữa khi bé gào — bé học được rằng gào thì được thêm."
+   ]
+  },
+  {
+   "icon": "🏫",
+   "sit": "Khóc khi chia tay ở cổng lớp",
+   "why": "Bé chưa chắc bố mẹ sẽ quay lại. Cần bằng chứng lặp đi lặp lại, không cần lời giải thích dài.",
+   "say": [
+    "Một câu cố định mỗi sáng: \"Mẹ đi làm, chiều mẹ đón. Ôm một cái nào.\"",
+    "\"Con vào chơi với cô, chiều mẹ đón lúc ngủ dậy ăn xong.\""
+   ],
+   "avoid": [
+    "Lén đi khi bé không để ý — lần sau bé bám chặt hơn vì mất tin tưởng.",
+    "Quay lại nhiều lần, đứng ngoài cửa lâu."
+   ]
+  },
+  {
+   "icon": "🛍️",
+   "sit": "Ăn vạ giữa chốn đông người",
+   "why": "Bé không cố làm mình xấu mặt — bé chỉ đang quá tải và không tự dừng được.",
+   "say": [
+    "Ngồi xuống ngang tầm mắt, hạ giọng: \"Mẹ ở đây. Con khóc xong mình đi tiếp.\"",
+    "Bế ra chỗ vắng hơn, không nói gì thêm cho tới khi bé dịu."
+   ],
+   "avoid": [
+    "Doạ, quát, hoặc dỗ bằng đồ để mọi người thôi nhìn.",
+    "Bận tâm ánh mắt người xung quanh hơn bận tâm con."
+   ]
+  },
+  {
+   "icon": "🤱",
+   "sit": "Đòi bế liên tục khi mình đang bận",
+   "why": "Bé đang cần được kết nối, và thường chỉ cần một khoảng ngắn thật sự chú tâm.",
+   "say": [
+    "\"Mẹ ôm con một phút thật chặt, rồi mẹ nấu nốt nồi canh nhé.\" — làm đúng như nói.",
+    "\"Con đứng ghế cạnh mẹ, nhặt rau giúp mẹ nhé.\""
+   ],
+   "avoid": [
+    "Vừa bế vừa cáu.",
+    "Hứa \"lát nữa\" rồi quên."
+   ]
+  },
+  {
+   "icon": "🚗",
+   "sit": "Không chịu ngồi ghế ô tô",
+   "why": "Bé thấy bị trói. Nhưng đây là điều không mặc cả được.",
+   "say": [
+    "\"Xe chỉ chạy khi mọi người cài dây. Bố cũng cài này.\"",
+    "\"Con tự cắm cái tách vào nhé.\"",
+    "Có một túi đồ chơi chỉ dùng trên xe."
+   ],
+   "avoid": [
+    "Bế trên tay cho bé nín — nguy hiểm hơn nhiều so với một trận khóc."
+   ]
+  },
+  {
+   "icon": "🧸",
+   "sit": "Giành đồ chơi với bạn",
+   "why": "Trước 3 tuổi bé chưa thật sự chia sẻ được — đó là mốc phát triển, không phải hư.",
+   "say": [
+    "\"Con đang muốn món đó nên bực đúng không?\"",
+    "Dạy câu thay cho giằng: \"Cho tớ chơi cùng với\" hoặc \"Đợi một chút nhé\".",
+    "Thay phiên có mốc: \"Bạn chơi đến khi hết bài hát này thì đến lượt con.\""
+   ],
+   "avoid": [
+    "Ép nhường mọi lúc — bé cũng cần học giữ đồ của mình.",
+    "Nhảy vào phân xử ngay trước khi hai bé kịp tự xoay xở."
+   ]
+  }
+ ],
+ "CHILD_BEHAVIOR": [
+  {
+   "icon": "✋",
+   "title": "Con đánh, cắn, cào",
+   "lead": "Ở tuổi 2 đây là việc bình thường tới mức gần như bé nào cũng qua. Bé cắn vì chưa có từ để nói, vì mọc răng, vì quá phấn khích hoặc vì bị lấn.",
+   "steps": [
+    "Can ngay và ngắn: giữ tay bé, nói một câu \"Mẹ không cho con cắn. Cắn làm đau.\"",
+    "Chăm sóc người bị đau trước mặt bé — bé học được hậu quả rơi vào ai.",
+    "Gọi tên cảm xúc rồi đưa cách khác: \"Con giận thì giậm chân, hoặc gọi mẹ.\"",
+    "Để ý xem cơn hay xảy ra lúc nào: đói, buồn ngủ, đông người, tranh đồ — chặn từ nguyên nhân sẽ nhanh hơn là xử lý sau.",
+    "Khen ngay lúc bé kiềm được: \"Vừa nãy con muốn đánh mà con nói với mẹ, giỏi quá.\""
+   ],
+   "note": "Cần đi khám nếu sau 3 tuổi vẫn cắn thường xuyên, hoặc bé làm đau bản thân."
+  },
+  {
+   "icon": "🩲",
+   "title": "Quy tắc thân thể (dạy từ 2–3 tuổi)",
+   "lead": "Dạy sớm không làm bé sợ hãi — nó chỉ cho bé từ ngữ để nói khi có chuyện. Nói tự nhiên lúc tắm, mỗi lần một câu, không cần buổi nói chuyện trịnh trọng.",
+   "steps": [
+    "Gọi đúng tên bộ phận cơ thể như gọi tay, chân — không đặt biệt danh.",
+    "Vùng đồ lót che là vùng riêng của con.",
+    "Không ai được nhìn hay chạm vào vùng đó. Trừ bố mẹ khi tắm, thay đồ, và bác sĩ khi có bố mẹ ở đó.",
+    "Không có bí mật nào về cơ thể mà phải giấu bố mẹ.",
+    "Con được quyền nói \"không\" với ôm hôn, kể cả với người thân — nhà mình không ép con thơm ai.",
+    "Ai làm con thấy khó chịu thì kể với bố mẹ ngay, con sẽ không bị mắng."
+   ],
+   "note": "Người lớn trong nhà cần thống nhất, nhất là chuyện không ép bé thơm khách."
+  }
+ ],
+ "CHORES_2Y": [
+  {
+   "icon": "🧺",
+   "n": "Bỏ quần áo bẩn vào giỏ",
+   "d": "Để giỏ thấp ngay chỗ thay đồ."
+  },
+  {
+   "icon": "🌀",
+   "n": "Cho đồ vào máy giặt",
+   "d": "Đưa từng món cho bé nhét vào — bé rất thích việc này."
+  },
+  {
+   "icon": "👟",
+   "n": "Cất giày lên kệ",
+   "d": "Dán hình đôi giày lên chỗ để bé biết đặt đâu."
+  },
+  {
+   "icon": "🧽",
+   "n": "Lau bàn bằng khăn ẩm",
+   "d": "Khăn nhỏ vừa tay, ướt vừa phải."
+  },
+  {
+   "icon": "🪴",
+   "n": "Tưới cây",
+   "d": "Bình tưới nhỏ, đổ sẵn ít nước."
+  },
+  {
+   "icon": "🗑️",
+   "n": "Bỏ rác vào thùng",
+   "d": "Đưa bé cầm và chỉ vào thùng."
+  },
+  {
+   "icon": "🧸",
+   "n": "Cất đồ chơi vào giỏ",
+   "d": "Biến thành trò: \"mình thi cất nhanh nào\"."
+  },
+  {
+   "icon": "🥄",
+   "n": "Xếp thìa, cốc nhựa lên bàn ăn",
+   "d": "Đếm cùng bé: một cái của bố, một cái của mẹ."
+  },
+  {
+   "icon": "🛒",
+   "n": "Bỏ đồ vào xe đẩy siêu thị",
+   "d": "Đưa món nhẹ, không vỡ."
+  },
+  {
+   "icon": "🍌",
+   "n": "Bóc vỏ chuối, vỏ trứng luộc",
+   "d": "Rèn ngón tay, lại có cái ăn ngay."
+  }
+ ],
+ "SELF_CORNER": [
+  {
+   "icon": "🧺",
+   "n": "Kệ đồ chơi thấp, ít món",
+   "d": "Bày 5–6 món ngang tầm mắt bé, xoay vòng mỗi tuần. Nhiều quá bé không chọn được và cũng không cất được."
+  },
+  {
+   "icon": "🧥",
+   "n": "Móc treo áo tầm với",
+   "d": "Đóng một hàng móc cao ngang ngực bé để bé tự treo áo khoác, tự lấy mũ."
+  },
+  {
+   "icon": "🪜",
+   "n": "Ghế bục ở bồn rửa",
+   "d": "Bé tự rửa tay, tự đánh răng mà không cần bế."
+  },
+  {
+   "icon": "🥤",
+   "n": "Bình nước nhỏ và cốc để sẵn",
+   "d": "Đổ ít nước thôi. Bé tự rót được là bớt hẳn một việc gọi mẹ."
+  },
+  {
+   "icon": "🧺",
+   "n": "Giỏ quần áo bẩn để thấp",
+   "d": "Bé cởi ra là bỏ vào được ngay."
+  },
+  {
+   "icon": "🪞",
+   "n": "Gương thấp",
+   "d": "Bé tự nhìn mặt mũi, tự lau miệng."
+  },
+  {
+   "icon": "🧻",
+   "n": "Khăn riêng ở tầm tay bé",
+   "d": "Treo thấp, có hình riêng để bé nhận ra khăn của mình."
+  },
+  {
+   "icon": "🍽️",
+   "n": "Bàn ghế cỡ bé",
+   "d": "Chân chạm đất khi ngồi ăn — bé ngồi lâu hơn và tự xúc tốt hơn."
+  },
+  {
+   "icon": "👟",
+   "n": "Chỗ để dép cố định",
+   "d": "Một ô riêng sát cửa, bé tự lấy tự cất."
+  },
+  {
+   "icon": "🗄️",
+   "n": "Một ngăn tủ của riêng bé",
+   "d": "Ngăn dưới cùng, đựng đồ bé được tự do lấy."
+  }
+ ],
+ "DRESS_TEMP": [
+  {
+   "ic": "🥵",
+   "t": "Từ 33° trở lên",
+   "d": "Một lớp cotton mỏng: áo cộc, quần đùi. Mũ rộng vành và bóng râm khi ra ngoài, uống nước liên tục."
+  },
+  {
+   "ic": "☀️",
+   "t": "28 – 32°",
+   "d": "Áo cộc tay + quần dài mỏng thoáng. Trong phòng điều hoà thêm một áo khoác mỏng."
+  },
+  {
+   "ic": "🌤️",
+   "t": "25 – 27°",
+   "d": "Áo dài tay mỏng hoặc áo cộc + quần dài. Đắp chăn mỏng khi ngủ."
+  },
+  {
+   "ic": "⛅",
+   "t": "22 – 24°",
+   "d": "Áo dài tay + áo khoác mỏng khi ra ngoài. Đi tất khi ngủ nếu bé đạp chăn."
+  },
+  {
+   "ic": "🌥️",
+   "t": "18 – 21°",
+   "d": "Áo giữ nhiệt mỏng + áo nỉ hoặc len. Quần dài, tất."
+  },
+  {
+   "ic": "🌬️",
+   "t": "15 – 17°",
+   "d": "Ba lớp: giữ nhiệt + len + khoác ngoài. Thêm mũ khi ra đường."
+  },
+  {
+   "ic": "❄️",
+   "t": "10 – 14°",
+   "d": "Giữ nhiệt + len + áo phao. Mũ, tất, găng tay. Giữ ấm gáy, ngực, bàn chân."
+  },
+  {
+   "ic": "🧊",
+   "t": "Dưới 10°",
+   "d": "Như trên và thêm khăn quàng cổ. Hạn chế ra ngoài buổi sáng sớm và tối muộn."
+  }
+ ],
+ "DRESS_RULES": [
+  "Nguyên tắc chung: mặc bằng người lớn rồi cộng thêm một lớp mỏng khi bé ngủ.",
+  "Kiểm tra bằng cách sờ GÁY bé, không sờ tay chân — tay chân trẻ nhỏ mát là bình thường.",
+  "Gáy ẩm mồ hôi là đang mặc quá ấm; cởi bớt một lớp, lau khô lưng ngay kẻo ngấm ngược.",
+  "Trời nồm ưu tiên đồ thấm hút, thay ngay khi ẩm; đừng ủ nhiều lớp kín."
+ ],
+ "SEASON_ILL": [
+  {
+   "s": "🌫️ Xuân · tháng 2–4 · nồm ẩm",
+   "ill": [
+    "Viêm hô hấp, viêm phế quản",
+    "Dị ứng, mẩn ngứa do nấm mốc",
+    "Thuỷ đậu, sởi, quai bị (mùa cao điểm)"
+   ],
+   "do": [
+    "Bật hút ẩm, lau nhà bằng khăn khô thay vì khăn ướt",
+    "Quần áo phải khô hẳn mới mặc — sấy lại nếu cần",
+    "Giữ chăn ga khô ráo, phơi nắng khi có nắng",
+    "Tiêm phòng thuỷ đậu, sởi đúng lịch"
+   ]
+  },
+  {
+   "s": "🌞 Hè · tháng 5–8",
+   "ill": [
+    "Tay chân miệng",
+    "Sốt xuất huyết",
+    "Tiêu chảy, ngộ độc thức ăn",
+    "Rôm sảy, say nắng"
+   ],
+   "do": [
+    "Rửa tay trước khi ăn và sau khi về nhà, rửa cả đồ chơi",
+    "Ngủ màn, dọn nước đọng quanh nhà",
+    "Ăn chín uống sôi, không để thức ăn ngoài lâu",
+    "Tránh ra ngoài 11–15 giờ, uống đủ nước, tắm mát mỗi ngày"
+   ]
+  },
+  {
+   "s": "🍂 Thu · tháng 9–11 · giao mùa",
+   "ill": [
+    "Viêm hô hấp trên, viêm họng",
+    "Cúm mùa",
+    "Đau mắt đỏ (hay lan ở lớp)"
+   ],
+   "do": [
+    "Tiêm cúm mùa trước khi vào mùa lạnh",
+    "Sáng lạnh chiều nóng: mặc nhiều lớp để cởi dần",
+    "Không dùng chung khăn mặt, chậu rửa với người đang đau mắt"
+   ]
+  },
+  {
+   "s": "❄️ Đông · tháng 12–1",
+   "ill": [
+    "Viêm phổi, viêm tiểu phế quản",
+    "Cúm",
+    "Tiêu chảy do rota",
+    "Da khô nứt nẻ"
+   ],
+   "do": [
+    "Giữ ấm gáy, ngực, bàn chân — không cần trùm quá kín",
+    "Phòng kín thì vẫn phải thông gió mỗi ngày",
+    "Dưỡng ẩm da sau tắm, tắm nhanh bằng nước ấm vừa",
+    "Không sưởi than trong phòng kín"
+   ]
+  }
+ ],
+ "POST_VACCINE": {
+  "first": "Ở lại điểm tiêm đủ 30 phút trước khi về — phản ứng nặng nếu có thường xảy ra trong khoảng này.",
+  "normal": [
+   "Sốt nhẹ dưới 38,5° trong 1–2 ngày",
+   "Sưng, đỏ, đau ở chỗ tiêm",
+   "Quấy hơn, ngủ nhiều hơn, chán ăn một hai bữa"
+  ],
+  "care": [
+   "Cho bé bú và uống nước nhiều hơn bình thường",
+   "Mặc thoáng, lau người bằng nước ấm khi sốt",
+   "Chườm mát chỗ tiêm; KHÔNG đắp khoai tây, chanh, lá hay xoa dầu",
+   "Hạ sốt theo đúng loại và liều bác sĩ đã dặn cho cân nặng của bé"
+  ],
+  "er": [
+   "Sốt từ 39° trở lên, uống hạ sốt không đỡ",
+   "Co giật",
+   "Li bì, khó đánh thức",
+   "Khóc thét liên tục trên 3 giờ",
+   "Tím tái, khó thở, nổi mề đay toàn thân",
+   "Chỗ tiêm sưng đỏ lan rộng, chảy mủ",
+   "Bỏ bú, bỏ ăn trên 6 giờ"
+  ]
+ },
+ "CONSTIPATION": {
+  "lead": "Rất hay xuất hiện đúng giai đoạn bỏ bỉm: bé nhịn vì ngại cái bô hoặc ngại đi ở lớp, càng nhịn phân càng cứng, càng đau lại càng nhịn.",
+  "signs": [
+   "Đi ít hơn 3 lần một tuần",
+   "Phân cứng thành viên nhỏ",
+   "Bé đỏ mặt, ôm bụng, bắt chéo chân để nhịn",
+   "Đau hoặc có máu tươi dính phân",
+   "Són phân ra quần giữa các lần đi"
+  ],
+  "do": [
+   "Uống đủ nước trong ngày, không đợi bé kêu khát",
+   "Rau, đu đủ, kiwi, lê, mận khô — chất xơ có tác dụng nhanh hơn men tiêu hoá",
+   "Giảm bánh kẹo và sữa quá đặc",
+   "Cho vận động, bò trườn, chạy nhảy mỗi ngày",
+   "Ngồi bô sau bữa ăn 15–20 phút, chân phải có chỗ đặt chứ đừng lủng lẳng",
+   "Tuyệt đối không mắng khi bé són ra quần — mắng là bé nhịn tiếp"
+  ],
+  "er": [
+   "Có máu, đau nhiều khi đi",
+   "Nôn, chướng bụng",
+   "Sụt cân, chậm lớn",
+   "Kéo dài trên 2 tuần không cải thiện",
+   "Phải dùng thuốc thụt thường xuyên mới đi được"
+  ]
+ },
+ "SCARY_TASKS": [
+  {
+   "icon": "👃",
+   "n": "Rửa mũi",
+   "tips": [
+    "Làm lúc bé tỉnh táo, không làm ngay sau ăn.",
+    "Cho bé nằm nghiêng, bơm chậm bên trên để nước chảy ra bên dưới.",
+    "Cho bé cầm một chai nước muối riêng để \"rửa mũi cho gấu bông\" trước.",
+    "Xong là khen và ôm ngay, đừng làm liền hai ba lần một lúc."
+   ]
+  },
+  {
+   "icon": "✂️",
+   "n": "Cắt móng tay",
+   "tips": [
+    "Cắt lúc bé ngủ hoặc đang mải xem sách.",
+    "Mỗi lần vài ngón, không cần xong hết trong một lượt.",
+    "Cho bé cắt móng cho búp bê trước.",
+    "Dùng bấm móng riêng cho trẻ, đầu tròn."
+   ]
+  },
+  {
+   "icon": "💇",
+   "n": "Cắt tóc",
+   "tips": [
+    "Ngồi trong lòng bố mẹ, không ngồi ghế riêng.",
+    "Cho bé cầm gương hoặc đồ chơi phát nhạc.",
+    "Nói trước từng bước: \"cô sẽ cắt phía sau nhé\".",
+    "Chọn giờ bé không đói và không buồn ngủ."
+   ]
+  },
+  {
+   "icon": "💊",
+   "n": "Uống thuốc",
+   "tips": [
+    "Nói thật là thuốc, đừng bảo là kẹo — bé sẽ tự ăn thuốc khi mình không có nhà.",
+    "Dùng xi-lanh bơm chậm vào má trong, không bơm thẳng vào họng.",
+    "Cho một ngụm nước hoặc miếng hoa quả ngay sau đó.",
+    "Cho bé chọn: uống trước hay sau khi đọc sách."
+   ]
+  },
+  {
+   "icon": "🚿",
+   "n": "Gội đầu",
+   "tips": [
+    "Dùng mũ chắn nước hoặc cho bé ngửa ra sau, đặt khăn khô lên trán.",
+    "Cho bé cầm khăn tự lau mắt — bé sợ nước vào mắt là chính.",
+    "Đếm to đến mười rồi xong."
+   ]
+  },
+  {
+   "icon": "🌡️",
+   "n": "Đo nhiệt độ",
+   "tips": [
+    "Cho bé đo cho gấu bông trước.",
+    "Nhiệt kế nách hoặc trán, nói trước là \"chỉ hơi mát thôi\".",
+    "Không đo khi bé vừa khóc hoặc vừa ủ chăn dày — số sẽ sai."
+   ]
+  }
+ ],
+ "WEEKEND_PLANS": [
+  {
+   "icon": "🏠",
+   "n": "Ngày ở nhà (mưa hoặc nắng gắt)",
+   "plan": [
+    "Sáng: dựng lều bằng chăn, chui ra chui vào",
+    "Giữa buổi: nghịch nước ở chậu trong nhà tắm, hoặc chơi bột nặn",
+    "Trưa: ăn rồi ngủ trưa",
+    "Chiều: đọc sách, dán sticker, xếp khối",
+    "Tối: tắm sớm, chơi yên, đi ngủ đúng giờ"
+   ]
+  },
+  {
+   "icon": "🌳",
+   "n": "Ngày ra ngoài",
+   "plan": [
+    "Đi sớm trước 9 giờ để tránh nắng",
+    "Công viên hoặc sân chơi gần nhà — chạy nhảy là chính",
+    "Về trước giờ ngủ trưa, đừng cố thêm một điểm nữa",
+    "Chiều ở nhà chơi tĩnh cho bù sức",
+    "Ghi lại một dòng vào nhật ký nếu có gì đáng nhớ"
+   ]
+  },
+  {
+   "icon": "👵",
+   "n": "Ngày về ông bà",
+   "plan": [
+    "Mang theo đồ ngủ và đồ trấn an quen thuộc",
+    "Nói trước với ông bà giờ ăn, giờ ngủ và những thứ nhà mình không cho",
+    "Giữ giấc trưa dù đang vui",
+    "Về sớm hơn dự định một chút để kịp nếp tối"
+   ]
+  },
+  {
+   "icon": "🥱",
+   "n": "Ngày bố mẹ mệt",
+   "plan": [
+    "Hạ chuẩn: hôm nay chỉ cần con ăn, ngủ, an toàn",
+    "Một hoạt động dài thay vì nhiều trò ngắn: nghịch nước, bột nặn, hộp giấy",
+    "Đổi ca: một người trông, một người ngủ bù 90 phút",
+    "Bữa tối đơn giản, không nấu nướng cầu kỳ"
+   ]
+  },
+  {
+   "icon": "🚗",
+   "n": "Ngày đi xa",
+   "plan": [
+    "Xuất phát trùng giờ ngủ của bé",
+    "Đồ ăn vặt và nước để trong tầm tay, không để trong cốp",
+    "Túi đồ chơi chỉ dùng trên xe",
+    "Cứ 1,5–2 giờ dừng cho bé xuống chạy",
+    "Tới nơi: dựng chỗ ngủ quen thuộc trước tiên"
+   ]
+  }
+ ],
+ "SCREEN_GUIDE": {
+  "rules": [
+   "Dưới 2 tuổi: hạn chế tối đa, trừ gọi video với người thân.",
+   "2–5 tuổi: tối đa khoảng 1 giờ mỗi ngày và nên xem cùng người lớn.",
+   "Không dùng màn hình trong bữa ăn và trong 1 giờ trước giờ ngủ.",
+   "Đặt khung giờ và chỗ xem cố định — dễ dừng hơn nhiều so với xem tuỳ hứng.",
+   "Bố mẹ giảm lướt điện thoại trước mặt con; đây là phần khó nhất."
+  ],
+  "pick": [
+   "Nội dung nhịp chậm, ít cắt cảnh, không nhạc dồn dập.",
+   "Bài hát có động tác để bé đứng dậy làm theo, không ngồi im.",
+   "Không quảng cáo, không tự động phát tập tiếp theo.",
+   "Ưu tiên thứ mình xem cùng và nói chuyện được: \"con thấy bạn ấy làm gì đấy?\""
+  ],
+  "off": [
+   "Báo trước bằng mốc bé hiểu: \"hết bài hát này là tắt\".",
+   "Tắt xong đưa ngay một việc khác đã chuẩn bị sẵn.",
+   "Nói \"tivi đi ngủ rồi\" — bé 2 tuổi chấp nhận cách này dễ hơn lý lẽ.",
+   "Không thương lượng thêm tập khi bé đang gào; nhượng bộ một lần là lần sau khó gấp đôi."
+  ]
+ },
+ "CHILD_DOCS": [
+  {
+   "icon": "📄",
+   "n": "Giấy khai sinh (bản chính + vài bản sao)",
+   "d": "Cần khi nhập học, làm thẻ, đi máy bay."
+  },
+  {
+   "icon": "🆔",
+   "n": "Mã số định danh cá nhân",
+   "d": "Ghi lại, dùng thay nhiều loại giấy tờ khi làm thủ tục."
+  },
+  {
+   "icon": "💳",
+   "n": "Thẻ bảo hiểm y tế trẻ em",
+   "d": "Trẻ dưới 6 tuổi được cấp miễn phí và khám chữa bệnh đúng tuyến được hưởng 100%. Nếu chưa có thẻ, mang giấy khai sinh vẫn làm thủ tục được."
+  },
+  {
+   "icon": "💉",
+   "n": "Sổ tiêm chủng giấy",
+   "d": "Chụp ảnh toàn bộ các trang đã ghi — mất sổ là mất sạch lịch sử tiêm."
+  },
+  {
+   "icon": "🛂",
+   "n": "Hộ chiếu",
+   "d": "Chỉ cần nếu nhà mình định cho bé đi nước ngoài; trẻ nhỏ làm hộ chiếu riêng."
+  },
+  {
+   "icon": "🏥",
+   "n": "Giấy ra viện, đơn thuốc cũ",
+   "d": "Giữ lại các đợt ốm nặng để lần khám sau bác sĩ có căn cứ."
+  }
  ]
 }

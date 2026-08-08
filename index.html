@@ -444,7 +444,7 @@ const store={
 const SB_URL='https://vvgkjgvzjeklaadusbne.supabase.co';
 const SB_KEY='sb_publishable_DMMPv5L2kGhrHTxeQ72iKw_dIh13iT1';
 // Các key được đồng bộ (KHÔNG gồm ju.me/ju.device/ju.sync — đó là riêng từng máy)
-const SYNC_KEYS=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood','ju.qa','ju.timeline','ju.coupons','ju.chores','ju.lovejar','ju.quiz','ju.city','ju.goals','ju.checkin','ju.challengeDone','ju.homecfg','ju.diary','ju.projects','ju.vinhaUrl','ju.checkins','ju.menu','ju.period','ju.menuPlan','ju.accuKey','ju.habits','ju.hiddenSpots','ju.usOrder','ju.eventPrefs','ju.child','ju.childGrowth','ju.childVaccines','ju.childMilestones','ju.childDiary','ju.partnerWishes','ju.todos','ju.spotify','ju.dishPrefs','ju.favDishes','ju.childPack','ju.childSkills','ju.childMed','ju.childIllness','ju.childWords','ju.childTantrum','ju.childParenting','ju.saveTips','ju.saveCustom','ju.funPrefs','ju.routine','ju.routineIssues','ju.noti','ju.family','ju.health','ju.transfers','ju.skillGuidesDone','ju.expenses','ju.budget','ju.vinhaSync','ju.menuOrder','ju.notesSeen','ju.intimacy','ju.intimacySeen','ju.quizKnow','ju.familyRules','ju.expiry','ju.stash','ju.docs','ju.tuvi','ju.thanso','ju.checkinSeen','ju.menuHidden','ju.gameBets','ju.cook','ju.cookLogs','ju.cookRewards','ju.cookHelp','ju.cookPantry','ju.docsLock'];
+const SYNC_KEYS=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood','ju.qa','ju.timeline','ju.coupons','ju.chores','ju.lovejar','ju.quiz','ju.city','ju.goals','ju.checkin','ju.challengeDone','ju.homecfg','ju.diary','ju.projects','ju.vinhaUrl','ju.checkins','ju.menu','ju.period','ju.menuPlan','ju.accuKey','ju.habits','ju.hiddenSpots','ju.usOrder','ju.eventPrefs','ju.child','ju.childGrowth','ju.childVaccines','ju.childMilestones','ju.childDiary','ju.partnerWishes','ju.todos','ju.spotify','ju.dishPrefs','ju.favDishes','ju.childPack','ju.childSkills','ju.childMed','ju.childIllness','ju.childWords','ju.childTantrum','ju.childParenting','ju.saveTips','ju.saveCustom','ju.funPrefs','ju.routine','ju.routineIssues','ju.noti','ju.family','ju.health','ju.transfers','ju.skillGuidesDone','ju.expenses','ju.budget','ju.vinhaSync','ju.menuOrder','ju.notesSeen','ju.intimacy','ju.intimacySeen','ju.quizKnow','ju.familyRules','ju.expiry','ju.stash','ju.docs','ju.tuvi','ju.thanso','ju.checkinSeen','ju.menuHidden','ju.gameBets','ju.cook','ju.cookLogs','ju.cookRewards','ju.cookHelp','ju.cookPantry','ju.docsLock','ju.childContacts','ju.childSafety','ju.childDocs'];
 let _sb=null;
 function sbClient(){
   if(_sb) return _sb;
@@ -4466,6 +4466,35 @@ function WeeklyMenu({me,people}){
    nên sửa nội dung một chỗ là cả hai app cùng đổi. */
 const PLAY_LIB=JUD.PLAY_LIB;
 const WEAN_MENU=JUD.WEAN_MENU;
+/* Bảng app của nhà mình — mọi app riêng gom về một chỗ ở tab Cá nhân.
+   Cùng origin nên chung localStorage: mở app nào cũng là dữ liệu cũ. */
+const APP_BOARD=[
+  {k:'soc',icon:'🐿️',name:'Sóc',desc:'Nuôi con: mốc phát triển, tiêm chủng, ăn dặm, đi lớp, an toàn & cấp cứu',href:'soc/'},
+  {k:'tamlinh',icon:'🪷',name:'Tâm linh',desc:'Ngày lễ âm lịch, kinh Phật, văn khấn, tử vi, thần số, quán chay, mâm cỗ',href:'tam-linh/'},
+];
+function AppBoard(){
+  const [vinha]=useLocal('ju.vinhaUrl','');
+  return (
+    <div>
+      <div className="sec-title">📱 App của nhà mình</div>
+      <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>Các phần đã tách ra thành app riêng cho nhẹ — cài được lên màn hình chính như app độc lập, dữ liệu vẫn dùng chung với Just Us.</div>
+      {APP_BOARD.map(a=>(
+        <a key={a.k} className="item" href={a.href} style={{display:'block',textDecoration:'none',color:'inherit'}}>
+          <div className="row"><span style={{fontSize:26,flex:'0 0 auto'}}>{a.icon}</span>
+            <div className="grow"><b style={{fontSize:14.5}}>{a.name}</b>
+              <div className="muted" style={{fontSize:12,marginTop:2,lineHeight:1.5}}>{a.desc}</div></div>
+            <span style={{fontSize:17,color:'var(--primary)'}}>›</span></div>
+        </a>
+      ))}
+      {vinha && <a className="item" href={vinha} target="_blank" rel="noreferrer" style={{display:'block',textDecoration:'none',color:'inherit'}}>
+        <div className="row"><span style={{fontSize:26,flex:'0 0 auto'}}>💰</span>
+          <div className="grow"><b style={{fontSize:14.5}}>VíNhà</b>
+            <div className="muted" style={{fontSize:12,marginTop:2,lineHeight:1.5}}>Tiền nong của cả nhà — app riêng, mở ở tab mới</div></div>
+          <span style={{fontSize:17,color:'var(--primary)'}}>↗</span></div>
+      </a>}
+    </div>
+  );
+}
 // Tab 🐿️ Sóc giờ là cửa vào app riêng (giữ tab cho quen tay, vẫn một chạm là tới).
 function ChildLauncher(){
   const [child]=useLocal('ju.child',{});
@@ -7331,12 +7360,8 @@ function Profile({setup,setSetup,people,me,setMe,flash}){
         <HealthTab people={people} me={me}/>
       </Collapse>
 
-      {/* Tâm linh đã tách thành app riêng ở thư mục tam-linh/ — cùng origin nên ju.tuvi/ju.thanso vẫn dùng chung */}
-      <div className="card">
-        <div className="row"><span className="hc-title">🪷 Tâm linh</span></div>
-        <div className="muted" style={{fontSize:12.5,margin:'4px 0 8px'}}>Ngày lễ âm lịch, kinh Phật, văn khấn, tử vi, thần số, quán chay và mâm cỗ cúng đã tách sang app riêng cho nhẹ. Cài được như một app độc lập.</div>
-        <a className="btn soft" style={{display:'block',textAlign:'center',textDecoration:'none'}} href="tam-linh/">Mở app Tâm linh →</a>
-      </div>
+      {/* Bảng app của nhà mình — các phần đã tách thành app riêng, cùng origin nên chung localStorage */}
+      <AppBoard/>
       {/* Theme */}
       <Collapse id="prof-theme" title="🎨 Giao diện đôi" defaultOpen={false}>
       <div className="card" style={{marginBottom:8}}>
