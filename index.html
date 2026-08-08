@@ -231,6 +231,18 @@ textarea.inp{resize:vertical;min-height:64px}
 .gallery .ph img{width:100%;height:100%;object-fit:cover;display:block}
 .gallery .ph .cap{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(transparent,rgba(0,0,0,.6));
   color:#fff;font-size:10px;padding:10px 6px 4px}
+/* Nhiều ảnh: dải thumbnail + khung chọn ảnh */
+.phrow{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:6px}
+.phrow .th{position:relative;line-height:0;cursor:pointer;border-radius:8px;overflow:hidden;background:var(--chip);flex:0 0 auto}
+.phrow .th img{display:block}
+.phrow .more{width:56px;height:56px;border-radius:8px;background:var(--chip);color:var(--chip-tx);
+  display:grid;place-items:center;font-size:12.5;font-weight:700;cursor:pointer;flex:0 0 auto}
+.phlab{font-size:11.5;color:var(--muted);margin-top:8px}
+.phpick{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.phpick .cell{position:relative}
+.phpick .cell img{border-radius:8px;object-fit:cover;display:block}
+.phpick .cell .x{position:absolute;top:-7px;right:-7px;background:var(--card);border:1px solid var(--line);
+  border-radius:50%;width:20px;height:20px;font-size:11;color:var(--muted);line-height:1;padding:0}
 
 /* Map */
 #map{height:340px;border-radius:16px;margin:10px 14px;border:1px solid var(--line);overflow:hidden}
@@ -1786,6 +1798,7 @@ function SimpleList({skey, people, me, addLabel, doneLabel='Xong', fields=[], ta
   const [open,setOpen]=useState(false);
   const [edit,setEdit]=useState(null);
   const [sugOpen,setSugOpen]=useState(false);
+  const [view,setView]=useState(null);
 
   const save=(it)=>{
     if(it.id){ setItems(items.map(x=>x.id===it.id?it:x)); }
@@ -1825,13 +1838,21 @@ function SimpleList({skey, people, me, addLabel, doneLabel='Xong', fields=[], ta
       {showTotal && totalPrice>0 && <div className="muted center" style={{fontSize:12.5,margin:'6px 14px 0'}}>💰 Tổng ước tính: <b>{VND(totalPrice)}</b></div>}
       {shown.length===0 && <div className="empty"><span className="big">{empty?.icon||'✨'}</span>{empty?.text||'Chưa có gì cả — thêm mục đầu tiên nhé!'}</div>}
 
-      {shown.map(it=>(
+      {shown.map(it=>{ const multi=fields.includes('photos'); const ps=photoList(it); const ms=(it.menuPhotos||[]).filter(Boolean); return (
         <div key={it.id} className={'item'+(it.done?' dn':'')}>
           <div className="it-top">
             <h4>{it.title}</h4>
             <button className={'heartbtn'+(it.fav?' on':'')} onClick={()=>toggle(it.id,'fav')}>{it.fav?'❤️':'🤍'}</button>
           </div>
-          {it.photo && <PhotoImg photo={it.photo} style={{width:'100%',maxHeight:200,objectFit:'cover',borderRadius:10,margin:'8px 0 0',display:'block'}}/>}
+          {multi
+            ? <React.Fragment>
+                {ps.length>0 && <div style={{marginTop:8}}><PhotoShow photos={ps} big onView={i=>setView({photos:ps,i,title:'📷 '+it.title})}/></div>}
+                {ms.length>0 && <div style={{marginTop:6}}>
+                  <div className="phlab" style={{marginTop:0}}>📋 Menu · {ms.length} ảnh</div>
+                  <PhotoShow photos={ms} onView={i=>setView({photos:ms,i,title:'📋 Menu · '+it.title})}/>
+                </div>}
+              </React.Fragment>
+            : (it.photo && <PhotoImg photo={it.photo} style={{width:'100%',maxHeight:200,objectFit:'cover',borderRadius:10,margin:'8px 0 0',display:'block'}}/>)}
           {it.note && <div className="it-note">{it.note}</div>}
           {it.address && <div className="it-note muted">📍 {it.address}</div>}
           {it.link && <div style={{marginTop:6}}><a className="linkout" href={it.link} target="_blank" rel="noreferrer">🔗 {it.link}</a></div>}
@@ -1852,7 +1873,9 @@ function SimpleList({skey, people, me, addLabel, doneLabel='Xong', fields=[], ta
             <button className="iconbtn" onClick={()=>del(it.id)}>🗑️</button>
           </div>
         </div>
-      ))}
+      ); })}
+
+      <PhotoLightbox photos={view&&view.photos} index={view&&view.i} title={view&&view.title} onClose={()=>setView(null)}/>
 
       {open && <ItemForm title={(edit?'Sửa ':'Thêm ')+addLabel} init={edit} fields={fields} tagOptions={tagOptions}
         onClose={()=>{setOpen(false);setEdit(null);}} onSave={save} />}
@@ -1872,7 +1895,12 @@ function SimpleList({skey, people, me, addLabel, doneLabel='Xong', fields=[], ta
 }
 
 function ItemForm({title,init,fields,tagOptions,onClose,onSave}){
-  const [f,setF]=useState(()=> init? {...init} : {title:''});
+  const [f,setF]=useState(()=>{
+    const b=init? {...init} : {title:''};
+    if(fields.includes('photos')){ b.photos=photoList(b); delete b.photo; }   // gộp ảnh cũ (1 ảnh) vào danh sách
+    if(fields.includes('menu')) b.menuPhotos=b.menuPhotos||[];
+    return b;
+  });
   const set=(k,v)=>setF(p=>({...p,[k]:v}));
   const has=(k)=>fields.includes(k);
   const fileRef=useRef(null); const [busy,setBusy]=useState(false);
@@ -1894,6 +1922,10 @@ function ItemForm({title,init,fields,tagOptions,onClose,onSave}){
               <button className="pill" style={{position:'absolute',top:6,right:6}} onClick={()=>set('photo',null)}>✕ Bỏ ảnh</button></div>
           : <button className="btn soft" onClick={()=>fileRef.current.click()}>{busy?'Đang tải…':'📷 Thêm ảnh'}</button>}
         <input ref={fileRef} type="file" accept="image/*" hidden onChange={onFile}/></div>}
+      {has('photos') && <div className="field"><label>📷 Ảnh quán / món (thêm bao nhiêu cũng được)</label>
+        <PhotoPicker value={f.photos} onChange={v=>set('photos',v)} label="📷 Thêm ảnh" hint="chọn được nhiều ảnh một lần"/></div>}
+      {has('menu') && <div className="field"><label>📋 Ảnh menu / bảng giá</label>
+        <PhotoPicker value={f.menuPhotos} onChange={v=>set('menuPhotos',v)} label="📋 Thêm ảnh menu" hint="chụp tờ menu để lần sau khỏi đoán giá"/></div>}
       {has('budget') && <div className="field"><label>Ngân sách</label>
         <select className="inp" value={f.budget||''} onChange={e=>set('budget',e.target.value)}>
           <option value="">— chọn —</option>{BUDGETS.map(b=><option key={b.k} value={b.k}>{b.label}</option>)}
@@ -2328,6 +2360,8 @@ function AngerHelper(){
 
 /* ============ HOME ============ */
 const WHATS_NEW=[
+  {d:'2026-08-08',ic:'📷',t:'Cafe &amp; quán ăn thêm được NHIỀU ẢNH: cả "Quán &amp; Món" và "Check-in ảnh" (Hẹn hò) giờ chọn một lần nhiều ảnh, ảnh đầu hiện to, còn lại thành dải nhỏ — chạm để xem lớn và lật qua lại.'},
+  {d:'2026-08-08',ic:'📋',t:'Mỗi quán lưu được riêng "Ảnh menu / bảng giá" — chụp tờ menu một lần, lần sau khỏi đoán giá. Ảnh cũ (1 ảnh) tự chuyển sang danh sách, không mất.'},
   {d:'2026-07-08',ic:'🔠',t:'Tự chọn font chữ Trang chủ: vào Hồ sơ → 🔤 Font chữ trang chủ, chọn 1 trong 6 kiểu (Be Vietnam Pro, Nunito, Quicksand, Montserrat, Lora, Hệ thống) — áp ngay, số ngày vẫn giữ serif.'},
   {d:'2026-07-08',ic:'🔤',t:'Chỉnh lại chữ toàn app: dùng font Be Vietnam Pro (thiết kế cho tiếng Việt), thống nhất cỡ chữ &amp; độ đậm giữa các mục cho gọn gàng, dễ đọc hơn.'},
   {d:'2026-07-08',ic:'🔢',t:'Tâm linh thêm "Thần số học": nhập ngày sinh ra số chủ đạo (đường đời) + điểm mạnh/lưu ý, số ngày sinh và năm cá nhân của năm nay.'},
@@ -2806,7 +2840,7 @@ function DateTab({people,me,flash}){
       {seg==='hanoi' && <HanoiCatalog me={me} flash={flash}/>}
       {seg==='events' && <EventsSuggest me={me} flash={flash}/>}
       {seg==='food' && <SimpleList skey="ju.food" people={people} me={me} addLabel="quán/món" doneLabel="Đã thử"
-        fields={['photo','address','rating','link','note']} suggest={FOOD_SUGGEST} empty={{icon:'🍜',text:'Quán ăn, món muốn thử cùng nhau. Bấm 💡 để xem gợi ý!'}} flash={flash}/>}
+        fields={['photos','menu','address','rating','link','note']} suggest={FOOD_SUGGEST} empty={{icon:'🍜',text:'Quán ăn, món muốn thử cùng nhau. Bấm 💡 để xem gợi ý!'}} flash={flash}/>}
       {seg==='checkin' && <CheckIns people={people} me={me}/>}
       {seg==='wish' && <WishTab people={people} me={me} flash={flash}/>}
     </div>
@@ -3005,6 +3039,7 @@ function CheckIns({people,me}){
   const [open,setOpen]=useState(false);
   const [edit,setEdit]=useState(null);
   const [filter,setFilter]=useState('all');
+  const [view,setView]=useState(null);
   useEffect(()=>{ const latest=items.reduce((m,c)=>Math.max(m,c.createdAt||0),0); const cs={...(store.get('ju.checkinSeen',{})||{})}; if((cs[me]||0)<latest){ cs[me]=latest; store.set('ju.checkinSeen',cs); try{ Cloud.schedulePush&&Cloud.schedulePush(); }catch(_){} } },[items.length]);
   const save=(c)=>{ if(c.id) setItems(items.map(x=>x.id===c.id?c:x)); else { setItems([{...c,id:uid(),by:me,createdAt:Date.now()},...items]); celebrate(['📸','💞','✨']); } setOpen(false);setEdit(null); };
   const del=(id)=>{ if(confirm('Xoá check-in này?')) setItems(items.filter(x=>x.id!==id)); };
@@ -3021,13 +3056,17 @@ function CheckIns({people,me}){
         <button className={filter==='food'?'on':''} onClick={()=>setFilter('food')}>🍜 Quán ăn</button>
       </div>
       {shown.length===0 && <div className="empty"><span className="big">📸</span>Đến quán mới? Check-in + chấm điểm + lưu ảnh & địa chỉ ngay — kể cả quán chưa có trong danh sách!</div>}
-      {shown.map(c=>(
+      {shown.map(c=>{ const ps=photoList(c); const ms=(c.menuPhotos||[]).filter(Boolean); return (
         <div key={c.id} className="item">
-          {c.photo && <PhotoImg photo={c.photo} style={{width:'100%',maxHeight:210,objectFit:'cover',borderRadius:10,marginBottom:8,display:'block'}}/>}
+          <PhotoShow photos={ps} big onView={i=>setView({photos:ps,i,title:'📷 '+c.name})}/>
           <div className="it-top"><h4>{c.type==='food'?'🍜':'☕'} {c.name}</h4>
             {typeof c.rating==='number'&&c.rating>0 && <Stars value={c.rating}/>}</div>
           {c.address && <div className="it-note muted">📍 {c.address}</div>}
           {c.review && <div className="it-note">{c.review}</div>}
+          {ms.length>0 && <div style={{marginTop:6}}>
+            <div className="phlab" style={{marginTop:0}}>📋 Menu · {ms.length} ảnh — chạm để xem giá</div>
+            <PhotoShow photos={ms} onView={i=>setView({photos:ms,i,title:'📋 Menu · '+c.name})}/>
+          </div>}
           <div className="it-meta">
             <span className="av-sm">{people[c.by]?.avatar||'❤️'}</span>
             {c.date && <span className="muted" style={{fontSize:12.5}}>{fmtDateVN(c.date)}</span>}
@@ -3037,15 +3076,19 @@ function CheckIns({people,me}){
             <button className="iconbtn" onClick={()=>del(c.id)}>🗑️</button>
           </div>
         </div>
-      ))}
+      ); })}
+      <PhotoLightbox photos={view&&view.photos} index={view&&view.i} title={view&&view.title} onClose={()=>setView(null)}/>
       {open && <CheckInForm init={edit} onClose={()=>{setOpen(false);setEdit(null);}} onSave={save}/>}
     </div>
   );
 }
 function CheckInForm({init,onClose,onSave}){
-  const [f,setF]=useState(()=>init?{...init}:{name:'',type:'cafe',address:'',rating:0,review:'',photo:null,date:todayISO()});
+  const [f,setF]=useState(()=>{
+    if(!init) return {name:'',type:'cafe',address:'',rating:0,review:'',photos:[],menuPhotos:[],date:todayISO()};
+    const b={...init,photos:photoList(init),menuPhotos:init.menuPhotos||[]};   // gộp ảnh cũ (1 ảnh) vào danh sách
+    delete b.photo; return b;
+  });
   const set=(k,v)=>setF(p=>({...p,[k]:v}));
-  const fileRef=useRef(null); const [busy,setBusy]=useState(false);
   const [q,setQ]=useState(''); const [results,setResults]=useState([]); const [searching,setSearching]=useState(false);
   const tRef=useRef(null);
   const runSearch=(text)=>{ setQ(text); clearTimeout(tRef.current);
@@ -3058,10 +3101,6 @@ function CheckInForm({init,onClose,onSave}){
   const pick=(r)=>{ const nm=(r.display_name||'').split(',')[0].trim();
     setF(p=>({...p,name:nm,address:(r.display_name||'').replace(/,?\s*Việt Nam$/,'').trim(),lat:parseFloat(r.lat),lng:parseFloat(r.lon)}));
     setResults([]); setQ(''); };
-  const onFile=async(e)=>{ const file=e.target.files[0]; if(!file)return; e.target.value=''; setBusy(true);
-    try{ if(Cloud.connected()){ const p=await Cloud.uploadPhoto(file); set('photo',{path:p}); setBusy(false); }
-      else { const r=new FileReader(); r.onload=()=>{ set('photo',{src:r.result}); setBusy(false); }; r.readAsDataURL(file); } }
-    catch(err){ setBusy(false); } };
   return (
     <Sheet title={(init?'Sửa ':'')+'📸 Check-in quán'} onClose={onClose}>
       <div className="field"><label>🔎 Tìm quán (tự điền địa chỉ)</label>
@@ -3083,12 +3122,10 @@ function CheckInForm({init,onClose,onSave}){
       <div className="field"><label>Địa chỉ</label>
         <input className="inp" value={f.address} onChange={e=>set('address',e.target.value)} placeholder="Số nhà, phố, quận… (để mở Google Maps)"/></div>
       <div className="field"><label>Đánh giá của hai đứa</label><div><Stars value={f.rating||0} onChange={v=>set('rating',v)}/></div></div>
-      <div className="field"><label>Ảnh</label>
-        {f.photo
-          ? <div style={{position:'relative'}}><PhotoImg photo={f.photo} style={{width:'100%',height:160,objectFit:'cover',borderRadius:12,display:'block'}}/>
-              <button className="pill" style={{position:'absolute',top:6,right:6}} onClick={()=>set('photo',null)}>✕ Bỏ ảnh</button></div>
-          : <button className="btn soft" onClick={()=>fileRef.current.click()}>{busy?'Đang tải…':'📷 Thêm ảnh'}</button>}
-        <input ref={fileRef} type="file" accept="image/*" hidden onChange={onFile}/></div>
+      <div className="field"><label>📷 Ảnh quán (thêm bao nhiêu cũng được)</label>
+        <PhotoPicker value={f.photos} onChange={v=>set('photos',v)} label="📷 Thêm ảnh" hint="chọn được nhiều ảnh một lần"/></div>
+      <div className="field"><label>📋 Ảnh menu / bảng giá</label>
+        <PhotoPicker value={f.menuPhotos} onChange={v=>set('menuPhotos',v)} label="📋 Thêm ảnh menu" hint="chụp tờ menu để lần sau khỏi đoán giá"/></div>
       <div className="field"><label>Ngày ghé</label>
         <input className="inp" type="date" value={f.date||''} onChange={e=>set('date',e.target.value)}/></div>
       <div className="field"><label>Nhận xét</label>
@@ -7597,17 +7634,72 @@ function compressToDataURL(file,maxDim,quality){
     r.onerror=()=>resolve(null); r.readAsDataURL(file); });
 }
 async function photoFromFile(file){ try{ if(typeof Cloud!=='undefined'&&Cloud.connected&&Cloud.connected()){ const path=await Cloud.uploadPhoto(file); if(path) return {path}; } }catch(_){} const src=await compressToDataURL(file,1400,0.72); return src?{src}:null; }
-function PhotoAddBtn({onAdd,size,label}){
+function PhotoAddBtn({onAdd,size,label,multiple}){
   const ref=useRef(null); const [busy,setBusy]=useState(false);
-  const pick=async(e)=>{ const file=e.target.files&&e.target.files[0]; if(!file)return; e.target.value=''; setBusy(true); try{ const p=await photoFromFile(file); if(p) onAdd(p); }catch(_){} setBusy(false); };
+  const pick=async(e)=>{ const files=Array.from(e.target.files||[]); if(!files.length)return; e.target.value=''; setBusy(true);
+    for(let i=0;i<files.length;i++){ try{ const p=await photoFromFile(files[i]); if(p) onAdd(p); }catch(_){} }
+    setBusy(false); };
   const s=size||64;
-  return <><button className="btn sm soft" style={{width:label?'auto':s,height:s,fontSize:label?13:20,padding:label?'0 12px':0}} onClick={()=>ref.current&&ref.current.click()}>{busy?'…':(label||'📷')}</button><input ref={ref} type="file" accept="image/*" style={{display:'none'}} onChange={pick}/></>;
+  return <><button className="btn sm soft" style={{width:label?'auto':s,height:s,fontSize:label?13:20,padding:label?'0 12px':0}} onClick={()=>ref.current&&ref.current.click()}>{busy?'…':(label||'📷')}</button><input ref={ref} type="file" accept="image/*" multiple={!!multiple} style={{display:'none'}} onChange={pick}/></>;
 }
-function PhotoLightbox({photo,onClose}){
-  if(!photo) return null;
+/* Danh sách ảnh của một mục — tương thích dữ liệu cũ (1 ảnh ở khoá `photo`) */
+function photoList(x){ if(!x) return []; const a=(x.photos||[]).filter(Boolean); if(a.length) return a; return x.photo?[x.photo]:[]; }
+/* Khung chọn nhiều ảnh (dùng trong form): thumbnail + ✕ xoá + nút thêm (chọn được nhiều file) */
+function PhotoPicker({value,onChange,size,label,hint}){
+  const list=(value||[]).filter(Boolean);
+  const ref=useRef(list); ref.current=list;
+  const add=(p)=>{ const next=[...ref.current,p]; ref.current=next; onChange(next); };
+  const rm=(i)=>{ const next=ref.current.filter((_,j)=>j!==i); ref.current=next; onChange(next); };
+  const s=size||70;
+  return <div>
+    <div className="phpick">
+      {list.map((p,i)=><div key={i} className="cell">
+        <PhotoImg photo={p} style={{width:s,height:s,borderRadius:8,objectFit:'cover',display:'block'}}/>
+        <button className="x" onClick={()=>rm(i)}>✕</button>
+      </div>)}
+      <PhotoAddBtn size={s} multiple onAdd={add} label={list.length?null:(label||null)}/>
+    </div>
+    {(hint||list.length>0) && <div className="phlab" style={{marginTop:4}}>{list.length>0?(list.length+' ảnh · bấm ✕ để bỏ'+(hint?' · '+hint:'')):hint}</div>}
+    {list.length>=6 && !(Cloud.connected&&Cloud.connected()) && <div className="phlab" style={{color:'var(--warn)'}}>
+      ⚠️ Chưa ghép đôi nên ảnh lưu ngay trên máy — nhiều ảnh quá có thể đầy bộ nhớ. Vào Hồ sơ → ☁️ Tài khoản &amp; đồng bộ để ảnh lên mây.</div>}
+  </div>;
+}
+/* Hiện nhiều ảnh trong danh sách: ảnh đầu to (khi big), còn lại thành dải thumbnail */
+function PhotoShow({photos,onView,big,size,max}){
+  const list=(photos||[]).filter(Boolean);
+  if(!list.length) return null;
+  const s=size||56, lim=max||6;
+  const thumbs=(from)=>{ const rest=list.slice(from); const show=rest.slice(0,lim); const extra=rest.length-show.length;
+    return <div className="phrow">
+      {show.map((p,i)=><span key={i} className="th" onClick={()=>onView&&onView(from+i)}>
+        <PhotoImg photo={p} style={{width:s,height:s,objectFit:'cover'}}/></span>)}
+      {extra>0 && <span className="more" onClick={()=>onView&&onView(from+show.length)}>+{extra}</span>}
+    </div>; };
+  if(!big) return thumbs(0);
+  return <div style={{marginBottom:8}}>
+    <span style={{display:'block',lineHeight:0,cursor:'pointer',position:'relative'}} onClick={()=>onView&&onView(0)}>
+      <PhotoImg photo={list[0]} style={{width:'100%',maxHeight:210,objectFit:'cover',borderRadius:10,display:'block'}}/>
+      {list.length>1 && <span className="pill" style={{position:'absolute',right:8,bottom:8,background:'rgba(0,0,0,.55)',color:'#fff'}}>📷 {list.length}</span>}
+    </span>
+    {list.length>1 && thumbs(1)}
+  </div>;
+}
+/* Xem ảnh lớn — nhận 1 ảnh (photo) hoặc cả bộ (photos + index) để lật qua lại */
+function PhotoLightbox({photo,photos,index,title,onClose}){
+  const list=(photos&&photos.length?photos:(photo?[photo]:[])).filter(Boolean);
+  const [i,setI]=useState(index||0);
+  useEffect(()=>{ setI(index||0); },[index,photo,list.length]);
+  if(!list.length) return null;
+  const cur=i<list.length?i:0;
   return <div className="ov" onClick={onClose}><div style={{maxWidth:'94%'}} onClick={e=>e.stopPropagation()}>
-    <PhotoImg photo={photo} style={{maxWidth:'100%',maxHeight:'80vh',borderRadius:12,display:'block'}}/>
-    <div className="center" style={{marginTop:10}}><button className="btn soft" onClick={onClose}>Đóng</button></div>
+    {title && <div className="center" style={{color:'#fff',fontSize:13,marginBottom:6}}>{title}</div>}
+    <PhotoImg photo={list[cur]} style={{maxWidth:'100%',maxHeight:'76vh',borderRadius:12,display:'block'}}/>
+    <div className="center" style={{marginTop:10,display:'flex',gap:8,justifyContent:'center',alignItems:'center'}}>
+      {list.length>1 && <button className="btn sm soft" onClick={()=>setI((cur-1+list.length)%list.length)}>‹</button>}
+      {list.length>1 && <span style={{color:'#fff',fontSize:12.5,minWidth:44,textAlign:'center'}}>{cur+1}/{list.length}</span>}
+      {list.length>1 && <button className="btn sm soft" onClick={()=>setI((cur+1)%list.length)}>›</button>}
+      <button className="btn soft" onClick={onClose}>Đóng</button>
+    </div>
   </div></div>;
 }
 
