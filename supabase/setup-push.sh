@@ -51,10 +51,21 @@ say "Deploy function push-notify"
 supabase functions deploy push-notify
 
 say "Lấy service_role key để trigger gọi được function"
-SERVICE_KEY="$(supabase projects api-keys --project-ref "$PROJECT_REF" -o json \
-  | node -e 'let s="";process.stdin.on("data",c=>s+=c).on("end",()=>{const k=JSON.parse(s).find(x=>x.name==="service_role");if(!k){console.error("không tìm thấy service_role key");process.exit(1);}process.stdout.write(k.api_key)})')"
-[ -n "$SERVICE_KEY" ] || die "Không lấy được service_role key"
-echo "  ✓ đã lấy (không in ra, không ghi vào repo)"
+# Cú pháp lệnh này đổi theo phiên bản CLI, nên lấy không được thì hỏi thẳng
+# chứ đừng chết ngang — anh dán tay là xong.
+SERVICE_KEY="${SERVICE_ROLE_KEY:-}"
+if [ -z "$SERVICE_KEY" ]; then
+  SERVICE_KEY="$(supabase projects api-keys --project-ref "$PROJECT_REF" -o json 2>/dev/null \
+    | node -e 'let s="";process.stdin.on("data",c=>s+=c).on("end",()=>{try{const k=JSON.parse(s).find(x=>x.name==="service_role");process.stdout.write(k?k.api_key:"")}catch(_){process.stdout.write("")}})' || true)"
+fi
+if [ -z "$SERVICE_KEY" ]; then
+  echo "  Không tự lấy được (CLI khác phiên bản)."
+  echo "  Lấy tại: https://supabase.com/dashboard/project/$PROJECT_REF/settings/api-keys  (mục service_role)"
+  read -r -s -p "  Dán service_role key vào đây rồi Enter: " SERVICE_KEY
+  echo
+fi
+[ -n "$SERVICE_KEY" ] || die "Không có service_role key thì trigger không gọi được function"
+echo "  ✓ đã có (không in ra, không ghi vào repo)"
 
 say "Tạo trigger trong database"
 TMP_SQL="$(mktemp -t ju-push-XXXXXX.sql)"
