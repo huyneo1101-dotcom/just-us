@@ -4,6 +4,10 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
 <title>Sóc · Nuôi con</title>
+<!-- Chặn trình duyệt tự bôi đen app (Chrome Android "Chủ đề tối → Làm tối trang web",
+     Samsung Internet dark mode…): app tự lo màu sáng/tối, đừng đảo màu giúp.
+     Script dưới đổi sang 'dark' khi theme đang dùng thật sự là nền tối. -->
+<meta name="color-scheme" content="only light" />
 <meta name="theme-color" content="#c65b52" />
 <link rel="manifest" href="manifest.json" />
 <link rel="icon" href="icon.svg" />
@@ -372,6 +376,14 @@ body.theme-sotay .homev3 .hero:not(.hascover) .sub{
     var dark=mode==='dark'||(mode==='system'&&typeof window.matchMedia==='function'&&window.matchMedia('(prefers-color-scheme: dark)').matches);
     document.body.className='theme-'+t+(dark?' dark':'');
   }catch(e){document.body.className='theme-sotay';}
+  // Đọc màu nền THẬT đang áp dụng rồi báo cho trình duyệt biết app đang sáng hay tối
+  try{
+    var v=getComputedStyle(document.body).getPropertyValue('--bg').trim();
+    var m=/^#([0-9a-f]{6})$/i.exec(v), isDark=false;
+    if(m){ var n=parseInt(m[1],16);
+      isDark=((((n>>16)&255)*0.299+(((n>>8)&255))*0.587+(n&255)*0.114)/255)<0.5; }
+    document.documentElement.style.colorScheme=isDark?'dark':'only light';
+  }catch(e){}
 })();
 </script>
 

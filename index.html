@@ -4,6 +4,10 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 <meta name="theme-color" content="#e85d8a" />
+<!-- Chặn trình duyệt tự bôi đen app (Chrome Android "Chủ đề tối → Làm tối trang web",
+     Samsung Internet dark mode…): app tự lo màu sáng/tối, đừng đảo màu giúp.
+     JS đổi sang 'dark' khi CHÍNH app bật chế độ tối — xem applyDarkMode. -->
+<meta name="color-scheme" content="only light" />
 <title>Just Us — Của riêng hai đứa</title>
 
 <!-- PWA: cài lên màn hình điện thoại + chạy offline -->
@@ -719,14 +723,29 @@ const THEMES=[
   {k:'sky', name:'Trời xanh', c:'#3b82f6'},
   {k:'mocha', name:'Mocha', c:'#b07a4f'},
 ];
+// Báo cho trình duyệt biết app ĐANG sáng hay tối, để nó đừng tự bôi đen giúp
+// (Chrome Android "Làm tối trang web" / Samsung Internet). Đọc thẳng màu nền
+// thật đang áp dụng nên tự đúng với mọi theme, kể cả skin Sổ tay.
+function syncColorScheme(){
+  try{
+    const v=getComputedStyle(document.body).getPropertyValue('--bg').trim();
+    const m=/^#([0-9a-f]{6})$/i.exec(v);
+    let dark=false;
+    if(m){ const n=parseInt(m[1],16);
+      dark = ((((n>>16)&255)*0.299 + (((n>>8)&255))*0.587 + (n&255)*0.114)/255) < 0.5; }
+    document.documentElement.style.colorScheme = dark ? 'dark' : 'only light';
+  }catch(_){}
+}
 function applyTheme(k){
   [...document.body.classList].forEach(c=>{ if(c.indexOf('theme-')===0) document.body.classList.remove(c); });
   document.body.classList.add('theme-'+k);
+  syncColorScheme();
 }
 // mode: 'light' | 'dark' | 'system' (theo cài đặt sáng/tối của điện thoại)
 function applyDarkMode(mode){
   const dark = mode==='dark' || (mode==='system' && typeof window.matchMedia==='function' && window.matchMedia('(prefers-color-scheme: dark)').matches);
   document.body.classList.toggle('dark', dark);
+  syncColorScheme();
 }
 // Skin "Sổ tay": gán góc nghiêng NGẪU NHIÊN thật cho từng thẻ/dòng (biến --rot).
 // Mỗi phần tử chỉ gán 1 lần (nhớ qua data-rot) nên góc ổn định, không nhảy khi re-render.
@@ -1769,6 +1788,7 @@ function AngerHelper(){
 
 /* ============ HOME ============ */
 const WHATS_NEW=[
+  {d:'2026-08-08',ic:'🖼️',t:'Thêm ảnh quán nay có 2 nút: 📷 mở đủ Thư viện/Máy ảnh (1 ảnh mỗi lần), 🖼️ chọn nhiều ảnh một lượt. Trước đó máy Android ẩn mất app Thư viện khi bảng chọn ở chế độ nhiều ảnh.'},
   {d:'2026-08-08',ic:'📷',t:'Cafe &amp; quán ăn thêm được NHIỀU ẢNH: cả "Quán &amp; Món" và "Check-in ảnh" (Hẹn hò) giờ chọn một lần nhiều ảnh, ảnh đầu hiện to, còn lại thành dải nhỏ — chạm để xem lớn và lật qua lại.'},
   {d:'2026-08-08',ic:'📋',t:'Mỗi quán lưu được riêng "Ảnh menu / bảng giá" — chụp tờ menu một lần, lần sau khỏi đoán giá. Ảnh cũ (1 ảnh) tự chuyển sang danh sách, không mất.'},
   {d:'2026-07-08',ic:'🔠',t:'Tự chọn font chữ Trang chủ: vào Hồ sơ → 🔤 Font chữ trang chủ, chọn 1 trong 6 kiểu (Be Vietnam Pro, Nunito, Quicksand, Montserrat, Lora, Hệ thống) — áp ngay, số ngày vẫn giữ serif.'},
@@ -4710,6 +4730,7 @@ function RoutineTab({people,me}){
 /* ============ Thông báo điện thoại ============ */
 const VAPID_PUBLIC='BBGZe7N9CydCcQhvky9O2oVqzHPnV5Xbhcn7QBGGEFykxsDCoTI1nFpCJtaXkaG3wTH0xQM98RSaJlQNky795EM';
 function urlB64ToU8(s){ const pad='='.repeat((4-s.length%4)%4); const b=(s+pad).replace(/-/g,'+').replace(/_/g,'/'); const raw=atob(b); const arr=new Uint8Array(raw.length); for(let i=0;i<raw.length;i++)arr[i]=raw.charCodeAt(i); return arr; }
+function u8ToUrlB64(buf){ const b=new Uint8Array(buf); let s=''; for(let i=0;i<b.length;i++) s+=String.fromCharCode(b[i]); return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''); }
 // Đăng ký web-push để nhận thông báo CẢ KHI ĐÓNG APP (cần đã đăng nhập + ghép đôi)
 async function subscribePush(){
   try{
@@ -4717,6 +4738,18 @@ async function subscribePush(){
     if(!Cloud.connected||!Cloud.connected()) return {ok:false,reason:'notconnected'};
     const reg=await navigator.serviceWorker.ready;
     let sub=await reg.pushManager.getSubscription();
+    // Nếu máy đang giữ subscription của CẶP KHOÁ VAPID CŨ thì server mới không đẩy tới được
+    // (trình duyệt cũng không cho subscribe đè khoá khác) → huỷ rồi đăng ký lại bằng khoá hiện tại.
+    if(sub){
+      try{
+        const cur=sub.options&&sub.options.applicationServerKey;
+        if(cur && u8ToUrlB64(cur)!==VAPID_PUBLIC){
+          const old=sub.endpoint;
+          await sub.unsubscribe(); sub=null;
+          try{ const c0=sbClient(); if(c0&&old) await c0.from('justus_push_subs').delete().eq('endpoint',old); }catch(_){}
+        }
+      }catch(_){}
+    }
     if(!sub){ sub=await reg.pushManager.subscribe({userVisibleOnly:true, applicationServerKey:urlB64ToU8(VAPID_PUBLIC)}); }
     const j=sub.toJSON(); const c=sbClient(); const cp=Cloud.couple&&Cloud.couple();
     const {data:ud}=await c.auth.getUser(); const user=ud&&ud.user;
@@ -6882,12 +6915,20 @@ function PhotoAddBtn({onAdd,size,label,multiple,make}){
 }
 /* Danh sách ảnh của một mục — tương thích dữ liệu cũ (1 ảnh ở khoá `photo`) */
 function photoList(x){ if(!x) return []; const a=(x.photos||[]).filter(Boolean); if(a.length) return a; return x.photo?[x.photo]:[]; }
-/* Khung chọn nhiều ảnh (dùng trong form): thumbnail + ✕ xoá + nút thêm (chọn được nhiều file) */
-function PhotoPicker({value,onChange,size,label,hint}){
+/* Khung chọn nhiều ảnh (dùng trong form): thumbnail + ✕ xoá + 2 cách thêm ảnh.
+   Nút chính KHÔNG đặt `multiple`: Android lọc bảng chọn theo thuộc tính này, có `multiple`
+   là mấy app không hỗ trợ chọn-nhiều (Thư viện/Gallery của máy) bị ẩn khỏi bảng chọn.
+   Muốn chọn nhiều ảnh một lần thì bấm nút phụ bên dưới. */
+function PhotoPicker({value,onChange,size,label,hint,make}){
   const list=(value||[]).filter(Boolean);
   const ref=useRef(list); ref.current=list;
   const add=(p)=>{ const next=[...ref.current,p]; ref.current=next; onChange(next); };
   const rm=(i)=>{ const next=ref.current.filter((_,j)=>j!==i); ref.current=next; onChange(next); };
+  const manyRef=useRef(null); const [many,setMany]=useState(0);
+  const pickMany=async(e)=>{ const files=Array.from(e.target.files||[]); if(!files.length)return; e.target.value='';
+    const mk=make||photoFromFile; setMany(files.length);
+    for(let i=0;i<files.length;i++){ try{ const p=await mk(files[i]); if(p) add(p); }catch(_){} setMany(files.length-i-1); }
+    setMany(0); };
   const s=size||70;
   return <div>
     <div className="phpick">
@@ -6895,9 +6936,13 @@ function PhotoPicker({value,onChange,size,label,hint}){
         <PhotoImg photo={p} style={{width:s,height:s,borderRadius:8,objectFit:'cover',display:'block'}}/>
         <button className="x" onClick={()=>rm(i)}>✕</button>
       </div>)}
-      <PhotoAddBtn size={s} multiple onAdd={add} label={list.length?null:(label||null)}/>
+      <PhotoAddBtn size={s} onAdd={add} make={make} label={list.length?null:(label||null)}/>
+      <button className="pill" style={{padding:'8px 12px',fontSize:12.5}} onClick={()=>manyRef.current&&manyRef.current.click()}>
+        {many?('Đang thêm… còn '+many):'🖼️ Chọn nhiều ảnh'}</button>
+      <input ref={manyRef} type="file" accept="image/*" multiple style={{display:'none'}} onChange={pickMany}/>
     </div>
-    {(hint||list.length>0) && <div className="phlab" style={{marginTop:4}}>{list.length>0?(list.length+' ảnh · bấm ✕ để bỏ'+(hint?' · '+hint:'')):hint}</div>}
+    <div className="phlab" style={{marginTop:4}}>Nút <b>📷</b> mở cả Thư viện/Máy ảnh (1 ảnh mỗi lần) · <b>🖼️</b> chọn nhiều ảnh một lượt.</div>
+    {(hint||list.length>0) && <div className="phlab" style={{marginTop:2}}>{list.length>0?(list.length+' ảnh · bấm ✕ để bỏ'+(hint?' · '+hint:'')):hint}</div>}
     {list.length>=6 && !(Cloud.connected&&Cloud.connected()) && <div className="phlab" style={{color:'var(--warn)'}}>
       ⚠️ Chưa ghép đôi nên ảnh lưu ngay trên máy — nhiều ảnh quá có thể đầy bộ nhớ. Vào Hồ sơ → ☁️ Tài khoản &amp; đồng bộ để ảnh lên mây.</div>}
   </div>;
