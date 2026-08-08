@@ -17,7 +17,24 @@ cd "$(dirname "$0")/.."
 say(){ printf '\n\033[1m▸ %s\033[0m\n' "$*"; }
 die(){ printf '\n\033[31m✗ %s\033[0m\n' "$*" >&2; exit 1; }
 
-command -v supabase >/dev/null || die "Chưa có Supabase CLI. Cài: brew install supabase/tap/supabase (hoặc npm i -g supabase)"
+if ! command -v supabase >/dev/null; then
+  cat >&2 <<'EOF'
+
+✗ Chưa có Supabase CLI.
+
+  Cách nhanh nhất (tải binary, KHÔNG cần brew, KHÔNG cần Xcode Command Line Tools):
+
+    ARCH=$([ "$(uname -m)" = "arm64" ] && echo arm64 || echo amd64)
+    curl -fsSL "https://github.com/supabase/cli/releases/latest/download/supabase_darwin_${ARCH}.tar.gz" | tar -xz -C /tmp supabase
+    mkdir -p ~/bin && mv /tmp/supabase ~/bin/ && chmod +x ~/bin/supabase
+    export PATH="$HOME/bin:$PATH"
+
+  Rồi `supabase login` và chạy lại script này.
+  (brew install supabase/tap/supabase cũng được, nhưng cần Command Line Tools bản mới.)
+
+EOF
+  exit 1
+fi
 [ -n "${VAPID_PRIVATE:-}" ] || die "Thiếu VAPID_PRIVATE. Chạy lại kiểu: VAPID_PRIVATE='<khoá bí mật>' bash supabase/setup-push.sh"
 
 # Kiểm tra private key có đúng khớp public key không — sai khoá thì push sẽ im lặng thất bại,
