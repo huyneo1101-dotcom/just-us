@@ -1767,6 +1767,7 @@ function AngerHelper(){
 
 /* ============ HOME ============ */
 const WHATS_NEW=[
+  {d:'2026-08-08',ic:'🖼️',t:'Thêm ảnh quán nay có 2 nút: 📷 mở đủ Thư viện/Máy ảnh (1 ảnh mỗi lần), 🖼️ chọn nhiều ảnh một lượt. Trước đó máy Android ẩn mất app Thư viện khi bảng chọn ở chế độ nhiều ảnh.'},
   {d:'2026-08-08',ic:'📷',t:'Cafe &amp; quán ăn thêm được NHIỀU ẢNH: cả "Quán &amp; Món" và "Check-in ảnh" (Hẹn hò) giờ chọn một lần nhiều ảnh, ảnh đầu hiện to, còn lại thành dải nhỏ — chạm để xem lớn và lật qua lại.'},
   {d:'2026-08-08',ic:'📋',t:'Mỗi quán lưu được riêng "Ảnh menu / bảng giá" — chụp tờ menu một lần, lần sau khỏi đoán giá. Ảnh cũ (1 ảnh) tự chuyển sang danh sách, không mất.'},
   {d:'2026-07-08',ic:'🔠',t:'Tự chọn font chữ Trang chủ: vào Hồ sơ → 🔤 Font chữ trang chủ, chọn 1 trong 6 kiểu (Be Vietnam Pro, Nunito, Quicksand, Montserrat, Lora, Hệ thống) — áp ngay, số ngày vẫn giữ serif.'},
@@ -7374,12 +7375,20 @@ function PhotoAddBtn({onAdd,size,label,multiple,make}){
 }
 /* Danh sách ảnh của một mục — tương thích dữ liệu cũ (1 ảnh ở khoá `photo`) */
 function photoList(x){ if(!x) return []; const a=(x.photos||[]).filter(Boolean); if(a.length) return a; return x.photo?[x.photo]:[]; }
-/* Khung chọn nhiều ảnh (dùng trong form): thumbnail + ✕ xoá + nút thêm (chọn được nhiều file) */
-function PhotoPicker({value,onChange,size,label,hint}){
+/* Khung chọn nhiều ảnh (dùng trong form): thumbnail + ✕ xoá + 2 cách thêm ảnh.
+   Nút chính KHÔNG đặt `multiple`: Android lọc bảng chọn theo thuộc tính này, có `multiple`
+   là mấy app không hỗ trợ chọn-nhiều (Thư viện/Gallery của máy) bị ẩn khỏi bảng chọn.
+   Muốn chọn nhiều ảnh một lần thì bấm nút phụ bên dưới. */
+function PhotoPicker({value,onChange,size,label,hint,make}){
   const list=(value||[]).filter(Boolean);
   const ref=useRef(list); ref.current=list;
   const add=(p)=>{ const next=[...ref.current,p]; ref.current=next; onChange(next); };
   const rm=(i)=>{ const next=ref.current.filter((_,j)=>j!==i); ref.current=next; onChange(next); };
+  const manyRef=useRef(null); const [many,setMany]=useState(0);
+  const pickMany=async(e)=>{ const files=Array.from(e.target.files||[]); if(!files.length)return; e.target.value='';
+    const mk=make||photoFromFile; setMany(files.length);
+    for(let i=0;i<files.length;i++){ try{ const p=await mk(files[i]); if(p) add(p); }catch(_){} setMany(files.length-i-1); }
+    setMany(0); };
   const s=size||70;
   return <div>
     <div className="phpick">
@@ -7387,9 +7396,13 @@ function PhotoPicker({value,onChange,size,label,hint}){
         <PhotoImg photo={p} style={{width:s,height:s,borderRadius:8,objectFit:'cover',display:'block'}}/>
         <button className="x" onClick={()=>rm(i)}>✕</button>
       </div>)}
-      <PhotoAddBtn size={s} multiple onAdd={add} label={list.length?null:(label||null)}/>
+      <PhotoAddBtn size={s} onAdd={add} make={make} label={list.length?null:(label||null)}/>
+      <button className="pill" style={{padding:'8px 12px',fontSize:12.5}} onClick={()=>manyRef.current&&manyRef.current.click()}>
+        {many?('Đang thêm… còn '+many):'🖼️ Chọn nhiều ảnh'}</button>
+      <input ref={manyRef} type="file" accept="image/*" multiple style={{display:'none'}} onChange={pickMany}/>
     </div>
-    {(hint||list.length>0) && <div className="phlab" style={{marginTop:4}}>{list.length>0?(list.length+' ảnh · bấm ✕ để bỏ'+(hint?' · '+hint:'')):hint}</div>}
+    <div className="phlab" style={{marginTop:4}}>Nút <b>📷</b> mở cả Thư viện/Máy ảnh (1 ảnh mỗi lần) · <b>🖼️</b> chọn nhiều ảnh một lượt.</div>
+    {(hint||list.length>0) && <div className="phlab" style={{marginTop:2}}>{list.length>0?(list.length+' ảnh · bấm ✕ để bỏ'+(hint?' · '+hint:'')):hint}</div>}
     {list.length>=6 && !(Cloud.connected&&Cloud.connected()) && <div className="phlab" style={{color:'var(--warn)'}}>
       ⚠️ Chưa ghép đôi nên ảnh lưu ngay trên máy — nhiều ảnh quá có thể đầy bộ nhớ. Vào Hồ sơ → ☁️ Tài khoản &amp; đồng bộ để ảnh lên mây.</div>}
   </div>;
