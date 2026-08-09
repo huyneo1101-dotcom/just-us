@@ -374,6 +374,24 @@ body.theme-sotay .homev3 .hero:not(.hascover) .sub{
 .sc-dont{color:#b04a3d}
 .sc-disc{font-size:10.5px;color:var(--muted);line-height:1.55;margin:8px 14px 0;
   border-left:2px solid var(--line);padding-left:9px}
+/* Trang chủ — mẫu 05 (bảng chỉ số) + mẫu 03 (lưới ô lớn) */
+.sc-stats{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:11px 14px}
+.sc-stat{margin:0;padding:11px 12px}
+.sc-lbl{font-size:10px;color:var(--muted);font-weight:600}
+.sc-num{font-family:Georgia,"Times New Roman",serif;font-weight:500;letter-spacing:-.5px;
+  font-variant-numeric:tabular-nums;color:var(--text);font-size:21px;line-height:1.2}
+.sc-num .u{font-size:12px}
+.sc-tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:11px 14px}
+.sc-tile{margin:0;padding:15px 7px;text-align:center;cursor:pointer;display:block;width:100%;
+  color:inherit;font-family:inherit}
+.sc-tile .ic{font-size:27px;line-height:1.1;display:block}
+.sc-tile b{display:block;font-size:13.5px;margin-top:4px}
+.sc-tile small{color:var(--muted);font-size:10.5px;display:block;margin-top:1px}
+.sc-hero{text-align:center;padding:16px 16px 2px}
+.sc-hero .av{width:74px;height:74px;border-radius:50%;background:var(--chip);border:2px dashed var(--line);
+  margin:0 auto;display:grid;place-items:center;font-size:38px;box-shadow:var(--shadow)}
+.sc-hero .nm{font-size:22px;font-weight:800;color:var(--primary);margin-top:9px;line-height:1.2}
+.sc-hero .ag{font-family:Georgia,"Times New Roman",serif;font-size:14px;margin-top:1px}
 </style>
 </head>
 <body>
@@ -664,6 +682,120 @@ function SkillGuide({g,done,onTick}){
     </div>
   );
 }
+/* ============ Trang chủ (mẫu 05 bảng chỉ số + mẫu 03 lưới ô lớn) ============ */
+// Đường cân nặng 6 lần đo gần nhất — vẽ tay bằng SVG, không cần thư viện.
+function Spark({points}){
+  if(!points || points.length<2) return null;
+  const W=96,H=34,pad=3;
+  const min=Math.min(...points), max=Math.max(...points), span=(max-min)||1;
+  const xy=points.map((v,i)=>[pad+i*(W-pad*2)/(points.length-1), H-pad-((v-min)/span)*(H-pad*2)]);
+  const line=xy.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ');
+  const area=line+' L'+xy[xy.length-1][0].toFixed(1)+' '+H+' L'+xy[0][0].toFixed(1)+' '+H+' Z';
+  const end=xy[xy.length-1];
+  return (
+    <svg width={W} height={H} viewBox={'0 0 '+W+' '+H} aria-label="đường cân nặng gần đây">
+      <path d={area} fill="var(--chip)"/>
+      <path d={line} fill="none" stroke="var(--primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <circle cx={end[0]} cy={end[1]} r="3" fill="var(--primary)"/>
+    </svg>
+  );
+}
+
+function HomeTab({child,months,ageLabel,growth,words,wordsThisWeek,vac,mile,skills,skillDone,pack,packDone,gDone,ill,schoolDays,go,onEdit}){
+  const last=growth[0];
+  const weights=growth.filter(g=>g.w!=null).slice(0,6).map(g=>g.w).reverse();
+  const band=months==null?null:(CHILD_MILESTONES.find(x=>months>=x.lo&&months<x.hi)||CHILD_MILESTONES[CHILD_MILESTONES.length-1]);
+  const bandDone=band? band.items.filter(it=>mile[band.band+'|'+it]).length : 0;
+  const guideDone=SKILL_GUIDES.filter(g=>gDone[g.name]).length;
+  const weanToday=WEAN_MENU[(new Date().getDay()+6)%7];
+
+  // Mũi tiêm: chỉ tính các mốc bé đã tới tuổi
+  const dueVac=months==null?[]:CHILD_VACCINES.filter(v=>vacAgeMonths(v.age)<=months);
+  const vacTotal=dueVac.reduce((n,v)=>n+v.items.length,0);
+  const vacDone=dueVac.reduce((n,v)=>n+v.items.filter(it=>vac[v.age+'|'+it]).length,0);
+  const vacMissing=dueVac.filter(v=>!v.items.every(it=>vac[v.age+'|'+it]));
+  // Mũi kế tiếp chưa tới tuổi
+  const nextVac=months==null?null:CHILD_VACCINES.find(v=>vacAgeMonths(v.age)>months);
+  const nextVacDays=(nextVac&&child.dob)? daysFromToday(new Date(new Date(child.dob+'T00:00:00').getTime()+vacAgeMonths(nextVac.age)*30.44*86400000).toISOString().slice(0,10)) : null;
+
+  const daysSinceMeasure=last? daysFromToday(last.date) : null; // âm = đã bao nhiêu ngày trước
+  const sickOpen=(ill||[]).filter(x=>!x.recovered);
+
+  const alerts=[];
+  if(vacMissing.length) alerts.push({ic:'💉',t:'Còn mũi chưa tiêm: '+vacMissing.map(v=>v.age).join(', '),go:'health'});
+  if(nextVac&&nextVacDays!=null&&nextVacDays>=0&&nextVacDays<=60) alerts.push({ic:'💉',t:'Mũi '+nextVac.age+' còn '+nextVacDays+' ngày',go:'health'});
+  if(schoolDays!=null&&schoolDays>=0&&schoolDays<=60) alerts.push({ic:'🎒',t:'Đi lớp còn '+schoolDays+' ngày · đồ đã soạn '+packDone+'/'+CHILD_PACK.length,go:'school'});
+  if(sickOpen.length) alerts.push({ic:'🤒',t:'Đợt ốm từ '+fmtDateVN(sickOpen[0].date)+' chưa đánh dấu đã khỏi',go:'health'});
+  if(daysSinceMeasure!=null&&daysSinceMeasure<=-30) alerts.push({ic:'📏',t:'Đã '+Math.abs(daysSinceMeasure)+' ngày chưa đo cân nặng',go:'health'});
+  if(!child.dob) alerts.push({ic:'🎂',t:'Chưa nhập ngày sinh — nhập để app hiện đúng mốc theo tuổi',go:null});
+
+  const TILES=[
+    {k:'develop',ic:'🌱',n:'Phát triển',s:band?(bandDone+'/'+band.items.length+' mốc'):'chưa có ngày sinh'},
+    {k:'play',ic:'🎲',n:'Chơi với con',s:PLAY_LIB.length+' trò'},
+    {k:'health',ic:'🏥',n:'Sức khoẻ',s:last&&last.w?(last.w+' kg'):'chưa đo'},
+    {k:'eat',ic:'🍎',n:'Ăn uống',s:weanToday?('thực đơn '+weanToday.d):'thực đơn tuần'},
+    {k:'school',ic:'🎒',n:'Đi học',s:schoolDays!=null?('còn '+schoolDays+' ngày'):('đồ '+packDone+'/'+CHILD_PACK.length)},
+    {k:'parent',ic:'💞',n:'Nuôi dạy',s:guideDone+'/'+SKILL_GUIDES.length+' kỹ năng'},
+  ];
+
+  return (
+    <div>
+      <div className="sc-hero">
+        <div className="av">🐿️</div>
+        <div className="nm">{child.name||'Bé yêu'}</div>
+        <div className="ag">{ageLabel}</div>
+        {child.dob && <div className="muted" style={{fontSize:10.5,marginTop:1}}>sinh {fmtDateVN(child.dob)}{child.gender?(' · '+(child.gender==='nam'?'bé trai':'bé gái')):''}</div>}
+        {onEdit && <button className="muted" style={{fontSize:11.5,marginTop:6}} onClick={onEdit}>✎ Sửa thông tin bé</button>}
+      </div>
+
+      <div className="card" style={{marginTop:14}}>
+        <div className="row"><span className="grow"><b style={{fontSize:14}}>Cân nặng</b></span>
+          {last && <span className="muted" style={{fontSize:10.5}}>đo {fmtDateVN(last.date)}</span>}</div>
+        <div className="row" style={{alignItems:'flex-end',marginTop:3}}>
+          <div className="sc-num" style={{fontSize:31}}>{last&&last.w? last.w : '—'}<span className="u"> kg</span></div>
+          <span className="grow"></span>
+          <Spark points={weights}/>
+        </div>
+        {!last && <div className="muted" style={{fontSize:12,marginTop:4}}>Chưa có lần đo nào — ghi ở tab Sức khoẻ.</div>}
+      </div>
+
+      <div className="sc-stats">
+        <div className="card sc-stat"><div className="sc-lbl">Chiều cao</div>
+          <div className="sc-num">{last&&last.h? last.h : '—'}<span className="u"> cm</span></div></div>
+        <div className="card sc-stat"><div className="sc-lbl">Từ nói được</div>
+          <div className="sc-num">{words.length}</div>
+          <div className="muted" style={{fontSize:10,marginTop:2}}>+{wordsThisWeek} tuần này</div></div>
+        <div className="card sc-stat"><div className="sc-lbl">Mũi đã tiêm</div>
+          <div className="sc-num">{vacDone}<span className="u">/{vacTotal||'—'}</span></div>
+          <div className="prog" style={{marginTop:5}}><i style={{width:(vacTotal?vacDone/vacTotal*100:0)+'%'}}></i></div></div>
+        <div className="card sc-stat"><div className="sc-lbl">Kỹ năng tự lập</div>
+          <div className="sc-num">{skillDone}<span className="u">/{CHILD_SKILLS.length}</span></div>
+          <div className="prog" style={{marginTop:5}}><i style={{width:(skillDone/CHILD_SKILLS.length*100)+'%'}}></i></div></div>
+      </div>
+
+      {alerts.length>0 && <>
+        <div className="sec-title">📌 Cần để ý</div>
+        {alerts.map((a,i)=>(
+          <div key={i} className="item" style={{padding:'10px 13px',cursor:a.go?'pointer':'default'}} onClick={()=>a.go&&go(a.go)}>
+            <div className="row"><span style={{fontSize:18,flex:'0 0 auto'}}>{a.ic}</span>
+              <span className="grow" style={{fontSize:13.5}}>{a.t}</span>
+              {a.go && <span style={{color:'var(--primary)',fontSize:16}}>›</span>}</div>
+          </div>
+        ))}
+      </>}
+
+      <div className="sec-title">📦 Vào mục nào</div>
+      <div className="sc-tiles">
+        {TILES.map(t=>(
+          <button key={t.k} className="card sc-tile" onClick={()=>go(t.k)}>
+            <span className="ic">{t.ic}</span><b>{t.n}</b><small>{t.s}</small>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 /* ============ An toàn & cấp cứu ============ */
 // Danh bạ khẩn — bố mẹ tự điền, lưu ju.childContacts (đồng bộ cùng các khoá Sóc khác)
 function ContactBook(){
@@ -835,7 +967,7 @@ function ChildCare({people,me}){
   const [tantrum,setTantrum]=useLocal('ju.childTantrum',[]);
   const [docs,setDocs]=useLocal('ju.childDocs',{});
   const [showAllVac,setShowAllVac]=useState(false);
-  const [tab,setTab]=useState('develop');
+  const [tab,setTab]=useState('home');
   const [editChild,setEditChild]=useState(false);
   const [gw,setGw]=useState(''); const [gh,setGh]=useState('');
   const [dtext,setDtext]=useState(''); const [wordIn,setWordIn]=useState('');
@@ -869,6 +1001,8 @@ function ChildCare({people,me}){
   const last=growth[0];
   return (
     <div>
+      {/* Trang chủ đã có phần đầu riêng (hero) nên ở đó chỉ hiện thẻ này khi cần điền/sửa */}
+      {(tab!=='home' || !child.name || !child.dob || editChild) &&
       <div className="card" style={{background:'linear-gradient(135deg,var(--chip),var(--card))'}}>
         <div className="row"><span style={{fontSize:24}}>👶</span>
           <div className="grow"><b style={{fontSize:15}}>{child.name||'Bé yêu'}</b>
@@ -885,7 +1019,7 @@ function ChildCare({people,me}){
             <input className="inp" type="date" max={todayISO()} value={child.dob||''} onChange={e=>setChild({...child,dob:e.target.value})}/></div>
           {editChild && child.name && child.dob && <button className="btn sm" style={{marginTop:8}} onClick={()=>setEditChild(false)}>✓ Xong</button>}
         </>}
-      </div>
+      </div>}
       {tab!=='safe' && <button className="sc-sos" onClick={()=>setTab('safe')}>
         <span className="ic">🚨</span>
         <span style={{flex:1,minWidth:0}}><b>Cấp cứu &amp; an toàn</b>
@@ -893,11 +1027,16 @@ function ChildCare({people,me}){
         <span style={{fontSize:17,opacity:.85}}>›</span>
       </button>}
       <FilterBar value={tab} onChange={setTab} items={[
+        {k:'home',icon:'🏠',label:'Trang chủ'},
         {k:'develop',icon:'🌱',label:'Phát triển'},{k:'play',icon:'🎲',label:'Chơi với con'},{k:'health',icon:'🏥',label:'Sức khoẻ'},
         {k:'eat',icon:'🍎',label:'Ăn uống'},{k:'school',icon:'🎒',label:'Đi học'},{k:'parent',icon:'💞',label:'Nuôi dạy'},
         {k:'safe',icon:'🚨',label:'An toàn'},
       ]}/>
 
+      {tab==='home' && <HomeTab child={child} months={months} ageLabel={ageLabel} growth={growth}
+        words={words} wordsThisWeek={wordsThisWeek} vac={vac} mile={mile} skills={skills} skillDone={skillDone}
+        pack={pack} packDone={packDone} gDone={gDone} ill={ill} schoolDays={schoolDays} go={setTab}
+        onEdit={()=>setEditChild(true)}/>}
       {tab==='safe' && <SafetyTab child={child} growth={growth}/>}
 
       {tab==='develop' && <div>
