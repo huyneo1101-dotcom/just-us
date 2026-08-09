@@ -4648,13 +4648,13 @@ function ChildLauncher(){
   const [child]=useLocal('ju.child',{});
   const months=(child&&child.dob)? Math.max(0, Math.round((new Date(todayISO()+'T00:00:00')-new Date(child.dob+'T00:00:00'))/(30.44*86400000))) : null;
   const ageLabel = months==null?null : months<24? months+' tháng tuổi' : Math.floor(months/12)+' tuổi'+(months%12?(' '+(months%12)+' th'):'');
+  /* Bám theo hằng NAV trong soc/index.html — đổi nhóm bên đó thì sửa luôn danh sách này. */
   const MUC=[
-    ['🌱','Phát triển','Mốc theo tuổi · từ mới bé nói được'],
-    ['🎲','Chơi với con','Trò chơi theo nhóm kỹ năng · cafe & khu vui chơi ở Hà Nội'],
-    ['🏥','Sức khoẻ','Tiêm chủng · cân nặng chiều cao · nhật ký ốm · hồ sơ gửi cô'],
-    ['🍎','Ăn uống','Mẹo chăm sóc · thực đơn ăn dặm cả tuần'],
-    ['🎒','Đi học','Đếm ngược ngày nhập học · đồ mang đi lớp · kỹ năng tự lập'],
-    ['💞','Nuôi dạy','Thống nhất cách dạy · dạy kỹ năng tự túc · nhật ký "đầu tiên" & ăn vạ'],
+    ['🏠','Nhà','Trang chủ: việc hôm nay, ghi một chạm, nhắc chủ động'],
+    ['🌱','Lớn lên','Mốc & lời nói · chơi và ra ngoài · học sớm · ăn uống · giấc ngủ · đi lớp'],
+    ['🏥','Sức khoẻ','Theo dõi & khám · răng · tập bô · an toàn và cấp cứu'],
+    ['💞','Nuôi dạy','Với con: thống nhất cách dạy, ăn vạ · Bố mẹ: chia việc, giữ sức'],
+    ['📔','Kỷ niệm','Nhật ký "điều đầu tiên" · ảnh · thư cho con · câu nói đáng nhớ'],
   ];
   return (
     <div>
