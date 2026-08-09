@@ -2223,5 +2223,254 @@
     102
    ]
   ]
- }
+ },
+ "SCHOOL_PICK": {
+  "criteria": [
+   "Sĩ số mỗi lớp và số cô trên một lớp — hỏi con số thật, đừng nghe \"đủ cô\".",
+   "Quãng đường từ nhà: đi lại mỗi ngày hai lượt, xa 10 phút thôi cũng thành gánh nặng.",
+   "Có camera cho phụ huynh xem không, xem được lúc nào.",
+   "Bếp ăn tại trường hay đặt ngoài; xem thực đơn tuần thật.",
+   "Sân chơi ngoài trời và chỗ ngủ trưa.",
+   "Cách trường xử lý khi bé ốm, sốt giữa buổi.",
+   "Học phí đã gồm những gì, còn khoản nào thu thêm trong năm.",
+   "Cô có gắn bó lâu không — trường thay cô liên tục là dấu hiệu cần cân nhắc."
+  ],
+  "questions": [
+   "Một ngày của bé diễn ra thế nào, từ lúc đến tới lúc về?",
+   "Bé mới đi lớp thì làm quen ra sao, có cho đi nửa buổi không?",
+   "Bé khóc nhiều thì cô làm gì, khi nào thì gọi cho bố mẹ?",
+   "Bé không chịu ăn thì xử lý thế nào?",
+   "Bé chưa bỏ bỉm có nhận không, cô có nhắc bé ngồi bô không?",
+   "Bé sốt hoặc nôn giữa buổi thì quy trình ra sao?",
+   "Trường có nhận thuốc bố mẹ gửi và cho bé uống theo đơn không?",
+   "Bố mẹ nhận thông tin hằng ngày qua đâu — sổ, nhóm chat, hay app?",
+   "Có được vào lớp xem con bất chợt không?",
+   "Bé cắn bạn hoặc bị bạn cắn thì trường báo và xử lý thế nào?"
+  ]
+ },
+ "SCHOOL_START": [
+  {
+   "d": "Trước 1–2 tuần",
+   "t": "Nói với con mỗi ngày một câu ngắn về việc đi lớp. Đi ngang qua trường cho con nhìn. Chỉnh dần giờ ngủ và giờ dậy cho khớp."
+  },
+  {
+   "d": "Ngày 1–2",
+   "t": "Ở lớp khoảng 1–2 tiếng, có bố mẹ ở gần hoặc đợi ngoài. Chưa ăn, chưa ngủ ở lớp."
+  },
+  {
+   "d": "Ngày 3–5",
+   "t": "Nửa buổi, có ăn bữa phụ. Bố mẹ chào rồi rời đi thật, đón đúng giờ đã hứa."
+  },
+  {
+   "d": "Tuần 2",
+   "t": "Ở tới sau bữa trưa, tập ngủ trưa ở lớp một hai hôm."
+  },
+  {
+   "d": "Tuần 3",
+   "t": "Cả ngày. Vẫn giữ nghi thức chia tay ngắn và đón đúng giờ."
+  },
+  {
+   "d": "Suốt giai đoạn",
+   "t": "Con khóc lúc chia tay mà vào lớp nín trong 5–10 phút là ổn. Hỏi cô cụ thể \"sau khi con vào thì bao lâu con nín\" thay vì hỏi chung chung."
+  }
+ ],
+ "SCHOOL_ILL": [
+  {
+   "icon": "🖐️",
+   "n": "Tay chân miệng",
+   "sign": "Sốt, loét miệng, nốt phỏng ở lòng bàn tay, bàn chân, mông, đầu gối.",
+   "off": "Nghỉ ít nhất 7–10 ngày và tới khi hết loét, hết nốt.",
+   "note": "Đi viện ngay nếu sốt cao khó hạ, giật mình khi ngủ, run tay chân, nôn nhiều, thở nhanh."
+  },
+  {
+   "icon": "💧",
+   "n": "Thuỷ đậu",
+   "sign": "Sốt nhẹ rồi nổi phỏng nước rải rác toàn thân, ngứa.",
+   "off": "Nghỉ tới khi tất cả nốt đã khô vảy, khoảng 7–10 ngày.",
+   "note": "Không chọc vỡ nốt; cắt móng tay cho bé để đỡ gãi trầy."
+  },
+  {
+   "icon": "👁️",
+   "n": "Đau mắt đỏ",
+   "sign": "Mắt đỏ, nhiều ghèn, chảy nước mắt, cộm.",
+   "off": "Nghỉ khoảng 5–7 ngày, tới khi hết đỏ và hết ghèn.",
+   "note": "Khăn mặt, gối, chậu rửa dùng riêng; cả nhà rửa tay kỹ."
+  },
+  {
+   "icon": "🤧",
+   "n": "Cúm mùa",
+   "sign": "Sốt cao đột ngột, đau người, ho, mệt rõ.",
+   "off": "Nghỉ tới khi hết sốt trọn 24 giờ mà không dùng thuốc hạ sốt.",
+   "note": "Tiêm cúm hằng năm giúp nhẹ đi nhiều."
+  },
+  {
+   "icon": "💩",
+   "n": "Tiêu chảy do rota / nhiễm khuẩn",
+   "sign": "Đi lỏng nhiều lần, nôn, có thể sốt.",
+   "off": "Nghỉ tới khi hết đi lỏng trọn 24–48 giờ.",
+   "note": "Bù nước là việc quan trọng nhất; để ý dấu mất nước."
+  },
+  {
+   "icon": "🫁",
+   "n": "Viêm tiểu phế quản / RSV",
+   "sign": "Ho, khò khè, thở nhanh, bú kém.",
+   "off": "Nghỉ theo chỉ định bác sĩ, thường tới khi hết khò khè và ăn lại bình thường.",
+   "note": "Thở rút lõm lồng ngực hoặc tím môi là đi viện ngay."
+  }
+ ],
+ "TEACHER_NOTE": [
+  "Tên gọi ở nhà của bé và từ riêng bé hay dùng (tè, ị, ti, măm…)",
+  "Giờ ngủ trưa và cách bé quen được dỗ ngủ",
+  "Món bé sợ, món bé thích",
+  "Cách dỗ hiệu quả khi bé khóc",
+  "Bé đã bỏ bỉm chưa, có cần nhắc ngồi bô không",
+  "Dị ứng và thuốc đang dùng",
+  "Đồ trấn an bé mang theo",
+  "Ai được phép đón bé"
+ ],
+ "TRIP_PACK": [
+  "Bỉm + khăn ướt + túi đựng đồ bẩn",
+  "Quần áo thay 2–3 bộ",
+  "Áo khoác mỏng / mũ",
+  "Bình nước + cốc quen",
+  "Sữa và đồ ăn vặt quen miệng",
+  "Yếm, thìa, bát riêng",
+  "Thuốc hạ sốt + nhiệt kế + gạc, băng cá nhân",
+  "Kem chống hăm, kem chống nắng",
+  "Đồ trấn an (gấu bông, khăn)",
+  "2–3 món đồ chơi nhỏ + 1 quyển sách",
+  "Chăn mỏng / khăn to (làm chỗ ngủ quen)",
+  "Túi nilon sạch phòng bé nôn",
+  "Sạc dự phòng, ảnh chụp giấy tờ của bé"
+ ],
+ "TRIP_TIPS": [
+  {
+   "icon": "🚗",
+   "n": "Đi ô tô đường dài",
+   "tips": [
+    "Xuất phát trùng giờ ngủ của bé — ngủ được một chặng là nhẹ cả nhà.",
+    "Ghế ngồi ô tô là bắt buộc, kể cả khi bé khóc. Bế trên tay nguy hiểm hơn nhiều so với một trận khóc.",
+    "Cứ 1,5–2 giờ dừng cho bé xuống chạy 10 phút.",
+    "Túi đồ chơi chỉ dùng trên xe — đồ mới lạ giữ được bé lâu hơn.",
+    "Say xe: cho ăn nhẹ trước khi đi, hé cửa lấy gió, tránh cho bé nhìn màn hình.",
+    "Đồ ăn nước uống để trong tầm tay, đừng nhét cốp."
+   ]
+  },
+  {
+   "icon": "✈️",
+   "n": "Đi máy bay",
+   "tips": [
+    "Cho bé bú, uống nước hoặc ngậm ti lúc cất và hạ cánh để đỡ ù tai.",
+    "Chọn giờ bay trùng giấc ngủ nếu chọn được.",
+    "Mang theo một bộ quần áo thay cho cả bé lẫn bố mẹ trong hành lý xách tay.",
+    "Đi bộ dọc lối đi khi bé bí bách, thay vì ghìm bé ngồi yên.",
+    "Giấy tờ của bé: mang bản chính, để riêng chỗ dễ lấy."
+   ]
+  },
+  {
+   "icon": "🍜",
+   "n": "Ăn hàng với bé",
+   "tips": [
+    "Chọn quán có ghế ăn cho bé và chỗ rộng, ưu tiên giờ vắng.",
+    "Gọi đồ của bé trước, hoặc mang sẵn phần ăn riêng — bé không đợi được.",
+    "Món an toàn: cơm, cháo, mì mềm, trứng, thịt hấp. Tránh đồ cay mặn, nước ngọt, đồ chiên.",
+    "Mang yếm, thìa và khăn riêng; nhờ quán tráng bát bằng nước sôi.",
+    "Bé chán trước khi cả nhà ăn xong là bình thường — một người dắt bé đi vòng vòng, đổi ca."
+   ]
+  },
+  {
+   "icon": "👵",
+   "n": "Gửi ông bà trông",
+   "tips": [
+    "Viết ra một tờ: giờ ăn, giờ ngủ, thuốc (nếu có), số điện thoại, và những điều nhà mình không cho.",
+    "Nói trước bằng giọng nhờ vả chứ không phải dặn dò — ông bà dễ nghe hơn nhiều.",
+    "Chọn 2–3 điều quan trọng nhất để giữ (an toàn, không cho xem điện thoại lâu, giờ ngủ), việc nhỏ thì linh hoạt.",
+    "Để sẵn đồ ăn đã chia phần và bộ quần áo thay.",
+    "Về nhà đừng \"kiểm tra\" ngay trước mặt bé — cảm ơn trước, góp ý sau."
+   ]
+  }
+ ],
+ "TWOS_CRISIS": {
+  "what": "“Khủng hoảng tuổi lên 2” không phải bé hư. Đây là lúc bé vừa phát hiện ra mình là một người riêng, có ý muốn riêng — nhưng vốn từ và khả năng tự kiềm chế thì chưa theo kịp. Khoảng cách đó bung ra thành những trận ăn vạ.",
+  "when": "Thường rõ nhất từ khoảng 18 tháng tới 3 tuổi, đỉnh điểm quanh 2 tuổi. Sau đó nhạt dần khi bé nói được nhiều hơn và biết chờ lâu hơn.",
+  "signs": [
+   "Nói \"không\" với gần như mọi thứ, kể cả thứ bé thích",
+   "Đòi tự làm rồi lại đòi bế",
+   "Ăn vạ vì lý do rất nhỏ: bẻ đôi cái bánh, mở cửa hộ",
+   "Đổi ý liên tục trong vài giây",
+   "Bám dai một lúc rồi đẩy ra một lúc"
+  ],
+  "help": [
+   "Cho bé quyết những việc nhỏ (áo nào, cốc nào) để bớt phải giành quyền ở việc lớn.",
+   "Báo trước mọi lần chuyển hoạt động; bé ghét bị cắt ngang chứ không ghét việc phải làm.",
+   "Giữ nếp sinh hoạt đều — bé đói và buồn ngủ là lúc ăn vạ nhiều nhất.",
+   "Nói ít, làm nhiều: một câu ngắn rồi hành động, đừng giảng giải giữa cơn.",
+   "Sau cơn thì ôm và nói tiếp, đừng bắt bé xin lỗi ngay.",
+   "Bố mẹ giữ một luật giống nhau — thứ khiến giai đoạn này dài ra là sự bất nhất."
+  ],
+  "end": "Bé bớt ăn vạ khi nói được câu dài hơn, chờ được lâu hơn và bắt đầu chơi giả vờ nhiều. Không có ngày kết thúc rõ ràng, nó nhạt dần."
+ },
+ "PARENT_BURNOUT": {
+  "lead": "Nuôi con nhỏ mà thấy cạn kiệt là chuyện có thật, không phải mình kém. Nhận ra sớm thì gỡ dễ hơn nhiều.",
+  "signs": [
+   "Thấy mệt ngay từ lúc mở mắt, ngủ dậy không lại sức",
+   "Cáu với con vì những việc trước đây mình chịu được",
+   "Làm mọi việc như cái máy, không thấy vui gì",
+   "Thấy mình là bố mẹ tệ, hay so với nhà khác",
+   "Né tránh — chỉ muốn ở một mình, ngại về nhà",
+   "Người đau đầu, đau dạ dày, ăn ngủ thất thường"
+  ],
+  "now": [
+   "Nói ra với người kia bằng câu cụ thể: \"anh/em cần 2 tiếng ngủ bù sáng mai\", thay vì \"em mệt lắm\".",
+   "Hạ chuẩn hôm nay xuống mức: con ăn, con ngủ, con an toàn. Bấy nhiêu là đủ.",
+   "Ra khỏi nhà một mình 30 phút — đi bộ, ngồi quán, không cần làm gì cả.",
+   "Bỏ bớt một việc trong ngày thay vì cố làm nhanh hơn.",
+   "Ngủ trước 23 giờ một hôm, nhà cửa để đấy."
+  ],
+  "share": [
+   "Chia theo BUỔI chứ đừng chia theo việc: sáng của bố, tối của mẹ — người kia được nghỉ thật.",
+   "Mỗi tuần mỗi người có một khoảng riêng cố định, ghi vào lịch như một cuộc hẹn.",
+   "Nhờ ông bà hoặc người thân 2–3 tiếng mỗi tháng, đừng đợi tới lúc kiệt sức mới nhờ.",
+   "Người đang trông con là người quyết — người kia không đứng ngoài nhận xét."
+  ],
+  "help": "Nếu cảm giác trống rỗng, mất ngủ hoặc buồn kéo dài trên hai tuần, hoặc có ý nghĩ làm hại bản thân, hãy nói với bác sĩ. Đó là bệnh cần chữa, không phải tính cách."
+ },
+ "DUTY_SLOTS": [
+  {
+   "k": "sang",
+   "ic": "🌅",
+   "n": "Buổi sáng",
+   "d": "Dậy, cho ăn sáng, thay đồ, đưa đi lớp"
+  },
+  {
+   "k": "don",
+   "ic": "🚗",
+   "n": "Đón về",
+   "d": "Đón ở lớp, ăn bữa phụ"
+  },
+  {
+   "k": "toi",
+   "ic": "🍚",
+   "n": "Bữa tối",
+   "d": "Nấu, cho bé ăn, dọn"
+  },
+  {
+   "k": "tam",
+   "ic": "🛁",
+   "n": "Tắm & ru ngủ",
+   "d": "Tắm, đọc sách, ru bé ngủ"
+  },
+  {
+   "k": "dem",
+   "ic": "🌙",
+   "n": "Dậy đêm",
+   "d": "Bé tỉnh giấc, thay bỉm, dỗ lại"
+  },
+  {
+   "k": "cuoi",
+   "ic": "🎪",
+   "n": "Cuối tuần",
+   "d": "Người dẫn chính các hoạt động cuối tuần"
+  }
+ ]
 }

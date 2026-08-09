@@ -430,6 +430,9 @@ body.theme-sotay .homev3 .hero:not(.hascover) .sub{
     DRESS_TEMP:[], DRESS_RULES:[], SEASON_ILL:[], SCARY_TASKS:[], WEEKEND_PLANS:[], CHILD_DOCS:[],
     // Đợt 2: tập bô + chuẩn tăng trưởng WHO (hai khoá WHO_* là object theo giới tính)
     POTTY_READY:[], POTTY_TIMES:[], POTTY_FIX:[], WHO_WEIGHT:{}, WHO_HEIGHT:{},
+    // Đợt 3: đi lớp · ra khỏi nhà · tâm lý bé và bố mẹ
+    SCHOOL_START:[], SCHOOL_ILL:[], TEACHER_NOTE:[], TRIP_PACK:[], TRIP_TIPS:[], DUTY_SLOTS:[],
+    SCHOOL_PICK:{}, TWOS_CRISIS:{}, PARENT_BURNOUT:{},
     // ba khoá dưới là OBJECT, không phải mảng — fill() xử lý riêng
     POST_VACCINE:{}, CONSTIPATION:{}, SCREEN_GUIDE:{} };
   function fill(dst,src){
@@ -484,7 +487,9 @@ const SB_KEY='sb_publishable_DMMPv5L2kGhrHTxeQ72iKw_dIh13iT1';
 const CHILD_KEYS=['ju.child','ju.childGrowth','ju.childVaccines','ju.childMilestones','ju.childDiary',
   'ju.childPack','ju.childSkills','ju.childMed','ju.childIllness','ju.childWords','ju.childTantrum',
   'ju.childParenting','ju.skillGuidesDone','ju.childContacts','ju.childSafety','ju.childDocs',
-  'ju.childPotty','ju.childNoti'];
+  'ju.childPotty','ju.childNoti',
+  'ju.childSchools','ju.childTeacherNote','ju.childTripPack','ju.childDuty',
+  'ju.childOneLine','ju.childQuotes','ju.childLetters','ju.childPhotos'];
 let _sb=null;
 function sbClient(){
   if(_sb) return _sb;
@@ -534,8 +539,60 @@ const Cloud={
       await c.from('justus_data').upsert({couple_id:this.coupleId,data:merged,last_writer:this.writer(),updated_at:new Date().toISOString()});
       store.set('ju.synced',Date.now());
     }catch(e){}
+  },
+
+  /* ---------- ảnh (dùng chung bucket 'justus-photos' với Just Us) ----------
+     Chỉ lưu ĐƯỜNG DẪN vào ju.childPhotos, không nhét base64 vào localStorage —
+     ảnh base64 sẽ phình hàng dữ liệu đồng bộ của cả cặp. */
+  _urlCache:{},
+  async uploadPhoto(blob,ext){
+    const c=this.client(); if(!c||!this.coupleId) throw new Error('not_connected');
+    const path=this.coupleId+'/soc-'+Date.now()+'-'+Math.random().toString(36).slice(2,6)+'.'+(ext||'jpg');
+    const {error}=await c.storage.from('justus-photos').upload(path,blob,{upsert:false,contentType:'image/jpeg'});
+    if(error) throw error;
+    return path;
+  },
+  async signedUrl(path){
+    const c=this.client(); if(!c||!path) return null;
+    const hit=this._urlCache[path];
+    if(hit&&hit.exp>Date.now()+60000) return hit.url;
+    const ttl=60*60;
+    const {data,error}=await c.storage.from('justus-photos').createSignedUrl(path,ttl);
+    if(error||!data) return null;
+    this._urlCache[path]={url:data.signedUrl,exp:Date.now()+ttl*1000};
+    return data.signedUrl;
+  },
+  async deletePhoto(path){
+    const c=this.client(); if(!c||!path) return;
+    try{ await c.storage.from('justus-photos').remove([path]); delete this._urlCache[path]; }catch(e){}
   }
 };
+
+/* Nén ảnh trước khi tải lên — cạnh dài tối đa 1200px, JPEG chất lượng 0.82 */
+function compressImage(file,maxSide,quality){
+  return new Promise((resolve,reject)=>{
+    const img=new Image(); const url=URL.createObjectURL(file);
+    img.onload=()=>{
+      URL.revokeObjectURL(url);
+      let {width:w,height:h}=img; const m=maxSide||1200;
+      if(Math.max(w,h)>m){ const r=m/Math.max(w,h); w=Math.round(w*r); h=Math.round(h*r); }
+      const cv=document.createElement('canvas'); cv.width=w; cv.height=h;
+      cv.getContext('2d').drawImage(img,0,0,w,h);
+      cv.toBlob(b=>b?resolve(b):reject(new Error('nén ảnh lỗi')),'image/jpeg',quality||0.82);
+    };
+    img.onerror=()=>{ URL.revokeObjectURL(url); reject(new Error('không đọc được ảnh')); };
+    img.src=url;
+  });
+}
+/* Ảnh đã lưu trên đám mây: xin link 1 giờ rồi hiện */
+function CloudImg({path,style,alt}){
+  const [url,setUrl]=useState(null);
+  useEffect(()=>{ let live=true; if(!path){ setUrl(null); return; }
+    Cloud.signedUrl(path).then(u=>{ if(live) setUrl(u); }).catch(()=>{});
+    return ()=>{ live=false; }; },[path]);
+  if(!url) return <div style={Object.assign({background:'var(--chip)',display:'grid',placeItems:'center',fontSize:20},style||{})}>🖼️</div>;
+  return <img src={url} alt={alt||''} style={Object.assign({objectFit:'cover',display:'block'},style||{})}/>;
+}
 
 function useLocal(key,initial){
   const [v,setV]=useState(()=>store.get(key,initial));
@@ -656,6 +713,15 @@ const POTTY_TIMES=JUD.POTTY_TIMES;
 const POTTY_FIX=JUD.POTTY_FIX;
 const WHO_WEIGHT=JUD.WHO_WEIGHT;
 const WHO_HEIGHT=JUD.WHO_HEIGHT;
+const SCHOOL_PICK=JUD.SCHOOL_PICK;
+const SCHOOL_START=JUD.SCHOOL_START;
+const SCHOOL_ILL=JUD.SCHOOL_ILL;
+const TEACHER_NOTE=JUD.TEACHER_NOTE;
+const TRIP_PACK=JUD.TRIP_PACK;
+const TRIP_TIPS=JUD.TRIP_TIPS;
+const TWOS_CRISIS=JUD.TWOS_CRISIS;
+const PARENT_BURNOUT=JUD.PARENT_BURNOUT;
+const DUTY_SLOTS=JUD.DUTY_SLOTS;
 
 /* ============ Thống nhất cách dạy con ============ */
 function ParentingAgreement(){
@@ -706,6 +772,231 @@ function Spark({points}){
       <path d={line} fill="none" stroke="var(--primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
       <circle cx={end[0]} cy={end[1]} r="3" fill="var(--primary)"/>
     </svg>
+  );
+}
+
+/* ============ Nhóm A — đi lớp ============ */
+function SchoolPicker(){
+  const [list,setList]=useLocal('ju.childSchools',[]);
+  const [f,setF]=useState({name:'',addr:'',fee:'',note:''});
+  const add=()=>{ if(!f.name.trim()) return; setList([...list,{id:uid(),...f,name:f.name.trim(),star:0}]); setF({name:'',addr:'',fee:'',note:''}); };
+  const setStar=(id,n)=> setList(list.map(x=>x.id===id?{...x,star:x.star===n?0:n}:x));
+  return (
+    <div>
+      <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>Ghi lại từng trường đã đi xem để cuối cùng so được, thay vì nhớ mang máng.</div>
+      {list.sort((a,b)=>(b.star||0)-(a.star||0)).map(s=>(
+        <div key={s.id} className="item">
+          <div className="it-top"><h4 style={{fontSize:14}}>🏫 {s.name}</h4>
+            <button className="muted" onClick={()=>{ if(confirm('Xoá trường này?')) setList(list.filter(x=>x.id!==s.id)); }}>✕</button></div>
+          {s.addr && <div className="muted" style={{fontSize:12.5,marginTop:2}}>📍 {s.addr}</div>}
+          {s.fee && <div style={{fontSize:12.5,marginTop:2}}>💵 {s.fee}</div>}
+          {s.note && <div className="muted" style={{fontSize:12.5,marginTop:3,lineHeight:1.5}}>{s.note}</div>}
+          <div className="row" style={{marginTop:6,gap:3}}>
+            <span className="muted" style={{fontSize:11}}>Ưng ý:</span>
+            {[1,2,3,4,5].map(n=><button key={n} onClick={()=>setStar(s.id,n)} style={{fontSize:16,color:(s.star||0)>=n?'var(--warn)':'var(--line)'}}>★</button>)}
+          </div>
+        </div>
+      ))}
+      <div className="card">
+        <input className="inp" placeholder="Tên trường" value={f.name} onChange={e=>setF({...f,name:e.target.value})}/>
+        <input className="inp" style={{marginTop:8}} placeholder="Địa chỉ / cách nhà bao xa" value={f.addr} onChange={e=>setF({...f,addr:e.target.value})}/>
+        <input className="inp" style={{marginTop:8}} placeholder="Học phí (gồm những gì)" value={f.fee} onChange={e=>setF({...f,fee:e.target.value})}/>
+        <textarea className="inp" style={{marginTop:8,minHeight:52,fontSize:12.5}} placeholder="Sĩ số, cô, bếp ăn, sân chơi, cảm nhận…" value={f.note} onChange={e=>setF({...f,note:e.target.value})}/>
+        <button className="btn" style={{marginTop:8}} onClick={add}>＋ Thêm trường đã xem</button>
+      </div>
+      <Collapse id="child-schoolcrit" defaultOpen={false} title="🔍 Nhìn vào những gì">
+        <div className="card">{bullets(SCHOOL_PICK.criteria||[])}</div>
+      </Collapse>
+      <Collapse id="child-schoolq" defaultOpen={false} title="❓ Câu hỏi mang theo khi đi xem trường">
+        <div className="card">{bullets(SCHOOL_PICK.questions||[])}</div>
+      </Collapse>
+    </div>
+  );
+}
+function TeacherNote({child,people}){
+  const [note,setNote]=useLocal('ju.childTeacherNote',{});
+  const exportNote=()=>{
+    const lines=['DẶN CÔ — '+(child.name||'Bé'),''];
+    TEACHER_NOTE.forEach(k=>{ if((note[k]||'').trim()) lines.push('• '+k+': '+note[k].trim()); });
+    lines.push('','Bố mẹ: '+[people.a.name,people.b.name].filter(Boolean).join(' / '));
+    const txt=lines.join('\n');
+    try{ const w=window.open('','_blank'); if(w){ w.document.write('<title>Dặn cô</title><pre style="font-family:system-ui,sans-serif;font-size:15px;white-space:pre-wrap;padding:24px;line-height:1.8">'+txt.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</pre>'); w.document.close(); w.focus(); setTimeout(()=>{ try{w.print();}catch(e){} },350); return; } }catch(e){}
+    if(navigator.share) navigator.share({title:'Dặn cô',text:txt}).catch(()=>{}); else { navigator.clipboard.writeText(txt); alert('Đã copy — dán để gửi cô nhé!'); }
+  };
+  return (
+    <div>
+      <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>Khác hồ sơ y tế: đây là những thứ chỉ nhà mình mới biết. Điền dần, để trống mục nào cũng được.</div>
+      <div className="card">
+        {TEACHER_NOTE.map(k=>(
+          <div key={k} className="field" style={{margin:'0 0 8px'}}><label>{k}</label>
+            <input className="inp" value={note[k]||''} onChange={e=>setNote({...note,[k]:e.target.value})}/></div>
+        ))}
+        <button className="btn" onClick={exportNote}>🖨️ Xuất để in / gửi cô</button>
+      </div>
+    </div>
+  );
+}
+
+/* ============ Nhóm B — ra khỏi nhà ============ */
+function TripPack(){
+  const [done,setDone]=useLocal('ju.childTripPack',{});
+  const n=TRIP_PACK.filter(x=>done[x]).length;
+  return (
+    <div>
+      <div className="prog" style={{margin:'0 14px'}}><i style={{width:(n/TRIP_PACK.length*100)+'%'}}></i></div>
+      <div className="muted center" style={{fontSize:11,margin:'4px 14px'}}>{n}/{TRIP_PACK.length} — khác danh sách đồ đi lớp bên tab Đi học.</div>
+      <div className="card" style={{padding:'4px 13px'}}>
+        {TRIP_PACK.map(it=>(
+          <div key={it} className="row" style={{padding:'8px 0',borderBottom:'1px solid var(--line)'}}>
+            <button onClick={()=>setDone(s=>{ const m={...s}; if(m[it]) delete m[it]; else m[it]=true; return m; })} style={{fontSize:19}}>{done[it]?'✅':'⬜'}</button>
+            <span className="grow" style={{fontSize:13.5,textDecoration:done[it]?'line-through':'none',opacity:done[it]?.6:1}}>{it}</span>
+          </div>
+        ))}
+        <button className="muted" style={{fontSize:11,margin:'8px 0'}} onClick={()=>{ if(confirm('Bỏ đánh dấu tất cả cho chuyến sau?')) setDone({}); }}>↻ Đặt lại cho chuyến sau</button>
+      </div>
+    </div>
+  );
+}
+
+/* ============ Nhóm D — tâm lý bé & bố mẹ ============ */
+function DutyBoard({people}){
+  const [duty,setDuty]=useLocal('ju.childDuty',{});
+  const WHO=[{k:'a',l:(people.a.name||'Bố')},{k:'b',l:(people.b.name||'Mẹ')},{k:'both',l:'Cả hai'},{k:'ob',l:'Ông bà'}];
+  return (
+    <div>
+      <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>Chốt ai lo việc nào để khỏi mỗi tối lại "tưởng người kia làm".</div>
+      {DUTY_SLOTS.map(s=>(
+        <div key={s.k} className="item">
+          <div className="row"><span style={{fontSize:19,flex:'0 0 auto'}}>{s.ic}</span>
+            <div className="grow"><b style={{fontSize:13.5}}>{s.n}</b>
+              <div className="muted" style={{fontSize:11.5}}>{s.d}</div></div></div>
+          <div className="row" style={{marginTop:6,gap:5,flexWrap:'wrap'}}>
+            {WHO.map(w=>(
+              <button key={w.k} className="pill" style={duty[s.k]===w.k?{background:'var(--primary)',color:'var(--on-primary)'}:{}}
+                onClick={()=>setDuty({...duty,[s.k]:duty[s.k]===w.k?'':w.k})}>{w.l}</button>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* ============ Nhóm E — kỷ niệm ============ */
+function MemoryTab({child}){
+  const [one,setOne]=useLocal('ju.childOneLine',[]);
+  const [quotes,setQuotes]=useLocal('ju.childQuotes',[]);
+  const [photos,setPhotos]=useLocal('ju.childPhotos',[]);
+  const [letters,setLetters]=useLocal('ju.childLetters',[]);
+  const [diary,setDiary]=useLocal('ju.childDiary',[]);
+  const [t1,setT1]=useState(''); const [t2,setT2]=useState(''); const [t3,setT3]=useState('');
+  const [lt,setLt]=useState('');
+  const [busy,setBusy]=useState('');
+  const today=todayISO();
+  const ym=today.slice(0,7);
+  const wroteToday=one.some(x=>x.date===today);
+  const monthPhoto=photos.find(p=>p.ym===ym);
+
+  const addOne=()=>{ if(!t1.trim()) return; setOne([{id:uid(),date:today,text:t1.trim()},...one.filter(x=>x.date!==today)]); setT1(''); celebrate(['📔']); };
+  const addQuote=()=>{ if(!t2.trim()) return; setQuotes([{id:uid(),date:today,text:t2.trim()},...quotes]); setT2(''); celebrate(['💬']); };
+  const addFirst=()=>{ if(!t3.trim()) return; setDiary([{id:uid(),date:today,text:t3.trim()},...diary]); setT3(''); celebrate(['📔','💞']); };
+  const addLetter=()=>{ if(!lt.trim()) return; setLetters([{id:uid(),date:today,text:lt.trim()},...letters]); setLt(''); celebrate(['💌']); };
+
+  const pickPhoto=async(e)=>{
+    const file=e.target.files&&e.target.files[0]; e.target.value='';
+    if(!file) return;
+    if(Cloud.status!=='on'){ alert('Ảnh lưu trên đám mây của hai vợ chồng. Mở Just Us đăng nhập và ghép cặp trước đã nhé.'); return; }
+    setBusy('Đang tải ảnh lên…');
+    try{
+      const blob=await compressImage(file,1200,0.82);
+      const path=await Cloud.uploadPhoto(blob,'jpg');
+      const old=photos.find(p=>p.ym===ym);
+      if(old&&old.path) Cloud.deletePhoto(old.path);
+      setPhotos([{id:uid(),ym,path,date:today},...photos.filter(p=>p.ym!==ym)]);
+      celebrate(['📷']);
+    }catch(err){ alert('Không tải được ảnh: '+((err&&err.message)||err)); }
+    setBusy('');
+  };
+
+  return (
+    <div>
+      <div className="sec-title">✍️ Một dòng hôm nay</div>
+      <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>Một câu thôi. Dễ giữ hơn nhật ký dài, và vài năm nữa đọc lại mới thấy quý.</div>
+      <div className="row" style={{margin:'0 14px',gap:8}}>
+        <input className="inp grow" placeholder={wroteToday?'Sửa dòng hôm nay…':'Hôm nay con…'} value={t1} onChange={e=>setT1(e.target.value)} onKeyDown={e=>{ if(e.key==='Enter') addOne(); }}/>
+        <button className="btn sm" onClick={addOne}>＋</button>
+      </div>
+      {one.slice(0,14).map(x=>(
+        <div key={x.id} className="item" style={{padding:'9px 13px'}}>
+          <div className="row"><span className="muted" style={{fontSize:11,flex:'0 0 auto'}}>{fmtDateVN(x.date)}</span>
+            <span className="grow" style={{fontSize:13.5}}>{x.text}</span>
+            <button className="muted" onClick={()=>{ if(confirm('Xoá dòng này?')) setOne(one.filter(y=>y.id!==x.id)); }}>✕</button></div>
+        </div>
+      ))}
+
+      <div className="sec-title">📷 Ảnh mỗi tháng</div>
+      <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>Mỗi tháng một tấm, chụp cùng một góc thì càng thấy con lớn.</div>
+      <div className="card">
+        {monthPhoto
+          ? <CloudImg path={monthPhoto.path} style={{width:'100%',borderRadius:10,maxHeight:260}} alt={'Ảnh tháng '+ym}/>
+          : <div className="muted center" style={{fontSize:12.5,padding:'14px 0'}}>Tháng {ym.slice(5)}/{ym.slice(0,4)} chưa có ảnh nào.</div>}
+        <label className="btn soft" style={{marginTop:9,display:'block',textAlign:'center',cursor:'pointer'}}>
+          {busy || (monthPhoto?'📷 Đổi ảnh tháng này':'📷 Chọn ảnh tháng này')}
+          <input type="file" accept="image/*" onChange={pickPhoto} style={{display:'none'}}/>
+        </label>
+        {Cloud.status!=='on' && <div className="muted" style={{fontSize:10.5,marginTop:6,lineHeight:1.5}}>Ảnh lưu trên đám mây chung của hai vợ chồng, nên cần đăng nhập &amp; ghép cặp bên Just Us trước.</div>}
+      </div>
+      {photos.length>1 && <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:6,margin:'0 14px'}}>
+        {photos.filter(p=>p.ym!==ym).slice(0,12).map(p=>(
+          <div key={p.id} style={{position:'relative'}}>
+            <CloudImg path={p.path} style={{width:'100%',aspectRatio:'1',borderRadius:8}} alt={'Ảnh '+p.ym}/>
+            <div style={{position:'absolute',left:0,right:0,bottom:0,background:'linear-gradient(transparent,rgba(0,0,0,.6))',color:'#fff',fontSize:10,padding:'8px 4px 3px',textAlign:'center',borderRadius:'0 0 8px 8px'}}>{p.ym.slice(5)}/{p.ym.slice(2,4)}</div>
+          </div>
+        ))}
+      </div>}
+
+      <div className="sec-title">💬 Con nói câu này</div>
+      <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>Câu bé tự chế ra — khác mục “từ mới” bên tab Phát triển.</div>
+      <div className="row" style={{margin:'0 14px',gap:8}}>
+        <input className="inp grow" placeholder="vd: “mẹ ơi trăng bị ướt”" value={t2} onChange={e=>setT2(e.target.value)} onKeyDown={e=>{ if(e.key==='Enter') addQuote(); }}/>
+        <button className="btn sm" onClick={addQuote}>＋</button>
+      </div>
+      {quotes.slice(0,12).map(x=>(
+        <div key={x.id} className="item" style={{padding:'9px 13px'}}>
+          <div className="row"><div className="grow"><div style={{fontSize:14}}>“{x.text}”</div>
+            <div className="muted" style={{fontSize:11,marginTop:2}}>{fmtDateVN(x.date)}</div></div>
+            <button className="muted" onClick={()=>{ if(confirm('Xoá câu này?')) setQuotes(quotes.filter(y=>y.id!==x.id)); }}>✕</button></div>
+        </div>
+      ))}
+
+      <div className="sec-title">📔 Điều đầu tiên</div>
+      <div className="row" style={{margin:'0 14px',gap:8}}>
+        <input className="inp grow" placeholder="Lần đầu con… (nói, bước đi, tự xúc…)" value={t3} onChange={e=>setT3(e.target.value)} onKeyDown={e=>{ if(e.key==='Enter') addFirst(); }}/>
+        <button className="btn sm" onClick={addFirst}>＋</button>
+      </div>
+      {diary.slice(0,10).map(d=>(
+        <div key={d.id} className="item" style={{padding:'9px 13px'}}>
+          <div className="row"><span className="muted" style={{fontSize:11,flex:'0 0 auto'}}>{fmtDateVN(d.date)}</span>
+            <span className="grow" style={{fontSize:13.5}}>{d.text}</span>
+            <button className="iconbtn" onClick={()=>{ if(confirm('Xoá ghi chú này?')) setDiary(diary.filter(x=>x.id!==d.id)); }}>🗑️</button></div>
+        </div>
+      ))}
+
+      <Collapse id="child-letters" defaultOpen={false} title="💌 Thư gửi con sau này">
+        <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>Viết cho con đọc khi lớn. Bố mẹ đều viết được, mỗi lúc một lá.</div>
+        <div className="card">
+          <textarea className="inp" style={{minHeight:96}} placeholder={'Gửi '+((child&&child.name)||'con')+' của bố mẹ…'} value={lt} onChange={e=>setLt(e.target.value)}/>
+          <button className="btn" style={{marginTop:8}} onClick={addLetter}>💌 Cất lá thư này</button>
+        </div>
+        {letters.map(l=>(
+          <div key={l.id} className="item">
+            <div className="row"><span className="muted grow" style={{fontSize:11}}>✍️ {fmtDateVN(l.date)}</span>
+              <button className="muted" onClick={()=>{ if(confirm('Xoá lá thư này?')) setLetters(letters.filter(y=>y.id!==l.id)); }}>✕</button></div>
+            <div style={{fontSize:13.5,marginTop:4,whiteSpace:'pre-wrap',lineHeight:1.6}}>{l.text}</div>
+          </div>
+        ))}
+      </Collapse>
+    </div>
   );
 }
 
@@ -1013,14 +1304,22 @@ function HomeTab({child,months,ageLabel,growth,words,wordsThisWeek,vac,mile,skil
   const nextVacDays=(nextVac&&child.dob)? daysFromToday(new Date(new Date(child.dob+'T00:00:00').getTime()+vacAgeMonths(nextVac.age)*30.44*86400000).toISOString().slice(0,10)) : null;
 
   const alerts=childDueList({child,months,vac,ill,growth,packDone,schoolDays});
+  // Nhãn nhỏ cho hai ô mới, đọc thẳng từ localStorage cho gọn (không cần thêm prop)
+  const potty=store.get('ju.childPotty',{})||{};
+  const pottyLabel=potty.start?'đang tập':'chưa bắt đầu';
+  const oneLine=store.get('ju.childOneLine',[])||[];
+  const quotes=store.get('ju.childQuotes',[])||[];
+  const memoryLabel=(oneLine.length+quotes.length)?((oneLine.length+quotes.length)+' ghi chép'):'chưa ghi gì';
 
   const TILES=[
     {k:'develop',ic:'🌱',n:'Phát triển',s:band?(bandDone+'/'+band.items.length+' mốc'):'chưa có ngày sinh'},
     {k:'play',ic:'🎲',n:'Chơi với con',s:PLAY_LIB.length+' trò'},
     {k:'health',ic:'🏥',n:'Sức khoẻ',s:last&&last.w?(last.w+' kg'):'chưa đo'},
     {k:'eat',ic:'🍎',n:'Ăn uống',s:weanToday?('thực đơn '+weanToday.d):'thực đơn tuần'},
+    {k:'potty',ic:'🚽',n:'Tập bô',s:pottyLabel},
     {k:'school',ic:'🎒',n:'Đi học',s:schoolDays!=null?('còn '+schoolDays+' ngày'):('đồ '+packDone+'/'+CHILD_PACK.length)},
     {k:'parent',ic:'💞',n:'Nuôi dạy',s:guideDone+'/'+SKILL_GUIDES.length+' kỹ năng'},
+    {k:'memory',ic:'📔',n:'Kỷ niệm',s:memoryLabel},
   ];
 
   return (
@@ -1245,7 +1544,6 @@ function ChildCare({people,me}){
   const [growth,setGrowth]=useLocal('ju.childGrowth',[]);
   const [vac,setVac]=useLocal('ju.childVaccines',{});
   const [mile,setMile]=useLocal('ju.childMilestones',{});
-  const [diary,setDiary]=useLocal('ju.childDiary',[]);
   const [pack,setPack]=useLocal('ju.childPack',{});
   const [skills,setSkills]=useLocal('ju.childSkills',{});
   const [gDone,setGDone]=useLocal('ju.skillGuidesDone',{});
@@ -1258,7 +1556,7 @@ function ChildCare({people,me}){
   const [tab,setTab]=useState('home');
   const [editChild,setEditChild]=useState(false);
   const [gw,setGw]=useState(''); const [gh,setGh]=useState('');
-  const [dtext,setDtext]=useState(''); const [wordIn,setWordIn]=useState('');
+  const [wordIn,setWordIn]=useState('');
   const [illForm,setIllForm]=useState({symptoms:[],meds:'',note:''});
   const [tanForm,setTanForm]=useState({situation:'',handling:''});
   const [browseIssue,setBrowseIssue]=useState(null);
@@ -1266,7 +1564,6 @@ function ChildCare({people,me}){
   const ageLabel = months==null?'chưa đặt ngày sinh' : months<24? months+' tháng tuổi' : Math.floor(months/12)+' tuổi'+(months%12?(' '+(months%12)+' th'):'');
   const tg=(obj,set,key)=>{ const n={...obj}; if(n[key]) delete n[key]; else n[key]=true; set(n); };
   const addGrowth=()=>{ const w=parseFloat(gw), h=parseFloat(gh); if(!w&&!h) return; setGrowth([{id:uid(),date:todayISO(),w:w||null,h:h||null},...growth]); setGw('');setGh(''); celebrate(['📏']); };
-  const addDiary=()=>{ if(!dtext.trim()) return; setDiary([{id:uid(),date:todayISO(),text:dtext.trim()},...diary]); setDtext(''); celebrate(['📔','💞']); };
   const addWord=()=>{ const w=wordIn.trim(); if(!w) return; if(!words.find(x=>x.word.toLowerCase()===w.toLowerCase())) setWords([{id:uid(),word:w,date:todayISO()},...words]); setWordIn(''); celebrate(['🗣️']); };
   const toggleSym=(s)=> setIllForm(f=>({...f,symptoms:f.symptoms.indexOf(s)>=0?f.symptoms.filter(x=>x!==s):[...f.symptoms,s]}));
   const addIll=()=>{ if(!illForm.symptoms.length&&!illForm.note.trim()) return; setIll([{id:uid(),date:todayISO(),symptoms:illForm.symptoms,meds:illForm.meds.trim(),note:illForm.note.trim(),recovered:''},...ill]); setIllForm({symptoms:[],meds:'',note:''}); celebrate(['💊']); };
@@ -1320,10 +1617,11 @@ function ChildCare({people,me}){
         {k:'home',icon:'🏠',label:'Trang chủ'},
         {k:'develop',icon:'🌱',label:'Phát triển'},{k:'play',icon:'🎲',label:'Chơi với con'},{k:'health',icon:'🏥',label:'Sức khoẻ'},
         {k:'eat',icon:'🍎',label:'Ăn uống'},{k:'potty',icon:'🚽',label:'Tập bô'},{k:'school',icon:'🎒',label:'Đi học'},
-        {k:'parent',icon:'💞',label:'Nuôi dạy'},{k:'safe',icon:'🚨',label:'An toàn'},
+        {k:'parent',icon:'💞',label:'Nuôi dạy'},{k:'memory',icon:'📔',label:'Kỷ niệm'},{k:'safe',icon:'🚨',label:'An toàn'},
       ]}/>
 
       {tab==='potty' && <PottyTab/>}
+      {tab==='memory' && <MemoryTab child={child}/>}
 
       {tab==='home' && <HomeTab child={child} months={months} ageLabel={ageLabel} growth={growth}
         words={words} wordsThisWeek={wordsThisWeek} vac={vac} mile={mile} skills={skills} skillDone={skillDone}
@@ -1392,6 +1690,12 @@ function ChildCare({people,me}){
             <div style={{marginTop:6}}><a className="pill" style={{textDecoration:'none'}} href={'https://www.google.com/maps/dir/?api=1&origin='+encodeURIComponent('Núi Trúc, Ba Đình, Hà Nội')+'&destination='+encodeURIComponent(c.n+', '+c.a+', Hà Nội')} target="_blank" rel="noreferrer">🗺️ Chỉ đường</a></div>
           </div>
         ))}
+        </Collapse>
+        <Collapse id="child-trippack" defaultOpen={false} title="🧳 Đồ mang đi chơi xa">
+          <TripPack/>
+        </Collapse>
+        <Collapse id="child-triptips" defaultOpen={false} title="🚗 Ra khỏi nhà cùng con">
+          <GuideList items={TRIP_TIPS} keyOf={x=>x.n} titleOf={x=>x.n} iconOf={x=>x.icon} render={x=>bullets(x.tips)}/>
         </Collapse>
         <Collapse id="child-weekend" defaultOpen={false} title="🗓️ Cuối tuần làm gì với con">
           <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>Mấy khung ngày để khỏi phải nghĩ từ đầu vào sáng thứ Bảy.</div>
@@ -1576,6 +1880,31 @@ function ChildCare({people,me}){
           ))}
         </div>
         </Collapse>
+        <Collapse id="child-schoolpick" defaultOpen={false} title="🏫 Chọn trường mầm non">
+          <SchoolPicker/>
+        </Collapse>
+        <Collapse id="child-schoolstart" defaultOpen={false} title="📆 Lịch làm quen ngày đầu đi lớp">
+          <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>Tăng dần thay vì thả cả ngày ngay hôm đầu — bé quen nhanh hơn và ít ốm hơn.</div>
+          {SCHOOL_START.map(s=>(
+            <div key={s.d} className="item" style={{padding:'9px 13px'}}>
+              <b style={{fontSize:13.5}}>{s.d}</b>
+              <div className="muted" style={{fontSize:12.5,marginTop:2,lineHeight:1.55}}>{s.t}</div>
+            </div>
+          ))}
+        </Collapse>
+        <Collapse id="child-teachernote" defaultOpen={false} title="📝 Tờ dặn cô">
+          <TeacherNote child={child} people={people}/>
+        </Collapse>
+        <Collapse id="child-schoolill" defaultOpen={false} title="🦠 Bệnh hay lây ở lớp — nghỉ mấy ngày">
+          <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>Số ngày nghỉ là mức thường được khuyến cáo; trường và bác sĩ có thể yêu cầu khác.</div>
+          <GuideList items={SCHOOL_ILL} keyOf={x=>x.n} titleOf={x=>x.n} iconOf={x=>x.icon} render={x=>(
+            <div style={{fontSize:13,lineHeight:1.6}}>
+              <div><b>Dấu hiệu:</b> {x.sign}</div>
+              <div style={{marginTop:4}}><b>Nghỉ học:</b> {x.off}</div>
+              <div className="muted" style={{marginTop:4}}>⚠️ {x.note}</div>
+            </div>
+          )}/>
+        </Collapse>
         <Collapse id="child-docs" defaultOpen={false} title="🗂️ Giấy tờ của bé">
           <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>Danh sách để soát cho đủ. Bản chụp thì cất bên <b>Just Us → Giấy tờ</b> (mã hoá đầu-cuối) — đừng lưu thành kho thứ hai ở đây.</div>
           {CHILD_DOCS.map(d=>(
@@ -1591,6 +1920,33 @@ function ChildCare({people,me}){
       </div>}
 
       {tab==='parent' && <div>
+        <Collapse id="child-twos" defaultOpen={false} title="🌪️ “Khủng hoảng tuổi lên 2” là gì">
+          <div className="card">
+            <div style={{fontSize:13.5,lineHeight:1.65}}>{TWOS_CRISIS.what}</div>
+            <div className="muted" style={{fontSize:12.5,marginTop:8,lineHeight:1.6}}>🕐 {TWOS_CRISIS.when}</div>
+            <div style={{marginTop:9,fontSize:12,fontWeight:800}}>NHÌN RA Ở ĐÂU</div>
+            {bullets(TWOS_CRISIS.signs||[],{marginTop:3})}
+            <div style={{marginTop:9,fontSize:12,fontWeight:800,color:'var(--good)'}}>ĐI QUA CHO NHẸ</div>
+            {bullets(TWOS_CRISIS.help||[],{marginTop:3})}
+            <div className="muted" style={{fontSize:12.5,marginTop:9,lineHeight:1.6}}>🌤️ {TWOS_CRISIS.end}</div>
+          </div>
+        </Collapse>
+        <Collapse id="child-burnout" defaultOpen={false} title="🫂 Bố mẹ đuối sức">
+          <div className="card">
+            <div className="muted" style={{fontSize:12.5,lineHeight:1.6}}>{PARENT_BURNOUT.lead}</div>
+            <div style={{marginTop:9,fontSize:12,fontWeight:800}}>DẤU HIỆU</div>
+            {bullets(PARENT_BURNOUT.signs||[],{marginTop:3})}
+            <div style={{marginTop:9,fontSize:12,fontWeight:800,color:'var(--good)'}}>LÀM ĐƯỢC NGAY HÔM NAY</div>
+            {bullets(PARENT_BURNOUT.now||[],{marginTop:3})}
+            <div style={{marginTop:9,fontSize:12,fontWeight:800}}>SAN SẺ VỚI NHAU</div>
+            {bullets(PARENT_BURNOUT.share||[],{marginTop:3})}
+            <div className="sc-er"><div className="h">Khi nào cần người giúp</div>
+              <div style={{fontSize:12.5,lineHeight:1.6}}>{PARENT_BURNOUT.help}</div></div>
+          </div>
+        </Collapse>
+        <Collapse id="child-duty" defaultOpen={false} title="🤝 Ai lo việc nào">
+          <DutyBoard people={people}/>
+        </Collapse>
         <Collapse id="child-scripts" defaultOpen={false} title="💬 Con đang ăn vạ — nói câu gì bây giờ">
           <TantrumScripts/>
         </Collapse>
@@ -1643,18 +1999,7 @@ function ChildCare({people,me}){
         {browseIssue && <Sheet title={browseIssue.icon+' '+browseIssue.title} onClose={()=>setBrowseIssue(null)}>
           <ul style={{margin:'4px 0 0',paddingLeft:18,fontSize:14,lineHeight:1.7}}>{browseIssue.tips.map((t,i)=><li key={i} style={{marginBottom:7}}>{t}</li>)}</ul>
         </Sheet>}
-        <div className="sec-title">📔 Nhật ký “điều đầu tiên”</div>
-        <div className="row" style={{margin:'0 14px 4px',gap:8}}>
-          <input className="inp grow" placeholder="Hôm nay bé… (lần đầu nói, bước đi…)" value={dtext} onChange={e=>setDtext(e.target.value)} onKeyDown={e=>{ if(e.key==='Enter') addDiary(); }}/>
-          <button className="btn sm" onClick={addDiary}>＋</button>
-        </div>
-        {diary.slice(0,6).map(d=>(
-          <div key={d.id} className="item">
-            <div className="row"><span className="muted grow" style={{fontSize:12.5}}>{fmtDateVN(d.date)}</span>
-              <button className="iconbtn" onClick={()=>{ if(confirm('Xoá ghi chú này?')) setDiary(diary.filter(x=>x.id!==d.id)); }}>🗑️</button></div>
-            <div style={{fontSize:14,marginTop:2}}>{d.text}</div>
-          </div>
-        ))}
+        {/* Nhật ký "điều đầu tiên" đã chuyển sang tab 📔 Kỷ niệm cho gọn một mối */}
         <div className="sec-title">😤 Nhật ký “cơn ăn vạ”</div>
         <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>Ghi tình huống + cách xử lý hiệu quả để lần sau rút kinh nghiệm.</div>
         <div className="card">
