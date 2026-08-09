@@ -5,7 +5,7 @@
    của service worker chỉ giới hạn TRANG nào do nó điều khiển, còn request thì nó chặn được cả
    đường dẫn ngoài thư mục — nên hai file trên vẫn vào cache 'soc-*' của app này.
 */
-const CACHE = 'soc-v4';
+const CACHE = 'soc-v5';
 const CDN = ['https://cdn.jsdelivr.net'];
 
 self.addEventListener('install', () => { self.skipWaiting(); });
