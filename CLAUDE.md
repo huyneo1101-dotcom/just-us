@@ -4,7 +4,7 @@ App tĩnh: UI + logic + CSS nằm trong `index.html` (~7810 dòng, ~676KB — v�
 
 ## Quy tắc làm việc với file này
 - **KHÔNG đọc cả `index.html` (~676KB, ~7810 dòng)** — LUÔN grep định vị rồi Read cửa sổ nhỏ (xem skill `bigfile-nav`).
-- Sửa nội dung đáng kể → **bump `CACHE` trong `sw.js`** (hiện: `justus-v33`; có thêm cache phụ `justus-noti`).
+- Sửa nội dung đáng kể → **bump `CACHE` trong `sw.js`** (hiện: `justus-v34`; có thêm cache phụ `justus-noti`).
 - Babel transpile trong trình duyệt: lỗi cú pháp = trắng màn hình. Kiểm tra Console sau khi sửa.
 
 ## Dữ liệu tĩnh tách rời (`data/*.json`)
@@ -16,7 +16,7 @@ Các mảng nội dung lớn KHÔNG còn nằm trong `index.html` — sửa nộ
 | `data/dishes.json` | `MENU_GOALS` `EASY_DISHES` `DISHES` (232 món) |
 | `data/prompts.json` | `QUESTIONS` `QUIZ_Q` `CHALLENGES` `TALK_TOPICS` |
 | `data/hanoi.json` | `HANOI_CATS` `HANOI_SPOTS` |
-| `data/child.json` | 44 khoá nội dung nuôi con — nhóm gốc (`CHILD_VACCINES` `CHILD_MILESTONES` `CHILD_TIPS` `CHILD_PACK` `CHILD_SKILLS` `PLAY_LIB` `WEAN_MENU` `PARENTING_QS` `ILL_SYMPTOMS` `KIDS_CAFES` `SKILL_GUIDES` `CHILD_ISSUES`) + nhóm đợt 1 (`EMERGENCY` `RED_FLAGS` `DANGER_ITEMS` `HOME_SAFETY` `CONTACT_SUGGEST` `TANTRUM_SCRIPTS` `CHILD_BEHAVIOR` `CHORES_2Y` `SELF_CORNER` `DRESS_TEMP` `DRESS_RULES` `SEASON_ILL` `SCARY_TASKS` `WEEKEND_PLANS` `CHILD_DOCS` + 3 **object** `POST_VACCINE` `CONSTIPATION` `SCREEN_GUIDE`) + nhóm đợt 2 (`POTTY_READY` `POTTY_TIMES` `POTTY_FIX` + 2 **object** `WHO_WEIGHT` `WHO_HEIGHT`) + nhóm đợt 3 (`SCHOOL_START` `SCHOOL_ILL` `TEACHER_NOTE` `TRIP_PACK` `TRIP_TIPS` `DUTY_SLOTS` + 3 **object** `SCHOOL_PICK` `TWOS_CRISIS` `PARENT_BURNOUT`) — **dùng chung** cho app Sóc (`soc/`) và trang chủ Just Us |
+| `data/child.json` | 51 khoá nội dung nuôi con — nhóm gốc (`CHILD_VACCINES` `CHILD_MILESTONES` `CHILD_TIPS` `CHILD_PACK` `CHILD_SKILLS` `PLAY_LIB` `WEAN_MENU` `PARENTING_QS` `ILL_SYMPTOMS` `KIDS_CAFES` `SKILL_GUIDES` `CHILD_ISSUES`) + nhóm đợt 1 (`EMERGENCY` `RED_FLAGS` `DANGER_ITEMS` `HOME_SAFETY` `CONTACT_SUGGEST` `TANTRUM_SCRIPTS` `CHILD_BEHAVIOR` `CHORES_2Y` `SELF_CORNER` `DRESS_TEMP` `DRESS_RULES` `SEASON_ILL` `SCARY_TASKS` `WEEKEND_PLANS` `CHILD_DOCS` + 3 **object** `POST_VACCINE` `CONSTIPATION` `SCREEN_GUIDE`) + nhóm đợt 2 (`POTTY_READY` `POTTY_TIMES` `POTTY_FIX` + 2 **object** `WHO_WEIGHT` `WHO_HEIGHT`) + nhóm đợt 3 (`SCHOOL_START` `SCHOOL_ILL` `TEACHER_NOTE` `TRIP_PACK` `TRIP_TIPS` `DUTY_SLOTS` + 3 **object** `SCHOOL_PICK` `TWOS_CRISIS` `PARENT_BURNOUT`) + nhóm bổ sung (`SLEEP_NEED` `SLEEP_ROUTINE` `SLEEP_FIX` `TEETH_ORDER` `CHECKUP_SCHEDULE` `DEV_REDFLAGS` + object `TEETH_CARE`) — **dùng chung** cho app Sóc (`soc/`) và trang chủ Just Us |
 
 Cách hoạt động: một `<script>` ngay trước khối `text/babel` tạo `window.JUD` với mảng/object RỖNG rồi `fetch` các JSON và **đổ dữ liệu vào đúng chỗ cũ** (giữ nguyên identity, vì trong khối babel viết `const DISHES=JUD.DISHES;` chạy ngay lập tức). App chỉ vẽ sau khi dữ liệu về (tối đa chờ 5s rồi vẽ trước, dữ liệu về muộn thì vẽ lại).
 - Thêm mảng dữ liệu mới → thêm khoá vào JSON **và** thêm placeholder rỗng đúng kiểu trong `window.JUD`.
@@ -77,6 +77,29 @@ Nuôi dạy sang đây**; state `ju.childDiary` giờ chỉ do `MemoryTab` giữ
   Chưa ghép cặp thì không tải ảnh được, app báo rõ chứ không im lặng.
 - `GuideList` + `bullets()` là hai helper dùng lại cho mọi mục "bấm mở ra đọc".
 
+### Thiết kế lại (2026-08-09)
+App Sóc **không còn mượn da "Sổ tay"** của Just Us nữa — nó có hệ token riêng trong khối `<style>`
+(`--brand` xanh mòng két, `--surface`, `--ink*`, `--line`, sáng/tối đầy đủ). Lý do đổi: da sổ tay lấy
+đỏ gạch làm màu chính, gần trùng màu cấp cứu nên thứ quan trọng nhất lại không nổi. **Nay đỏ
+(`--danger`) CHỈ dùng cho cấp cứu, không dùng ở đâu khác** — đừng phá luật này.
+- Sửa giao diện thì sửa token, đừng viết màu thẳng vào style nội tuyến.
+- Muốn quay lại da sổ tay thì thay đúng khối `<style>` của `soc/index.html`, phần JS không phụ thuộc.
+
+**Điều hướng hai tầng** thay cho lưới 10 pill cũ: hằng `NAV` chia 13 mục vào **5 nhóm** —
+🏠 Nhà · 🌱 Lớn lên (mốc & lời nói · chơi & ra ngoài · ăn uống · giấc ngủ · đi lớp) ·
+🏥 Sức khoẻ (theo dõi & khám · răng · tập bô · an toàn) · 💞 Nuôi dạy (với con · bố mẹ) · 📔 Kỷ niệm.
+`Dock` là thanh dưới cố định (có chấm nhắc khi nhóm đó đang có việc), `SubTabs` là hàng tab con.
+Thêm mục mới → thêm vào `NAV`, `TAB_GROUP`/`TAB_NAME` tự suy ra.
+- Nút 🚨 nằm cố định ở `header`, luôn một chạm là tới từ bất kỳ đâu.
+
+**Ba thứ vá điểm yếu cũ:**
+- `SearchSheet` + `searchIndex()` — tìm toàn app, bỏ dấu vẫn ra ("sot co giat"). Thêm nội dung mới
+  thì nhớ thêm một dòng vào `searchIndex()`, không thì tra không thấy.
+- `MenuSheet` — xuất/nhập file sao lưu JSON toàn bộ `CHILD_KEYS`, kèm trạng thái đồng bộ và giờ
+  đồng bộ gần nhất. Ảnh KHÔNG nằm trong file (chỉ có đường dẫn).
+- `App` kiểm dữ liệu tĩnh trước khi vẽ: `data/child.json` hỏng thì hiện màn báo lỗi có nút tải lại,
+  thay vì vẽ hàng loạt mục rỗng một cách im lặng.
+
 **Trang chủ** (`HomeTab`) là sub-tab đầu tiên và là màn mặc định khi mở app — ghép hai mẫu đã chọn:
 phần trên là **bảng chỉ số** (cân nặng lớn + đường 6 lần đo gần nhất vẽ bằng `Spark`, rồi 4 ô chiều cao ·
 từ nói được · mũi đã tiêm · kỹ năng tự lập), giữa là **📌 Cần để ý** (mũi còn thiếu, mũi kế tiếp trong 60
@@ -98,7 +121,7 @@ lớn** vào từng mục (thêm 🚽 Tập bô và 📔 Kỷ niệm ở đợt 
   liệu khác, và `Cloud.start()` của Just Us (vốn `pull()` đè localStorage khi mở app) không nuốt mất phần
   vừa ghi bên Sóc. `last_writer` ghi là `<device>.soc` để máy kia (và tab Just Us) nhận realtime.
   Chưa đăng nhập/ghép cặp thì app vẫn chạy, chỉ lưu máy này (có dòng báo "📴 Chưa nối đám mây").
-- Cache riêng `soc-v5`. **Ba service worker dùng chung origin**: mỗi `sw.js` chỉ được xoá cache có tiền tố
+- Cache riêng `soc-v6`. **Ba service worker dùng chung origin**: mỗi `sw.js` chỉ được xoá cache có tiền tố
   của chính nó (`justus-*` / `tamlinh-*` / `soc-*`). `soc/sw.js` cache cả `../data/child.json` + `../fonts.css`
   (scope chỉ giới hạn TRANG được điều khiển, không giới hạn URL được chặn) → đổi 2 file đó phải bump `soc-v*`.
 - Deploy: Pages và Netlify đều publish cả thư mục nên `soc/` tự lên, không cần sửa CI.
