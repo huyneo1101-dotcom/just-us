@@ -6968,8 +6968,10 @@ function PhotoPicker({value,onChange,size,label,hint,make}){
         <button className="x" onClick={()=>rm(i)}>✕</button>
       </div>)}
       <PhotoAddBtn size={s} onAdd={add} make={make} label={list.length?null:(label||null)}/>
-      <button className="pill" style={{padding:'8px 12px',fontSize:12.5}} onClick={()=>manyRef.current&&manyRef.current.click()}>
-        {many?('Đang thêm… còn '+many):'🖼️ Chọn nhiều ảnh'}</button>
+      {/* nút phụ để cùng cỡ với nút 📷: có chữ khi chưa có ảnh, thành ô vuông s×s khi đã có ảnh */}
+      <button className="btn sm soft" style={{width:list.length?s:'auto',height:s,fontSize:list.length?20:13,padding:list.length?0:'0 12px'}}
+        onClick={()=>manyRef.current&&manyRef.current.click()}>
+        {many?(list.length?('…'+many):('Đang thêm… còn '+many)):(list.length?'🖼️':'🖼️ Chọn nhiều ảnh')}</button>
       <input ref={manyRef} type="file" accept="image/*" multiple style={{display:'none'}} onChange={pickMany}/>
     </div>
     <div className="phlab" style={{marginTop:4}}>Nút <b>📷</b> mở cả Thư viện/Máy ảnh (1 ảnh mỗi lần) · <b>🖼️</b> chọn nhiều ảnh một lượt.</div>
