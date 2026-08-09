@@ -306,7 +306,7 @@ const store={
 const SB_URL='https://vvgkjgvzjeklaadusbne.supabase.co';
 const SB_KEY='sb_publishable_DMMPv5L2kGhrHTxeQ72iKw_dIh13iT1';
 // Các key được đồng bộ (KHÔNG gồm ju.me/ju.device/ju.sync — đó là riêng từng máy)
-const SYNC_KEYS=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood','ju.qa','ju.timeline','ju.coupons','ju.chores','ju.lovejar','ju.quiz','ju.city','ju.goals','ju.checkin','ju.challengeDone','ju.homecfg','ju.diary','ju.projects','ju.vinhaUrl','ju.checkins','ju.menu','ju.period','ju.menuPlan','ju.accuKey','ju.habits','ju.hiddenSpots','ju.usOrder','ju.eventPrefs','ju.child','ju.childGrowth','ju.childVaccines','ju.childMilestones','ju.childDiary','ju.partnerWishes','ju.todos','ju.spotify','ju.dishPrefs','ju.favDishes','ju.childPack','ju.childSkills','ju.childMed','ju.childIllness','ju.childWords','ju.childTantrum','ju.childParenting','ju.saveTips','ju.saveCustom','ju.funPrefs','ju.routine','ju.routineIssues','ju.noti','ju.family','ju.health','ju.transfers','ju.skillGuidesDone','ju.expenses','ju.budget','ju.vinhaSync','ju.menuOrder','ju.notesSeen','ju.intimacy','ju.intimacySeen','ju.quizKnow','ju.familyRules','ju.expiry','ju.stash','ju.docs','ju.tuvi','ju.thanso','ju.checkinSeen','ju.menuHidden','ju.gameBets'];
+const SYNC_KEYS=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood','ju.qa','ju.timeline','ju.coupons','ju.chores','ju.lovejar','ju.quiz','ju.city','ju.goals','ju.checkin','ju.challengeDone','ju.homecfg','ju.diary','ju.projects','ju.vinhaUrl','ju.checkins','ju.menu','ju.period','ju.menuPlan','ju.accuKey','ju.habits','ju.hiddenSpots','ju.usOrder','ju.eventPrefs','ju.child','ju.childGrowth','ju.childVaccines','ju.childMilestones','ju.childDiary','ju.partnerWishes','ju.todos','ju.spotify','ju.dishPrefs','ju.favDishes','ju.childPack','ju.childSkills','ju.childMed','ju.childIllness','ju.childWords','ju.childTantrum','ju.childParenting','ju.childDay','ju.childContacts','ju.saveTips','ju.saveCustom','ju.funPrefs','ju.routine','ju.routineIssues','ju.noti','ju.family','ju.health','ju.transfers','ju.skillGuidesDone','ju.expenses','ju.budget','ju.vinhaSync','ju.menuOrder','ju.notesSeen','ju.intimacy','ju.intimacySeen','ju.quizKnow','ju.familyRules','ju.expiry','ju.stash','ju.docs','ju.tuvi','ju.thanso','ju.checkinSeen','ju.menuHidden','ju.gameBets'];
 let _sb=null;
 function sbClient(){
   if(_sb) return _sb;
@@ -5078,12 +5078,14 @@ const CHILD_SOS=[
     'Ghi sẵn số cấp cứu 115 và số bác sĩ nhi ở chỗ cả nhà dễ thấy.']},
 ];
 /* ── Cẩm nang: Giấc ngủ ─────────────────────────────────────────── */
+/* lo/hi tính bằng THÁNG để app tự tô dải tuổi con đang ở — đừng ghi cứng "con nhà mình
+   đang ở mốc này" vào chữ, vài tháng nữa là câu đó sai mà không ai nhận ra. */
 const SLEEP_NEEDS=[
-  {age:'4–12 tháng',tong:'12–16 giờ',ngay:'2–3 giấc ngày',note:'Tính cả giấc ngày. Nhiều bé bắt đầu ngủ đêm dài liền mạch.'},
-  {age:'12–18 tháng',tong:'11–14 giờ',ngay:'2 → 1 giấc',note:'Khoảng 15–18 tháng bé thường gộp còn một giấc trưa.'},
-  {age:'18–24 tháng',tong:'11–14 giờ',ngay:'1 giấc trưa 1,5–2,5 giờ',note:'Đêm khoảng 10–12 giờ. Đây là mốc con nhà mình đang ở.'},
-  {age:'2–3 tuổi',tong:'11–14 giờ',ngay:'1 giấc trưa 1–2 giờ',note:'Giấc trưa kết thúc trước 15:00 để tối bé còn buồn ngủ.'},
-  {age:'3–5 tuổi',tong:'10–13 giờ',ngay:'giấc trưa thưa dần',note:'Nhiều bé bỏ hẳn giấc ngày, bù lại ngủ đêm sớm hơn.'},
+  {age:'4–12 tháng',lo:4,hi:12,tong:'12–16 giờ',ngay:'2–3 giấc ngày',note:'Tính cả giấc ngày. Nhiều bé bắt đầu ngủ đêm dài liền mạch.'},
+  {age:'12–18 tháng',lo:12,hi:18,tong:'11–14 giờ',ngay:'2 → 1 giấc',note:'Khoảng 15–18 tháng bé thường gộp còn một giấc trưa.'},
+  {age:'18–24 tháng',lo:18,hi:24,tong:'11–14 giờ',ngay:'1 giấc trưa 1,5–2,5 giờ',note:'Đêm khoảng 10–12 giờ.'},
+  {age:'2–3 tuổi',lo:24,hi:36,tong:'11–14 giờ',ngay:'1 giấc trưa 1–2 giờ',note:'Giấc trưa kết thúc trước 15:00 để tối bé còn buồn ngủ.'},
+  {age:'3–5 tuổi',lo:36,hi:60,tong:'10–13 giờ',ngay:'giấc trưa thưa dần',note:'Nhiều bé bỏ hẳn giấc ngày, bù lại ngủ đêm sớm hơn.'},
 ];
 const SLEEP_GUIDE=[
   {icon:'🌙',title:'Dựng nếp ngủ (việc quan trọng nhất)',tips:[
@@ -5229,6 +5231,51 @@ const STEAM_ACT=[
     {t:'T',n:'Chụp ảnh, bấm hẹn giờ',d:'Cho con bấm máy ảnh chụp thứ con thích, hoặc canh đồng hồ hẹn giờ 2 phút lúc đánh răng.'}]},
 ];
 const STEAM_LABEL={S:'🔬 Khoa học',T:'⚙️ Công nghệ',E:'🏗️ Kỹ thuật',A:'🎨 Nghệ thuật',M:'🔢 Toán'};
+/* Ghi một chạm — bấm là xong, khỏi gõ chữ. Nhóm để nút cùng loại đứng cạnh nhau. */
+const DAY_EVENTS=[
+  {k:'an-het',icon:'🍚',label:'Ăn hết',g:'Ăn'},
+  {k:'an-it',icon:'🥄',label:'Ăn ít',g:'Ăn'},
+  {k:'bo-bua',icon:'🚫',label:'Bỏ bữa',g:'Ăn'},
+  {k:'ngu-trua',icon:'😴',label:'Ngủ trưa',g:'Ngủ'},
+  {k:'ngu-dem',icon:'🌙',label:'Ngủ đêm',g:'Ngủ'},
+  {k:'thuc-dem',icon:'😖',label:'Thức đêm',g:'Ngủ'},
+  {k:'di-i',icon:'💩',label:'Đi ị',g:'Khác'},
+  {k:'an-va',icon:'😤',label:'Ăn vạ',g:'Khác'},
+  {k:'vui-ve',icon:'😄',label:'Vui vẻ',g:'Khác'},
+  {k:'om-met',icon:'🤒',label:'Mệt, sốt',g:'Khác'},
+];
+const DAY_GROUPS=['Ăn','Ngủ','Khác'];
+const dayEv=(k)=>DAY_EVENTS.find(x=>x.k===k)||{icon:'•',label:k};
+/* Đọc thay vì gõ — Web Speech API, miễn phí, có sẵn trên Chrome Android và Safari iOS.
+   Máy không hỗ trợ thì nút tự ẩn, người dùng vẫn gõ tay như cũ. */
+function MicBtn({onText}){
+  const [on,setOn]=useState(false); const ref=useRef(null);
+  const SR=(typeof window!=='undefined')&&(window.SpeechRecognition||window.webkitSpeechRecognition);
+  useEffect(()=>()=>{ try{ ref.current&&ref.current.abort(); }catch(_){} },[]);
+  if(!SR) return null;
+  const bam=()=>{
+    if(on){ try{ ref.current&&ref.current.stop(); }catch(_){} return; }
+    try{
+      const r=new SR(); r.lang='vi-VN'; r.interimResults=false; r.maxAlternatives=1;
+      r.onresult=e=>{ try{ const t=e.results[0][0].transcript; if(t) onText(t); }catch(_){} };
+      r.onend=()=>{ setOn(false); ref.current=null; };
+      r.onerror=()=>{ setOn(false); ref.current=null; };
+      ref.current=r; r.start(); setOn(true);
+    }catch(_){ setOn(false); ref.current=null; }
+  };
+  return <button className="btn sm soft" title="Đọc thay vì gõ" onClick={bam}
+    style={on?{background:'var(--primary)',color:'#fff',flex:'0 0 auto'}:{flex:'0 0 auto'}}>{on?'⏹️':'🎤'}</button>;
+}
+/* Nội dung viết cho một dải tuổi cụ thể. Bé lớn ra khỏi dải thì phải KÊU, không im lặng
+   để nội dung cũ trông như vẫn đúng — đó là cách một cẩm nang tự lỗi thời mà không ai biết. */
+function BandNote({lo,hi,months,what}){
+  const ngoai = months!=null && (months<lo||months>=hi);
+  return <div className="muted center" style={{fontSize:11,margin:'0 14px 4px',color:ngoai?'#b06b6b':null}}>
+    {ngoai
+      ? '⚠️ '+what+' này viết cho bé '+lo+'–'+hi+' tháng, con nhà mình đã '+months+' tháng — cần cập nhật lại.'
+      : what+' cho bé '+lo+'–'+hi+' tháng'+(months!=null?' (con đang '+months+' tháng)':'')+'.'}
+  </div>;
+}
 function ChildCare({people,me}){
   const [child,setChild]=useLocal('ju.child',{name:'',dob:'',gender:''});
   const [growth,setGrowth]=useLocal('ju.childGrowth',[]);
@@ -5242,6 +5289,9 @@ function ChildCare({people,me}){
   const [ill,setIll]=useLocal('ju.childIllness',[]);
   const [words,setWords]=useLocal('ju.childWords',[]);
   const [tantrum,setTantrum]=useLocal('ju.childTantrum',[]);
+  const [dayLog,setDayLog]=useLocal('ju.childDay',[]);
+  const [contacts,setContacts]=useLocal('ju.childContacts',[]);
+  const [ctForm,setCtForm]=useState({name:'',phone:''});
   const [showAllVac,setShowAllVac]=useState(false);
   const [tab,setTab]=useState('today');
   const [gq,setGq]=useState(''); const [sq,setSq]=useState('');
@@ -5262,6 +5312,9 @@ function ChildCare({people,me}){
   const recover=(id)=> setIll(ill.map(x=>x.id===id?{...x,recovered:x.recovered?'':todayISO()}:x));
   const addTantrum=()=>{ if(!tanForm.situation.trim()) return; setTantrum([{id:uid(),date:todayISO(),situation:tanForm.situation.trim(),handling:tanForm.handling.trim(),worked:null},...tantrum]); setTanForm({situation:'',handling:''}); };
   const setTanWorked=(id,v)=> setTantrum(tantrum.map(x=>x.id===id?{...x,worked:x.worked===v?null:v}:x));
+  const addDay=(k)=>{ const now=new Date(); setDayLog([{id:uid(),date:todayISO(),at:pad(now.getHours())+':'+pad(now.getMinutes()),k},...dayLog].slice(0,600)); celebrate(['✓']); };
+  const dayToday=dayLog.filter(x=>x.date===todayISO());
+  const addContact=()=>{ const n=ctForm.name.trim(), p=ctForm.phone.trim(); if(!n||!p) return; setContacts([...contacts,{id:uid(),name:n,phone:p}]); setCtForm({name:'',phone:''}); };
   const schoolDays=child.schoolDate? daysFromToday(child.schoolDate) : null;
   const packDone=CHILD_PACK.filter(it=>pack[it]).length;
   const skillDone=CHILD_SKILLS.filter(it=>skills[it]).length;
@@ -5334,13 +5387,36 @@ function ChildCare({people,me}){
           <div className="muted" style={{fontSize:11,marginTop:6}}>Bấm vào mũi đã tiêm để tích. Xem đủ lịch ở mục 📈 Theo dõi.</div>
         </div>}
         <div className="card">
+          <div className="row"><span className="hc-title">👆 Bấm một cái là xong</span><span className="grow"></span>{dayToday.length>0 && <span className="muted" style={{fontSize:12.5}}>{dayToday.length} lần hôm nay</span>}</div>
+          <div className="muted" style={{fontSize:11,marginTop:2}}>Không cần gõ chữ — bấm đúng việc vừa xảy ra, app tự ghi kèm giờ.</div>
+          {DAY_GROUPS.map(g=>(
+            <div key={g} className="row" style={{gap:6,marginTop:7,flexWrap:'wrap'}}>
+              <span className="muted" style={{fontSize:11,width:34,flex:'0 0 auto'}}>{g}</span>
+              {DAY_EVENTS.filter(x=>x.g===g).map(x=>(
+                <button key={x.k} className="pill" style={{padding:'8px 12px',fontSize:13}} onClick={()=>addDay(x.k)}>{x.icon} {x.label}</button>
+              ))}
+            </div>
+          ))}
+          {dayToday.length>0 && <div style={{marginTop:9,borderTop:'1px solid var(--line)',paddingTop:7}}>
+            {dayToday.slice(0,10).map(x=>(
+              <div key={x.id} className="row" style={{fontSize:12.5,padding:'3px 0'}}>
+                <span className="muted" style={{width:44,flex:'0 0 auto'}}>{x.at}</span>
+                <span className="grow">{dayEv(x.k).icon} {dayEv(x.k).label}</span>
+                <button className="iconbtn" onClick={()=>setDayLog(dayLog.filter(y=>y.id!==x.id))}>🗑️</button>
+              </div>
+            ))}
+          </div>}
+        </div>
+        <div className="card">
           <div className="row"><span className="hc-title">✍️ Ghi nhanh hôm nay</span></div>
           <div className="row" style={{gap:6,marginTop:8}}>
             <input className="inp grow" placeholder="Từ mới bé nói được…" value={wordIn} onChange={e=>setWordIn(e.target.value)} onKeyDown={e=>{ if(e.key==='Enter') addWord(); }}/>
+            <MicBtn onText={t=>setWordIn(t)}/>
             <button className="btn sm" onClick={addWord}>＋</button>
           </div>
           <div className="row" style={{gap:6,marginTop:8}}>
             <input className="inp grow" placeholder="Hôm nay bé… (điều đầu tiên)" value={dtext} onChange={e=>setDtext(e.target.value)} onKeyDown={e=>{ if(e.key==='Enter') addDiary(); }}/>
+            <MicBtn onText={t=>setDtext(t)}/>
             <button className="btn sm" onClick={addDiary}>＋</button>
           </div>
           <div className="row" style={{gap:8,marginTop:8}}>
@@ -5384,6 +5460,19 @@ function ChildCare({people,me}){
                 <div>{b.items.map(it=>{ const k=b.band+'|'+it; const on=!!mile[k];
                   return <button key={it} className="pill" style={{margin:'3px 6px 3px 0',padding:'7px 11px',fontSize:12.5,background:on?'var(--good)':'var(--chip)',color:on?'#fff':'var(--chip-tx)'}} onClick={()=>tg(mile,setMile,k)}>{on?'✓ ':''}{it}</button>; })}</div>
               </div>; })()}
+        <div className="sec-title">🍚😴 Ăn ngủ trong ngày</div>
+        <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>Bấm nút ở mục 🏠 Hôm nay để ghi. Xem lại 07 ngày gần đây để thấy nếp của con.</div>
+        {dayLog.length===0
+          ? <div className="empty muted">Chưa ghi lần nào — sang mục 🏠 Hôm nay bấm một cái là xong.</div>
+          : (()=>{ const ngay=[...new Set(dayLog.map(x=>x.date))].sort().reverse().slice(0,7);
+              return ngay.map(d=>{ const items=dayLog.filter(x=>x.date===d).sort((a,b)=>(a.at||'').localeCompare(b.at||''));
+                return <div key={d} className="item">
+                  <div className="it-top"><h4 style={{fontSize:14}}>{fmtDateVN(d)}{d===todayISO()?' · hôm nay':''}</h4><span className="muted" style={{fontSize:11}}>{items.length} lần</span></div>
+                  <div style={{marginTop:3}}>{items.map(x=>(
+                    <span key={x.id} className="pill" style={{margin:'3px 6px 3px 0',padding:'5px 9px',fontSize:12}}>{dayEv(x.k).icon} {dayEv(x.k).label} <span className="muted">{x.at}</span></span>
+                  ))}</div>
+                </div>; });
+            })()}
         <div className="sec-title">🗣️ Từ bé nói được <span className="grow"></span><span className="muted" style={{fontSize:12.5}}>{words.length} từ · +{wordsThisWeek} tuần này</span></div>
         <div className="card">
           <div className="row" style={{gap:6}}>
@@ -5485,7 +5574,8 @@ function ChildCare({people,me}){
           <div className="sec-title">🍎 Ăn uống {months!=null?`(~${months} tháng)`:''}</div>
           <div className="card"><div className="muted" style={{fontSize:14,lineHeight:1.8}}>{CHILD_TIPS.map((t,i)=><div key={i}>{t}</div>)}</div></div>
           <Collapse id="child-wean" defaultOpen={false} title="🍚 Thực đơn ăn dặm / ăn thô cả tuần">
-          <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>Gợi ý cho bé ~18–24 tháng (cơm nát + món mềm). Điều chỉnh theo khẩu vị bé nhé.</div>
+          <BandNote lo={18} hi={24} months={months} what="Thực đơn"/>
+          <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>Cơm nát + món mềm. Điều chỉnh theo khẩu vị bé nhé.</div>
           {WEAN_MENU.map((m,i)=>(
             <div key={i} className="item">
               <div className="it-top"><h4>{m.d}</h4></div>
@@ -5502,7 +5592,8 @@ function ChildCare({people,me}){
 
         {gShow(GUIDE_KEYS[1]) && <>
           <div className="sec-title">🎲 Chơi & học sớm</div>
-          <div className="muted center" style={{fontSize:11,margin:'0 14px 6px'}}>Trò chơi giúp bé phát triển (~20–24 tháng), chia theo nhóm kỹ năng. Mục 🏠 Hôm nay có gợi ý một trò mỗi ngày.</div>
+          <BandNote lo={18} hi={24} months={months} what="Bộ trò chơi"/>
+          <div className="muted center" style={{fontSize:11,margin:'0 14px 6px'}}>Chia theo nhóm kỹ năng. Mục 🏠 Hôm nay có gợi ý một trò mỗi ngày.</div>
           <Collapse id="child-play" defaultOpen={false} title="🎲 Trò chơi theo nhóm kỹ năng">
           {['🤸 Vận động','🧩 Tư duy','🗣️ Ngôn ngữ','🎨 Khéo tay'].map(cat=>(
             <div key={cat}>
@@ -5532,12 +5623,11 @@ function ChildCare({people,me}){
           <div className="sec-title">😴 Giấc ngủ</div>
           <div className="muted center" style={{fontSize:11,margin:'0 14px 6px'}}>Ngủ đủ và đúng nếp thì bé ăn ngoan hơn, ít cáu hơn và cả nhà cũng được nghỉ.</div>
           <Collapse id="child-sleep-need" defaultOpen={false} title="🕰️ Bé cần ngủ bao nhiêu là đủ">
-          {SLEEP_NEEDS.map((s,i)=>(
-            <div key={i} className="item" style={{padding:'9px 13px'}}>
-              <div className="it-top"><h4 style={{fontSize:14}}>{s.age}</h4><span className="pill">{s.tong}/ngày</span></div>
+          {SLEEP_NEEDS.map((s,i)=>{ const dang=months!=null&&months>=s.lo&&months<s.hi;
+            return <div key={i} className="item" style={dang?{padding:'9px 13px',borderLeft:'4px solid var(--primary)'}:{padding:'9px 13px'}}>
+              <div className="it-top"><h4 style={{fontSize:14}}>{s.age}{dang?' · con đang ở mốc này':''}</h4><span className="pill">{s.tong}/ngày</span></div>
               <div className="muted" style={{fontSize:12.5,marginTop:2,lineHeight:1.55}}>💤 {s.ngay} · {s.note}</div>
-            </div>
-          ))}
+            </div>; })}
           <div className="muted" style={{fontSize:11,margin:'8px 14px 2px'}}>Số giờ đã tính cả giấc ngày. Mỗi bé lệch một chút vẫn bình thường — dấu hiệu ngủ đủ là ban ngày bé tỉnh táo và vui vẻ.</div>
           </Collapse>
           <Collapse id="child-sleep-tips" defaultOpen={false} title="🌙 Nếp ngủ · giấc ngày · cai ti đêm · thức đêm">
@@ -5615,6 +5705,17 @@ function ChildCare({people,me}){
           {sq && <button className="btn sm soft" onClick={()=>setSq('')}>✕</button>}
         </div>
         <div className="muted center" style={{fontSize:11,margin:'0 14px 8px'}}>Bấm một tình huống để xem các bước làm ngay. Nội dung tham khảo, không thay cho khám bác sĩ.</div>
+
+        <div className="card" style={{borderLeft:'4px solid #c0504d'}}>
+          <div className="row"><span className="hc-title">📞 Gọi ngay</span></div>
+          <div style={{display:'flex',flexWrap:'wrap',gap:6,marginTop:7}}>
+            <a className="pill" style={{textDecoration:'none',background:'#c0504d',color:'#fff',padding:'8px 13px',fontSize:13.5,fontWeight:700}} href="tel:115">🚑 115 Cấp cứu</a>
+            {contacts.map(c=>(
+              <a key={c.id} className="pill" style={{textDecoration:'none',padding:'8px 13px',fontSize:13.5}} href={'tel:'+c.phone.replace(/[^0-9+]/g,'')}>📞 {c.name}</a>
+            ))}
+          </div>
+          {contacts.length===0 && <div className="muted" style={{fontSize:11,marginTop:7}}>Thêm số bác sĩ / bệnh viện quen ở mục 🧒 Hồ sơ bé để lúc cuống khỏi phải đi tìm.</div>}
+        </div>
 
         {sosUrgent.length>0 && <>
           <div className="sec-title">🚨 Khẩn cấp</div>
@@ -5703,6 +5804,22 @@ function ChildCare({people,me}){
           <div className="field" style={{margin:'8px 0 0'}}><label>Thói quen ngủ</label><input className="inp" value={med.sleep||''} onChange={e=>setMed({...med,sleep:e.target.value})} placeholder="vd: ngủ trưa 12h30, cần ôm gối…"/></div>
           <div className="field" style={{margin:'8px 0 0'}}><label>Ghi chú cho cô</label><textarea className="inp" value={med.note||''} onChange={e=>setMed({...med,note:e.target.value})} placeholder="Tính cách, món sợ, cách dỗ…"/></div>
           <button className="btn" style={{marginTop:10}} onClick={exportMed}>🖨️ Xuất để in / gửi cô</button>
+        </div>
+        <div className="sec-title">📞 Số gọi nhanh khi con có chuyện</div>
+        <div className="card">
+          <div className="muted" style={{fontSize:11,marginBottom:7}}>Bác sĩ nhi quen, bệnh viện gần nhà, cô giáo, ông bà. Các số này hiện thành nút bấm gọi ở mục 🆘 Gỡ rối.</div>
+          {contacts.map(c=>(
+            <div key={c.id} className="row" style={{padding:'7px 0',borderBottom:'1px solid var(--line)',gap:8}}>
+              <span className="grow" style={{fontSize:14}}>{c.name}<div className="muted" style={{fontSize:12.5}}>{c.phone}</div></span>
+              <a className="pill" style={{textDecoration:'none',flex:'0 0 auto'}} href={'tel:'+c.phone.replace(/[^0-9+]/g,'')}>📞 Gọi</a>
+              <button className="iconbtn" onClick={()=>{ if(confirm('Xoá số này?')) setContacts(contacts.filter(x=>x.id!==c.id)); }}>🗑️</button>
+            </div>
+          ))}
+          <div className="row" style={{gap:6,marginTop:8}}>
+            <input className="inp grow" placeholder="Tên (vd: BS Hà — Nhi TW)" value={ctForm.name} onChange={e=>setCtForm({...ctForm,name:e.target.value})}/>
+            <input className="inp" style={{width:120}} placeholder="Số điện thoại" inputMode="tel" value={ctForm.phone} onChange={e=>setCtForm({...ctForm,phone:e.target.value})} onKeyDown={e=>{ if(e.key==='Enter') addContact(); }}/>
+            <button className="btn sm" onClick={addContact}>＋</button>
+          </div>
         </div>
         <Collapse id="child-pack" defaultOpen={false} title="🎒 Đồ mang đi lớp" right={<span className="muted" style={{fontSize:12.5}}>{packDone}/{CHILD_PACK.length}</span>}>
         <div className="card" style={{padding:'4px 13px'}}>
@@ -6001,6 +6118,32 @@ function computeDueNotis(noti){
   if(on('tamLinh')) (upcomingSpiritual(2)||[]).slice(0,2).forEach((h,i)=>{ if(h.d!=null&&h.d>=0&&h.d<=2) out.push({id:'sp'+(h.name||i),cat:'tamLinh',title:'🪷 '+h.name+(h.d===0?' — hôm nay':' — còn '+h.d+' ngày')}); });
   if(on('chuky')){ const p=periodNext(); if(p&&!p.onPeriod&&p.days!=null&&p.days<=2) out.push({id:'period',cat:'chuky',title:'🌸 Kỳ kinh dự kiến — còn '+p.days+' ngày'}); }
   if(on('trabai')){ const it=store.get('ju.intimacy',null); if(it){ const me=store.get('ju.me',setup.me||'a'); const sg=it.signal; const sn=store.get('ju.intimacySeen',{})||{}; if(sg&&sg.by&&sg.by!==me&&!(sg.reply&&sg.reply.by===me)&&(sg.at||0)>(sn[me]||0)) out.push({id:'intsig'+(sg.at||''),cat:'trabai',title:'💗 Nửa kia vừa bật tín hiệu cho bạn 😏'}); const lg=it.log||{}; const ks=Object.keys(lg).sort(); const lastd=ks.length?ks[ks.length-1]:null; if(lastd){ const ds=Math.round((new Date(todayISO()+'T00:00:00')-new Date(lastd+'T00:00:00'))/86400000); if(ds>=14) out.push({id:'intlong',cat:'trabai',title:'💗 Đã '+ds+' ngày rồi — dành cho nhau chút thời gian nhé 😊'}); } const dnw=it.dateNight&&it.dateNight.weekday; if(dnw!=null && new Date(todayISO()+'T00:00:00').getDay()===dnw) out.push({id:'datenight',cat:'trabai',title:'📅 Tối nay là đêm hẹn hò của hai đứa 💞'+(it.dateNight.note?' — '+it.dateNight.note:'')}); if(me==='a'){ const pinfo=periodNext(); if(pinfo&&!pinfo.onPeriod&&pinfo.days!=null){ const dOv=pinfo.days-14; if(dOv>=-1&&dOv<=2) out.push({id:'lib'+dOv,cat:'trabai',title:dOv<=0?'💗 Hôm nay vợ có thể hứng khởi hơn (quanh rụng trứng) 😏':'💗 Còn '+dOv+' ngày tới ngày vợ dễ hứng khởi 😏'}); } } } }
+  if(on('con')){
+    const ch=store.get('ju.child',{})||{};
+    const ten=ch.name||'Bé';
+    const songay=(iso)=>{ try{ return Math.round((new Date(todayISO()+'T00:00:00')-new Date(iso+'T00:00:00'))/86400000); }catch(_){ return null; } };
+    if(ch.dob){
+      const mo=Math.max(0,Math.round((new Date(todayISO()+'T00:00:00')-new Date(ch.dob+'T00:00:00'))/(30.44*86400000)));
+      const vacs=store.get('ju.childVaccines',{})||{};
+      const conthieu=CHILD_VACCINES.filter(v=>vacAgeMonths(v.age)<=mo)
+        .reduce((a,v)=>a.concat(v.items.filter(it=>!vacs[v.age+'|'+it])),[]);
+      if(conthieu.length) out.push({id:'convac'+conthieu.length,cat:'con',title:'💉 '+ten+' còn '+conthieu.length+' mũi tiêm đã đến hạn chưa tích — kiểm lại sổ tiêm nhé'});
+      // Không đo thì không biết con có đang chững cân không, mà chững cân thì không tự phát ra dấu hiệu nào.
+      const g=store.get('ju.childGrowth',[])||[];
+      const d0=g.length?songay(g[0].date):null;
+      if(d0==null||d0>=30) out.push({id:'congrow'+(d0==null?'x':Math.floor(d0/30)),cat:'con',title:'📏 '+(d0==null?'Chưa ghi lần đo nào — đo':'Đã '+d0+' ngày chưa đo')+' cân nặng · chiều cao của '+ten});
+    }
+    (store.get('ju.childIllness',[])||[]).filter(x=>!x.recovered).forEach(x=>{
+      const d=songay(x.date);
+      if(d!=null&&d>=3) out.push({id:'conill'+x.id,cat:'con',title:'🤒 '+ten+' ốm từ '+fmtDateVN(x.date)+' ('+d+' ngày) — đỡ rồi thì đánh dấu khỏi, chưa đỡ thì cho đi khám'});
+    });
+    // Chỉ nhắc soạn balo khi bé đã thật sự đi lớp, không nhắc trước ngày khai giảng.
+    if(ch.schoolDate && songay(ch.schoolDate)>=0){
+      const pk=store.get('ju.childPack',{})||{};
+      const thieu=CHILD_PACK.filter(it=>!pk[it]).length;
+      if(thieu) out.push({id:'conpack'+thieu,cat:'con',title:'🎒 Còn '+thieu+' món chưa soạn vào balo đi lớp cho '+ten});
+    }
+  }
   return out;
 }
 function NotiRunner(){
@@ -6042,7 +6185,7 @@ function NotiRunner(){
   return null;
 }
 function NotiSettings({flash}){
-  const [noti,setNoti]=useLocal('ju.noti',{on:false,cats:{kyNiem:true,sukien:true,viec:true,thucDon:true,nganSach:true,yeuThuong:true,nhanNhau:true,tamLinh:true,trabai:true,lich:true,hanDung:true,giayTo:true,ngayNho:false,chuky:false,checkin:true},time:'08:00'});
+  const [noti,setNoti]=useLocal('ju.noti',{on:false,cats:{kyNiem:true,con:true,sukien:true,viec:true,thucDon:true,nganSach:true,yeuThuong:true,nhanNhau:true,tamLinh:true,trabai:true,lich:true,hanDung:true,giayTo:true,ngayNho:false,chuky:false,checkin:true},time:'08:00'});
   const supported=(typeof Notification!=='undefined')&&('serviceWorker' in navigator);
   const [perm,setPerm]=useState(supported?Notification.permission:'unsupported');
   const [pushMsg,setPushMsg]=useState('');
@@ -6063,7 +6206,7 @@ function NotiSettings({flash}){
   const tog=(k)=>setNoti({...noti,cats:{...(noti.cats||{}),[k]:!((noti.cats||{})[k]!==false)}});
   const setCatTime=(k,v)=>setNoti({...noti,times:{...(noti.times||{}),[k]:v}});
   const cats=noti.cats||{};
-  const CATS=[['kyNiem','💞 Ngày yêu nhau · cột mốc'],['sukien','📅 Sự kiện gia đình'],['lich','🗓️ Lịch sinh hoạt (mốc có 🔔)'],['hanDung','⏳ Đồ ăn / thuốc sắp hết hạn'],['giayTo','🗂️ Giấy tờ sắp hết hạn'],['viec','✅ Việc tới hạn · ưu tiên cao'],['thucDon','🍱 Món nấu hôm nay · đi chợ'],['nganSach','💰 Cảnh báo ngân sách tháng'],['yeuThuong','💌 Nhắc gửi lời yêu thương'],['nhanNhau','💌 Nhắn nhau (có lời nhắn mới)'],['trabai','💗 Trả bài (tín hiệu · ngày vợ hứng khởi · đêm hẹn)'],['tamLinh','🪷 Mùng 1 · rằm · lễ'],['ngayNho','🎂 Sinh nhật · giỗ · lễ cần quà'],['chuky','🌸 Chu kỳ sắp đến'],['checkin','📸 Check-in quán mới của nửa kia']];
+  const CATS=[['kyNiem','💞 Ngày yêu nhau · cột mốc'],['sukien','📅 Sự kiện gia đình'],['lich','🗓️ Lịch sinh hoạt (mốc có 🔔)'],['hanDung','⏳ Đồ ăn / thuốc sắp hết hạn'],['giayTo','🗂️ Giấy tờ sắp hết hạn'],['viec','✅ Việc tới hạn · ưu tiên cao'],['thucDon','🍱 Món nấu hôm nay · đi chợ'],['nganSach','💰 Cảnh báo ngân sách tháng'],['yeuThuong','💌 Nhắc gửi lời yêu thương'],['nhanNhau','💌 Nhắn nhau (có lời nhắn mới)'],['trabai','💗 Trả bài (tín hiệu · ngày vợ hứng khởi · đêm hẹn)'],['tamLinh','🪷 Mùng 1 · rằm · lễ'],['ngayNho','🎂 Sinh nhật · giỗ · lễ cần quà'],['chuky','🌸 Chu kỳ sắp đến'],['checkin','📸 Check-in quán mới của nửa kia'],['con','🐿️ Nuôi con (tiêm · đo · ốm · balo đi lớp)']];
   return (
     <div className="card">
       <div className="row"><span className="hc-title">🔔 Thông báo điện thoại</span><span className="grow"></span>
