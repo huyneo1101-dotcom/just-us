@@ -1,4 +1,11 @@
-# Sóc — sổ việc nặng, mỗi đêm làm đúng MỘT mục
+# Sóc — sổ việc nặng ĐÃ DỜI, bản này không còn dùng
+
+⛔ **Sổ đang dùng nằm ở `/Users/Huy/Claude/App/Soc/SOC-VIEC-NANG.md`** (dời chiều 09/08/2026,
+cùng lúc app Sóc tách hẳn sang repo `App/Soc` và lên `https://soc-eiv.pages.dev`).
+Routine `soc-nang` đọc bản kia. Giữ file này chỉ để khỏi mất dấu, **cấm sửa và cấm làm theo** —
+mọi mô tả cấu trúc bên dưới là của bản Sóc cũ trong repo này, đã ngừng dùng.
+
+# (bản cũ) Sóc — sổ việc nặng, mỗi đêm làm đúng MỘT mục
 
 Routine `com.huy.routine-soc-nang` chạy 23:30 hằng đêm, lấy mục `CHỜ` đầu tiên trong bảng
 dưới, làm trọn mục đó rồi đổi trạng thái. Sổ hết mục `CHỜ` thì routine thoát êm, không kêu.
