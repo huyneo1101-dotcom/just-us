@@ -40,128 +40,28 @@ ngày lễ âm lịch · kinh Phật · văn khấn · tử vi · thần số ·
 `ImportantDates`, dấu ngày lễ ở `MiniCalendar`, nhắc việc ở `Reminders` và thông báo nhóm `tamLinh`.
 App `tam-linh/` giữ **bản sao** các hàm này.
 
-## App con: Sóc / Nuôi con (`soc/`)
-Phần Nuôi con **đã tách khỏi `index.html`** thành app tĩnh độc lập trong thư mục `soc/`
-(`index.html` + `manifest.json` + `sw.js` + `icon.svg`, cài được như PWA riêng): mốc phát triển ·
-mốc ngôn ngữ · trò chơi theo kỹ năng · cafe/khu vui chơi cho bé ở HN · tiêm chủng · cân nặng chiều cao ·
-nhật ký ốm · hồ sơ y tế gửi cô · mẹo ăn uống · thực đơn ăn dặm · đếm ngược ngày nhập học · đồ mang đi lớp ·
-kỹ năng tự lập · thống nhất cách dạy con · dạy kỹ năng tự túc · nhật ký "điều đầu tiên" & "cơn ăn vạ".
+## App Sóc — ĐÃ TÁCH HẲN, không còn trong repo này
 
-**Đợt 1 (nội dung) đã thêm:** sub-tab **🚨 An toàn** (`SafetyTab`) + thanh đỏ cấp cứu luôn hiện ở đầu app —
-sơ cứu 8 tình huống, dấu hiệu đi viện ngay, đồ nguy hiểm, checklist chống trẻ trong nhà, danh bạ khẩn tự
-điền (`ContactBook`); **💬 kịch bản câu nói khi con ăn vạ** (`TantrumScripts`, 14 tình huống); hành vi
-tuổi lên 2 + quy tắc thân thể; việc nhà vừa sức; bày nhà cho bé tự lập; sau tiêm 48h; táo bón; mặc gì
-theo nhiệt độ; bệnh theo mùa Hà Nội; việc bé sợ; cuối tuần làm gì; màn hình; giấy tờ của bé.
-- Nội dung y tế chỉ là **sơ cứu tham khảo** — app KHÔNG tự tính liều thuốc, chỉ ghi thứ bác sĩ đã kê.
+App nuôi con nay là **repo riêng `/Users/Huy/Claude/App/Soc`**, chạy ở
+<https://soc-eiv.pages.dev> (Cloudflare Pages). Luật của nó nằm ở `App/Soc/CLAUDE.md`.
 
-**Đợt 2 (cần code) đã thêm:** sub-tab **🚽 Tập bô** (`PottyTab`) — checklist dấu hiệu sẵn sàng, ghi nhanh
-mỗi ngày, chuỗi ngày khô, lưới 30 ngày, mốc ngồi bô, gỡ vướng; **📈 So với chuẩn WHO** (`GrowthWHO`
-+ `GrowthChart`, helper `whoAt`/`whoBand`) trong tab Sức khoẻ — bảng `WHO_WEIGHT`/`WHO_HEIGHT` là bản
-**rút gọn mốc 3 tháng, 0–36 tháng**, nội suy tuyến tính giữa hai mốc, chỉ để nhìn xu hướng; **🔔 nhắc việc**
-(`childDueList` + `NotiRunner` + `NotiSettings`).
-- `childDueList()` là **một nguồn duy nhất** cho cả thẻ "📌 Cần để ý" ở trang chủ lẫn thông báo — sửa
-  luật nhắc thì sửa đúng một chỗ.
-- App Sóc **không có server đẩy**, chỉ nhắc được khi app đang mở (mở app · mỗi 15 phút · quay lại tab).
-  Thông báo lúc đóng app vẫn là việc của Just Us. `soc/sw.js` có `notificationclick` để bấm là focus app.
+- **Thư mục `soc/` đã gỡ khỏi repo này tối 09/08/2026**, sau khi 12 mảng bản cũ có mà bản
+  mới chưa có đều đã bù xong. Cần đọc lại mã cũ thì `git show 7bac245:soc/index.html`, hoặc
+  bản sao ở `~/.Trash/soc-ban-cu-trong-JustUs-2026-08-09/`.
+- `data/child.json` **không còn ai nạp** — `index.html` bỏ nạp từ 09/08, bản Sóc mới nhúng
+  thẳng dữ liệu vào file. Giữ lại file để tra nội dung gốc, sửa nó không làm đổi app nào.
+- Vào app Sóc: tab **Cá nhân → 📱 App của nhà mình → 🐿️ Sóc**, mở tab ngoài sang tên miền
+  riêng. Hằng `APP_BOARD` giữ đường dẫn đó; đổi tên miền thì sửa cả `App/BangApp/apps.json`.
+- **Khác origin nên KHÔNG còn chung `localStorage`.** Mọi khoá `ju.child*` của máy nào ở lại
+  máy đó; chuyển sang app mới bằng mục "📥 Chuyển dữ liệu từ Just Us" trong ⚙️ Cài đặt của
+  Sóc (xuất file sao lưu bên này rồi nhập bên kia).
+- Ảnh của bé vẫn dùng chung bucket `justus-photos` và vẫn cần phiên Supabase đã ghép cặp
+  của Just Us — đây là chỗ duy nhất hai app còn dính nhau.
 
-**Đợt 3 (nội dung + vài phần có lưu) đã thêm:** tab **Đi học** có chọn trường mầm non (`SchoolPicker`,
-so sánh các trường đã xem), lịch làm quen ngày đầu, tờ dặn cô (`TeacherNote`, in/gửi được), bệnh hay lây
-ở lớp kèm số ngày nghỉ; tab **Chơi với con** có đồ mang đi chơi xa (`TripPack`) + ra khỏi nhà cùng con
-(ô tô · máy bay · ăn hàng · gửi ông bà); tab **Nuôi dạy** có "khủng hoảng tuổi lên 2", bố mẹ đuối sức,
-và bảng **ai lo việc nào** (`DutyBoard`); sub-tab mới **📔 Kỷ niệm** (`MemoryTab`) — một dòng mỗi ngày,
-ảnh mỗi tháng, câu nói ngộ nghĩnh, thư gửi con sau này, và nhật ký "điều đầu tiên" (**đã chuyển từ tab
-Nuôi dạy sang đây**; state `ju.childDiary` giờ chỉ do `MemoryTab` giữ, đừng khai lại ở `ChildCare`).
-- **Ảnh**: `soc/` nay có `Cloud.uploadPhoto` / `signedUrl` / `deletePhoto` dùng chung bucket
-  `justus-photos` với Just Us, kèm `compressImage` (cạnh dài 1200px, JPEG 0.82) và `CloudImg`.
-  `ju.childPhotos` chỉ giữ **đường dẫn** — nhét base64 vào đây sẽ phình hàng `justus_data` của cả cặp.
-  Chưa ghép cặp thì không tải ảnh được, app báo rõ chứ không im lặng.
-- `GuideList` + `bullets()` là hai helper dùng lại cho mọi mục "bấm mở ra đọc".
-
-**Đợt 4 (nội dung, 2026-08-09) đã thêm:** sub-tab mới **🌱 Lớn lên → Học sớm** (`tab==='learn'`) gồm
-**Montessori tại nhà** (10 nguyên lý · hoạt động mẫu 2 nhóm tuổi · đồ chơi và vật liệu) và **STEAM cho bé**
-(nguyên lý chơi · hoạt động mẫu 2 nhóm tuổi có nhãn S/T/E/A/M qua `STEAM_LABEL`); tab **Giấc ngủ** thêm khối
-"giấc ngày · cai ti đêm · ác mộng" (`SLEEP_MORE`) và bảng `SLEEP_NEED` tách mốc **12–18** và **18–24 tháng**
-kèm cột giấc ngày (trường `g`); tab **Tập bô** thêm "chuẩn bị trước khi bắt đầu" (`POTTY_PREP`) và
-**bảy bước cai bỉm** (`POTTY_STEPS`).
-- Nội dung này vốn viết cho `ChildCare` trong `index.html` (commit `f721818`, cơ chế `GUIDE_KEYS`), nhưng
-  bản trên `origin/main` đã tách Sóc sang `soc/` nên **đã chuyển thẳng sang đây và bỏ `GUIDE_KEYS`** —
-  app Sóc tra nội dung bằng `searchIndex()` chứ không bằng chuỗi khoá từng mảng.
-- Phần giấc ngủ và tập bô **gộp** với `SLEEP_ROUTINE`/`SLEEP_FIX`/`POTTY_READY`/`POTTY_TIMES`/`POTTY_FIX`
-  đã có, không chép đè: chỉ đưa sang phần app Sóc còn thiếu.
-
-**Đợt 5 (2026-08-09) — ghi một chạm · ghi bằng giọng nói · gọi nhanh · tự kêu khi lệch tuổi:**
-- **Ghi một chạm** (`ju.childDay`): thẻ "👆 Bấm một cái là xong" ở trang chủ, 10 nút chia 3 nhóm
-  (`DAY_EVENTS`/`DAY_GROUPS` trong `data/child.json`), bấm là ghi kèm giờ, giữ 600 lần gần nhất.
-  Tab **Theo dõi & khám** hiện lại 07 ngày gần nhất. `addDay`/`delDay` **bắt buộc dùng dạng hàm cập nhật**
-  (`setDayLog(prev=>…)`) — bấm hai nút liền tay mà tính từ biến cũ thì lần sau đè mất lần trước.
-- **`MicBtn`** — đọc thay vì gõ (Web Speech `vi-VN`), gắn ở ô từ mới và 3 ô của tab Kỷ niệm.
-  Máy không hỗ trợ thì nút tự ẩn. Dùng `--brand` chứ **không** dùng `--danger` (đỏ chỉ dành cho cấp cứu).
-- **`BandNote`** — nội dung viết cho một dải tuổi thì tự KÊU khi con lớn ra khỏi dải (thực đơn ăn dặm ·
-  bộ trò chơi, cùng dải 18–24 tháng). `SLEEP_NEED` nay có `lo`/`hi` tính bằng tháng nên app tự tô mốc con
-  đang ở, thay cho câu ghi cứng "đây là mốc con nhà mình đang ở" (đã gỡ khỏi `data/child.json`).
-- **Gọi nhanh**: thẻ "📞 Gọi ngay" ghim ở **đầu** tab An toàn (115 + số đã lưu). State `ju.childContacts`
-  **đã nâng lên `SafetyTab`** và truyền xuống `ContactBook` qua props — trước đó hai chỗ cùng `useLocal`
-  một khoá thì thêm số ở dưới mà thanh ghim vẫn hiện bản cũ.
-- **`childDueList`** thêm nhắc balo khi bé **đã đi lớp rồi** mà còn món chưa soạn (cũ chỉ nhắc trong 60 ngày
-  trước ngày nhập học), và thêm số ngày ốm vào nhắc đợt ốm.
-- Nội dung này vốn là commit `8937352` viết cho `ChildCare` trong `index.html`; bản trên `origin/main` đã tách
-  Sóc sang `soc/` nên 173 dòng đó không có mặt trên cây làm việc — đã chuyển thẳng sang `soc/`.
-
-### Thiết kế lại (2026-08-09)
-App Sóc **không còn mượn da "Sổ tay"** của Just Us nữa — nó có hệ token riêng trong khối `<style>`
-(`--brand` xanh mòng két, `--surface`, `--ink*`, `--line`, sáng/tối đầy đủ). Lý do đổi: da sổ tay lấy
-đỏ gạch làm màu chính, gần trùng màu cấp cứu nên thứ quan trọng nhất lại không nổi. **Nay đỏ
-(`--danger`) CHỈ dùng cho cấp cứu, không dùng ở đâu khác** — đừng phá luật này.
-- Sửa giao diện thì sửa token, đừng viết màu thẳng vào style nội tuyến.
-- Muốn quay lại da sổ tay thì thay đúng khối `<style>` của `soc/index.html`, phần JS không phụ thuộc.
-
-**Điều hướng hai tầng** thay cho lưới 10 pill cũ: hằng `NAV` chia 14 mục vào **5 nhóm** —
-🏠 Nhà · 🌱 Lớn lên (mốc & lời nói · chơi & ra ngoài · học sớm · ăn uống · giấc ngủ · đi lớp) ·
-🏥 Sức khoẻ (theo dõi & khám · răng · tập bô · an toàn) · 💞 Nuôi dạy (với con · bố mẹ) · 📔 Kỷ niệm.
-`Dock` là thanh dưới cố định (có chấm nhắc khi nhóm đó đang có việc), `SubTabs` là hàng tab con.
-Thêm mục mới → thêm vào `NAV`, `TAB_GROUP`/`TAB_NAME` tự suy ra.
-- Nút 🚨 nằm cố định ở `header`, luôn một chạm là tới từ bất kỳ đâu.
-
-**Ba thứ vá điểm yếu cũ:**
-- `SearchSheet` + `searchIndex()` — tìm toàn app, bỏ dấu vẫn ra ("sot co giat"). Thêm nội dung mới
-  thì nhớ thêm một dòng vào `searchIndex()`, không thì tra không thấy.
-- `MenuSheet` — xuất/nhập file sao lưu JSON toàn bộ `CHILD_KEYS`, kèm trạng thái đồng bộ và giờ
-  đồng bộ gần nhất. Ảnh KHÔNG nằm trong file (chỉ có đường dẫn).
-- `App` kiểm dữ liệu tĩnh trước khi vẽ: `data/child.json` hỏng thì hiện màn báo lỗi có nút tải lại,
-  thay vì vẽ hàng loạt mục rỗng một cách im lặng.
-
-**Trang chủ** (`HomeTab`) là sub-tab đầu tiên và là màn mặc định khi mở app — ghép hai mẫu đã chọn:
-phần trên là **bảng chỉ số** (cân nặng lớn + đường 6 lần đo gần nhất vẽ bằng `Spark`, rồi 4 ô chiều cao ·
-từ nói được · mũi đã tiêm · kỹ năng tự lập), giữa là **📌 Cần để ý** (mũi còn thiếu, mũi kế tiếp trong 60
-ngày, đếm ngược đi lớp, đợt ốm chưa đánh dấu khỏi, lâu chưa đo) — bấm là nhảy đúng tab; dưới là **lưới 8 ô
-lớn** vào từng mục (thêm 🚽 Tập bô và 📔 Kỷ niệm ở đợt 3). Thẻ hồ sơ bé cũ chỉ còn hiện ở trang chủ khi chưa điền đủ hoặc đang bấm sửa.
-
-- **Gỡ hẳn Sóc khỏi Just Us (2026-08-09):** `index.html` KHÔNG còn tab dưới 🐿️ Sóc, không còn
-  `ChildLauncher`, không còn thẻ trang chủ `ChildPlayCard` ("🧸 Chơi với con hôm nay"), không còn phần
-  của bé trong `TodayMenuCard`, và **không nạp `data/child.json`** nữa (đã bỏ khỏi `FILES` + `window.JUD`).
-  Thanh tab dưới còn **05 mục**; máy nào từng đặt `ju.setup.defaultTab='child'` thì `App` tự lùi về `home`.
-- Vào app Sóc **chỉ còn một đường**: tab **Cá nhân → 📱 App của nhà mình → 🐿️ Sóc** (`href="soc/"`).
-- Bảng app đó là `AppBoard` + hằng `APP_BOARD`, gom mọi app riêng về một chỗ:
-  🐿️ Sóc · 🪷 Tâm linh · 💰 VíNhà (chỉ hiện khi đã dán link ở `ju.vinhaUrl`). Tách thêm app mới thì
-  thêm một dòng vào `APP_BOARD`, không dựng thẻ riêng nữa.
-- Dữ liệu tĩnh nuôi con nay **chỉ một nơi đọc**: `soc/index.html` fetch `../data/child.json`.
-  Sửa nội dung nuôi con → sửa `data/child.json` rồi bump `soc-v*`, không phải bump `justus-v*`.
-- **Cùng origin** với Just Us → chung `localStorage`, mọi khoá `ju.child*` + `ju.skillGuidesDone` giữ nguyên.
-- **Đồng bộ đám mây**: khác Tâm linh, `soc/` CÓ lớp `Cloud` gọn riêng — nó dùng lại **phiên Supabase đã có
-  của Just Us** (không tự đăng nhập / ghép cặp) và chỉ đụng vào `CHILD_KEYS`: kéo về thì chỉ ghi đè khoá của
-  Sóc, đẩy lên thì **trộn** khoá Sóc vào hàng `justus_data` đang có. Nhờ vậy ghi bên này không đè mất dữ
-  liệu khác, và `Cloud.start()` của Just Us (vốn `pull()` đè localStorage khi mở app) không nuốt mất phần
-  vừa ghi bên Sóc. `last_writer` ghi là `<device>.soc` để máy kia (và tab Just Us) nhận realtime.
-  Chưa đăng nhập/ghép cặp thì app vẫn chạy, chỉ lưu máy này (có dòng báo "📴 Chưa nối đám mây").
-- Cache riêng `soc-v8`. **Ba service worker dùng chung origin**: mỗi `sw.js` chỉ được xoá cache có tiền tố
-  của chính nó (`justus-*` / `tamlinh-*` / `soc-*`). `soc/sw.js` cache cả `../data/child.json` + `../fonts.css`
-  (scope chỉ giới hạn TRANG được điều khiển, không giới hạn URL được chặn) → đổi 2 file đó phải bump `soc-v*`.
-- Deploy: Pages và Netlify đều publish cả thư mục nên `soc/` tự lên, không cần sửa CI.
-
-**Vẫn nằm trong `index.html` (KHÔNG tách):** những chỗ nói về con nhưng là việc của HAI VỢ CHỒNG, không
-phải app nuôi con — mục Sức khỏe gia đình (thành viên `child`, đọc `ju.child` lấy tên), chế độ nấu ăn
-"🐿️ Đang trông Sóc", `DEFAULT_ROUTINE` / lịch sinh hoạt trong ngày, chi tiêu ví `m_soc` lấy từ VíNhà,
-và nhóm câu đố "👶 Nuôi con" trong `KnowledgeQuiz`.
+**Vẫn nằm trong `index.html` (KHÔNG tách):** những chỗ nói về con nhưng là việc của HAI VỢ
+CHỒNG, không phải app nuôi con — mục Sức khỏe gia đình (thành viên `child`, đọc `ju.child`
+lấy tên), chế độ nấu ăn "🐿️ Đang trông Sóc", `DEFAULT_ROUTINE` / lịch sinh hoạt trong ngày,
+chi tiêu ví `m_soc` lấy từ VíNhà, và nhóm câu đố "👶 Nuôi con" trong `KnowledgeQuiz`.
 
 ## Dữ liệu (localStorage, tiền tố `ju.`)
 | Khoá | Ý nghĩa | Kiểu |
