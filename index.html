@@ -4993,6 +4993,85 @@ const CHILD_ISSUES=[
     'Chuẩn bị sẵn 2 món giống/tương tự nhau khi hẹn bạn đến chơi để giảm tranh giành.',
     'Khen ngay khi con biết nhường hoặc rủ bạn chơi chung, để con thấy hành vi tốt được ghi nhận.',
     'Không ép con nhường mọi lúc — cũng dạy con quyền giữ đồ của mình và cách từ chối lịch sự.']},
+  {icon:'🗣️',title:'Con chậm nói',tips:[
+    'Nói chuyện & mô tả mọi việc đang làm cùng con mỗi ngày; hỏi rồi chờ con phản hồi thay vì tự trả lời luôn.',
+    'Đọc sách tranh, gọi tên đồ vật, hát cùng con hằng ngày để tăng vốn từ một cách tự nhiên.',
+    'Hạn chế tối đa màn hình (tivi/điện thoại) — màn hình không thay thế được tương tác trực tiếp với con.',
+    'Chờ đợi, tạo cơ hội để con chủ động nói/ra hiệu trước, tránh đoán ý và đáp ứng ngay khi con chỉ cần chỉ tay.',
+    'Để ý thêm dấu hiệu đi kèm: ít giao tiếp mắt, không phản ứng khi gọi tên, không bắt chước âm thanh/cử chỉ.',
+    'Nếu 18–24 tháng con nói rất ít từ, hoặc 2 tuổi chưa ghép được 2 từ, nên cho con khám chuyên khoa (nhi khoa/âm ngữ trị liệu) sớm — can thiệp càng sớm càng hiệu quả.']},
+];
+const GUIDE_KEYS=[
+  'ăn uống dinh dưỡng thực đơn ăn dặm ăn thô bữa ăn',
+  'chơi trò chơi vận động tư duy khéo tay ngôn ngữ học sớm giáo dục',
+  'kỹ năng tự túc tự lập dạy con cầm thìa mặc quần áo rửa tay',
+];
+/* Sơ cứu & tình huống khẩn — nội dung tham khảo, KHÔNG thay cho khám bác sĩ */
+const CHILD_SOS=[
+  {icon:'🚨',title:'Dấu hiệu phải đi viện NGAY',urgent:true,tips:[
+    'Khó thở, thở nhanh, rút lõm lồng ngực, tím môi hoặc đầu ngón tay.',
+    'Li bì, gọi không tỉnh, ngủ mê mệt bất thường hoặc quấy khóc không dỗ được.',
+    'Co giật, cứng gáy, thóp phồng.',
+    'Nôn liên tục, không uống/bú được, đi tiểu rất ít, môi khô mắt trũng (mất nước).',
+    'Sốt kèm phát ban tím không mất khi ấn vào, hoặc sốt ở trẻ dưới 3 tháng tuổi.',
+    'Đau bụng dữ dội, nôn ra dịch xanh, đi ngoài ra máu.',
+    'Gọi cấp cứu 115 khi con ngừng thở, tím tái, co giật kéo dài trên 5 phút hoặc bất tỉnh.']},
+  {icon:'🌡️',title:'Con sốt cao',tips:[
+    'Cặp nhiệt độ: từ 38°C là sốt. Ghi lại mốc giờ và số đo để báo bác sĩ.',
+    'Cho mặc thoáng, phòng mát, lau người bằng nước ấm — không lau cồn, không đắp chăn dày.',
+    'Cho uống nhiều nước, sữa, oresol; ăn lỏng dễ tiêu, chia nhiều bữa nhỏ.',
+    'Hạ sốt theo cân nặng và đúng khoảng cách liều mà bác sĩ/nhà thuốc đã dặn; không tự phối nhiều loại.',
+    'Đi khám ngay nếu: dưới 3 tháng tuổi mà sốt · sốt trên 39°C không hạ · sốt quá 3 ngày · kèm li bì, co giật, phát ban, khó thở.']},
+  {icon:'😷',title:'Hóc, nghẹn dị vật',urgent:true,tips:[
+    'Con còn ho được, còn khóc được: khuyến khích con ho, KHÔNG móc tay vào họng.',
+    'Con không ho được, không khóc được, tím tái: gọi 115 ngay rồi sơ cứu.',
+    'Trẻ nhỏ: đặt úp dọc theo cánh tay, đầu thấp hơn thân, vỗ 5 cái vào giữa hai xương bả vai.',
+    'Sau đó lật ngửa, ấn 5 lần bằng hai ngón tay giữa xương ức; lặp lại đến khi dị vật ra hoặc xe cấp cứu tới.',
+    'Sau khi lấy được dị vật vẫn nên cho con đi khám.',
+    'Phòng trước: cắt nhỏ nho, cà chua bi, xúc xích; không cho con ăn hạt cứng, thạch rau câu; không để con vừa chạy vừa ăn.']},
+  {icon:'⚡',title:'Co giật do sốt',urgent:true,tips:[
+    'Đặt con nằm nghiêng trên mặt phẳng, nới rộng quần áo, dọn vật cứng xung quanh.',
+    'KHÔNG giữ chặt tay chân, KHÔNG nhét bất cứ thứ gì vào miệng con, không vắt chanh.',
+    'Bấm giờ xem cơn kéo dài bao lâu và quan sát để mô tả lại cho bác sĩ.',
+    'Gọi 115 nếu cơn kéo dài trên 5 phút, con tím tái, hoặc lặp lại nhiều cơn.',
+    'Sau cơn giật, dù con tỉnh lại bình thường vẫn cần cho đi khám.']},
+  {icon:'🔥',title:'Bỏng',tips:[
+    'Đưa vùng bỏng vào vòi nước mát chảy nhẹ 15–20 phút.',
+    'KHÔNG bôi kem đánh răng, nước mắm, mỡ trăn, đá lạnh lên vết bỏng.',
+    'Cởi bỏ quần áo, tháo vòng nhẫn quanh vùng bỏng trước khi sưng — trừ khi vải đã dính vào da.',
+    'Che vết bỏng bằng gạc sạch hoặc vải sạch, không chọc vỡ bọng nước.',
+    'Đi viện ngay nếu bỏng rộng hơn bàn tay con, bỏng ở mặt, tay, bộ phận sinh dục, hoặc bỏng do điện, hoá chất.']},
+  {icon:'🤕',title:'Ngã đập đầu',tips:[
+    'Giữ bình tĩnh, dỗ con và quan sát liên tục trong 24–48 giờ đầu.',
+    'Chườm mát chỗ sưng khoảng 15 phút; không xoa dầu nóng.',
+    'Đi viện ngay nếu: nôn nhiều lần, lơ mơ, gọi khó tỉnh, co giật, chảy máu hoặc dịch trong từ mũi/tai, đồng tử hai bên không đều, yếu một bên tay chân.',
+    'Đêm đầu tiên nên đánh thức con vài lần xem con có tỉnh và phản ứng bình thường không.',
+    'Con dưới 12 tháng ngã từ độ cao trên 1 mét thì nên cho đi khám dù bề ngoài vẫn ổn.']},
+  {icon:'🩸',title:'Chảy máu, vết thương hở',tips:[
+    'Rửa tay, ép trực tiếp lên vết thương bằng gạc sạch trong 5–10 phút, không nhấc ra xem liên tục.',
+    'Rửa vết thương dưới vòi nước sạch, loại bỏ đất cát bám ngoài, rồi băng lại.',
+    'Nâng cao vùng bị thương hơn tim nếu ở tay hoặc chân.',
+    'Đi khám nếu: máu không cầm sau 10 phút ép, vết rách sâu và hở miệng, vết thương do vật bẩn hoặc bị động vật cắn.',
+    'Hỏi bác sĩ về tiêm phòng uốn ván khi vết thương bẩn hoặc sâu.']},
+  {icon:'☠️',title:'Nuốt nhầm thuốc, hoá chất, pin cúc áo',urgent:true,tips:[
+    'KHÔNG móc họng gây nôn, không cho uống sữa hay nước chanh để "giải độc".',
+    'Đưa con đi viện ngay và mang theo vỏ hộp, chai, vỉ thuốc con đã nuốt.',
+    'Nuốt pin cúc áo là cấp cứu — đi viện ngay lập tức dù con vẫn chơi bình thường.',
+    'Nếu hoá chất dính da hoặc mắt, rửa ngay dưới vòi nước sạch 15–20 phút rồi đi viện.',
+    'Ghi lại thời điểm nuốt và lượng ước chừng để báo bác sĩ.']},
+  {icon:'💧',title:'Tiêu chảy, nôn trớ, mất nước',tips:[
+    'Bù nước bằng oresol pha ĐÚNG tỉ lệ ghi trên gói, cho uống từng thìa nhỏ, liên tục.',
+    'Vẫn cho ăn uống bình thường, chia nhiều bữa nhỏ; không bắt con nhịn.',
+    'Không tự dùng thuốc cầm tiêu chảy cho trẻ nhỏ khi chưa có chỉ định.',
+    'Dấu hiệu mất nước cần đi viện: đi tiểu rất ít, môi khô, mắt trũng, khóc không ra nước mắt, li bì.',
+    'Đi khám khi phân có máu, nôn liên tục không giữ được nước, hoặc kéo dài quá 2 ngày.']},
+  {icon:'🏠',title:'An toàn trong nhà (phòng trước)',tips:[
+    'Chặn cầu thang, khoá cửa ban công và cửa sổ; không kê ghế, giường sát cửa sổ.',
+    'Cất thuốc, hoá chất, nước rửa bát, pin cúc áo lên cao và có khoá.',
+    'Bịt ổ điện, giấu dây điện, gắn cố định tủ kệ vào tường để không đổ đè con.',
+    'Không để cốc nước nóng, phích, nồi canh ở mép bàn; quay cán xoong vào trong bếp.',
+    'Không bao giờ để con một mình trong nhà tắm, kể cả khi chậu chỉ có ít nước.',
+    'Ghi sẵn số cấp cứu 115 và số bác sĩ nhi ở chỗ cả nhà dễ thấy.']},
 ];
 function ChildCare({people,me}){
   const [child,setChild]=useLocal('ju.child',{name:'',dob:'',gender:''});
@@ -5008,7 +5087,8 @@ function ChildCare({people,me}){
   const [words,setWords]=useLocal('ju.childWords',[]);
   const [tantrum,setTantrum]=useLocal('ju.childTantrum',[]);
   const [showAllVac,setShowAllVac]=useState(false);
-  const [tab,setTab]=useState('develop');
+  const [tab,setTab]=useState('today');
+  const [gq,setGq]=useState(''); const [sq,setSq]=useState('');
   const [editChild,setEditChild]=useState(false);
   const [gw,setGw]=useState(''); const [gh,setGh]=useState('');
   const [dtext,setDtext]=useState(''); const [wordIn,setWordIn]=useState('');
@@ -5040,6 +5120,20 @@ function ChildCare({people,me}){
     try{ const w=window.open('','_blank'); if(w){ w.document.write('<title>Hồ sơ y tế</title><pre style="font-family:system-ui,sans-serif;font-size:15px;white-space:pre-wrap;padding:24px;line-height:1.8">'+txt.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</pre>'); w.document.close(); w.focus(); setTimeout(()=>{ try{w.print();}catch(e){} },350); return; } }catch(e){}
     if(navigator.share) navigator.share({title:'Hồ sơ y tế',text:txt}).catch(()=>{}); else { navigator.clipboard.writeText(txt); alert('Đã copy hồ sơ — dán để gửi cô nhé!'); } };
   const last=growth[0];
+  const viKey=(s)=>(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'d').replace(/Đ/g,'D').toLowerCase();
+  const gqk=viKey(gq.trim()); const sqk=viKey(sq.trim());
+  const gShow=(s)=>!gqk||viKey(s).indexOf(gqk)>=0;
+  const gHits=GUIDE_KEYS.filter(gShow).length;
+  const sMatch=(f)=>!sqk||viKey(f.title+' '+(f.tips||[]).join(' ')).indexOf(sqk)>=0;
+  const sosUrgent=CHILD_SOS.filter(f=>f.urgent).filter(sMatch);
+  const sosCare=CHILD_SOS.filter(f=>!f.urgent).filter(sMatch);
+  const sosDaily=CHILD_ISSUES.filter(sMatch);
+  const illOpen=ill.filter(x=>!x.recovered);
+  const band=months==null?null:(CHILD_MILESTONES.find(x=>months>=x.lo&&months<x.hi)||CHILD_MILESTONES[CHILD_MILESTONES.length-1]);
+  const bandLeft=band?band.items.filter(it=>!mile[band.band+'|'+it]):[];
+  const dueVac=months==null?[]:CHILD_VACCINES.filter(v=>vacAgeMonths(v.age)<=months)
+    .reduce((acc,v)=>acc.concat(v.items.filter(it=>!vac[v.age+'|'+it]).map(it=>({age:v.age,it}))),[]);
+  const playToday=PLAY_LIB.length?PLAY_LIB[Math.floor(new Date(todayISO()+'T00:00:00')/86400000)%PLAY_LIB.length]:null;
   return (
     <div>
       <div className="card" style={{background:'linear-gradient(135deg,var(--chip),var(--card))'}}>
@@ -5060,22 +5154,81 @@ function ChildCare({people,me}){
         </>}
       </div>
       <FilterBar value={tab} onChange={setTab} menuId="child" items={[
-        {k:'develop',icon:'🌱',label:'Phát triển'},{k:'play',icon:'🎲',label:'Chơi với con'},{k:'health',icon:'🏥',label:'Sức khoẻ'},
-        {k:'eat',icon:'🍎',label:'Ăn uống'},{k:'school',icon:'🎒',label:'Đi học'},{k:'parent',icon:'💞',label:'Nuôi dạy'},
+        {k:'today',icon:'🏠',label:'Hôm nay'},{k:'track',icon:'📈',label:'Theo dõi'},
+        {k:'guide',icon:'📚',label:'Cẩm nang'},{k:'sos',icon:'🆘',label:'Gỡ rối'},
+        {k:'profile',icon:'🧒',label:'Hồ sơ bé'},
       ]}/>
 
-      {tab==='develop' && <div>
+      {tab==='today' && <div>
+        {months==null && <div className="card"><div className="muted" style={{fontSize:12.5,lineHeight:1.6}}>Nhập ngày sinh bé ở trên để app hiện đúng mốc phát triển, lịch tiêm và gợi ý theo tuổi.</div></div>}
+        {illOpen.length>0 && <div className="card" style={{borderLeft:'4px solid #e0a341'}}>
+          <div className="row"><span className="hc-title">🤒 {child.name||'Bé'} đang ốm</span></div>
+          {illOpen.map(x=>(
+            <div key={x.id} style={{marginTop:6}}>
+              <div style={{fontSize:12.5}}>{x.symptoms.length?x.symptoms.join(' · '):'Chưa ghi triệu chứng'} <span className="muted">· từ {fmtDateVN(x.date)}</span></div>
+              <button className="pill" style={{marginTop:5}} onClick={()=>recover(x.id)}>✅ Đã khỏi hôm nay</button>
+            </div>
+          ))}
+        </div>}
+        {dueVac.length>0 && <div className="card" style={{borderLeft:'4px solid var(--primary)'}}>
+          <div className="row"><span className="hc-title">💉 Mũi tiêm đã đến hạn</span><span className="grow"></span><span className="muted" style={{fontSize:12.5}}>{dueVac.length} mũi</span></div>
+          <div style={{marginTop:6}}>{dueVac.slice(0,6).map(v=>(
+            <button key={v.age+'|'+v.it} className="pill" style={{margin:'3px 6px 3px 0',padding:'7px 11px',fontSize:12.5}} onClick={()=>tg(vac,setVac,v.age+'|'+v.it)}>{v.it} <span className="muted">({v.age})</span></button>
+          ))}</div>
+          <div className="muted" style={{fontSize:11,marginTop:6}}>Bấm vào mũi đã tiêm để tích. Xem đủ lịch ở mục 📈 Theo dõi.</div>
+        </div>}
+        <div className="card">
+          <div className="row"><span className="hc-title">✍️ Ghi nhanh hôm nay</span></div>
+          <div className="row" style={{gap:6,marginTop:8}}>
+            <input className="inp grow" placeholder="Từ mới bé nói được…" value={wordIn} onChange={e=>setWordIn(e.target.value)} onKeyDown={e=>{ if(e.key==='Enter') addWord(); }}/>
+            <button className="btn sm" onClick={addWord}>＋</button>
+          </div>
+          <div className="row" style={{gap:6,marginTop:8}}>
+            <input className="inp grow" placeholder="Hôm nay bé… (điều đầu tiên)" value={dtext} onChange={e=>setDtext(e.target.value)} onKeyDown={e=>{ if(e.key==='Enter') addDiary(); }}/>
+            <button className="btn sm" onClick={addDiary}>＋</button>
+          </div>
+          <div className="row" style={{gap:8,marginTop:8}}>
+            <div className="field grow" style={{margin:0}}><label>Cân nặng (kg)</label><input className="inp" type="number" value={gw} onChange={e=>setGw(e.target.value)} placeholder="vd 11.5"/></div>
+            <div className="field grow" style={{margin:0}}><label>Chiều cao (cm)</label><input className="inp" type="number" value={gh} onChange={e=>setGh(e.target.value)} placeholder="vd 82"/></div>
+          </div>
+          <button className="btn" style={{marginTop:8}} onClick={addGrowth}>📏 Ghi số đo hôm nay</button>
+          {last && <div className="muted" style={{fontSize:12.5,marginTop:8}}>Gần nhất ({fmtDateVN(last.date)}): {last.w?last.w+'kg':''}{last.w&&last.h?' · ':''}{last.h?last.h+'cm':''}</div>}
+        </div>
+        {band && bandLeft.length>0 && <div className="card">
+          <div className="row"><span className="hc-title">🎯 Mốc {band.band} chưa đạt</span><span className="grow"></span><span className="muted" style={{fontSize:12.5}}>{band.items.length-bandLeft.length}/{band.items.length}</span></div>
+          <div style={{marginTop:6}}>{bandLeft.slice(0,5).map(it=>(
+            <button key={it} className="pill" style={{margin:'3px 6px 3px 0',padding:'7px 11px',fontSize:12.5}} onClick={()=>tg(mile,setMile,band.band+'|'+it)}>{it}</button>
+          ))}</div>
+          <div className="muted" style={{fontSize:11,marginTop:6}}>Bấm mốc bé đã làm được để tích.</div>
+        </div>}
+        {playToday && <div className="card">
+          <div className="row"><span className="hc-title">🧸 Chơi với con hôm nay</span></div>
+          <div style={{fontSize:14,marginTop:6,fontWeight:700}}>{playToday.n}</div>
+          <div className="muted" style={{fontSize:12.5,marginTop:3,lineHeight:1.55}}>{playToday.d}</div>
+          <div className="muted" style={{fontSize:11,marginTop:6}}>{playToday.c} · xem đủ trò ở mục 📚 Cẩm nang</div>
+        </div>}
+        {schoolDays!=null && schoolDays>=0 && <div className="card">
+          <div className="row"><span className="hc-title">🎒 Ngày đi lớp</span></div>
+          <div className="center" style={{marginTop:6}}>
+            {schoolDays>0 ? <><div style={{fontSize:24,fontWeight:800,color:'var(--primary)'}}>{schoolDays} ngày</div><div className="muted" style={{fontSize:12.5}}>nữa là bé tới lớp — {fmtDateVN(child.schoolDate)}</div></>
+              : <div style={{fontSize:18,fontWeight:700}}>🎉 Hôm nay bé đi học!</div>}
+          </div>
+          <div className="muted center" style={{fontSize:11,marginTop:6}}>Danh sách đồ mang đi lớp nằm ở mục 🧒 Hồ sơ bé.</div>
+        </div>}
+      </div>}
+
+      {tab==='track' && <div>
         <div className="sec-title">🎯 Mốc phát triển</div>
         <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>Chỉ hiện mốc đúng độ tuổi của bé — tích mốc bé đã làm được.</div>
         {months==null
           ? <div className="empty muted">Nhập ngày sinh bé ở trên để hiện mốc đúng tuổi.</div>
-          : (()=>{ const b=CHILD_MILESTONES.find(x=>months>=x.lo&&months<x.hi)||CHILD_MILESTONES[CHILD_MILESTONES.length-1];
+          : (()=>{ const b=band;
               return <div className="item" style={{borderLeft:'4px solid var(--primary)'}}>
                 <div className="it-top"><h4>⭐ {b.band} <span className="muted" style={{fontSize:11,fontWeight:400}}>(bé {months} tháng)</span></h4></div>
                 <div>{b.items.map(it=>{ const k=b.band+'|'+it; const on=!!mile[k];
                   return <button key={it} className="pill" style={{margin:'3px 6px 3px 0',padding:'7px 11px',fontSize:12.5,background:on?'var(--good)':'var(--chip)',color:on?'#fff':'var(--chip-tx)'}} onClick={()=>tg(mile,setMile,k)}>{on?'✓ ':''}{it}</button>; })}</div>
               </div>; })()}
-        <div className="sec-title">🗣️ Mốc ngôn ngữ <span className="grow"></span><span className="muted" style={{fontSize:12.5}}>{words.length} từ · +{wordsThisWeek} tuần này</span></div>
+        <div className="sec-title">🗣️ Từ bé nói được <span className="grow"></span><span className="muted" style={{fontSize:12.5}}>{words.length} từ · +{wordsThisWeek} tuần này</span></div>
         <div className="card">
           <div className="row" style={{gap:6}}>
             <input className="inp grow" placeholder="Thêm từ bé mới nói được…" value={wordIn} onChange={e=>setWordIn(e.target.value)} onKeyDown={e=>{ if(e.key==='Enter') addWord(); }}/>
@@ -5086,60 +5239,6 @@ function ChildCare({people,me}){
             <span key={w.id} className="pill" style={{margin:'3px 6px 3px 0',padding:'6px 10px',fontSize:12.5}}>{w.word} <span onClick={()=>{ if(confirm('Xoá từ này?')) setWords(words.filter(x=>x.id!==w.id)); }} style={{cursor:'pointer',marginLeft:3,opacity:.6}}>✕</span></span>
           ))}</div>}
         </div>
-        <Collapse id="child-speech-delay" defaultOpen={false} title="🗣️ Con chậm nói? Xem gợi ý xử lý">
-          <ul style={{margin:'4px 0 0',paddingLeft:18,fontSize:12.5,lineHeight:1.65}}>
-            <li style={{marginBottom:4}}>Nói chuyện & mô tả mọi việc đang làm cùng con mỗi ngày; hỏi rồi chờ con phản hồi thay vì tự trả lời luôn.</li>
-            <li style={{marginBottom:4}}>Đọc sách tranh, gọi tên đồ vật, hát cùng con hằng ngày để tăng vốn từ một cách tự nhiên.</li>
-            <li style={{marginBottom:4}}>Hạn chế tối đa màn hình (tivi/điện thoại) — màn hình không thay thế được tương tác trực tiếp với con.</li>
-            <li style={{marginBottom:4}}>Chờ đợi, tạo cơ hội để con chủ động nói/ra hiệu trước, tránh đoán ý và đáp ứng ngay khi con chỉ cần chỉ tay.</li>
-            <li style={{marginBottom:4}}>Để ý thêm dấu hiệu đi kèm: ít giao tiếp mắt, không phản ứng khi gọi tên, không bắt chước âm thanh/cử chỉ.</li>
-            <li style={{marginBottom:4}}>Nếu 18–24 tháng con nói rất ít từ, hoặc 2 tuổi chưa ghép được 2 từ, nên cho con khám chuyên khoa (nhi khoa/âm ngữ trị liệu) sớm — can thiệp càng sớm càng hiệu quả.</li>
-          </ul>
-        </Collapse>
-      </div>}
-
-      {tab==='play' && <div>
-        <div className="muted center" style={{fontSize:11,margin:'10px 14px'}}>🎲 Trò chơi giúp bé phát triển (~20–24 tháng), chia theo nhóm kỹ năng. Trang chủ có thẻ <b>Chơi với con hôm nay</b> để gợi ý ngẫu nhiên.</div>
-        <Collapse id="child-play" defaultOpen={false} title="🎲 Trò chơi theo nhóm kỹ năng">
-        {['🤸 Vận động','🧩 Tư duy','🗣️ Ngôn ngữ','🎨 Khéo tay'].map(cat=>(
-          <div key={cat}>
-            <div className="sec-title">{cat}</div>
-            {PLAY_LIB.filter(p=>p.c===cat).map((p,i)=>(
-              <div key={i} className="item" style={{padding:'9px 13px'}}>
-                <div className="it-top"><h4 style={{fontSize:14}}>{p.n}</h4></div>
-                <div className="muted" style={{fontSize:12.5,marginTop:2,lineHeight:1.5}}>{p.d}</div>
-              </div>
-            ))}
-          </div>
-        ))}
-        </Collapse>
-        <div className="muted center" style={{fontSize:11,margin:'6px 14px 8px'}}>Chơi cùng con 15–20 phút mỗi ngày giúp bé gắn kết & phát triển toàn diện 💛</div>
-        <Collapse id="child-cafe" defaultOpen={false} title="☕ Cafe / khu vui chơi cho bé ở Hà Nội">
-        <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>Gần → xa tính từ nhà (Núi Trúc). Giá & taxi khứ hồi là ước tính (taxi ~13.5k/km, 2 chiều).</div>
-        {KIDS_CAFES.map(c=>({...c,km:haversine(NHA.lat,NHA.lng,c.lat,c.lng)})).sort((a,b)=>a.km-b.km).map((c,i)=>(
-          <div key={i} className="item" style={{padding:'9px 13px'}}>
-            <div className="it-top"><h4 style={{fontSize:14}}>☕ {c.n}</h4><span className="pill" style={{flex:'0 0 auto'}}>{c.km.toFixed(1)} km</span></div>
-            <div className="muted" style={{fontSize:12.5,marginTop:3}}>📍 {c.a}</div>
-            <div style={{fontSize:12.5,marginTop:3}}>💵 {c.p}{c.note?' · '+c.note:''}</div>
-            <div className="muted" style={{fontSize:12.5,marginTop:3}}>🚕 Taxi khứ hồi ~<b>{taxiRoundK(c.km)}k</b> <span style={{opacity:.7}}>(ước tính 2 chiều)</span></div>
-            <div style={{marginTop:6}}><a className="pill" style={{textDecoration:'none'}} href={'https://www.google.com/maps/dir/?api=1&origin='+encodeURIComponent('Núi Trúc, Ba Đình, Hà Nội')+'&destination='+encodeURIComponent(c.n+', '+c.a+', Hà Nội')} target="_blank" rel="noreferrer">🗺️ Chỉ đường</a></div>
-          </div>
-        ))}
-        </Collapse>
-      </div>}
-
-      {tab==='health' && <div>
-        <Collapse id="child-vac" defaultOpen={false} title="💉 Lịch tiêm chủng" right={months!=null && <button className="muted" style={{fontSize:11}} onClick={()=>setShowAllVac(v=>!v)}>{showAllVac?'Theo tuổi bé':'Xem tất cả'}</button>}>
-        <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>{months!=null&&!showAllVac?`Chỉ hiện mốc hợp tuổi ${child.name||'bé'} (~${months} tháng) — tích mũi đã tiêm.`:'Tham khảo (TCMR + dịch vụ) — tích mũi đã tiêm.'}</div>
-        {(()=>{ const vacList=CHILD_VACCINES.filter(v=> showAllVac||months==null||(vacAgeMonths(v.age)>=months-3&&vacAgeMonths(v.age)<=months+12));
-          if(!vacList.length) return <div className="empty muted">Không có mốc tiêm nào quanh tuổi này — bấm “Xem tất cả”.</div>;
-          return vacList.map(v=>{ const due=months!=null&&vacAgeMonths(v.age)<=months; const allDone=v.items.every(it=>vac[v.age+'|'+it]);
-          return <div key={v.age} className="item" style={due&&!allDone?{borderLeft:'4px solid var(--primary)'}:null}>
-            <div className="it-top"><h4>{v.age}{due&&!allDone?' · đến hạn':''}{allDone?' ✅':''}</h4></div>
-            <div>{v.items.map(it=>{ const k=v.age+'|'+it; const on=!!vac[k];
-              return <button key={it} className="pill" style={{margin:'3px 6px 3px 0',padding:'7px 11px',fontSize:12.5,background:on?'var(--good)':'var(--chip)',color:on?'#fff':'var(--chip-tx)'}} onClick={()=>tg(vac,setVac,k)}>{on?'✓ ':''}{it}</button>; })}</div>
-          </div>; }); })()}
-        </Collapse>
         <div className="sec-title">📏 Chiều cao & cân nặng</div>
         <div className="card">
           <div className="row" style={{gap:8}}>
@@ -5157,6 +5256,17 @@ function ChildCare({people,me}){
             <button className="iconbtn" onClick={()=>{ if(confirm('Xoá lần đo này?')) setGrowth(growth.filter(x=>x.id!==e.id)); }}>🗑️</button>
           </div>
         ))}
+        <Collapse id="child-vac" defaultOpen={false} title="💉 Lịch tiêm chủng" right={months!=null && <button className="muted" style={{fontSize:11}} onClick={()=>setShowAllVac(v=>!v)}>{showAllVac?'Theo tuổi bé':'Xem tất cả'}</button>}>
+        <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>{months!=null&&!showAllVac?`Chỉ hiện mốc hợp tuổi ${child.name||'bé'} (~${months} tháng) — tích mũi đã tiêm.`:'Tham khảo (TCMR + dịch vụ) — tích mũi đã tiêm.'}</div>
+        {(()=>{ const vacList=CHILD_VACCINES.filter(v=> showAllVac||months==null||(vacAgeMonths(v.age)>=months-3&&vacAgeMonths(v.age)<=months+12));
+          if(!vacList.length) return <div className="empty muted">Không có mốc tiêm nào quanh tuổi này — bấm “Xem tất cả”.</div>;
+          return vacList.map(v=>{ const due=months!=null&&vacAgeMonths(v.age)<=months; const allDone=v.items.every(it=>vac[v.age+'|'+it]);
+          return <div key={v.age} className="item" style={due&&!allDone?{borderLeft:'4px solid var(--primary)'}:null}>
+            <div className="it-top"><h4>{v.age}{due&&!allDone?' · đến hạn':''}{allDone?' ✅':''}</h4></div>
+            <div>{v.items.map(it=>{ const k=v.age+'|'+it; const on=!!vac[k];
+              return <button key={it} className="pill" style={{margin:'3px 6px 3px 0',padding:'7px 11px',fontSize:12.5,background:on?'var(--good)':'var(--chip)',color:on?'#fff':'var(--chip-tx)'}} onClick={()=>tg(vac,setVac,k)}>{on?'✓ ':''}{it}</button>; })}</div>
+          </div>; }); })()}
+        </Collapse>
         <div className="sec-title">🤒 Nhật ký ốm</div>
         <div className="card">
           <div style={{display:'flex',flexWrap:'wrap',gap:6}}>{ILL_SYMPTOMS.map(s=>{ const on=illForm.symptoms.indexOf(s)>=0;
@@ -5176,88 +5286,6 @@ function ChildCare({people,me}){
             <button className="pill" style={{marginTop:6}} onClick={()=>recover(x.id)}>{x.recovered?'↩︎ Đánh dấu chưa khỏi':'✅ Đã khỏi hôm nay'}</button>
           </div>
         ))}
-        <div className="sec-title">🩺 Hồ sơ y tế gửi cô</div>
-        <div className="card">
-          <div className="field" style={{margin:0}}><label>Dị ứng</label><input className="inp" value={med.allergy||''} onChange={e=>setMed({...med,allergy:e.target.value})} placeholder="Thức ăn / thuốc bé dị ứng…"/></div>
-          <div className="field" style={{margin:'8px 0 0'}}><label>Thuốc đang dùng</label><input className="inp" value={med.meds||''} onChange={e=>setMed({...med,meds:e.target.value})} placeholder="Nếu có"/></div>
-          <div className="field" style={{margin:'8px 0 0'}}><label>Thói quen ngủ</label><input className="inp" value={med.sleep||''} onChange={e=>setMed({...med,sleep:e.target.value})} placeholder="vd: ngủ trưa 12h30, cần ôm gối…"/></div>
-          <div className="field" style={{margin:'8px 0 0'}}><label>Ghi chú cho cô</label><textarea className="inp" value={med.note||''} onChange={e=>setMed({...med,note:e.target.value})} placeholder="Tính cách, món sợ, cách dỗ…"/></div>
-          <button className="btn" style={{marginTop:10}} onClick={exportMed}>🖨️ Xuất để in / gửi cô</button>
-        </div>
-      </div>}
-
-      {tab==='eat' && <div>
-        <div className="sec-title">🍎 Ăn uống & chăm sóc {months!=null?`(~${months} tháng)`:''}</div>
-        <div className="card"><div className="muted" style={{fontSize:14,lineHeight:1.8}}>{CHILD_TIPS.map((t,i)=><div key={i}>{t}</div>)}</div></div>
-        <Collapse id="child-wean" defaultOpen={false} title="🍚 Thực đơn ăn dặm / ăn thô cả tuần">
-        <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>Gợi ý cho bé ~18–24 tháng (cơm nát + món mềm). Điều chỉnh theo khẩu vị bé nhé.</div>
-        {WEAN_MENU.map((m,i)=>(
-          <div key={i} className="item">
-            <div className="it-top"><h4>{m.d}</h4></div>
-            <div style={{fontSize:12.5,lineHeight:1.7,marginTop:2}}>
-              <div>🌅 <b>Sáng:</b> {m.sang}</div>
-              <div>🍎 <b>Phụ:</b> {m.phu}</div>
-              <div>🍚 <b>Trưa:</b> {m.trua}</div>
-              <div>🌙 <b>Tối:</b> {m.toi}</div>
-            </div>
-          </div>
-        ))}
-        </Collapse>
-      </div>}
-
-      {tab==='school' && <div>
-        <div className="sec-title">⏳ Đếm ngược ngày nhập học</div>
-        <div className="card">
-          <div className="field" style={{margin:0}}><label>Ngày bé đi học</label>
-            <input className="inp" type="date" value={child.schoolDate||''} onChange={e=>setChild({...child,schoolDate:e.target.value})}/></div>
-          {schoolDays!=null && <div className="center" style={{marginTop:10}}>
-            {schoolDays>0 ? <><div style={{fontSize:26,fontWeight:800,color:'var(--primary)'}}>{schoolDays} ngày</div><div className="muted" style={{fontSize:12.5}}>nữa là bé tới lớp — {fmtDateVN(child.schoolDate)} 🎒</div></>
-              : schoolDays===0 ? <div style={{fontSize:18,fontWeight:700}}>🎉 Hôm nay bé đi học!</div>
-              : <div className="muted">Bé đã đi học được {Math.abs(schoolDays)} ngày 💪</div>}
-          </div>}
-        </div>
-        <Collapse id="child-pack" defaultOpen={false} title="🎒 Đồ mang đi lớp" right={<span className="muted" style={{fontSize:12.5}}>{packDone}/{CHILD_PACK.length}</span>}>
-        <div className="card" style={{padding:'4px 13px'}}>
-          {CHILD_PACK.map(it=>(
-            <div key={it} className="row" style={{padding:'8px 0',borderBottom:'1px solid var(--line)'}}>
-              <button onClick={()=>tg(pack,setPack,it)} style={{fontSize:19}}>{pack[it]?'✅':'⬜'}</button>
-              <span className="grow" style={{fontSize:14,textDecoration:pack[it]?'line-through':'none',opacity:pack[it]?.6:1}}>{it}</span>
-            </div>
-          ))}
-          <button className="muted" style={{fontSize:11,margin:'8px 0'}} onClick={()=>{ if(confirm('Bỏ đánh dấu tất cả để chuẩn bị cho hôm sau?')) setPack({}); }}>↻ Đặt lại cho hôm sau</button>
-        </div>
-        </Collapse>
-        <Collapse id="child-skills" defaultOpen={false} title="🌟 Kỹ năng tự lập" right={<span className="muted" style={{fontSize:12.5}}>{skillDone}/{CHILD_SKILLS.length}</span>}>
-        <div className="prog" style={{margin:'0 14px'}}><i style={{width:(skillDone/CHILD_SKILLS.length*100)+'%'}}></i></div>
-        <div className="card" style={{padding:'4px 13px',marginTop:8}}>
-          {CHILD_SKILLS.map(it=>(
-            <div key={it} className="row" style={{padding:'8px 0',borderBottom:'1px solid var(--line)'}}>
-              <button onClick={()=>tg(skills,setSkills,it)} style={{fontSize:19}}>{skills[it]?'✅':'⬜'}</button>
-              <span className="grow" style={{fontSize:14,textDecoration:skills[it]?'line-through':'none',opacity:skills[it]?.6:1}}>{it}</span>
-            </div>
-          ))}
-        </div>
-        </Collapse>
-      </div>}
-
-      {tab==='parent' && <div>
-        <Collapse id="child-skillguides" defaultOpen={false} title="🌱 Dạy kỹ năng tự túc đầu tiên">
-        <div className="muted center" style={{fontSize:11,margin:'0 14px 6px'}}>Bấm từng kỹ năng để xem cách dạy theo bước. Mỗi bé một nhịp — cứ từ từ, khen nhiều 💛</div>
-        {SKILL_GUIDES.filter(g=>!gDone[g.name]).map(g=><SkillGuide key={g.name} g={g} done={false} onTick={()=>setGDone({...gDone,[g.name]:true})}/>)}
-        {SKILL_GUIDES.some(g=>gDone[g.name]) && <div className="muted" style={{fontSize:11,margin:'10px 14px 4px'}}>✅ Bé đã biết ({SKILL_GUIDES.filter(g=>gDone[g.name]).length}) — bấm nút xanh để bỏ đánh dấu:</div>}
-        {SKILL_GUIDES.filter(g=>gDone[g.name]).map(g=><SkillGuide key={g.name} g={g} done={true} onTick={()=>{ const n={...gDone}; delete n[g.name]; setGDone(n); }}/>)}
-        </Collapse>
-        <Collapse id="child-issues" defaultOpen={false} title="🧩 Vấn đề thường gặp & cách xử lý">
-          <div className="muted center" style={{fontSize:11,margin:'0 14px 6px'}}>Bấm vào chủ đề để xem gợi ý.</div>
-          <div className="card">
-            <div style={{display:'flex',flexWrap:'wrap',gap:6}}>
-              {CHILD_ISSUES.map(f=><button key={f.title} className="pill" onClick={()=>setBrowseIssue(f)}>{f.icon} {f.title}</button>)}
-            </div>
-          </div>
-        </Collapse>
-        {browseIssue && <Sheet title={browseIssue.icon+' '+browseIssue.title} onClose={()=>setBrowseIssue(null)}>
-          <ul style={{margin:'4px 0 0',paddingLeft:18,fontSize:14,lineHeight:1.7}}>{browseIssue.tips.map((t,i)=><li key={i} style={{marginBottom:7}}>{t}</li>)}</ul>
-        </Sheet>}
         <div className="sec-title">📔 Nhật ký “điều đầu tiên”</div>
         <div className="row" style={{margin:'0 14px 4px',gap:8}}>
           <input className="inp grow" placeholder="Hôm nay bé… (lần đầu nói, bước đi…)" value={dtext} onChange={e=>setDtext(e.target.value)} onKeyDown={e=>{ if(e.key==='Enter') addDiary(); }}/>
@@ -5287,6 +5315,182 @@ function ChildCare({people,me}){
               <button className="pill" style={{background:x.worked===false?'#b06b6b':'var(--chip)',color:x.worked===false?'#fff':'var(--chip-tx)'}} onClick={()=>setTanWorked(x.id,false)}>👎 Không</button></div>
           </div>
         ))}
+      </div>}
+
+      {tab==='guide' && <div>
+        <div className="row" style={{margin:'10px 14px 4px',gap:6}}>
+          <input className="inp grow" placeholder="🔎 Tìm trong cẩm nang (ăn, thực đơn, chơi, kỹ năng…)" value={gq} onChange={e=>setGq(e.target.value)}/>
+          {gq && <button className="btn sm soft" onClick={()=>setGq('')}>✕</button>}
+        </div>
+        <div className="muted center" style={{fontSize:11,margin:'0 14px 6px'}}>Kiến thức đọc lúc rảnh. Đang có chuyện cần xử lý ngay thì sang mục 🆘 Gỡ rối.</div>
+        {gq && gHits===0 && <div className="empty muted">Không có mục nào khớp “{gq}”.</div>}
+
+        {gShow(GUIDE_KEYS[0]) && <>
+          <div className="sec-title">🍎 Ăn uống {months!=null?`(~${months} tháng)`:''}</div>
+          <div className="card"><div className="muted" style={{fontSize:14,lineHeight:1.8}}>{CHILD_TIPS.map((t,i)=><div key={i}>{t}</div>)}</div></div>
+          <Collapse id="child-wean" defaultOpen={false} title="🍚 Thực đơn ăn dặm / ăn thô cả tuần">
+          <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>Gợi ý cho bé ~18–24 tháng (cơm nát + món mềm). Điều chỉnh theo khẩu vị bé nhé.</div>
+          {WEAN_MENU.map((m,i)=>(
+            <div key={i} className="item">
+              <div className="it-top"><h4>{m.d}</h4></div>
+              <div style={{fontSize:12.5,lineHeight:1.7,marginTop:2}}>
+                <div>🌅 <b>Sáng:</b> {m.sang}</div>
+                <div>🍎 <b>Phụ:</b> {m.phu}</div>
+                <div>🍚 <b>Trưa:</b> {m.trua}</div>
+                <div>🌙 <b>Tối:</b> {m.toi}</div>
+              </div>
+            </div>
+          ))}
+          </Collapse>
+        </>}
+
+        {gShow(GUIDE_KEYS[1]) && <>
+          <div className="sec-title">🎲 Chơi & học sớm</div>
+          <div className="muted center" style={{fontSize:11,margin:'0 14px 6px'}}>Trò chơi giúp bé phát triển (~20–24 tháng), chia theo nhóm kỹ năng. Mục 🏠 Hôm nay có gợi ý một trò mỗi ngày.</div>
+          <Collapse id="child-play" defaultOpen={false} title="🎲 Trò chơi theo nhóm kỹ năng">
+          {['🤸 Vận động','🧩 Tư duy','🗣️ Ngôn ngữ','🎨 Khéo tay'].map(cat=>(
+            <div key={cat}>
+              <div className="sec-title">{cat}</div>
+              {PLAY_LIB.filter(p=>p.c===cat).map((p,i)=>(
+                <div key={i} className="item" style={{padding:'9px 13px'}}>
+                  <div className="it-top"><h4 style={{fontSize:14}}>{p.n}</h4></div>
+                  <div className="muted" style={{fontSize:12.5,marginTop:2,lineHeight:1.5}}>{p.d}</div>
+                </div>
+              ))}
+            </div>
+          ))}
+          </Collapse>
+        </>}
+
+        {gShow(GUIDE_KEYS[2]) && <>
+          <div className="sec-title">🌱 Dạy kỹ năng tự túc</div>
+          <Collapse id="child-skillguides" defaultOpen={false} title="🌱 Dạy kỹ năng tự túc đầu tiên">
+          <div className="muted center" style={{fontSize:11,margin:'0 14px 6px'}}>Bấm từng kỹ năng để xem cách dạy theo bước. Mỗi bé một nhịp — cứ từ từ, khen nhiều 💛</div>
+          {SKILL_GUIDES.filter(g=>!gDone[g.name]).map(g=><SkillGuide key={g.name} g={g} done={false} onTick={()=>setGDone({...gDone,[g.name]:true})}/>)}
+          {SKILL_GUIDES.some(g=>gDone[g.name]) && <div className="muted" style={{fontSize:11,margin:'10px 14px 4px'}}>✅ Bé đã biết ({SKILL_GUIDES.filter(g=>gDone[g.name]).length}) — bấm nút xanh để bỏ đánh dấu:</div>}
+          {SKILL_GUIDES.filter(g=>gDone[g.name]).map(g=><SkillGuide key={g.name} g={g} done={true} onTick={()=>{ const n={...gDone}; delete n[g.name]; setGDone(n); }}/>)}
+          </Collapse>
+        </>}
+      </div>}
+
+      {tab==='sos' && <div>
+        <div className="row" style={{margin:'10px 14px 4px',gap:6}}>
+          <input className="inp grow" placeholder="🔎 Đang gặp chuyện gì? (sốt, hóc, ăn vạ, không ngủ…)" value={sq} onChange={e=>setSq(e.target.value)}/>
+          {sq && <button className="btn sm soft" onClick={()=>setSq('')}>✕</button>}
+        </div>
+        <div className="muted center" style={{fontSize:11,margin:'0 14px 8px'}}>Bấm một tình huống để xem các bước làm ngay. Nội dung tham khảo, không thay cho khám bác sĩ.</div>
+
+        {sosUrgent.length>0 && <>
+          <div className="sec-title">🚨 Khẩn cấp</div>
+          <div className="card" style={{borderLeft:'4px solid #c0504d'}}>
+            {sosUrgent.map(f=>(
+              <button key={f.title} className="row" style={{width:'100%',padding:'10px 0',borderBottom:'1px solid var(--line)',textAlign:'left',gap:8}} onClick={()=>setBrowseIssue(f)}>
+                <span style={{fontSize:19}}>{f.icon}</span><span className="grow" style={{fontSize:14,fontWeight:700}}>{f.title}</span><span className="muted">›</span>
+              </button>
+            ))}
+            <div className="muted" style={{fontSize:11,margin:'8px 0 2px'}}>Con ngừng thở, tím tái, co giật quá 5 phút hoặc bất tỉnh: gọi <b>115</b> ngay.</div>
+          </div>
+        </>}
+
+        {sosCare.length>0 && <>
+          <div className="sec-title">🩺 Sơ cứu & sức khoẻ</div>
+          <div className="card">
+            <div style={{display:'flex',flexWrap:'wrap',gap:6}}>
+              {sosCare.map(f=><button key={f.title} className="pill" onClick={()=>setBrowseIssue(f)}>{f.icon} {f.title}</button>)}
+            </div>
+          </div>
+        </>}
+
+        {sosDaily.length>0 && <>
+          <div className="sec-title">🧩 Chuyện hằng ngày</div>
+          <div className="card">
+            <div style={{display:'flex',flexWrap:'wrap',gap:6}}>
+              {sosDaily.map(f=><button key={f.title} className="pill" onClick={()=>setBrowseIssue(f)}>{f.icon} {f.title}</button>)}
+            </div>
+          </div>
+        </>}
+
+        {sq && (sosUrgent.length+sosCare.length+sosDaily.length)===0 && <div className="empty muted">Không có tình huống nào khớp “{sq}”.</div>}
+
+        {!sq && <>
+          <div className="sec-title">🤒 Con đang ốm</div>
+          <div className="card">
+            {illOpen.length>0
+              ? <>{illOpen.map(x=>(
+                  <div key={x.id} style={{marginBottom:6}}>
+                    <div style={{fontSize:12.5}}>{x.symptoms.length?x.symptoms.join(' · '):'Chưa ghi triệu chứng'} <span className="muted">· từ {fmtDateVN(x.date)}</span></div>
+                    <button className="pill" style={{marginTop:5}} onClick={()=>recover(x.id)}>✅ Đã khỏi hôm nay</button>
+                  </div>
+                ))}</>
+              : <div className="muted" style={{fontSize:12.5}}>Chưa có đợt ốm nào đang mở.</div>}
+            <button className="btn soft" style={{marginTop:8}} onClick={()=>setTab('track')}>📝 Ghi đợt ốm ở mục Theo dõi</button>
+          </div>
+
+          <div className="sec-title">☕ Bí chỗ đi chơi</div>
+          <Collapse id="child-cafe" defaultOpen={false} title="☕ Cafe / khu vui chơi cho bé ở Hà Nội">
+          <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>Gần → xa tính từ nhà (Núi Trúc). Giá & taxi khứ hồi là ước tính (taxi ~13.5k/km, 2 chiều).</div>
+          {KIDS_CAFES.map(c=>({...c,km:haversine(NHA.lat,NHA.lng,c.lat,c.lng)})).sort((a,b)=>a.km-b.km).map((c,i)=>(
+            <div key={i} className="item" style={{padding:'9px 13px'}}>
+              <div className="it-top"><h4 style={{fontSize:14}}>☕ {c.n}</h4><span className="pill" style={{flex:'0 0 auto'}}>{c.km.toFixed(1)} km</span></div>
+              <div className="muted" style={{fontSize:12.5,marginTop:3}}>📍 {c.a}</div>
+              <div style={{fontSize:12.5,marginTop:3}}>💵 {c.p}{c.note?' · '+c.note:''}</div>
+              <div className="muted" style={{fontSize:12.5,marginTop:3}}>🚕 Taxi khứ hồi ~<b>{taxiRoundK(c.km)}k</b> <span style={{opacity:.7}}>(ước tính 2 chiều)</span></div>
+              <div style={{marginTop:6}}><a className="pill" style={{textDecoration:'none'}} href={'https://www.google.com/maps/dir/?api=1&origin='+encodeURIComponent('Núi Trúc, Ba Đình, Hà Nội')+'&destination='+encodeURIComponent(c.n+', '+c.a+', Hà Nội')} target="_blank" rel="noreferrer">🗺️ Chỉ đường</a></div>
+            </div>
+          ))}
+          </Collapse>
+        </>}
+
+        {browseIssue && <Sheet title={browseIssue.icon+' '+browseIssue.title} onClose={()=>setBrowseIssue(null)}>
+          <ul style={{margin:'4px 0 0',paddingLeft:18,fontSize:14,lineHeight:1.7}}>{browseIssue.tips.map((t,i)=><li key={i} style={{marginBottom:7}}>{t}</li>)}</ul>
+          {browseIssue.urgent && <div className="muted" style={{fontSize:12,marginTop:10,lineHeight:1.6}}>Đây là tình huống khẩn — nếu còn phân vân, cứ đưa con đi viện. Cấp cứu: <b>115</b>.</div>}
+        </Sheet>}
+      </div>}
+
+      {tab==='profile' && <div>
+        <div className="sec-title">🧒 Thông tin bé</div>
+        <div className="card">
+          <div className="row" style={{gap:8}}>
+            <input className="inp grow" placeholder="Tên bé" value={child.name||''} onChange={e=>setChild({...child,name:e.target.value})}/>
+            <select className="inp" value={child.gender||''} onChange={e=>setChild({...child,gender:e.target.value})} style={{width:100}}>
+              <option value="">—</option><option value="nam">Trai</option><option value="nu">Gái</option></select>
+          </div>
+          <div className="field" style={{margin:'8px 0 0'}}><label>Ngày sinh</label>
+            <input className="inp" type="date" max={todayISO()} value={child.dob||''} onChange={e=>setChild({...child,dob:e.target.value})}/></div>
+          <div className="field" style={{margin:'8px 0 0'}}><label>Ngày bé đi học</label>
+            <input className="inp" type="date" value={child.schoolDate||''} onChange={e=>setChild({...child,schoolDate:e.target.value})}/></div>
+        </div>
+        <div className="sec-title">🩺 Hồ sơ y tế gửi cô</div>
+        <div className="card">
+          <div className="field" style={{margin:0}}><label>Dị ứng</label><input className="inp" value={med.allergy||''} onChange={e=>setMed({...med,allergy:e.target.value})} placeholder="Thức ăn / thuốc bé dị ứng…"/></div>
+          <div className="field" style={{margin:'8px 0 0'}}><label>Thuốc đang dùng</label><input className="inp" value={med.meds||''} onChange={e=>setMed({...med,meds:e.target.value})} placeholder="Nếu có"/></div>
+          <div className="field" style={{margin:'8px 0 0'}}><label>Thói quen ngủ</label><input className="inp" value={med.sleep||''} onChange={e=>setMed({...med,sleep:e.target.value})} placeholder="vd: ngủ trưa 12h30, cần ôm gối…"/></div>
+          <div className="field" style={{margin:'8px 0 0'}}><label>Ghi chú cho cô</label><textarea className="inp" value={med.note||''} onChange={e=>setMed({...med,note:e.target.value})} placeholder="Tính cách, món sợ, cách dỗ…"/></div>
+          <button className="btn" style={{marginTop:10}} onClick={exportMed}>🖨️ Xuất để in / gửi cô</button>
+        </div>
+        <Collapse id="child-pack" defaultOpen={false} title="🎒 Đồ mang đi lớp" right={<span className="muted" style={{fontSize:12.5}}>{packDone}/{CHILD_PACK.length}</span>}>
+        <div className="card" style={{padding:'4px 13px'}}>
+          {CHILD_PACK.map(it=>(
+            <div key={it} className="row" style={{padding:'8px 0',borderBottom:'1px solid var(--line)'}}>
+              <button onClick={()=>tg(pack,setPack,it)} style={{fontSize:19}}>{pack[it]?'✅':'⬜'}</button>
+              <span className="grow" style={{fontSize:14,textDecoration:pack[it]?'line-through':'none',opacity:pack[it]?.6:1}}>{it}</span>
+            </div>
+          ))}
+          <button className="muted" style={{fontSize:11,margin:'8px 0'}} onClick={()=>{ if(confirm('Bỏ đánh dấu tất cả để chuẩn bị cho hôm sau?')) setPack({}); }}>↻ Đặt lại cho hôm sau</button>
+        </div>
+        </Collapse>
+        <Collapse id="child-skills" defaultOpen={false} title="🌟 Kỹ năng tự lập" right={<span className="muted" style={{fontSize:12.5}}>{skillDone}/{CHILD_SKILLS.length}</span>}>
+        <div className="prog" style={{margin:'0 14px'}}><i style={{width:(skillDone/CHILD_SKILLS.length*100)+'%'}}></i></div>
+        <div className="card" style={{padding:'4px 13px',marginTop:8}}>
+          {CHILD_SKILLS.map(it=>(
+            <div key={it} className="row" style={{padding:'8px 0',borderBottom:'1px solid var(--line)'}}>
+              <button onClick={()=>tg(skills,setSkills,it)} style={{fontSize:19}}>{skills[it]?'✅':'⬜'}</button>
+              <span className="grow" style={{fontSize:14,textDecoration:skills[it]?'line-through':'none',opacity:skills[it]?.6:1}}>{it}</span>
+            </div>
+          ))}
+        </div>
+        </Collapse>
+        <div className="muted center" style={{fontSize:11,margin:'8px 14px 4px'}}>Cách dạy từng kỹ năng nằm ở mục 📚 Cẩm nang.</div>
       </div>}
     </div>
   );
@@ -5951,7 +6155,7 @@ const MENU_REGISTRY=[
   {id:'talk',label:'Trò chuyện',items:[{k:'notes',icon:'💌',label:'Nhắn nhau'},{k:'question',icon:'❓',label:'Câu hỏi'},{k:'wishes',icon:'💛',label:'Mong nhau'},{k:'guide',icon:'🕊️',label:'Giao tiếp'},{k:'parenting',icon:'🤝',label:'Dạy con'},{k:'quiz',icon:'💞',label:'Đố vui'},{k:'checkin',icon:'📝',label:'Check-in'},{k:'topics',icon:'🗣️',label:'Chủ đề'}]},
   {id:'comm',label:'Cẩm nang giao tiếp',items:[{k:'principles',icon:'🕊️',label:'Nguyên tắc'},{k:'say',icon:'💬',label:'Nói khéo'},{k:'love',icon:'💖',label:'NN yêu thương'},{k:'fight',icon:'⚖️',label:'Cãi lành mạnh'},{k:'connect',icon:'🔗',label:'Câu hỏi kết nối'}]},
   {id:'spirit',label:'Tâm linh',items:[{k:'le',icon:'📅',label:'Ngày lễ'},{k:'kinh',icon:'📿',label:'Kinh Phật'},{k:'khan',icon:'📜',label:'Văn khấn'},{k:'tuvi',icon:'🔮',label:'Tử vi'},{k:'thanso',icon:'🔢',label:'Thần số'},{k:'chay',icon:'🍃',label:'Quán chay'},{k:'co',icon:'🍲',label:'Mâm cỗ'}]},
-  {id:'child',label:'Nuôi con',items:[{k:'develop',icon:'🌱',label:'Phát triển'},{k:'play',icon:'🎲',label:'Chơi với con'},{k:'health',icon:'🏥',label:'Sức khoẻ'},{k:'eat',icon:'🍎',label:'Ăn uống'},{k:'school',icon:'🎒',label:'Đi học'},{k:'parent',icon:'💞',label:'Nuôi dạy'}]},
+  {id:'child',label:'Nuôi con',items:[{k:'today',icon:'🏠',label:'Hôm nay'},{k:'track',icon:'📈',label:'Theo dõi'},{k:'guide',icon:'📚',label:'Cẩm nang'},{k:'sos',icon:'🆘',label:'Gỡ rối'},{k:'profile',icon:'🧒',label:'Hồ sơ bé'}]},
 ];
 function LongSectionsControl({flash}){
   const setAll=(open)=>{ try{ Object.keys(localStorage).forEach(k=>{ if(k.indexOf('ju.col.')===0) localStorage.removeItem(k); }); }catch(_){}; store.set('ju.colDefault',open?1:0); flash&&flash(open?'Đã mở tất cả mục dài ✓':'Đã thu gọn tất cả mục dài ✓'); };
