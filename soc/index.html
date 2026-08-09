@@ -1,0 +1,2197 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>Sóc · Nuôi con</title>
+<!-- Chặn trình duyệt tự bôi đen app (Chrome Android "Chủ đề tối → Làm tối trang web",
+     Samsung Internet dark mode…): app tự lo màu sáng/tối, đừng đảo màu giúp.
+     Script dưới đổi sang 'dark' khi theme đang dùng thật sự là nền tối. -->
+<meta name="color-scheme" content="only light" />
+<meta name="theme-color" content="#c65b52" />
+<link rel="manifest" href="manifest.json" />
+<link rel="icon" href="icon.svg" />
+<link rel="apple-touch-icon" href="icon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet" />
+<!-- Font viết tay Patrick Hand (dùng chung với Just Us) cho theme "Sổ tay" -->
+<link rel="stylesheet" href="../fonts.css" />
+
+<script crossorigin src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.production.min.js"></script>
+<script crossorigin src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.23.6/babel.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.js"></script>
+<style>
+/* =========================================================================
+   Bộ nhận diện riêng của app Sóc.
+   Trước đây app mược da "Sổ tay" của Just Us (giấy be, viền đứt, thẻ nghiêng,
+   chữ viết tay). Da đó hợp app đôi, nhưng ở đây nó làm phần y tế trông kém
+   tin cậy, và tệ hơn: màu chính của nó là đỏ gạch, gần trùng với màu cấp cứu
+   nên thứ quan trọng nhất lại không nổi lên được.
+   Nay Sóc có hệ màu riêng, và ĐỎ CHỈ DÙNG CHO CẤP CỨU — không dùng ở đâu khác.
+   ========================================================================= */
+:root{
+  --bg:#eef2f4; --surface:#ffffff; --surface-2:#f6f9fa; --raised:#ffffff;
+  --ink:#0f1a20; --ink-2:#4c6472; --ink-3:#7b909c;
+  --line:#dde5e9; --line-2:#eaf0f2;
+  --brand:#0d6a7a; --brand-2:#128ea3; --brand-soft:#e0eff2; --brand-ink:#0a5462;
+  --good:#1d7a4d; --good-soft:#e2f2e9;
+  --warn:#a86400; --warn-soft:#fcf0dc;
+  --danger:#bd3226; --danger-2:#d8503f; --danger-soft:#fbe9e6;
+  --on-brand:#ffffff;
+  --shadow-1:0 1px 2px rgba(15,26,32,.06);
+  --shadow-2:0 1px 2px rgba(15,26,32,.05), 0 10px 24px -14px rgba(15,26,32,.28);
+  --r-sm:9px; --r:14px; --r-lg:20px;
+  --t-xs:12px; --t-sm:13.5px; --t-md:15px; --t-lg:17px; --t-xl:21px; --t-2xl:30px;
+  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:22px; --sp-6:30px;
+  --gut:16px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0c1215; --surface:#141d21; --surface-2:#19242a; --raised:#1c282e;
+    --ink:#e9f0f2; --ink-2:#a2b7c0; --ink-3:#7b929c;
+    --line:#26343a; --line-2:#1f2b31;
+    --brand:#4cb4c7; --brand-2:#6bcbdb; --brand-soft:#12333b; --brand-ink:#9ddfeb;
+    --good:#4cb782; --good-soft:#12312270;
+    --warn:#d9a253; --warn-soft:#32270f;
+    --danger:#e2705f; --danger-2:#ef8574; --danger-soft:#3a1c18;
+    --on-brand:#06222a;
+    --shadow-1:0 1px 2px rgba(0,0,0,.4);
+    --shadow-2:0 2px 4px rgba(0,0,0,.4), 0 12px 28px -16px rgba(0,0,0,.7);
+  }
+}
+body.dark{
+  --bg:#0c1215; --surface:#141d21; --surface-2:#19242a; --raised:#1c282e;
+  --ink:#e9f0f2; --ink-2:#a2b7c0; --ink-3:#7b929c;
+  --line:#26343a; --line-2:#1f2b31;
+  --brand:#4cb4c7; --brand-2:#6bcbdb; --brand-soft:#12333b; --brand-ink:#9ddfeb;
+  --good:#4cb782; --good-soft:#123122;
+  --warn:#d9a253; --warn-soft:#32270f;
+  --danger:#e2705f; --danger-2:#ef8574; --danger-soft:#3a1c18;
+  --on-brand:#06222a;
+  --shadow-1:0 1px 2px rgba(0,0,0,.4);
+  --shadow-2:0 2px 4px rgba(0,0,0,.4), 0 12px 28px -16px rgba(0,0,0,.7);
+}
+
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  font-family:'Be Vietnam Pro',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  font-size:var(--t-md); line-height:1.55; letter-spacing:.1px;
+  -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+  background:var(--bg); color:var(--ink); min-height:100vh;
+}
+#root{max-width:520px;margin:0 auto;min-height:100vh;position:relative;background:var(--bg)}
+.app{padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;font-size:inherit}
+input,textarea,select{font-family:inherit;font-size:var(--t-md);color:var(--ink)}
+a{color:var(--brand)}
+:focus-visible{outline:2px solid var(--brand);outline-offset:2px;border-radius:4px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ===== Thanh trên: tên bé + nút cấp cứu luôn trong tầm tay ===== */
+.hdr{position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:10px;
+  padding:10px var(--gut);background:color-mix(in srgb,var(--bg) 88%,transparent);
+  backdrop-filter:saturate(1.4) blur(10px);border-bottom:1px solid var(--line)}
+.hdr .id{display:flex;align-items:center;gap:9px;min-width:0;flex:1}
+.hdr .mark{width:32px;height:32px;border-radius:10px;background:var(--brand-soft);
+  display:grid;place-items:center;font-size:18px;flex:0 0 auto}
+.hdr .nm{font-size:var(--t-md);font-weight:700;line-height:1.2;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hdr .sub{font-size:var(--t-xs);color:var(--ink-2);line-height:1.25}
+.hdr-btn{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;
+  background:var(--surface);border:1px solid var(--line);font-size:17px;flex:0 0 auto}
+.hdr-btn.sos{background:var(--danger);border-color:var(--danger);color:#fff}
+
+/* ===== Nội dung ===== */
+.wrap{padding:0 0 var(--sp-5)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
+  box-shadow:var(--shadow-1);padding:var(--sp-4);margin:var(--sp-3) var(--gut)}
+.item{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
+  box-shadow:var(--shadow-1);padding:13px 14px;margin:var(--sp-2) var(--gut)}
+.item .it-top{display:flex;align-items:flex-start;gap:8px}
+.item h4{margin:0;font-size:var(--t-sm);font-weight:700;flex:1;line-height:1.4}
+.sec-title{font-weight:700;font-size:var(--t-xs);letter-spacing:1.2px;text-transform:uppercase;
+  color:var(--ink-3);margin:var(--sp-5) var(--gut) var(--sp-2);display:flex;align-items:center;gap:8px}
+.muted{color:var(--ink-2)}
+.row{display:flex;gap:10px;align-items:center}
+.grow{flex:1;min-width:0}
+.center{text-align:center}
+.empty{text-align:center;color:var(--ink-2);padding:26px 20px;font-size:var(--t-sm);line-height:1.6}
+
+.pill{display:inline-flex;align-items:center;gap:5px;background:var(--surface-2);
+  color:var(--ink-2);border:1px solid var(--line);border-radius:999px;
+  padding:6px 12px;font-size:var(--t-xs);font-weight:600;min-height:32px}
+.pill.on{background:var(--brand);border-color:var(--brand);color:var(--on-brand)}
+.pill.good{background:var(--good-soft);border-color:transparent;color:var(--good)}
+.pill.warn{background:var(--warn-soft);border-color:transparent;color:var(--warn)}
+.pill.hot{background:var(--danger);border-color:var(--danger);color:#fff}
+
+.btn{background:var(--brand);color:var(--on-brand);border-radius:var(--r-sm);
+  padding:12px 16px;font-weight:700;font-size:var(--t-sm);display:inline-flex;
+  align-items:center;justify-content:center;gap:7px;width:100%;min-height:46px;
+  box-shadow:var(--shadow-1)}
+.btn.sm{padding:9px 13px;width:auto;min-height:40px}
+.btn.soft{background:var(--brand-soft);color:var(--brand-ink);box-shadow:none}
+.btn.ghost{background:transparent;color:var(--brand);border:1.5px solid var(--line);box-shadow:none}
+.btn.danger{background:var(--danger);color:#fff}
+.iconbtn{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;
+  background:var(--surface-2);border:1px solid var(--line);color:var(--ink-2);font-size:15px;flex:0 0 auto}
+.xbtn{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;
+  color:var(--ink-3);font-size:15px;flex:0 0 auto}
+.tick{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;font-size:19px;flex:0 0 auto}
+
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:var(--sp-3)}
+.field label{font-size:var(--t-xs);font-weight:700;color:var(--ink-2)}
+.inp{background:var(--surface-2);border:1.5px solid var(--line);border-radius:var(--r-sm);
+  padding:12px 13px;width:100%;color:var(--ink);min-height:46px}
+.inp::placeholder{color:var(--ink-3)}
+.inp:focus{border-color:var(--brand);outline:none}
+textarea.inp{resize:vertical;min-height:72px;line-height:1.55}
+
+.prog{height:8px;border-radius:999px;background:var(--line-2);overflow:hidden;margin-top:8px}
+.prog > i{display:block;height:100%;background:var(--brand);border-radius:999px}
+
+/* ===== Điều hướng hai tầng =====
+   Dưới: 5 nhóm chính. Trong nhóm: hàng tab gạch chân.
+   Trước đây 10 mục nằm trong một lưới 3 hàng, chiếm gần một phần tư màn hình
+   ở MỌI trang và không cho biết mục nào đang cần để ý. */
+.dock{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:100%;max-width:520px;
+  z-index:50;display:flex;background:color-mix(in srgb,var(--surface) 92%,transparent);
+  backdrop-filter:saturate(1.4) blur(12px);border-top:1px solid var(--line);
+  padding:6px 4px calc(6px + env(safe-area-inset-bottom,0px))}
+.dock button{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:2px;
+  color:var(--ink-3);font-size:10.5px;font-weight:600;padding:5px 2px;border-radius:11px;
+  min-height:52px;justify-content:center;position:relative}
+.dock button .ic{font-size:20px;line-height:1.15}
+.dock button.on{color:var(--brand)}
+.dock button .dot{position:absolute;top:5px;right:calc(50% - 17px);width:7px;height:7px;
+  border-radius:50%;background:var(--warn);border:1.5px solid var(--surface)}
+
+.subtabs{display:flex;gap:2px;overflow-x:auto;padding:2px var(--gut) 0;
+  border-bottom:1px solid var(--line);scrollbar-width:none}
+.subtabs::-webkit-scrollbar{display:none}
+.subtabs button{flex:0 0 auto;padding:11px 12px 9px;font-size:var(--t-sm);font-weight:600;
+  color:var(--ink-2);border-bottom:2.5px solid transparent;white-space:nowrap;min-height:44px}
+.subtabs button.on{color:var(--brand);border-bottom-color:var(--brand)}
+
+/* ===== Khối mở ra đọc ===== */
+.col-h{cursor:pointer;user-select:none;display:inline-flex;align-items:center;gap:6px;
+  min-height:40px;font-size:var(--t-xs);letter-spacing:1.2px;text-transform:uppercase}
+.col-chev{font-size:10px;color:var(--ink-3);width:11px;text-align:center}
+
+/* ===== Cấp cứu: đỏ chỉ ở đây ===== */
+.sos-bar{display:flex;align-items:center;gap:11px;margin:var(--sp-3) var(--gut);
+  padding:13px 14px;border-radius:var(--r);background:var(--danger);color:#fff;
+  width:calc(100% - var(--gut)*2);text-align:left;box-shadow:var(--shadow-1);min-height:56px}
+.sos-bar b{font-size:var(--t-sm);display:block;font-weight:700}
+.sos-bar small{font-size:11.5px;opacity:.92;display:block}
+.sos-bar .ic{font-size:22px;flex:0 0 auto}
+.callout{border-radius:var(--r-sm);padding:11px 13px;margin-top:10px;font-size:var(--t-sm);line-height:1.6}
+.callout.er{background:var(--danger-soft);border-left:3px solid var(--danger)}
+.callout.er .h{color:var(--danger);font-weight:800;font-size:var(--t-xs);
+  text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px}
+.callout.tip{background:var(--brand-soft);border-left:3px solid var(--brand)}
+.lbl-do{font-size:var(--t-xs);font-weight:800;color:var(--good);letter-spacing:.8px;text-transform:uppercase}
+.lbl-dont{font-size:var(--t-xs);font-weight:800;color:var(--danger);letter-spacing:.8px;text-transform:uppercase}
+.lbl-neutral{font-size:var(--t-xs);font-weight:800;color:var(--ink-2);letter-spacing:.8px;text-transform:uppercase}
+.note{font-size:var(--t-xs);color:var(--ink-2);line-height:1.6;margin:var(--sp-3) var(--gut) 0;
+  border-left:2px solid var(--line);padding-left:11px}
+
+/* ===== Trang chủ ===== */
+.hero{text-align:center;padding:var(--sp-5) var(--gut) var(--sp-2)}
+.hero .av{width:78px;height:78px;border-radius:26px;background:var(--brand-soft);
+  margin:0 auto;display:grid;place-items:center;font-size:38px;box-shadow:var(--shadow-1)}
+.hero .nm{font-size:var(--t-xl);font-weight:800;margin-top:11px;line-height:1.2}
+.hero .ag{font-size:var(--t-sm);color:var(--ink-2);margin-top:2px;font-variant-numeric:tabular-nums}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:var(--sp-3) var(--gut)}
+.stat{margin:0;padding:13px 14px}
+.stat .k{font-size:11.5px;color:var(--ink-2);font-weight:600}
+.stat .v{font-size:var(--t-xl);font-weight:700;line-height:1.2;font-variant-numeric:tabular-nums;margin-top:1px}
+.stat .v .u{font-size:var(--t-sm);font-weight:600;color:var(--ink-2)}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:var(--sp-3) var(--gut)}
+.tile{margin:0;padding:16px 9px;text-align:center;display:block;width:100%;min-height:96px}
+.tile .ic{font-size:25px;line-height:1.15;display:block}
+.tile b{display:block;font-size:var(--t-sm);margin-top:5px}
+.tile small{color:var(--ink-2);font-size:11.5px;display:block;margin-top:1px}
+.alert{display:flex;align-items:center;gap:10px;padding:12px 14px;margin:var(--sp-2) var(--gut);
+  background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--warn);
+  border-radius:var(--r);box-shadow:var(--shadow-1);width:calc(100% - var(--gut)*2);text-align:left;min-height:52px}
+
+/* ===== Tấm che (sheet) ===== */
+.ov{position:fixed;inset:0;z-index:80;background:rgba(6,14,18,.5);display:flex;
+  align-items:flex-end;justify-content:center}
+.sheet{background:var(--surface);width:100%;max-width:520px;border-radius:var(--r-lg) var(--r-lg) 0 0;
+  padding:var(--sp-4) var(--sp-4) var(--sp-6);max-height:88vh;overflow:auto;position:relative;
+  animation:up .22s ease}
+@keyframes up{from{transform:translateY(30px);opacity:.6}to{transform:translateY(0);opacity:1}}
+.sheet h3{margin:0 34px 12px 0;font-size:var(--t-lg)}
+.sheet .x{position:absolute;right:12px;top:12px;width:36px;height:36px;border-radius:10px;
+  display:grid;place-items:center;color:var(--ink-2);font-size:17px}
+
+/* ===== Tìm kiếm ===== */
+.hit{display:block;width:100%;text-align:left;margin:var(--sp-2) 0;padding:12px 13px;
+  background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-sm)}
+.hit .where{font-size:11px;color:var(--brand);font-weight:700;letter-spacing:.6px;text-transform:uppercase}
+.hit .t{font-size:var(--t-sm);font-weight:600;margin-top:2px}
+.hit .s{font-size:var(--t-xs);color:var(--ink-2);margin-top:2px;line-height:1.5}
+
+/* ===== Lưới 30 ngày tập bô ===== */
+.grid30{display:grid;grid-template-columns:repeat(10,1fr);gap:4px}
+.grid30 span{aspect-ratio:1;border-radius:5px;font-size:9px;display:grid;place-items:center;
+  color:var(--ink-3);background:var(--line-2);font-variant-numeric:tabular-nums}
+.grid30 span.dry{background:var(--good);color:#fff}
+.grid30 span.wet{background:var(--warn-soft);color:var(--warn)}
+
+/* ===== Trạng thái nạp / lỗi ===== */
+.skel{margin:var(--sp-3) var(--gut);height:74px;border-radius:var(--r);
+  background:linear-gradient(90deg,var(--line-2) 25%,var(--surface-2) 50%,var(--line-2) 75%);
+  background-size:400% 100%;animation:sh 1.3s ease-in-out infinite}
+@keyframes sh{0%{background-position:100% 0}100%{background-position:0 0}}
+
+/* Tiện ích nhỏ dùng lại */
+.num{font-variant-numeric:tabular-nums;font-weight:700;line-height:1.2}
+.num .u{font-size:var(--t-sm);font-weight:600;color:var(--ink-2)}
+.bul{margin:0;padding-left:19px;font-size:var(--t-sm);line-height:1.65}
+.bul li{margin-bottom:6px}
+.bul.dont{color:var(--danger)}
+.collapse{margin:0}
+.col-body{margin:0}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<!-- Chống nháy theme: lấy đúng theme đang chọn bên Just Us (cùng origin, chung localStorage) -->
+<script>
+(function(){
+  try{
+    var raw=localStorage.getItem('ju.setup');
+    var s=raw?JSON.parse(raw):{};
+    var t=s.theme||'sotay';
+    var mode=s.darkMode||'light';
+    var dark=mode==='dark'||(mode==='system'&&typeof window.matchMedia==='function'&&window.matchMedia('(prefers-color-scheme: dark)').matches);
+    document.body.className='theme-'+t+(dark?' dark':'');
+  }catch(e){document.body.className='theme-sotay';}
+  // Đọc màu nền THẬT đang áp dụng rồi báo cho trình duyệt biết app đang sáng hay tối
+  try{
+    var v=getComputedStyle(document.body).getPropertyValue('--bg').trim();
+    var m=/^#([0-9a-f]{6})$/i.exec(v), isDark=false;
+    if(m){ var n=parseInt(m[1],16);
+      isDark=((((n>>16)&255)*0.299+(((n>>8)&255))*0.587+(n&255)*0.114)/255)<0.5; }
+    document.documentElement.style.colorScheme=isDark?'dark':'only light';
+  }catch(e){}
+})();
+</script>
+
+<!-- Dữ liệu tĩnh dùng chung với Just Us: ../data/child.json -->
+<script>
+(function(){
+  window.JUD={ CHILD_VACCINES:[], CHILD_MILESTONES:[], CHILD_TIPS:[], CHILD_PACK:[], CHILD_SKILLS:[],
+    PLAY_LIB:[], WEAN_MENU:[], PARENTING_QS:[], ILL_SYMPTOMS:[], KIDS_CAFES:[], SKILL_GUIDES:[], CHILD_ISSUES:[],
+    // Đợt 1: an toàn · kịch bản câu nói · sức khoẻ theo mùa · dạy bé · ngày thường · giấy tờ
+    EMERGENCY:[], RED_FLAGS:[], DANGER_ITEMS:[], HOME_SAFETY:[], CONTACT_SUGGEST:[],
+    TANTRUM_SCRIPTS:[], CHILD_BEHAVIOR:[], CHORES_2Y:[], SELF_CORNER:[],
+    DRESS_TEMP:[], DRESS_RULES:[], SEASON_ILL:[], SCARY_TASKS:[], WEEKEND_PLANS:[], CHILD_DOCS:[],
+    // Đợt 2: tập bô + chuẩn tăng trưởng WHO (hai khoá WHO_* là object theo giới tính)
+    POTTY_READY:[], POTTY_TIMES:[], POTTY_FIX:[], WHO_WEIGHT:{}, WHO_HEIGHT:{},
+    // Bổ sung: giấc ngủ · răng · khám & sàng lọc định kỳ
+    SLEEP_NEED:[], SLEEP_ROUTINE:[], SLEEP_FIX:[], TEETH_ORDER:[], CHECKUP_SCHEDULE:[], DEV_REDFLAGS:[],
+    TEETH_CARE:{},
+    // Đợt 3: đi lớp · ra khỏi nhà · tâm lý bé và bố mẹ
+    SCHOOL_START:[], SCHOOL_ILL:[], TEACHER_NOTE:[], TRIP_PACK:[], TRIP_TIPS:[], DUTY_SLOTS:[],
+    SCHOOL_PICK:{}, TWOS_CRISIS:{}, PARENT_BURNOUT:{},
+    // ba khoá dưới là OBJECT, không phải mảng — fill() xử lý riêng
+    POST_VACCINE:{}, CONSTIPATION:{}, SCREEN_GUIDE:{} };
+  function fill(dst,src){
+    if(Array.isArray(dst)&&Array.isArray(src)){ dst.length=0; Array.prototype.push.apply(dst,src); return; }
+    // Giữ nguyên identity của object (trong khối babel đã viết const POST_VACCINE=JUD.POST_VACCINE)
+    if(dst&&src&&typeof dst==='object'&&typeof src==='object'){
+      Object.keys(dst).forEach(function(k){ delete dst[k]; });
+      Object.keys(src).forEach(function(k){ dst[k]=src[k]; });
+    }
+  }
+  window.__JU_DATA_READY=fetch('../data/child.json').then(function(r){ if(!r.ok) throw 0; return r.json(); })
+    .then(function(d){ Object.keys(d).forEach(function(k){ if(window.JUD[k]) fill(window.JUD[k],d[k]); }); })
+    .catch(function(){});
+})();
+</script>
+
+<!-- Chẩn đoán: nếu app không chạy thì hiện lý do thay vì màn trắng -->
+<script>
+window.__SC_OK=false;
+setTimeout(function(){
+  if(!window.__SC_OK){
+    var miss=[];
+    if(!window.React) miss.push('React');
+    if(!window.ReactDOM) miss.push('ReactDOM');
+    if(!window.Babel) miss.push('Babel');
+    var r=document.getElementById('root');
+    if(r&&!r.firstChild) r.innerHTML='<div style="padding:40px 22px;font-family:sans-serif"><h2>🐿️ App chưa khởi động</h2><p>'+(miss.length?'Thiếu thư viện: <b>'+miss.join(', ')+'</b> — kiểm tra mạng rồi tải lại.':'Có lỗi cú pháp, mở Console (F12) để xem.')+'</p></div>';
+  }
+},8000);
+</script>
+
+<script type="text/babel" data-presets="react">
+const {useState,useEffect,useRef,useMemo} = React;
+
+/* ============ store — DÙNG CHUNG khoá 'ju.*' với app Just Us (cùng origin),
+   nên dữ liệu Sóc đã lưu trước đây vẫn còn nguyên ============ */
+const mem={};
+const store={
+  get(k,d){ try{ const v=localStorage.getItem(k); return v==null?d:JSON.parse(v); }catch(e){ return (k in mem)?mem[k]:d; } },
+  set(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){ mem[k]=v; } },
+  del(k){ try{ localStorage.removeItem(k); }catch(e){ delete mem[k]; } }
+};
+
+/* ============ Đồng bộ đám mây (bản gọn)
+   App này KHÔNG tự đăng nhập / ghép cặp — nó dùng lại phiên Supabase mà Just Us
+   đã lưu trong localStorage (cùng origin). Nó chỉ đụng vào ĐÚNG các khoá của Sóc:
+   kéo về thì chỉ ghi đè khoá Sóc, đẩy lên thì trộn khoá Sóc vào hàng dữ liệu đang có.
+   Nhờ vậy ghi ở app này không đè mất dữ liệu khác của Just Us, và ngược lại
+   khi Just Us mở lên nó cũng không kéo bản cũ đè lên phần Sóc mình vừa ghi. ============ */
+const SB_URL='https://vvgkjgvzjeklaadusbne.supabase.co';
+const SB_KEY='sb_publishable_DMMPv5L2kGhrHTxeQ72iKw_dIh13iT1';
+const CHILD_KEYS=['ju.child','ju.childGrowth','ju.childVaccines','ju.childMilestones','ju.childDiary',
+  'ju.childPack','ju.childSkills','ju.childMed','ju.childIllness','ju.childWords','ju.childTantrum',
+  'ju.childParenting','ju.skillGuidesDone','ju.childContacts','ju.childSafety','ju.childDocs',
+  'ju.childPotty','ju.childNoti',
+  'ju.childSchools','ju.childTeacherNote','ju.childTripPack','ju.childDuty',
+  'ju.childOneLine','ju.childQuotes','ju.childLetters','ju.childPhotos'];
+let _sb=null;
+function sbClient(){
+  if(_sb) return _sb;
+  if(window.supabase && window.supabase.createClient){
+    _sb=window.supabase.createClient(SB_URL,SB_KEY,{ auth:{ persistSession:true, autoRefreshToken:true, detectSessionInUrl:false } });
+  }
+  return _sb;
+}
+const Cloud={
+  ready:false, coupleId:null, pushTimer:null, onChange:null, status:'off',
+  client(){ return sbClient(); },
+  writer(){ let d=store.get('ju.device',null); if(!d){ d=Math.random().toString(36).slice(2)+Date.now().toString(36); store.set('ju.device',d); } return d+'.soc'; },
+  async init(){
+    const c=this.client(); if(!c) return this._set('off');
+    try{
+      const {data}=await c.auth.getSession();
+      if(!data||!data.session) return this._set('off');
+      const r=await c.rpc('ju_my_couple');
+      if(r.error||!r.data||!r.data.id) return this._set('off');
+      this.coupleId=r.data.id;
+      await this.pull();
+      this.ready=true; this._set('on');
+      // Có sửa gì trong lúc đang nối máy chủ thì đẩy nốt lên (lúc đó schedulePush chưa chạy được)
+      if(this._pending) this.push();
+    }catch(e){ this._set('off'); }
+  },
+  _set(s){ this.status=s; if(this.onChange) this.onChange(s); },
+  async pull(){
+    const c=this.client(); if(!c||!this.coupleId) return;
+    try{
+      const {data,error}=await c.from('justus_data').select('data').eq('couple_id',this.coupleId).maybeSingle();
+      if(error||!data||!data.data) return;
+      let changed=false;
+      CHILD_KEYS.forEach(k=>{ if(k in data.data){ store.set(k,data.data[k]); changed=true; } });
+      if(changed) window.dispatchEvent(new CustomEvent('ju:remote'));
+    }catch(e){}
+  },
+  schedulePush(){ this._pending=true; if(!this.ready) return; clearTimeout(this.pushTimer); this.pushTimer=setTimeout(()=>this.push(),700); },
+  async push(){
+    const c=this.client(); if(!c||!this.coupleId||!this.ready) return;
+    this._pending=false;
+    try{
+      const {data,error}=await c.from('justus_data').select('data').eq('couple_id',this.coupleId).maybeSingle();
+      if(error) return;
+      const merged=Object.assign({},(data&&data.data)||{});
+      CHILD_KEYS.forEach(k=>{ const v=store.get(k,null); if(v!=null) merged[k]=v; });
+      await c.from('justus_data').upsert({couple_id:this.coupleId,data:merged,last_writer:this.writer(),updated_at:new Date().toISOString()});
+      store.set('ju.synced',Date.now());
+    }catch(e){}
+  },
+
+  /* ---------- ảnh (dùng chung bucket 'justus-photos' với Just Us) ----------
+     Chỉ lưu ĐƯỜNG DẪN vào ju.childPhotos, không nhét base64 vào localStorage —
+     ảnh base64 sẽ phình hàng dữ liệu đồng bộ của cả cặp. */
+  _urlCache:{},
+  async uploadPhoto(blob,ext){
+    const c=this.client(); if(!c||!this.coupleId) throw new Error('not_connected');
+    const path=this.coupleId+'/soc-'+Date.now()+'-'+Math.random().toString(36).slice(2,6)+'.'+(ext||'jpg');
+    const {error}=await c.storage.from('justus-photos').upload(path,blob,{upsert:false,contentType:'image/jpeg'});
+    if(error) throw error;
+    return path;
+  },
+  async signedUrl(path){
+    const c=this.client(); if(!c||!path) return null;
+    const hit=this._urlCache[path];
+    if(hit&&hit.exp>Date.now()+60000) return hit.url;
+    const ttl=60*60;
+    const {data,error}=await c.storage.from('justus-photos').createSignedUrl(path,ttl);
+    if(error||!data) return null;
+    this._urlCache[path]={url:data.signedUrl,exp:Date.now()+ttl*1000};
+    return data.signedUrl;
+  },
+  async deletePhoto(path){
+    const c=this.client(); if(!c||!path) return;
+    try{ await c.storage.from('justus-photos').remove([path]); delete this._urlCache[path]; }catch(e){}
+  }
+};
+
+/* Nén ảnh trước khi tải lên — cạnh dài tối đa 1200px, JPEG chất lượng 0.82 */
+function compressImage(file,maxSide,quality){
+  return new Promise((resolve,reject)=>{
+    const img=new Image(); const url=URL.createObjectURL(file);
+    img.onload=()=>{
+      URL.revokeObjectURL(url);
+      let {width:w,height:h}=img; const m=maxSide||1200;
+      if(Math.max(w,h)>m){ const r=m/Math.max(w,h); w=Math.round(w*r); h=Math.round(h*r); }
+      const cv=document.createElement('canvas'); cv.width=w; cv.height=h;
+      cv.getContext('2d').drawImage(img,0,0,w,h);
+      cv.toBlob(b=>b?resolve(b):reject(new Error('nén ảnh lỗi')),'image/jpeg',quality||0.82);
+    };
+    img.onerror=()=>{ URL.revokeObjectURL(url); reject(new Error('không đọc được ảnh')); };
+    img.src=url;
+  });
+}
+/* Ảnh đã lưu trên đám mây: xin link 1 giờ rồi hiện */
+function CloudImg({path,style,alt}){
+  const [url,setUrl]=useState(null);
+  useEffect(()=>{ let live=true; if(!path){ setUrl(null); return; }
+    Cloud.signedUrl(path).then(u=>{ if(live) setUrl(u); }).catch(()=>{});
+    return ()=>{ live=false; }; },[path]);
+  if(!url) return <div style={Object.assign({background:'var(--surface-2)',display:'grid',placeItems:'center',fontSize:20},style||{})}>🖼️</div>;
+  return <img src={url} alt={alt||''} style={Object.assign({objectFit:'cover',display:'block'},style||{})}/>;
+}
+
+function useLocal(key,initial){
+  const [v,setV]=useState(()=>store.get(key,initial));
+  const first=useRef(true);
+  useEffect(()=>{ store.set(key,v); if(first.current){ first.current=false; return; } Cloud.schedulePush(); },[key,v]);
+  useEffect(()=>{
+    const h=()=>{ const nv=store.get(key,initial); setV(prev=> JSON.stringify(prev)===JSON.stringify(nv)?prev:nv); };
+    window.addEventListener('ju:remote',h);
+    return ()=>window.removeEventListener('ju:remote',h);
+  },[key]);
+  return [v,setV];
+}
+
+/* ============ helpers (bản sao gọn từ Just Us) ============ */
+const uid=()=> Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const pad=(n)=> n<10?'0'+n:''+n;
+function todayISO(){ const d=new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+function fmtDateVN(s){ if(!s) return ''; const [y,m,d]=s.split('-'); return d+'/'+m+'/'+y; }
+function daysFromToday(iso){
+  if(!iso) return null;
+  const t=new Date(); t.setHours(0,0,0,0);
+  const d=new Date(iso+'T00:00:00');
+  return Math.round((d-t)/86400000);
+}
+function celebrate(emojis){
+  try{ if(navigator.vibrate) navigator.vibrate([28,40,28]); }catch(e){}
+  const set=emojis||['❤️','💖','🎉','✨','💞','💕'];
+  for(let i=0;i<26;i++){
+    const el=document.createElement('div');
+    el.textContent=set[Math.floor(Math.random()*set.length)];
+    el.style.cssText='position:fixed;z-index:200;left:'+(Math.random()*100)+'vw;top:-30px;font-size:'+(16+Math.random()*18)+'px;pointer-events:none;will-change:transform,opacity;transition:transform 1.7s cubic-bezier(.3,.7,.4,1), opacity 1.7s;';
+    document.body.appendChild(el);
+    requestAnimationFrame(()=>{ el.style.transform='translateY('+(105+Math.random()*15)+'vh) rotate('+(Math.random()*540-270)+'deg)'; el.style.opacity='0'; });
+    setTimeout(()=>{ try{el.remove();}catch(e){} },1800);
+  }
+}
+const NHA={lat:21.0301,lng:105.8210,name:'Núi Trúc, Ba Đình, Hà Nội'};
+function haversine(la1,lo1,la2,lo2){ const R=6371,toR=x=>x*Math.PI/180;
+  const dLa=toR(la2-la1),dLo=toR(lo2-lo1);
+  const a=Math.sin(dLa/2)**2+Math.cos(toR(la1))*Math.cos(toR(la2))*Math.sin(dLo/2)**2;
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)); }
+// Taxi khứ hồi ước tính từ nhà (Núi Trúc): mở cửa ~12k + ~13.5k/km, đường thực ~1.3× đường chim bay, ×2 chiều
+function taxiRoundK(km){ const road=km*1.3; const one=12000+13500*road; return Math.round(one*2/1000); }
+const vacAgeMonths=(label)=>{ if(/sơ sinh/i.test(label)) return 0; const m=label.match(/\d+/); return m?Number(m[0]):0; };
+
+/* ============ UI dùng chung ============ */
+function Collapse({id,title,defaultOpen=true,right,children}){
+  const k='ju.col.'+id;
+  const [open,setOpen]=useState(()=>{ const v=store.get(k,null); if(v!=null) return !!v; const gd=store.get('ju.colDefault',null); return gd!=null?!!gd:defaultOpen; });
+  const toggle=()=>setOpen(o=>{ store.set(k,!o); return !o; });
+  return (
+    <div className="collapse">
+      <div className="sec-title">
+        <span className="col-h" onClick={toggle}><span className="col-chev">{open?'▾':'▸'}</span> {title}</span>
+        <span className="grow"></span>{right}
+      </div>
+      {open && <div className="col-body">{children}</div>}
+    </div>
+  );
+}
+function Sheet({title,onClose,children}){
+  return (
+    <div className="ov" onClick={onClose}>
+      <div className="sheet" onClick={e=>e.stopPropagation()}>
+        <div className="x" onClick={onClose}>✕</div>
+        {title && <h3>{title}</h3>}
+        {children}
+      </div>
+    </div>
+  );
+}
+/* ============ Điều hướng hai tầng ============
+   Trước đây 10 mục nằm chung một lưới 3 hàng, chiếm gần một phần tư màn hình ở
+   MỌI trang. Nay: 5 nhóm ở thanh dưới, trong nhóm mới có tab con. */
+const NAV=[
+  {k:'home',ic:'🏠',n:'Nhà',tabs:[{k:'home',n:'Trang chủ'}]},
+  {k:'grow',ic:'🌱',n:'Lớn lên',tabs:[
+    {k:'develop',n:'Mốc & lời nói'},{k:'play',n:'Chơi & ra ngoài'},
+    {k:'eat',n:'Ăn uống'},{k:'sleep',n:'Giấc ngủ'},{k:'school',n:'Đi lớp'}]},
+  {k:'care',ic:'🏥',n:'Sức khoẻ',tabs:[
+    {k:'health',n:'Theo dõi & khám'},{k:'teeth',n:'Răng'},
+    {k:'potty',n:'Tập bô'},{k:'safe',n:'An toàn'}]},
+  {k:'raise',ic:'💞',n:'Nuôi dạy',tabs:[{k:'parent',n:'Với con'},{k:'family',n:'Bố mẹ'}]},
+  {k:'keep',ic:'📔',n:'Kỷ niệm',tabs:[{k:'memory',n:'Kỷ niệm'}]},
+];
+const TAB_GROUP={}; NAV.forEach(g=>g.tabs.forEach(t=>{ TAB_GROUP[t.k]=g.k; }));
+const TAB_NAME={}; NAV.forEach(g=>g.tabs.forEach(t=>{ TAB_NAME[t.k]=t.n; }));
+
+function Dock({tab,onGo,alertGroups}){
+  const cur=TAB_GROUP[tab]||'home';
+  return (
+    <nav className="dock" aria-label="Chuyển nhóm">
+      {NAV.map(g=>(
+        <button key={g.k} className={cur===g.k?'on':''} onClick={()=>onGo(g.tabs[0].k)}
+          aria-current={cur===g.k?'page':undefined} aria-label={g.n}>
+          <span className="ic" aria-hidden="true">{g.ic}</span>{g.n}
+          {alertGroups&&alertGroups[g.k] && <span className="dot" aria-hidden="true"></span>}
+        </button>
+      ))}
+    </nav>
+  );
+}
+function SubTabs({tab,onGo}){
+  const g=NAV.find(x=>x.k===(TAB_GROUP[tab]||'home'));
+  if(!g||g.tabs.length<2) return null;
+  return (
+    <div className="subtabs" role="tablist">
+      {g.tabs.map(t=>(
+        <button key={t.k} role="tab" aria-selected={tab===t.k} className={tab===t.k?'on':''}
+          onClick={()=>onGo(t.k)}>{t.n}</button>
+      ))}
+    </div>
+  );
+}
+
+/* ============ Dữ liệu tĩnh (từ ../data/child.json) ============ */
+const CHILD_VACCINES=JUD.CHILD_VACCINES;
+const CHILD_MILESTONES=JUD.CHILD_MILESTONES;
+const CHILD_TIPS=JUD.CHILD_TIPS;
+const CHILD_PACK=JUD.CHILD_PACK;
+const CHILD_SKILLS=JUD.CHILD_SKILLS;
+const PLAY_LIB=JUD.PLAY_LIB;
+const WEAN_MENU=JUD.WEAN_MENU;
+const PARENTING_QS=JUD.PARENTING_QS;
+const ILL_SYMPTOMS=JUD.ILL_SYMPTOMS;
+const KIDS_CAFES=JUD.KIDS_CAFES;
+const SKILL_GUIDES=JUD.SKILL_GUIDES;
+const CHILD_ISSUES=JUD.CHILD_ISSUES;
+const EMERGENCY=JUD.EMERGENCY;
+const RED_FLAGS=JUD.RED_FLAGS;
+const DANGER_ITEMS=JUD.DANGER_ITEMS;
+const HOME_SAFETY=JUD.HOME_SAFETY;
+const CONTACT_SUGGEST=JUD.CONTACT_SUGGEST;
+const TANTRUM_SCRIPTS=JUD.TANTRUM_SCRIPTS;
+const CHILD_BEHAVIOR=JUD.CHILD_BEHAVIOR;
+const CHORES_2Y=JUD.CHORES_2Y;
+const SELF_CORNER=JUD.SELF_CORNER;
+const DRESS_TEMP=JUD.DRESS_TEMP;
+const DRESS_RULES=JUD.DRESS_RULES;
+const SEASON_ILL=JUD.SEASON_ILL;
+const SCARY_TASKS=JUD.SCARY_TASKS;
+const WEEKEND_PLANS=JUD.WEEKEND_PLANS;
+const CHILD_DOCS=JUD.CHILD_DOCS;
+const POST_VACCINE=JUD.POST_VACCINE;
+const CONSTIPATION=JUD.CONSTIPATION;
+const SCREEN_GUIDE=JUD.SCREEN_GUIDE;
+const POTTY_READY=JUD.POTTY_READY;
+const POTTY_TIMES=JUD.POTTY_TIMES;
+const POTTY_FIX=JUD.POTTY_FIX;
+const WHO_WEIGHT=JUD.WHO_WEIGHT;
+const WHO_HEIGHT=JUD.WHO_HEIGHT;
+const SCHOOL_PICK=JUD.SCHOOL_PICK;
+const SCHOOL_START=JUD.SCHOOL_START;
+const SCHOOL_ILL=JUD.SCHOOL_ILL;
+const TEACHER_NOTE=JUD.TEACHER_NOTE;
+const TRIP_PACK=JUD.TRIP_PACK;
+const TRIP_TIPS=JUD.TRIP_TIPS;
+const TWOS_CRISIS=JUD.TWOS_CRISIS;
+const PARENT_BURNOUT=JUD.PARENT_BURNOUT;
+const DUTY_SLOTS=JUD.DUTY_SLOTS;
+const SLEEP_NEED=JUD.SLEEP_NEED;
+const SLEEP_ROUTINE=JUD.SLEEP_ROUTINE;
+const SLEEP_FIX=JUD.SLEEP_FIX;
+const TEETH_ORDER=JUD.TEETH_ORDER;
+const TEETH_CARE=JUD.TEETH_CARE;
+const CHECKUP_SCHEDULE=JUD.CHECKUP_SCHEDULE;
+const DEV_REDFLAGS=JUD.DEV_REDFLAGS;
+
+/* ============ Thống nhất cách dạy con ============ */
+function ParentingAgreement(){
+  const [pq,setPq]=useLocal('ju.childParenting',{});
+  const done=PARENTING_QS.filter((q,i)=>(pq[i]||{}).agreed).length;
+  return (
+    <div>
+      <div className="muted center" style={{fontSize:12.5,margin:'10px 14px'}}>🤝 Hai vợ chồng cùng thống nhất cách dạy con để nhất quán — tránh “bố một kiểu, mẹ một kiểu”. <b>{done}/{PARENTING_QS.length}</b> đã thống nhất.</div>
+      {PARENTING_QS.map((q,i)=>{ const st=pq[i]||{};
+        return <div key={i} className="item">
+          <div className="row"><span style={{fontSize:16}}>{st.agreed?'✅':'❓'}</span><b className="grow" style={{fontSize:14}}>{q}</b></div>
+          <textarea className="inp" style={{marginTop:6,minHeight:48,fontSize:12.5}} placeholder="Hai đứa thống nhất là…" value={st.note||''} onChange={e=>setPq({...pq,[i]:{...st,note:e.target.value}})}/>
+          <button className="pill" style={{marginTop:6,background:st.agreed?'var(--good)':'var(--surface-2)',color:st.agreed?'#fff':'var(--brand-ink)'}} onClick={()=>setPq({...pq,[i]:{...st,agreed:!st.agreed}})}>{st.agreed?'✓ Đã thống nhất':'Đánh dấu đã thống nhất'}</button>
+        </div>; })}
+    </div>
+  );
+}
+
+/* ============ Dạy con kỹ năng tự túc đầu tiên ============ */
+function SkillGuide({g,done,onTick}){
+  const [open,setOpen]=useState(false);
+  return (
+    <div className="card" style={{padding:'10px 13px',opacity:done?.6:1}}>
+      <div className="row" style={{gap:8}}>
+        <span style={{fontSize:20,flex:'0 0 auto',cursor:'pointer'}} onClick={()=>setOpen(o=>!o)}>{g.icon}</span>
+        <div className="grow" style={{minWidth:0,cursor:'pointer'}} onClick={()=>setOpen(o=>!o)}>
+          <div style={{fontSize:14,fontWeight:700,textDecoration:done?'line-through':'none'}}>{g.name}</div>
+          <div className="muted" style={{fontSize:11}}>{open?'':'Bấm để xem cách dạy · '}{g.age}</div></div>
+        {onTick && <button className="pill" style={{flex:'0 0 auto',background:done?'var(--good)':'var(--surface-2)',color:done?'#fff':'var(--brand-ink)'}} onClick={onTick}>{done?'✓ Đã biết':'Bé đã biết'}</button>}
+      </div>
+      {open && <ol style={{margin:'8px 0 0',paddingLeft:20,fontSize:12.5,lineHeight:1.6}}>{g.steps.map((s,i)=><li key={i} style={{marginBottom:5}}>{s}</li>)}</ol>}
+    </div>
+  );
+}
+/* ============ Tìm kiếm toàn app ============
+   44 nhóm nội dung nằm rải trong 13 mục — không có ô tìm thì phải nhớ
+   "sốt co giật nằm tab nào" mới tra được. */
+function searchIndex(){
+  const out=[];
+  const add=(tab,where,title,body)=>out.push({tab,where,title,body:(body||'')});
+  (EMERGENCY||[]).forEach(e=>add('safe','Cấp cứu',e.title,[e.lead].concat(e.do||[],e.dont||[],e.er||[]).join(' ')));
+  (DANGER_ITEMS||[]).forEach(d=>add('safe','Đồ nguy hiểm',d.n,d.why));
+  (HOME_SAFETY||[]).forEach(g=>add('safe','Chống trẻ trong nhà',g.g,(g.items||[]).join(' ')));
+  add('safe','An toàn','Dấu hiệu phải đi viện ngay',(RED_FLAGS||[]).join(' '));
+  (TANTRUM_SCRIPTS||[]).forEach(x=>add('parent','Câu nói khi ăn vạ',x.sit,[x.why].concat(x.say||[],x.avoid||[]).join(' ')));
+  (CHILD_BEHAVIOR||[]).forEach(x=>add('parent','Hành vi',x.title,[x.lead].concat(x.steps||[]).join(' ')));
+  (CHILD_ISSUES||[]).forEach(x=>add('parent','Vấn đề thường gặp',x.title,(x.tips||[]).join(' ')));
+  (SKILL_GUIDES||[]).forEach(x=>add('parent','Dạy kỹ năng',x.name,[x.age].concat(x.steps||[]).join(' ')));
+  (CHORES_2Y||[]).forEach(x=>add('parent','Việc nhà vừa sức',x.n,x.d));
+  (SELF_CORNER||[]).forEach(x=>add('parent','Bày nhà cho bé',x.n,x.d));
+  add('family','Bố mẹ','Khủng hoảng tuổi lên 2',[TWOS_CRISIS.what,TWOS_CRISIS.when].concat(TWOS_CRISIS.signs||[],TWOS_CRISIS.help||[]).join(' '));
+  add('family','Bố mẹ','Bố mẹ đuối sức',[PARENT_BURNOUT.lead].concat(PARENT_BURNOUT.signs||[],PARENT_BURNOUT.now||[],PARENT_BURNOUT.share||[]).join(' '));
+  (SCARY_TASKS||[]).forEach(x=>add('health','Việc bé sợ',x.n,(x.tips||[]).join(' ')));
+  (SEASON_ILL||[]).forEach(x=>add('health','Bệnh theo mùa',x.s,(x.ill||[]).concat(x.do||[]).join(' ')));
+  (DRESS_TEMP||[]).forEach(x=>add('health','Mặc theo nhiệt độ',x.t,x.d));
+  (CHECKUP_SCHEDULE||[]).forEach(x=>add('health','Khám định kỳ',x.n,x.w+' '+x.d));
+  add('health','Sau tiêm','Theo dõi 48 giờ sau tiêm',[POST_VACCINE.first].concat(POST_VACCINE.normal||[],POST_VACCINE.care||[],POST_VACCINE.er||[]).join(' '));
+  add('health','Táo bón','Táo bón',[CONSTIPATION.lead].concat(CONSTIPATION.signs||[],CONSTIPATION.do||[],CONSTIPATION.er||[]).join(' '));
+  (CHILD_VACCINES||[]).forEach(v=>add('health','Tiêm chủng',v.age,(v.items||[]).join(' ')));
+  (SLEEP_FIX||[]).forEach(x=>add('sleep','Giấc ngủ',x.n,(x.tips||[]).join(' ')));
+  (SLEEP_NEED||[]).forEach(x=>add('sleep','Giấc ngủ',x.a+' — '+x.t,x.n));
+  (SLEEP_ROUTINE||[]).forEach(x=>add('sleep','Trình tự đi ngủ',x.t,x.d));
+  (TEETH_ORDER||[]).forEach(x=>add('teeth','Mọc răng',x.n,x.w));
+  add('teeth','Răng','Chăm răng hằng ngày',[TEETH_CARE.lead].concat(TEETH_CARE.daily||[],TEETH_CARE.visit||[],TEETH_CARE.teething||[]).join(' '));
+  (POTTY_FIX||[]).forEach(x=>add('potty','Tập bô',x.n,(x.tips||[]).join(' ')));
+  (POTTY_TIMES||[]).forEach(x=>add('potty','Mốc ngồi bô',x.t,x.d));
+  (DEV_REDFLAGS||[]).forEach(g=>add('develop','Dấu hiệu cần khám',g.m,(g.items||[]).join(' ')));
+  (CHILD_MILESTONES||[]).forEach(b=>add('develop','Mốc phát triển',b.band,(b.items||[]).join(' ')));
+  (PLAY_LIB||[]).forEach(x=>add('play','Trò chơi',x.n,x.c+' '+x.d));
+  (KIDS_CAFES||[]).forEach(x=>add('play','Chỗ chơi ở Hà Nội',x.n,x.a+' '+x.p));
+  (WEEKEND_PLANS||[]).forEach(x=>add('play','Cuối tuần',x.n,(x.plan||[]).join(' ')));
+  (TRIP_TIPS||[]).forEach(x=>add('play','Ra khỏi nhà',x.n,(x.tips||[]).join(' ')));
+  add('play','Màn hình','Màn hình cho bé',[].concat(SCREEN_GUIDE.rules||[],SCREEN_GUIDE.pick||[],SCREEN_GUIDE.off||[]).join(' '));
+  (WEAN_MENU||[]).forEach(x=>add('eat','Thực đơn',x.d,[x.sang,x.phu,x.trua,x.toi].join(' ')));
+  add('eat','Ăn uống','Mẹo ăn uống & chăm sóc',(CHILD_TIPS||[]).join(' '));
+  (SCHOOL_ILL||[]).forEach(x=>add('school','Bệnh ở lớp',x.n,x.sign+' '+x.off+' '+x.note));
+  (SCHOOL_START||[]).forEach(x=>add('school','Làm quen đi lớp',x.d,x.t));
+  add('school','Chọn trường','Chọn trường mầm non',[].concat(SCHOOL_PICK.criteria||[],SCHOOL_PICK.questions||[]).join(' '));
+  (CHILD_DOCS||[]).forEach(x=>add('school','Giấy tờ',x.n,x.d));
+  (PARENTING_QS||[]).forEach(q=>add('family','Thống nhất cách dạy',q,''));
+  return out;
+}
+const _fold=(x)=>(x||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'d');
+let _IDX=null;
+function SearchSheet({onClose,onGo}){
+  const [q,setQ]=useState('');
+  const idx=useMemo(()=>{ if(!_IDX) _IDX=searchIndex(); return _IDX; },[]);
+  const hits=useMemo(()=>{
+    const k=_fold(q.trim()); if(k.length<2) return [];
+    return idx.map(it=>{
+      const t=_fold(it.title), b=_fold(it.body), w=_fold(it.where);
+      let sc=0;
+      if(t.indexOf(k)>=0) sc+=10;
+      if(w.indexOf(k)>=0) sc+=6;   // tên mục cũng đáng kể: gõ "mọc răng" phải ra phần Răng
+      if(b.indexOf(k)>=0) sc+=3;
+      return sc?{...it,sc}:null;
+    }).filter(Boolean).sort((a,b)=>b.sc-a.sc).slice(0,25);
+  },[q,idx]);
+  return (
+    <Sheet title="Tìm trong app" onClose={onClose}>
+      <input className="inp" autoFocus placeholder="vd: sốt co giật, ăn vạ, mọc răng, tè dầm…" value={q} onChange={e=>setQ(e.target.value)}/>
+      {q.trim().length>=2 && hits.length===0 && <div className="empty">Không thấy gì khớp với “{q.trim()}”.</div>}
+      {q.trim().length<2 && <div className="muted" style={{fontSize:'var(--t-xs)',marginTop:10,lineHeight:1.6}}>Gõ từ 2 chữ trở lên. Không cần bỏ dấu — gõ “sot co giat” cũng ra.</div>}
+      {hits.map((h,i)=>(
+        <button key={i} className="hit" onClick={()=>onGo(h.tab)}>
+          <div className="where">{h.where} · {TAB_NAME[h.tab]||h.tab}</div>
+          <div className="t">{h.title}</div>
+          {h.body && <div className="s">{h.body.slice(0,110)}…</div>}
+        </button>
+      ))}
+    </Sheet>
+  );
+}
+
+/* ============ Sao lưu & khôi phục ============
+   Trước đây toàn bộ nhật ký, mốc, ảnh chỉ nằm ở localStorage + đúng một hàng
+   trên Supabase. Không có đường nào lấy dữ liệu ra. */
+function MenuSheet({onClose}){
+  const [msg,setMsg]=useState('');
+  const [st,setSt]=useState(Cloud.status);
+  useEffect(()=>{ Cloud.onChange=setSt; return ()=>{ Cloud.onChange=null; }; },[]);
+  const exportAll=()=>{
+    const dump={app:'soc',version:1,at:new Date().toISOString(),data:{}};
+    CHILD_KEYS.forEach(k=>{ const v=store.get(k,null); if(v!=null) dump.data[k]=v; });
+    const blob=new Blob([JSON.stringify(dump,null,1)],{type:'application/json'});
+    const url=URL.createObjectURL(blob); const a=document.createElement('a');
+    a.href=url; a.download='soc-backup-'+todayISO()+'.json';
+    document.body.appendChild(a); a.click();
+    setTimeout(()=>{ try{document.body.removeChild(a);}catch(_){} URL.revokeObjectURL(url); },600);
+    setMsg('Đã tải file sao lưu về máy.');
+  };
+  const importAll=(e)=>{
+    const f=e.target.files&&e.target.files[0]; e.target.value='';
+    if(!f) return;
+    const rd=new FileReader();
+    rd.onload=()=>{
+      try{
+        const j=JSON.parse(rd.result);
+        const d=(j&&j.data)?j.data:j;
+        const keys=Object.keys(d).filter(k=>CHILD_KEYS.indexOf(k)>=0);
+        if(!keys.length){ setMsg('File này không có dữ liệu của app Sóc.'); return; }
+        if(!confirm('Ghi đè '+keys.length+' nhóm dữ liệu của bé bằng nội dung trong file? Dữ liệu hiện tại trên máy này sẽ bị thay.')) return;
+        keys.forEach(k=>store.set(k,d[k]));
+        window.dispatchEvent(new CustomEvent('ju:remote'));
+        Cloud.schedulePush();
+        setMsg('Đã khôi phục '+keys.length+' nhóm dữ liệu.');
+      }catch(err){ setMsg('File không đọc được — cần đúng file JSON đã xuất từ app Sóc.'); }
+    };
+    rd.readAsText(f);
+  };
+  const synced=store.get('ju.synced',null);
+  return (
+    <Sheet title="Cài đặt & dữ liệu" onClose={onClose}>
+      <div className="card" style={{margin:'0 0 12px'}}>
+        <div className="row"><span style={{fontSize:19}}>{st==='on'?'☁️':'📴'}</span>
+          <div className="grow"><b style={{fontSize:'var(--t-sm)'}}>{st==='on'?'Đang đồng bộ với nửa kia':'Chưa nối đám mây'}</b>
+            <div className="muted" style={{fontSize:'var(--t-xs)',marginTop:2,lineHeight:1.55}}>
+              {st==='on'
+                ? (synced? ('Lần gần nhất: '+new Date(synced).toLocaleString('vi-VN')) : 'Đã nối, chưa có lần ghi nào.')
+                : 'Dữ liệu chỉ nằm trên máy này. Mở Just Us đăng nhập và ghép cặp thì app tự đồng bộ theo.'}
+            </div></div></div>
+      </div>
+      <div className="sec-title" style={{margin:'0 0 8px'}}>Sao lưu</div>
+      <div className="muted" style={{fontSize:'var(--t-xs)',lineHeight:1.6,marginBottom:10}}>
+        Nhật ký, mốc, số đo và đường dẫn ảnh của bé là thứ không mua lại được. Thỉnh thoảng tải một file về máy hoặc gửi vào email cho chắc.
+      </div>
+      <button className="btn" onClick={exportAll}>⬇️ Tải file sao lưu</button>
+      <label className="btn ghost" style={{marginTop:10,display:'flex',cursor:'pointer'}}>
+        ⬆️ Khôi phục từ file
+        <input type="file" accept="application/json,.json" onChange={importAll} style={{display:'none'}}/>
+      </label>
+      {msg && <div className="callout tip" style={{marginTop:12}}>{msg}</div>}
+      <div className="note" style={{margin:'16px 0 0'}}>
+        Ảnh không nằm trong file sao lưu — file chỉ giữ đường dẫn. Ảnh thật nằm trên kho ảnh chung với Just Us.
+      </div>
+      <a className="btn soft" href="../index.html" style={{marginTop:16,textDecoration:'none'}}>← Về Just Us</a>
+    </Sheet>
+  );
+}
+
+/* ============ Trang chủ (mẫu 05 bảng chỉ số + mẫu 03 lưới ô lớn) ============ */
+// Đường cân nặng 6 lần đo gần nhất — vẽ tay bằng SVG, không cần thư viện.
+function Spark({points}){
+  if(!points || points.length<2) return null;
+  const W=96,H=34,pad=3;
+  const min=Math.min(...points), max=Math.max(...points), span=(max-min)||1;
+  const xy=points.map((v,i)=>[pad+i*(W-pad*2)/(points.length-1), H-pad-((v-min)/span)*(H-pad*2)]);
+  const line=xy.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ');
+  const area=line+' L'+xy[xy.length-1][0].toFixed(1)+' '+H+' L'+xy[0][0].toFixed(1)+' '+H+' Z';
+  const end=xy[xy.length-1];
+  return (
+    <svg width={W} height={H} viewBox={'0 0 '+W+' '+H} aria-label="đường cân nặng gần đây">
+      <path d={area} fill="var(--surface-2)"/>
+      <path d={line} fill="none" stroke="var(--brand)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <circle cx={end[0]} cy={end[1]} r="3" fill="var(--brand)"/>
+    </svg>
+  );
+}
+
+/* ============ Nhóm A — đi lớp ============ */
+function SchoolPicker(){
+  const [list,setList]=useLocal('ju.childSchools',[]);
+  const [f,setF]=useState({name:'',addr:'',fee:'',note:''});
+  const add=()=>{ if(!f.name.trim()) return; setList([...list,{id:uid(),...f,name:f.name.trim(),star:0}]); setF({name:'',addr:'',fee:'',note:''}); };
+  const setStar=(id,n)=> setList(list.map(x=>x.id===id?{...x,star:x.star===n?0:n}:x));
+  return (
+    <div>
+      <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>Ghi lại từng trường đã đi xem để cuối cùng so được, thay vì nhớ mang máng.</div>
+      {list.sort((a,b)=>(b.star||0)-(a.star||0)).map(s=>(
+        <div key={s.id} className="item">
+          <div className="it-top"><h4 style={{fontSize:14}}>🏫 {s.name}</h4>
+            <button className="xbtn" aria-label="Xoá" onClick={()=>{ if(confirm('Xoá trường này?')) setList(list.filter(x=>x.id!==s.id)); }}>✕</button></div>
+          {s.addr && <div className="muted" style={{fontSize:12.5,marginTop:2}}>📍 {s.addr}</div>}
+          {s.fee && <div style={{fontSize:12.5,marginTop:2}}>💵 {s.fee}</div>}
+          {s.note && <div className="muted" style={{fontSize:12.5,marginTop:3,lineHeight:1.5}}>{s.note}</div>}
+          <div className="row" style={{marginTop:6,gap:3}}>
+            <span className="muted" style={{fontSize:11}}>Ưng ý:</span>
+            {[1,2,3,4,5].map(n=><button key={n} onClick={()=>setStar(s.id,n)} style={{fontSize:16,color:(s.star||0)>=n?'var(--warn)':'var(--line)'}}>★</button>)}
+          </div>
+        </div>
+      ))}
+      <div className="card">
+        <input className="inp" placeholder="Tên trường" value={f.name} onChange={e=>setF({...f,name:e.target.value})}/>
+        <input className="inp" style={{marginTop:8}} placeholder="Địa chỉ / cách nhà bao xa" value={f.addr} onChange={e=>setF({...f,addr:e.target.value})}/>
+        <input className="inp" style={{marginTop:8}} placeholder="Học phí (gồm những gì)" value={f.fee} onChange={e=>setF({...f,fee:e.target.value})}/>
+        <textarea className="inp" style={{marginTop:8,minHeight:52,fontSize:12.5}} placeholder="Sĩ số, cô, bếp ăn, sân chơi, cảm nhận…" value={f.note} onChange={e=>setF({...f,note:e.target.value})}/>
+        <button className="btn" style={{marginTop:8}} onClick={add}>＋ Thêm trường đã xem</button>
+      </div>
+      <Collapse id="child-schoolcrit" defaultOpen={false} title="🔍 Nhìn vào những gì">
+        <div className="card">{bullets(SCHOOL_PICK.criteria||[])}</div>
+      </Collapse>
+      <Collapse id="child-schoolq" defaultOpen={false} title="❓ Câu hỏi mang theo khi đi xem trường">
+        <div className="card">{bullets(SCHOOL_PICK.questions||[])}</div>
+      </Collapse>
+    </div>
+  );
+}
+function TeacherNote({child,people}){
+  const [note,setNote]=useLocal('ju.childTeacherNote',{});
+  const exportNote=()=>{
+    const lines=['DẶN CÔ — '+(child.name||'Bé'),''];
+    TEACHER_NOTE.forEach(k=>{ if((note[k]||'').trim()) lines.push('• '+k+': '+note[k].trim()); });
+    lines.push('','Bố mẹ: '+[people.a.name,people.b.name].filter(Boolean).join(' / '));
+    const txt=lines.join('\n');
+    try{ const w=window.open('','_blank'); if(w){ w.document.write('<title>Dặn cô</title><pre style="font-family:system-ui,sans-serif;font-size:15px;white-space:pre-wrap;padding:24px;line-height:1.8">'+txt.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</pre>'); w.document.close(); w.focus(); setTimeout(()=>{ try{w.print();}catch(e){} },350); return; } }catch(e){}
+    if(navigator.share) navigator.share({title:'Dặn cô',text:txt}).catch(()=>{}); else { navigator.clipboard.writeText(txt); alert('Đã copy — dán để gửi cô nhé!'); }
+  };
+  return (
+    <div>
+      <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>Khác hồ sơ y tế: đây là những thứ chỉ nhà mình mới biết. Điền dần, để trống mục nào cũng được.</div>
+      <div className="card">
+        {TEACHER_NOTE.map(k=>(
+          <div key={k} className="field" style={{margin:'0 0 8px'}}><label>{k}</label>
+            <input className="inp" value={note[k]||''} onChange={e=>setNote({...note,[k]:e.target.value})}/></div>
+        ))}
+        <button className="btn" onClick={exportNote}>🖨️ Xuất để in / gửi cô</button>
+      </div>
+    </div>
+  );
+}
+
+/* ============ Nhóm B — ra khỏi nhà ============ */
+function TripPack(){
+  const [done,setDone]=useLocal('ju.childTripPack',{});
+  const n=TRIP_PACK.filter(x=>done[x]).length;
+  return (
+    <div>
+      <div className="prog" style={{margin:'0 14px'}}><i style={{width:(n/TRIP_PACK.length*100)+'%'}}></i></div>
+      <div className="muted center" style={{fontSize:11,margin:'4px 14px'}}>{n}/{TRIP_PACK.length} — khác danh sách đồ đi lớp bên tab Đi học.</div>
+      <div className="card" style={{padding:'4px 13px'}}>
+        {TRIP_PACK.map(it=>(
+          <div key={it} className="row" style={{padding:'8px 0',borderBottom:'1px solid var(--line)'}}>
+            <button className="tick" onClick={()=>setDone(s=>{ const m={...s}; if(m[it]) delete m[it]; else m[it]=true; return m; })} style={{fontSize:19}}>{done[it]?'✅':'⬜'}</button>
+            <span className="grow" style={{fontSize:13.5,textDecoration:done[it]?'line-through':'none',opacity:done[it]?.6:1}}>{it}</span>
+          </div>
+        ))}
+        <button className="muted" style={{fontSize:11,margin:'8px 0'}} onClick={()=>{ if(confirm('Bỏ đánh dấu tất cả cho chuyến sau?')) setDone({}); }}>↻ Đặt lại cho chuyến sau</button>
+      </div>
+    </div>
+  );
+}
+
+/* ============ Nhóm D — tâm lý bé & bố mẹ ============ */
+function DutyBoard({people}){
+  const [duty,setDuty]=useLocal('ju.childDuty',{});
+  const WHO=[{k:'a',l:(people.a.name||'Bố')},{k:'b',l:(people.b.name||'Mẹ')},{k:'both',l:'Cả hai'},{k:'ob',l:'Ông bà'}];
+  return (
+    <div>
+      <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>Chốt ai lo việc nào để khỏi mỗi tối lại "tưởng người kia làm".</div>
+      {DUTY_SLOTS.map(s=>(
+        <div key={s.k} className="item">
+          <div className="row"><span style={{fontSize:19,flex:'0 0 auto'}}>{s.ic}</span>
+            <div className="grow"><b style={{fontSize:13.5}}>{s.n}</b>
+              <div className="muted" style={{fontSize:11.5}}>{s.d}</div></div></div>
+          <div className="row" style={{marginTop:6,gap:5,flexWrap:'wrap'}}>
+            {WHO.map(w=>(
+              <button key={w.k} className="pill" style={duty[s.k]===w.k?{background:'var(--brand)',color:'var(--on-brand)'}:{}}
+                onClick={()=>setDuty({...duty,[s.k]:duty[s.k]===w.k?'':w.k})}>{w.l}</button>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* ============ Nhóm E — kỷ niệm ============ */
+function MemoryTab({child}){
+  const [one,setOne]=useLocal('ju.childOneLine',[]);
+  const [quotes,setQuotes]=useLocal('ju.childQuotes',[]);
+  const [photos,setPhotos]=useLocal('ju.childPhotos',[]);
+  const [letters,setLetters]=useLocal('ju.childLetters',[]);
+  const [diary,setDiary]=useLocal('ju.childDiary',[]);
+  const [t1,setT1]=useState(''); const [t2,setT2]=useState(''); const [t3,setT3]=useState('');
+  const [lt,setLt]=useState('');
+  const [busy,setBusy]=useState('');
+  const today=todayISO();
+  const ym=today.slice(0,7);
+  const wroteToday=one.some(x=>x.date===today);
+  const monthPhoto=photos.find(p=>p.ym===ym);
+
+  const addOne=()=>{ if(!t1.trim()) return; setOne([{id:uid(),date:today,text:t1.trim()},...one.filter(x=>x.date!==today)]); setT1(''); celebrate(['📔']); };
+  const addQuote=()=>{ if(!t2.trim()) return; setQuotes([{id:uid(),date:today,text:t2.trim()},...quotes]); setT2(''); celebrate(['💬']); };
+  const addFirst=()=>{ if(!t3.trim()) return; setDiary([{id:uid(),date:today,text:t3.trim()},...diary]); setT3(''); celebrate(['📔','💞']); };
+  const addLetter=()=>{ if(!lt.trim()) return; setLetters([{id:uid(),date:today,text:lt.trim()},...letters]); setLt(''); celebrate(['💌']); };
+
+  const pickPhoto=async(e)=>{
+    const file=e.target.files&&e.target.files[0]; e.target.value='';
+    if(!file) return;
+    if(Cloud.status!=='on'){ alert('Ảnh lưu trên đám mây của hai vợ chồng. Mở Just Us đăng nhập và ghép cặp trước đã nhé.'); return; }
+    setBusy('Đang tải ảnh lên…');
+    try{
+      const blob=await compressImage(file,1200,0.82);
+      const path=await Cloud.uploadPhoto(blob,'jpg');
+      const old=photos.find(p=>p.ym===ym);
+      if(old&&old.path) Cloud.deletePhoto(old.path);
+      setPhotos([{id:uid(),ym,path,date:today},...photos.filter(p=>p.ym!==ym)]);
+      celebrate(['📷']);
+    }catch(err){ alert('Không tải được ảnh: '+((err&&err.message)||err)); }
+    setBusy('');
+  };
+
+  return (
+    <div>
+      <div className="sec-title">✍️ Một dòng hôm nay</div>
+      <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>Một câu thôi. Dễ giữ hơn nhật ký dài, và vài năm nữa đọc lại mới thấy quý.</div>
+      <div className="row" style={{margin:'0 14px',gap:8}}>
+        <input className="inp grow" placeholder={wroteToday?'Sửa dòng hôm nay…':'Hôm nay con…'} value={t1} onChange={e=>setT1(e.target.value)} onKeyDown={e=>{ if(e.key==='Enter') addOne(); }}/>
+        <button className="btn sm" onClick={addOne}>＋</button>
+      </div>
+      {one.slice(0,14).map(x=>(
+        <div key={x.id} className="item" style={{padding:'9px 13px'}}>
+          <div className="row"><span className="muted" style={{fontSize:11,flex:'0 0 auto'}}>{fmtDateVN(x.date)}</span>
+            <span className="grow" style={{fontSize:13.5}}>{x.text}</span>
+            <button className="xbtn" aria-label="Xoá" onClick={()=>{ if(confirm('Xoá dòng này?')) setOne(one.filter(y=>y.id!==x.id)); }}>✕</button></div>
+        </div>
+      ))}
+
+      <div className="sec-title">📷 Ảnh mỗi tháng</div>
+      <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>Mỗi tháng một tấm, chụp cùng một góc thì càng thấy con lớn.</div>
+      <div className="card">
+        {monthPhoto
+          ? <CloudImg path={monthPhoto.path} style={{width:'100%',borderRadius:10,maxHeight:260}} alt={'Ảnh tháng '+ym}/>
+          : <div className="muted center" style={{fontSize:12.5,padding:'14px 0'}}>Tháng {ym.slice(5)}/{ym.slice(0,4)} chưa có ảnh nào.</div>}
+        <label className="btn soft" style={{marginTop:9,display:'block',textAlign:'center',cursor:'pointer'}}>
+          {busy || (monthPhoto?'📷 Đổi ảnh tháng này':'📷 Chọn ảnh tháng này')}
+          <input type="file" accept="image/*" onChange={pickPhoto} style={{display:'none'}}/>
+        </label>
+        {Cloud.status!=='on' && <div className="muted" style={{fontSize:10.5,marginTop:6,lineHeight:1.5}}>Ảnh lưu trên đám mây chung của hai vợ chồng, nên cần đăng nhập &amp; ghép cặp bên Just Us trước.</div>}
+      </div>
+      {photos.length>1 && <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:6,margin:'0 14px'}}>
+        {photos.filter(p=>p.ym!==ym).slice(0,12).map(p=>(
+          <div key={p.id} style={{position:'relative'}}>
+            <CloudImg path={p.path} style={{width:'100%',aspectRatio:'1',borderRadius:8}} alt={'Ảnh '+p.ym}/>
+            <div style={{position:'absolute',left:0,right:0,bottom:0,background:'linear-gradient(transparent,rgba(0,0,0,.6))',color:'#fff',fontSize:10,padding:'8px 4px 3px',textAlign:'center',borderRadius:'0 0 8px 8px'}}>{p.ym.slice(5)}/{p.ym.slice(2,4)}</div>
+          </div>
+        ))}
+      </div>}
+
+      <div className="sec-title">💬 Con nói câu này</div>
+      <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>Câu bé tự chế ra — khác mục “từ mới” bên tab Phát triển.</div>
+      <div className="row" style={{margin:'0 14px',gap:8}}>
+        <input className="inp grow" placeholder="vd: “mẹ ơi trăng bị ướt”" value={t2} onChange={e=>setT2(e.target.value)} onKeyDown={e=>{ if(e.key==='Enter') addQuote(); }}/>
+        <button className="btn sm" onClick={addQuote}>＋</button>
+      </div>
+      {quotes.slice(0,12).map(x=>(
+        <div key={x.id} className="item" style={{padding:'9px 13px'}}>
+          <div className="row"><div className="grow"><div style={{fontSize:14}}>“{x.text}”</div>
+            <div className="muted" style={{fontSize:11,marginTop:2}}>{fmtDateVN(x.date)}</div></div>
+            <button className="xbtn" aria-label="Xoá" onClick={()=>{ if(confirm('Xoá câu này?')) setQuotes(quotes.filter(y=>y.id!==x.id)); }}>✕</button></div>
+        </div>
+      ))}
+
+      <div className="sec-title">📔 Điều đầu tiên</div>
+      <div className="row" style={{margin:'0 14px',gap:8}}>
+        <input className="inp grow" placeholder="Lần đầu con… (nói, bước đi, tự xúc…)" value={t3} onChange={e=>setT3(e.target.value)} onKeyDown={e=>{ if(e.key==='Enter') addFirst(); }}/>
+        <button className="btn sm" onClick={addFirst}>＋</button>
+      </div>
+      {diary.slice(0,10).map(d=>(
+        <div key={d.id} className="item" style={{padding:'9px 13px'}}>
+          <div className="row"><span className="muted" style={{fontSize:11,flex:'0 0 auto'}}>{fmtDateVN(d.date)}</span>
+            <span className="grow" style={{fontSize:13.5}}>{d.text}</span>
+            <button className="iconbtn" onClick={()=>{ if(confirm('Xoá ghi chú này?')) setDiary(diary.filter(x=>x.id!==d.id)); }}>🗑️</button></div>
+        </div>
+      ))}
+
+      <Collapse id="child-letters" defaultOpen={false} title="💌 Thư gửi con sau này">
+        <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>Viết cho con đọc khi lớn. Bố mẹ đều viết được, mỗi lúc một lá.</div>
+        <div className="card">
+          <textarea className="inp" style={{minHeight:96}} placeholder={'Gửi '+((child&&child.name)||'con')+' của bố mẹ…'} value={lt} onChange={e=>setLt(e.target.value)}/>
+          <button className="btn" style={{marginTop:8}} onClick={addLetter}>💌 Cất lá thư này</button>
+        </div>
+        {letters.map(l=>(
+          <div key={l.id} className="item">
+            <div className="row"><span className="muted grow" style={{fontSize:11}}>✍️ {fmtDateVN(l.date)}</span>
+              <button className="xbtn" aria-label="Xoá" onClick={()=>{ if(confirm('Xoá lá thư này?')) setLetters(letters.filter(y=>y.id!==l.id)); }}>✕</button></div>
+            <div style={{fontSize:13.5,marginTop:4,whiteSpace:'pre-wrap',lineHeight:1.6}}>{l.text}</div>
+          </div>
+        ))}
+      </Collapse>
+    </div>
+  );
+}
+
+/* ============ Mục 4 — biểu đồ tăng trưởng theo chuẩn WHO ============ */
+// Nội suy tuyến tính giữa hai mốc 3 tháng của bảng WHO rút gọn.
+function whoAt(table,gender,m){
+  const rows=table[gender==='nu'?'nu':'nam']; if(!rows||!rows.length||m==null) return null;
+  if(m<=rows[0][0]) return rows[0].slice(1);
+  if(m>=rows[rows.length-1][0]) return rows[rows.length-1].slice(1);
+  for(let i=0;i<rows.length-1;i++){
+    const a=rows[i],b=rows[i+1];
+    if(m>=a[0]&&m<=b[0]){ const f=(m-a[0])/(b[0]-a[0]);
+      return [1,2,3].map(j=>a[j]+(b[j]-a[j])*f); }
+  }
+  return null;
+}
+// "Bé đang nằm ở đâu so với chuẩn" — chỉ nói theo dải, không phán chẩn đoán.
+function whoBand(v,ref){
+  if(v==null||!ref) return null;
+  if(v<ref[0]) return {k:'low',t:'thấp hơn dải chuẩn (dưới P3)',c:'#c0392b'};
+  if(v>ref[2]) return {k:'high',t:'cao hơn dải chuẩn (trên P97)',c:'#c0392b'};
+  if(v<ref[1]) return {k:'mid',t:'trong dải chuẩn, dưới mức giữa',c:'var(--good)'};
+  return {k:'mid',t:'trong dải chuẩn, trên mức giữa',c:'var(--good)'};
+}
+function GrowthChart({growth,child,months,kind}){
+  const gender=child.gender==='nu'?'nu':'nam';
+  const table=kind==='h'?WHO_HEIGHT:WHO_WEIGHT;
+  const rows=table[gender]||[];
+  if(!rows.length) return null;
+  const pts=(growth||[]).filter(g=>(kind==='h'?g.h:g.w)!=null && child.dob)
+    .map(g=>({m:Math.max(0,Math.round((new Date(g.date+'T00:00:00')-new Date(child.dob+'T00:00:00'))/(30.44*86400000))), v:(kind==='h'?g.h:g.w)}))
+    .sort((a,b)=>a.m-b.m);
+  const W=300,H=190,L=26,R=6,T=8,B=18;
+  const maxM=Math.min(36,Math.max(12,(months==null?24:months)+6, pts.length?pts[pts.length-1].m+3:0));
+  const inRange=rows.filter(r=>r[0]<=maxM+3);
+  const lo=Math.min(...inRange.map(r=>r[1]), ...pts.map(p=>p.v));
+  const hi=Math.max(...inRange.map(r=>r[3]), ...pts.map(p=>p.v));
+  const pad=(hi-lo)*0.08||1;
+  const y0=lo-pad, y1=hi+pad;
+  const X=m=>L+(m/maxM)*(W-L-R);
+  const Y=v=>T+(1-(v-y0)/(y1-y0))*(H-T-B);
+  const path=(idx)=>inRange.map((r,i)=>(i?'L':'M')+X(r[0]).toFixed(1)+' '+Y(r[idx]).toFixed(1)).join(' ');
+  const bandArea=inRange.map((r,i)=>(i?'L':'M')+X(r[0]).toFixed(1)+' '+Y(r[1]).toFixed(1)).join(' ')
+    +' '+inRange.slice().reverse().map(r=>'L'+X(r[0]).toFixed(1)+' '+Y(r[3]).toFixed(1)).join(' ')+' Z';
+  const kidPath=pts.map((p,i)=>(i?'L':'M')+X(p.m).toFixed(1)+' '+Y(p.v).toFixed(1)).join(' ');
+  const ticks=[0,6,12,18,24,30,36].filter(t=>t<=maxM);
+  const unit=kind==='h'?'cm':'kg';
+  return (
+    <svg width="100%" viewBox={'0 0 '+W+' '+H} style={{display:'block'}} role="img"
+      aria-label={'Biểu đồ '+(kind==='h'?'chiều cao':'cân nặng')+' của bé so với dải chuẩn WHO'}>
+      <path d={bandArea} fill="var(--surface-2)" opacity="0.75"/>
+      <path d={path(1)} fill="none" stroke="var(--line)" strokeWidth="1"/>
+      <path d={path(3)} fill="none" stroke="var(--line)" strokeWidth="1"/>
+      <path d={path(2)} fill="none" stroke="var(--ink-2)" strokeWidth="1" strokeDasharray="3 3"/>
+      {ticks.map(t=>(<g key={t}>
+        <line x1={X(t)} y1={H-B} x2={X(t)} y2={H-B+3} stroke="var(--line)"/>
+        <text x={X(t)} y={H-B+13} fontSize="8" fill="var(--ink-2)" textAnchor="middle">{t}</text>
+      </g>))}
+      <text x="2" y={Y(y1)+8} fontSize="8" fill="var(--ink-2)">{Math.round(y1)}</text>
+      <text x="2" y={Y(y0)} fontSize="8" fill="var(--ink-2)">{Math.round(y0)}</text>
+      <text x={W-R} y={H-B+13} fontSize="8" fill="var(--ink-2)" textAnchor="end">tháng tuổi</text>
+      {pts.length>1 && <path d={kidPath} fill="none" stroke="var(--brand)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>}
+      {pts.map((p,i)=><circle key={i} cx={X(p.m)} cy={Y(p.v)} r={i===pts.length-1?3.5:2.2} fill="var(--brand)"/>)}
+      {pts.length>0 && <text x={X(pts[pts.length-1].m)} y={Y(pts[pts.length-1].v)-6} fontSize="9" fill="var(--brand)" textAnchor="middle" fontWeight="700">{pts[pts.length-1].v}{unit}</text>}
+    </svg>
+  );
+}
+function GrowthWHO({growth,child,months}){
+  const [kind,setKind]=useState('w');
+  const last=(growth||[])[0];
+  const v=last?(kind==='h'?last.h:last.w):null;
+  const ref=whoAt(kind==='h'?WHO_HEIGHT:WHO_WEIGHT,child.gender,months);
+  const band=whoBand(v,ref);
+  const unit=kind==='h'?'cm':'kg';
+  if(!child.dob) return <div className="empty muted">Nhập ngày sinh của bé ở trang chủ để vẽ được biểu đồ theo tuổi.</div>;
+  return (
+    <div>
+      <div className="row" style={{margin:'0 14px 6px',gap:7}}>
+        <button className="pill" style={kind==='w'?{background:'var(--brand)',color:'var(--on-brand)'}:{}} onClick={()=>setKind('w')}>⚖️ Cân nặng</button>
+        <button className="pill" style={kind==='h'?{background:'var(--brand)',color:'var(--on-brand)'}:{}} onClick={()=>setKind('h')}>📐 Chiều cao</button>
+      </div>
+      <div className="card">
+        <GrowthChart growth={growth} child={child} months={months} kind={kind}/>
+        <div className="row" style={{gap:10,marginTop:6,flexWrap:'wrap'}}>
+          <span className="muted" style={{fontSize:10.5}}>▬ đường của bé</span>
+          <span className="muted" style={{fontSize:10.5}}>▨ dải chuẩn P3–P97</span>
+          <span className="muted" style={{fontSize:10.5}}>┅ mức giữa P50</span>
+        </div>
+      </div>
+      {v!=null && ref && band && <div className="card" style={{borderLeft:'4px solid '+band.c}}>
+        <div style={{fontSize:13.5}}><b>{v} {unit}</b> ở {months} tháng — {band.t}.</div>
+        <div className="muted" style={{fontSize:12,marginTop:4}}>
+          Chuẩn WHO cho {child.gender==='nu'?'bé gái':'bé trai'} {months} tháng: {ref[0].toFixed(1)}–{ref[2].toFixed(1)} {unit}, mức giữa {ref[1].toFixed(1)} {unit}.
+        </div>
+      </div>}
+      {v==null && <div className="muted center" style={{fontSize:12,margin:'0 14px'}}>Chưa có số đo {kind==='h'?'chiều cao':'cân nặng'} nào — ghi ở phần “Chiều cao & cân nặng” bên dưới.</div>}
+      <div className="note">{months!=null&&months>36 && <><b>Bé đã trên 36 tháng</b> — bảng trong app dừng ở mốc 36 tháng nên phần so sánh bên trên chỉ còn tham khảo rất thô. </>}Bảng chuẩn trong app là bản <b>rút gọn theo mốc 3 tháng</b> của chuẩn WHO 0–36 tháng, số đã làm tròn và giữa hai mốc thì nội suy — dùng để nhìn xu hướng, không thay bảng chuẩn của bác sĩ. Một lần đo lệch dải không có nhiều ý nghĩa bằng việc đường của bé đi lên đều đặn. Thấy bé rơi ra ngoài dải hoặc đứng cân nhiều tháng thì cho đi khám dinh dưỡng.</div>
+    </div>
+  );
+}
+
+/* ============ Mục 3 — bỏ bỉm / tập ngồi bô ============ */
+function PottyTab(){
+  const [p,setP]=useLocal('ju.childPotty',{ready:{},log:{}});
+  const ready=p.ready||{}, log=p.log||{};
+  const readyN=POTTY_READY.filter(r=>ready[r]).length;
+  const today=todayISO();
+  const td=log[today]||{ok:0,acc:0};
+  const set=(patch)=>setP({...p,...patch});
+  const bump=(field,delta)=>{ const cur=log[today]||{ok:0,acc:0};
+    const next={...cur,[field]:Math.max(0,(cur[field]||0)+delta)};
+    set({log:{...log,[today]:next}}); };
+  const toggleNight=()=>{ const cur=log[today]||{ok:0,acc:0};
+    set({log:{...log,[today]:{...cur,night:!cur.night}}}); };
+  const dayOf=(iso)=>{ const d=log[iso]; if(!d) return null;
+    return ((d.acc||0)===0 && (d.ok||0)>0) ? 'dry' : ((d.ok||0)>0||(d.acc||0)>0 ? 'wet' : null); };
+  // chuỗi ngày khô liên tiếp tính lùi từ hôm nay
+  let streak=0;
+  for(let i=0;i<400;i++){
+    const d=new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate()-i);
+    const iso=d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+    const st=dayOf(iso);
+    if(st==='dry') streak++;
+    else if(i===0) continue;  // hôm nay chưa ghi thì chưa tính là đứt
+    else break;
+  }
+  const days=[]; for(let i=29;i>=0;i--){ const d=new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate()-i);
+    const iso=d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+    days.push({iso,st:dayOf(iso),d:d.getDate()}); }
+  const started=!!p.start;
+  return (
+    <div>
+      {!started && <div className="card" style={{background:'linear-gradient(135deg,var(--surface-2),var(--surface))'}}>
+        <b style={{fontSize:14}}>🚽 Bé sẵn sàng bỏ bỉm chưa?</b>
+        <div className="muted" style={{fontSize:12,margin:'4px 0 8px',lineHeight:1.55}}>Tick những dấu hiệu bé đã có. Từ khoảng 4 dấu hiệu trở lên là thời điểm thuận lợi — chưa đủ thì cứ đợi thêm, bắt đầu sớm quá thường kéo dài hơn.</div>
+        <div className="prog"><i style={{width:(readyN/POTTY_READY.length*100)+'%'}}></i></div>
+        <div className="muted" style={{fontSize:11,marginTop:4}}>{readyN}/{POTTY_READY.length} dấu hiệu</div>
+      </div>}
+      {!started && <div className="card" style={{padding:'4px 13px'}}>
+        {POTTY_READY.map(r=>(
+          <div key={r} className="row" style={{padding:'8px 0',borderBottom:'1px solid var(--line)'}}>
+            <button className="tick" onClick={()=>{ const n={...ready}; if(n[r]) delete n[r]; else n[r]=true; set({ready:n}); }} style={{fontSize:19}}>{ready[r]?'✅':'⬜'}</button>
+            <span className="grow" style={{fontSize:13.5}}>{r}</span>
+          </div>
+        ))}
+      </div>}
+      {!started && <div style={{margin:'10px 14px'}}>
+        <button className="btn" onClick={()=>set({start:todayISO()})}>🚽 Bắt đầu tập từ hôm nay</button>
+      </div>}
+
+      {started && <>
+        <div className="card center" style={{background:'linear-gradient(135deg,var(--surface-2),var(--surface))'}}>
+          <div className="muted" style={{fontSize:11}}>Chuỗi ngày khô liên tiếp</div>
+          <div style={{fontSize:34,fontWeight:800,color:'var(--brand)',lineHeight:1.15}}>{streak}</div>
+          <div className="muted" style={{fontSize:11}}>bắt đầu tập từ {fmtDateVN(p.start)}</div>
+        </div>
+        <div className="sec-title">✍️ Hôm nay</div>
+        <div className="card">
+          <div className="row" style={{gap:8}}>
+            <button className="btn sm grow" onClick={()=>bump('ok',1)}>✓ Đi đúng bô ({td.ok||0})</button>
+            <button className="btn sm soft grow" onClick={()=>bump('acc',1)}>💧 Tè dầm ({td.acc||0})</button>
+          </div>
+          <div className="row" style={{gap:8,marginTop:8}}>
+            <button className="pill" onClick={()=>bump('ok',-1)}>− bô</button>
+            <button className="pill" onClick={()=>bump('acc',-1)}>− dầm</button>
+            <span className="grow"></span>
+            <button className="pill" style={td.night?{background:'var(--good)',color:'#fff'}:{}} onClick={toggleNight}>🌙 Đêm khô</button>
+          </div>
+        </div>
+        <div className="sec-title">📅 30 ngày gần đây</div>
+        <div className="card">
+          <div className="grid30">
+            {days.map(d=>(
+              <span key={d.iso} title={fmtDateVN(d.iso)} className={d.st||''}>{d.d}</span>
+            ))}
+          </div>
+          <div className="row" style={{gap:10,marginTop:7,flexWrap:'wrap'}}>
+            <span className="muted" style={{fontSize:10.5}}>🟩 ngày khô</span>
+            <span className="muted" style={{fontSize:10.5}}>🟨 có tè dầm</span>
+            <span className="muted" style={{fontSize:10.5}}>⬜ chưa ghi</span>
+          </div>
+        </div>
+        <div style={{margin:'8px 14px'}}>
+          <button className="muted" style={{fontSize:11}} onClick={()=>{ if(confirm('Bỏ đánh dấu "đang tập" và quay lại phần dấu hiệu sẵn sàng? Lịch đã ghi vẫn giữ nguyên.')) set({start:''}); }}>↻ Tạm dừng việc tập</button>
+        </div>
+      </>}
+
+      <Collapse id="child-pottytimes" defaultOpen={false} title="⏰ Cho ngồi bô vào những lúc này">
+        <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>Nhắc theo mốc sinh hoạt hiệu quả hơn hỏi "con có buồn không" — tuổi này bé thường chưa kịp nhận ra.</div>
+        {POTTY_TIMES.map(t=>(
+          <div key={t.t} className="item" style={{padding:'9px 13px'}}>
+            <b style={{fontSize:13.5}}>{t.t}</b>
+            {t.d && <div className="muted" style={{fontSize:12.5,marginTop:2}}>{t.d}</div>}
+          </div>
+        ))}
+      </Collapse>
+      <Collapse id="child-pottyfix" defaultOpen={false} title="🧩 Vướng ở đâu">
+        <GuideList items={POTTY_FIX} keyOf={x=>x.n} titleOf={x=>x.n} iconOf={x=>x.icon} render={x=>bullets(x.tips)}/>
+      </Collapse>
+      <div className="note">Bỏ bỉm là việc của bé, không phải cuộc thi của bố mẹ. Bé quanh 2 tuổi mà chưa sẵn sàng thì đợi thêm vài tháng vẫn hoàn toàn bình thường. Nếu bé nhịn đi nặng nhiều ngày, xem thêm mục Táo bón bên tab Sức khoẻ.</div>
+    </div>
+  );
+}
+
+/* Việc đến hạn của bé — dùng chung cho thẻ "📌 Cần để ý" ở trang chủ và cho thông báo.
+   Trả về [{id,ic,t,go}]; id dùng để mỗi ngày chỉ báo một lần cho mỗi việc. */
+function childDueList({child,months,vac,ill,growth,packDone,schoolDays}){
+  child=child||{}; vac=vac||{}; growth=growth||[]; ill=ill||[];
+  const out=[];
+  const dueVac=months==null?[]:CHILD_VACCINES.filter(v=>vacAgeMonths(v.age)<=months);
+  const vacMissing=dueVac.filter(v=>!v.items.every(it=>vac[v.age+'|'+it]));
+  const nextVac=months==null?null:CHILD_VACCINES.find(v=>vacAgeMonths(v.age)>months);
+  const nextVacDays=(nextVac&&child.dob)? daysFromToday(new Date(new Date(child.dob+'T00:00:00').getTime()+vacAgeMonths(nextVac.age)*30.44*86400000).toISOString().slice(0,10)) : null;
+  const last=growth[0];
+  const daysSinceMeasure=last? daysFromToday(last.date) : null; // âm = bao nhiêu ngày trước
+  const sickOpen=ill.filter(x=>!x.recovered);
+
+  if(vacMissing.length) out.push({id:'vacmiss',ic:'💉',t:'Còn mũi chưa tiêm: '+vacMissing.map(v=>v.age).join(', '),go:'health'});
+  if(nextVac&&nextVacDays!=null&&nextVacDays>=0&&nextVacDays<=60) out.push({id:'vacnext'+nextVac.age,ic:'💉',t:'Mũi '+nextVac.age+' còn '+nextVacDays+' ngày',go:'health'});
+  if(schoolDays!=null&&schoolDays>=0&&schoolDays<=60) out.push({id:'school',ic:'🎒',t:'Đi lớp còn '+schoolDays+' ngày · đồ đã soạn '+packDone+'/'+CHILD_PACK.length,go:'school'});
+  if(sickOpen.length) out.push({id:'sick'+sickOpen[0].id,ic:'🤒',t:'Đợt ốm từ '+fmtDateVN(sickOpen[0].date)+' chưa đánh dấu đã khỏi',go:'health'});
+  if(daysSinceMeasure!=null&&daysSinceMeasure<=-30) out.push({id:'measure',ic:'📏',t:'Đã '+Math.abs(daysSinceMeasure)+' ngày chưa đo cân nặng',go:'health'});
+  if(!child.dob) out.push({id:'dob',ic:'🎂',t:'Chưa nhập ngày sinh — nhập để app hiện đúng mốc theo tuổi',go:null});
+  return out;
+}
+
+/* ============ Mục 5 — nhắc việc ============
+   App Sóc không có server đẩy (web-push nằm bên Just Us), nên chỉ nhắc được
+   KHI APP ĐANG MỞ: kiểm lúc mở, mỗi 15 phút, và mỗi lần quay lại tab.
+   Mỗi việc chỉ báo một lần trong ngày — dấu vết lưu ở ju.childNotiSeen
+   (riêng từng máy, KHÔNG đồng bộ, để máy kia vẫn được nhắc). */
+function NotiRunner({due,childName}){
+  const [cfg]=useLocal('ju.childNoti',{on:false});
+  const ids=due.map(d=>d.id).join('|');
+  useEffect(()=>{
+    if(!cfg.on || typeof Notification==='undefined') return;
+    const tick=()=>{
+      if(Notification.permission!=='granted') return;
+      const day=todayISO();
+      let seen=store.get('ju.childNotiSeen',null)||{};
+      if(seen.date!==day) seen={date:day,ids:{}};
+      const fresh=due.filter(d=>!seen.ids[d.id]);
+      if(!fresh.length) return;
+      const body=fresh.slice(0,4).map(x=>x.ic+' '+x.t).join('\n');
+      const opts={body,icon:'icon.svg',badge:'icon.svg',tag:'soc-daily-'+day,data:{url:'./'}};
+      const title='🐿️ '+(childName||'Bé')+' — nhắc hôm nay';
+      try{
+        if(navigator.serviceWorker && navigator.serviceWorker.getRegistration){
+          navigator.serviceWorker.getRegistration().then(r=>{
+            if(r&&r.showNotification) r.showNotification(title,opts); else new Notification(title,opts);
+          }).catch(()=>{ try{ new Notification(title,opts); }catch(_){} });
+        } else new Notification(title,opts);
+      }catch(e){}
+      fresh.forEach(f=>{ seen.ids[f.id]=1; });
+      store.set('ju.childNotiSeen',seen);
+    };
+    tick();
+    const iv=setInterval(tick,15*60*1000);
+    const onVis=()=>{ if(!document.hidden) tick(); };
+    document.addEventListener('visibilitychange',onVis);
+    return ()=>{ clearInterval(iv); document.removeEventListener('visibilitychange',onVis); };
+  },[cfg.on,ids,childName]);
+  return null;
+}
+function NotiSettings({due}){
+  const [cfg,setCfg]=useLocal('ju.childNoti',{on:false});
+  const [perm,setPerm]=useState(()=> typeof Notification==='undefined' ? 'unsupported' : Notification.permission);
+  const ask=async()=>{ try{ const r=await Notification.requestPermission(); setPerm(r); if(r==='granted') setCfg({...cfg,on:true}); }catch(e){} };
+  return (
+    <div className="card">
+      <div className="row"><span style={{fontSize:19}}>🔔</span><b className="grow" style={{fontSize:14}}>Nhắc việc của bé</b>
+        {perm==='granted' && <button className="pill" style={cfg.on?{background:'var(--good)',color:'#fff'}:{}} onClick={()=>setCfg({...cfg,on:!cfg.on})}>{cfg.on?'✓ Đang bật':'Đang tắt'}</button>}</div>
+      {perm==='unsupported' && <div className="muted" style={{fontSize:12,marginTop:6}}>Trình duyệt này không hỗ trợ thông báo. Phần “📌 Cần để ý” ở trên vẫn chạy bình thường.</div>}
+      {perm==='default' && <>
+        <div className="muted" style={{fontSize:12,margin:'6px 0 8px',lineHeight:1.55}}>Cho phép thông báo để app nhắc mũi tiêm đến hạn, ngày đi lớp, đợt ốm chưa đánh dấu khỏi và lâu chưa đo.</div>
+        <button className="btn" onClick={ask}>Cho phép thông báo</button></>}
+      {perm==='denied' && <div className="muted" style={{fontSize:12,marginTop:6,lineHeight:1.55}}>Thông báo đang bị chặn cho trang này. Mở phần cài đặt trang trong trình duyệt để bật lại.</div>}
+      {perm==='granted' && <div className="muted" style={{fontSize:12,marginTop:6,lineHeight:1.55}}>
+        {cfg.on? (due.length? ('Đang có '+due.length+' việc — mỗi việc chỉ báo một lần trong ngày.') : 'Đang bật. Hiện không có việc nào đến hạn.') : 'Đang tắt — bấm nút bên trên để bật lại.'}
+      </div>}
+      <div className="muted" style={{fontSize:10.5,marginTop:8,lineHeight:1.5,borderTop:'1px solid var(--line)',paddingTop:7}}>
+        App Sóc chỉ nhắc được <b>khi đang mở</b> (kiểm lúc mở app, mỗi 15 phút và mỗi lần quay lại tab). Thông báo lúc đóng app là việc của Just Us — bên đó có máy chủ đẩy.
+      </div>
+    </div>
+  );
+}
+
+function HomeTab({child,months,ageLabel,growth,words,wordsThisWeek,vac,mile,skills,skillDone,pack,packDone,gDone,ill,schoolDays,go,onEdit}){
+  const last=growth[0];
+  const weights=growth.filter(g=>g.w!=null).slice(0,6).map(g=>g.w).reverse();
+  const band=months==null?null:(CHILD_MILESTONES.find(x=>months>=x.lo&&months<x.hi)||CHILD_MILESTONES[CHILD_MILESTONES.length-1]);
+  const bandDone=band? band.items.filter(it=>mile[band.band+'|'+it]).length : 0;
+  const guideDone=SKILL_GUIDES.filter(g=>gDone[g.name]).length;
+  const weanToday=WEAN_MENU[(new Date().getDay()+6)%7];
+
+  // Mũi tiêm: chỉ tính các mốc bé đã tới tuổi
+  const dueVac=months==null?[]:CHILD_VACCINES.filter(v=>vacAgeMonths(v.age)<=months);
+  const vacTotal=dueVac.reduce((n,v)=>n+v.items.length,0);
+  const vacDone=dueVac.reduce((n,v)=>n+v.items.filter(it=>vac[v.age+'|'+it]).length,0);
+  const vacMissing=dueVac.filter(v=>!v.items.every(it=>vac[v.age+'|'+it]));
+  // Mũi kế tiếp chưa tới tuổi
+  const nextVac=months==null?null:CHILD_VACCINES.find(v=>vacAgeMonths(v.age)>months);
+  const nextVacDays=(nextVac&&child.dob)? daysFromToday(new Date(new Date(child.dob+'T00:00:00').getTime()+vacAgeMonths(nextVac.age)*30.44*86400000).toISOString().slice(0,10)) : null;
+
+  const alerts=childDueList({child,months,vac,ill,growth,packDone,schoolDays});
+  // Nhãn nhỏ cho hai ô mới, đọc thẳng từ localStorage cho gọn (không cần thêm prop)
+  const potty=store.get('ju.childPotty',{})||{};
+  const pottyLabel=potty.start?'đang tập':'chưa bắt đầu';
+  const oneLine=store.get('ju.childOneLine',[])||[];
+  const quotes=store.get('ju.childQuotes',[])||[];
+  const memoryLabel=(oneLine.length+quotes.length)?((oneLine.length+quotes.length)+' ghi chép'):'chưa ghi gì';
+
+  const TILES=[
+    {k:'develop',ic:'🌱',n:'Phát triển',s:band?(bandDone+'/'+band.items.length+' mốc'):'chưa có ngày sinh'},
+    {k:'play',ic:'🎲',n:'Chơi với con',s:PLAY_LIB.length+' trò'},
+    {k:'health',ic:'🏥',n:'Sức khoẻ',s:last&&last.w?(last.w+' kg'):'chưa đo'},
+    {k:'eat',ic:'🍎',n:'Ăn uống',s:weanToday?('thực đơn '+weanToday.d):'thực đơn tuần'},
+    {k:'potty',ic:'🚽',n:'Tập bô',s:pottyLabel},
+    {k:'school',ic:'🎒',n:'Đi học',s:schoolDays!=null?('còn '+schoolDays+' ngày'):('đồ '+packDone+'/'+CHILD_PACK.length)},
+    {k:'parent',ic:'💞',n:'Nuôi dạy',s:guideDone+'/'+SKILL_GUIDES.length+' kỹ năng'},
+    {k:'memory',ic:'📔',n:'Kỷ niệm',s:memoryLabel},
+  ];
+
+  return (
+    <div>
+      <div className="hero">
+        <div className="av">🐿️</div>
+        <div className="nm">{child.name||'Bé yêu'}</div>
+        <div className="ag">{ageLabel}</div>
+        {child.dob && <div className="muted" style={{fontSize:10.5,marginTop:1}}>sinh {fmtDateVN(child.dob)}{child.gender?(' · '+(child.gender==='nam'?'bé trai':'bé gái')):''}</div>}
+        {onEdit && <button className="muted" style={{fontSize:11.5,marginTop:6}} onClick={onEdit}>✎ Sửa thông tin bé</button>}
+      </div>
+
+      <div className="card" style={{marginTop:14}}>
+        <div className="row"><span className="grow"><b style={{fontSize:14}}>Cân nặng</b></span>
+          {last && <span className="muted" style={{fontSize:10.5}}>đo {fmtDateVN(last.date)}</span>}</div>
+        <div className="row" style={{alignItems:'flex-end',marginTop:3}}>
+          <div className="num" style={{fontSize:31}}>{last&&last.w? last.w : '—'}<span className="u"> kg</span></div>
+          <span className="grow"></span>
+          <Spark points={weights}/>
+        </div>
+        {!last && <div className="muted" style={{fontSize:12,marginTop:4}}>Chưa có lần đo nào — ghi ở tab Sức khoẻ.</div>}
+      </div>
+
+      <div className="stats">
+        <div className="card stat"><div className="k">Chiều cao</div>
+          <div className="num">{last&&last.h? last.h : '—'}<span className="u"> cm</span></div></div>
+        <div className="card stat"><div className="k">Từ nói được</div>
+          <div className="num">{words.length}</div>
+          <div className="muted" style={{fontSize:10,marginTop:2}}>+{wordsThisWeek} tuần này</div></div>
+        <div className="card stat"><div className="k">Mũi đã tiêm</div>
+          <div className="num">{vacDone}<span className="u">/{vacTotal||'—'}</span></div>
+          <div className="prog" style={{marginTop:5}}><i style={{width:(vacTotal?vacDone/vacTotal*100:0)+'%'}}></i></div></div>
+        <div className="card stat"><div className="k">Kỹ năng tự lập</div>
+          <div className="num">{skillDone}<span className="u">/{CHILD_SKILLS.length}</span></div>
+          <div className="prog" style={{marginTop:5}}><i style={{width:(skillDone/CHILD_SKILLS.length*100)+'%'}}></i></div></div>
+      </div>
+
+      {alerts.length>0 && <>
+        <div className="sec-title">📌 Cần để ý</div>
+        {alerts.map((a,i)=>(
+          <div key={i} className="item" style={{padding:'10px 13px',cursor:a.go?'pointer':'default'}} onClick={()=>a.go&&go(a.go)}>
+            <div className="row"><span style={{fontSize:18,flex:'0 0 auto'}}>{a.ic}</span>
+              <span className="grow" style={{fontSize:13.5}}>{a.t}</span>
+              {a.go && <span style={{color:'var(--brand)',fontSize:16}}>›</span>}</div>
+          </div>
+        ))}
+      </>}
+
+      <div className="sec-title">📦 Vào mục nào</div>
+      <div className="tiles">
+        {TILES.map(t=>(
+          <button key={t.k} className="card tile" onClick={()=>go(t.k)}>
+            <span className="ic">{t.ic}</span><b>{t.n}</b><small>{t.s}</small>
+          </button>
+        ))}
+      </div>
+
+      <div className="sec-title">🔔 Nhắc nhở</div>
+      <NotiSettings due={alerts}/>
+    </div>
+  );
+}
+
+/* ============ An toàn & cấp cứu ============ */
+// Danh bạ khẩn — bố mẹ tự điền, lưu ju.childContacts (đồng bộ cùng các khoá Sóc khác)
+function ContactBook(){
+  const [list,setList]=useLocal('ju.childContacts',[]);
+  const [f,setF]=useState({label:'',phone:''});
+  const add=()=>{ if(!f.label.trim()||!f.phone.trim()) return; setList([...list,{id:uid(),label:f.label.trim(),phone:f.phone.trim()}]); setF({label:'',phone:''}); };
+  return (
+    <div>
+      {list.length===0 && <div className="muted center" style={{fontSize:11.5,margin:'0 14px 6px'}}>Chưa có số nào. Điền trước đi — lúc cần thì không ai còn bình tĩnh mà tra danh bạ.</div>}
+      {list.map(c=>(
+        <div key={c.id} className="item" style={{padding:'9px 13px'}}>
+          <div className="row"><div className="grow"><b style={{fontSize:14}}>{c.label}</b>
+            <div className="muted" style={{fontSize:12.5}}>{c.phone}</div></div>
+            <a className="pill" href={'tel:'+c.phone.replace(/[^0-9+]/g,'')} style={{textDecoration:'none'}}>📞 Gọi</a>
+            <button className="xbtn" aria-label="Xoá" onClick={()=>{ if(confirm('Xoá số này?')) setList(list.filter(x=>x.id!==c.id)); }}>✕</button></div>
+        </div>
+      ))}
+      <div className="card">
+        <div className="row" style={{gap:6,flexWrap:'wrap'}}>
+          {CONTACT_SUGGEST.filter(s=>!list.some(c=>c.label===s.label)).map(s=>(
+            <button key={s.label} className="pill" onClick={()=>setF({...f,label:s.label})}>{s.icon} {s.label}</button>
+          ))}
+        </div>
+        <input className="inp" style={{marginTop:8}} placeholder="Tên (vd: BS. Hà — khoa Nhi)" value={f.label} onChange={e=>setF({...f,label:e.target.value})}/>
+        <input className="inp" style={{marginTop:8}} type="tel" placeholder="Số điện thoại" value={f.phone} onChange={e=>setF({...f,phone:e.target.value})}/>
+        <button className="btn" style={{marginTop:8}} onClick={add}>＋ Lưu số</button>
+      </div>
+      <div className="row" style={{margin:'0 14px',gap:8}}>
+        <a className="btn" href="tel:115" style={{textDecoration:'none',background:'linear-gradient(135deg,#c0392b,#e0654f)'}}>📞 115 — Cấp cứu</a>
+      </div>
+    </div>
+  );
+}
+
+function SafetyTab({child,growth}){
+  const [open,setOpen]=useState(null);
+  const [safe,setSafe]=useLocal('ju.childSafety',{});
+  const last=growth&&growth[0];
+  const doneCount=HOME_SAFETY.reduce((n,g)=>n+g.items.filter(it=>safe[it]).length,0);
+  const totalCount=HOME_SAFETY.reduce((n,g)=>n+g.items.length,0);
+  return (
+    <div>
+      <div className="card" style={{background:'linear-gradient(135deg,var(--surface-2),var(--surface))'}}>
+        <div className="row">
+          <div className="grow"><div className="muted" style={{fontSize:11}}>Cân nặng mới nhất — bác sĩ luôn hỏi câu này trước</div>
+            <div style={{fontSize:26,fontWeight:800,color:'var(--brand)',lineHeight:1.15}}>{last&&last.w? last.w+' kg' : '— chưa đo'}</div>
+            {last && <div className="muted" style={{fontSize:11}}>đo {fmtDateVN(last.date)}{last.h?(' · '+last.h+' cm'):''}</div>}</div>
+          <span style={{fontSize:30}}>🩺</span>
+        </div>
+      </div>
+
+      <div className="sec-title">🚑 Sơ cứu — bấm để mở</div>
+      {EMERGENCY.map(e=>(
+        <div key={e.title} className="item" style={e.urgent?{borderLeft:'4px solid #c0392b'}:null}>
+          <div className="row" style={{cursor:'pointer'}} onClick={()=>setOpen(open===e.title?null:e.title)}>
+            <span style={{fontSize:20,flex:'0 0 auto'}}>{e.icon}</span>
+            <b className="grow" style={{fontSize:14}}>{e.title}</b>
+            {e.urgent && <span className="pill" style={{background:'#c0392b',color:'#fff'}}>đi viện ngay</span>}
+            <span className="muted" style={{fontSize:11}}>{open===e.title?'▾':'▸'}</span>
+          </div>
+          {open===e.title && <div style={{marginTop:8}}>
+            {e.lead && <div className="muted" style={{fontSize:12.5,lineHeight:1.6,marginBottom:7}}>{e.lead}</div>}
+            <ul className="bul" style={{margin:0,paddingLeft:18,fontSize:13,lineHeight:1.6}}>{e.do.map((t,i)=><li key={i}>{t}</li>)}</ul>
+            {e.dont && e.dont.length>0 && <ul className="bul dont" style={{margin:'8px 0 0',paddingLeft:18,fontSize:13,lineHeight:1.6}}>{e.dont.map((t,i)=><li key={i}>{t}</li>)}</ul>}
+            {e.er && e.er.length>0 && <div className="callout er">
+              <div className="h">🚨 Đi viện ngay khi</div>
+              <ul style={{margin:0,paddingLeft:16,fontSize:12.5,lineHeight:1.6}}>{e.er.map((t,i)=><li key={i}>{t}</li>)}</ul>
+            </div>}
+          </div>}
+        </div>
+      ))}
+      <div className="note">Đây là hướng dẫn sơ cứu tham khảo để xử lý phút đầu, không thay được bác sĩ. Về thuốc, app chỉ ghi lại loại và liều mà bác sĩ đã kê riêng cho bé — không tự tính liều.</div>
+
+      <div className="sec-title">🚨 Dấu hiệu phải đi viện ngay</div>
+      <div className="card"><ul style={{margin:0,paddingLeft:18,fontSize:13,lineHeight:1.7}}>{RED_FLAGS.map((t,i)=><li key={i}>{t}</li>)}</ul></div>
+
+      <div className="sec-title">📞 Số gọi khi cần</div>
+      <ContactBook/>
+
+      <Collapse id="child-danger" defaultOpen={false} title="⚠️ Thứ nguy hiểm cần cất khỏi tầm với">
+        <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>Thử nhanh: lọt qua lõi giấy vệ sinh là bé nuốt được.</div>
+        {DANGER_ITEMS.map(d=>(
+          <div key={d.n} className="item" style={{padding:'9px 13px'}}>
+            <div className="row"><span style={{fontSize:19,flex:'0 0 auto'}}>{d.icon}</span>
+              <div className="grow"><b style={{fontSize:13.5}}>{d.n}</b>
+                <div className="muted" style={{fontSize:12.5,marginTop:2,lineHeight:1.5}}>{d.why}</div></div></div>
+          </div>
+        ))}
+      </Collapse>
+
+      <Collapse id="child-homesafe" defaultOpen={false} title="🏠 Chống trẻ trong nhà" right={<span className="muted" style={{fontSize:12.5}}>{doneCount}/{totalCount}</span>}>
+        <div className="prog" style={{margin:'0 14px'}}><i style={{width:(totalCount?doneCount/totalCount*100:0)+'%'}}></i></div>
+        {HOME_SAFETY.map(g=>(
+          <div key={g.g}>
+            <div className="sec-title" style={{fontSize:13}}>{g.g}</div>
+            <div className="card" style={{padding:'4px 13px'}}>
+              {g.items.map(it=>(
+                <div key={it} className="row" style={{padding:'8px 0',borderBottom:'1px solid var(--line)'}}>
+                  <button className="tick" onClick={()=>setSafe(s=>{ const n={...s}; if(n[it]) delete n[it]; else n[it]=true; return n; })} style={{fontSize:19}}>{safe[it]?'✅':'⬜'}</button>
+                  <span className="grow" style={{fontSize:13.5,textDecoration:safe[it]?'line-through':'none',opacity:safe[it]?.6:1}}>{it}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </Collapse>
+    </div>
+  );
+}
+
+/* ============ Kịch bản câu nói khi con ăn vạ ============ */
+function TantrumScripts(){
+  const [open,setOpen]=useState(null);
+  return (
+    <div>
+      <div className="muted center" style={{fontSize:11,margin:'0 14px 6px'}}>Tìm đúng tình huống đang xảy ra, đọc nhanh rồi dùng luôn. Câu chữ chỉ là gợi ý — nói bằng giọng của mình.</div>
+      {TANTRUM_SCRIPTS.map(s=>(
+        <div key={s.sit} className="item">
+          <div className="row" style={{cursor:'pointer'}} onClick={()=>setOpen(open===s.sit?null:s.sit)}>
+            <span style={{fontSize:19,flex:'0 0 auto'}}>{s.icon}</span>
+            <b className="grow" style={{fontSize:13.5}}>{s.sit}</b>
+            <span className="muted" style={{fontSize:11}}>{open===s.sit?'▾':'▸'}</span>
+          </div>
+          {open===s.sit && <div style={{marginTop:7}}>
+            <div className="muted" style={{fontSize:12.5,lineHeight:1.6}}>💡 {s.why}</div>
+            <div style={{marginTop:7,fontSize:12,fontWeight:800,color:'var(--good)'}}>NÓI THẾ NÀY</div>
+            <ul style={{margin:'3px 0 0',paddingLeft:18,fontSize:13,lineHeight:1.65}}>{s.say.map((t,i)=><li key={i}>{t}</li>)}</ul>
+            <div style={{marginTop:8,fontSize:12,fontWeight:800,color:'#b04a3d'}}>TRÁNH</div>
+            <ul style={{margin:'3px 0 0',paddingLeft:18,fontSize:13,lineHeight:1.65}}>{s.avoid.map((t,i)=><li key={i}>{t}</li>)}</ul>
+          </div>}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* Bài đọc dạng "mở ra xem": dùng cho hành vi, việc bé sợ, kế hoạch cuối tuần */
+function GuideList({items,keyOf,titleOf,iconOf,render}){
+  const [open,setOpen]=useState(null);
+  return (
+    <div>
+      {items.map(x=>{ const k=keyOf(x);
+        return <div key={k} className="item">
+          <div className="row" style={{cursor:'pointer'}} onClick={()=>setOpen(open===k?null:k)}>
+            <span style={{fontSize:19,flex:'0 0 auto'}}>{iconOf(x)}</span>
+            <b className="grow" style={{fontSize:13.5}}>{titleOf(x)}</b>
+            <span className="muted" style={{fontSize:11}}>{open===k?'▾':'▸'}</span>
+          </div>
+          {open===k && <div style={{marginTop:7}}>{render(x)}</div>}
+        </div>; })}
+    </div>
+  );
+}
+const bullets=(arr,style)=> <ul style={Object.assign({margin:'0',paddingLeft:18,fontSize:13,lineHeight:1.65},style||{})}>{arr.map((t,i)=><li key={i}>{t}</li>)}</ul>;
+
+/* ============ Nuôi con (chuyển nguyên từ Just Us sang) ============ */
+function ChildCare({people,me}){
+  const [child,setChild]=useLocal('ju.child',{name:'',dob:'',gender:''});
+  const [growth,setGrowth]=useLocal('ju.childGrowth',[]);
+  const [vac,setVac]=useLocal('ju.childVaccines',{});
+  const [mile,setMile]=useLocal('ju.childMilestones',{});
+  const [pack,setPack]=useLocal('ju.childPack',{});
+  const [skills,setSkills]=useLocal('ju.childSkills',{});
+  const [gDone,setGDone]=useLocal('ju.skillGuidesDone',{});
+  const [med,setMed]=useLocal('ju.childMed',{allergy:'',meds:'',sleep:'',note:''});
+  const [ill,setIll]=useLocal('ju.childIllness',[]);
+  const [words,setWords]=useLocal('ju.childWords',[]);
+  const [tantrum,setTantrum]=useLocal('ju.childTantrum',[]);
+  const [docs,setDocs]=useLocal('ju.childDocs',{});
+  const [showAllVac,setShowAllVac]=useState(false);
+  const [tab,setTab]=useState('home');
+  const [editChild,setEditChild]=useState(false);
+  const [gw,setGw]=useState(''); const [gh,setGh]=useState('');
+  const [wordIn,setWordIn]=useState('');
+  const [illForm,setIllForm]=useState({symptoms:[],meds:'',note:''});
+  const [tanForm,setTanForm]=useState({situation:'',handling:''});
+  const [browseIssue,setBrowseIssue]=useState(null);
+  const [searchOpen,setSearchOpen]=useState(false);
+  const [menuOpen,setMenuOpen]=useState(false);
+  const months=child.dob? Math.max(0, Math.round((new Date(todayISO()+'T00:00:00')-new Date(child.dob+'T00:00:00'))/(30.44*86400000))) : null;
+  const ageLabel = months==null?'chưa đặt ngày sinh' : months<24? months+' tháng tuổi' : Math.floor(months/12)+' tuổi'+(months%12?(' '+(months%12)+' th'):'');
+  const tg=(obj,set,key)=>{ const n={...obj}; if(n[key]) delete n[key]; else n[key]=true; set(n); };
+  const addGrowth=()=>{ const w=parseFloat(gw), h=parseFloat(gh); if(!w&&!h) return; setGrowth([{id:uid(),date:todayISO(),w:w||null,h:h||null},...growth]); setGw('');setGh(''); celebrate(['📏']); };
+  const addWord=()=>{ const w=wordIn.trim(); if(!w) return; if(!words.find(x=>x.word.toLowerCase()===w.toLowerCase())) setWords([{id:uid(),word:w,date:todayISO()},...words]); setWordIn(''); celebrate(['🗣️']); };
+  const toggleSym=(s)=> setIllForm(f=>({...f,symptoms:f.symptoms.indexOf(s)>=0?f.symptoms.filter(x=>x!==s):[...f.symptoms,s]}));
+  const addIll=()=>{ if(!illForm.symptoms.length&&!illForm.note.trim()) return; setIll([{id:uid(),date:todayISO(),symptoms:illForm.symptoms,meds:illForm.meds.trim(),note:illForm.note.trim(),recovered:''},...ill]); setIllForm({symptoms:[],meds:'',note:''}); celebrate(['💊']); };
+  const recover=(id)=> setIll(ill.map(x=>x.id===id?{...x,recovered:x.recovered?'':todayISO()}:x));
+  const addTantrum=()=>{ if(!tanForm.situation.trim()) return; setTantrum([{id:uid(),date:todayISO(),situation:tanForm.situation.trim(),handling:tanForm.handling.trim(),worked:null},...tantrum]); setTanForm({situation:'',handling:''}); };
+  const setTanWorked=(id,v)=> setTantrum(tantrum.map(x=>x.id===id?{...x,worked:x.worked===v?null:v}:x));
+  const schoolDays=child.schoolDate? daysFromToday(child.schoolDate) : null;
+  const packDone=CHILD_PACK.filter(it=>pack[it]).length;
+  const skillDone=CHILD_SKILLS.filter(it=>skills[it]).length;
+  const wordsThisWeek=words.filter(w=>{ const d=Math.round((new Date(todayISO()+'T00:00:00')-new Date(w.date+'T00:00:00'))/86400000); return d>=0&&d<7; }).length;
+  const exportMed=()=>{ const lines=['HỒ SƠ Y TẾ — '+(child.name||'Bé'),
+    'Ngày sinh: '+(child.dob?fmtDateVN(child.dob):'—')+(months!=null?(' ('+ageLabel+')'):''),
+    'Giới tính: '+(child.gender==='nam'?'Bé trai':child.gender==='nu'?'Bé gái':'—'),'',
+    'Dị ứng: '+(med.allergy||'Không rõ'),'Thuốc đang dùng: '+(med.meds||'Không'),
+    'Thói quen ngủ: '+(med.sleep||'—'),'Ghi chú cho cô: '+(med.note||'—'),'',
+    'Liên hệ bố/mẹ: '+[people.a.name,people.b.name].filter(Boolean).join(' / ')];
+    const txt=lines.join('\n');
+    try{ const w=window.open('','_blank'); if(w){ w.document.write('<title>Hồ sơ y tế</title><pre style="font-family:system-ui,sans-serif;font-size:15px;white-space:pre-wrap;padding:24px;line-height:1.8">'+txt.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</pre>'); w.document.close(); w.focus(); setTimeout(()=>{ try{w.print();}catch(e){} },350); return; } }catch(e){}
+    if(navigator.share) navigator.share({title:'Hồ sơ y tế',text:txt}).catch(()=>{}); else { navigator.clipboard.writeText(txt); alert('Đã copy hồ sơ — dán để gửi cô nhé!'); } };
+  const last=growth[0];
+  const dueNow=childDueList({child,months,vac,ill,growth,packDone,schoolDays});
+  // Chấm nhắc trên thanh dưới: nhóm nào đang có việc thì hiện chấm
+  const alertGroups={}; dueNow.forEach(d=>{ if(d.go) alertGroups[TAB_GROUP[d.go]||'home']=1; });
+  return (
+    <div>
+      <NotiRunner due={dueNow} childName={child.name}/>
+      {/* Trang chủ đã có phần đầu riêng (hero) nên ở đó chỉ hiện thẻ này khi cần điền/sửa */}
+      {(tab!=='home' || !child.name || !child.dob || editChild) &&
+      <div className="card" style={{background:'linear-gradient(135deg,var(--surface-2),var(--surface))'}}>
+        <div className="row"><span style={{fontSize:24}}>👶</span>
+          <div className="grow"><b style={{fontSize:15}}>{child.name||'Bé yêu'}</b>
+            <div className="muted" style={{fontSize:12.5}}>{ageLabel}{child.gender?(' · '+(child.gender==='nam'?'bé trai':'bé gái')):''}</div></div>
+          {(child.name&&child.dob&&!editChild) && <button className="muted" style={{fontSize:12.5}} onClick={()=>setEditChild(true)}>✎ Sửa</button>}
+        </div>
+        {(!child.name||!child.dob||editChild) && <>
+          <div className="row" style={{gap:8,marginTop:8}}>
+            <input className="inp grow" placeholder="Tên bé" value={child.name||''} onChange={e=>setChild({...child,name:e.target.value})} style={{padding:'7px 10px',fontSize:12.5}}/>
+            <select className="inp" value={child.gender||''} onChange={e=>setChild({...child,gender:e.target.value})} style={{width:90,padding:'7px',fontSize:12.5}}>
+              <option value="">—</option><option value="nam">Trai</option><option value="nu">Gái</option></select>
+          </div>
+          <div className="field" style={{margin:'8px 0 0'}}><label>Ngày sinh</label>
+            <input className="inp" type="date" max={todayISO()} value={child.dob||''} onChange={e=>setChild({...child,dob:e.target.value})}/></div>
+          {editChild && child.name && child.dob && <button className="btn sm" style={{marginTop:8}} onClick={()=>setEditChild(false)}>✓ Xong</button>}
+        </>}
+      </div>}
+      <header className="hdr">
+        <div className="id">
+          <span className="mark" aria-hidden="true">🐿️</span>
+          <span style={{minWidth:0}}>
+            <span className="nm">{child.name||'Bé yêu'}</span>
+            <span className="sub">{ageLabel}</span>
+          </span>
+        </div>
+        <button className="hdr-btn" onClick={()=>setSearchOpen(true)} aria-label="Tìm trong app">🔍</button>
+        <button className="hdr-btn" onClick={()=>setMenuOpen(true)} aria-label="Cài đặt và sao lưu">⋯</button>
+        <button className="hdr-btn sos" onClick={()=>setTab('safe')} aria-label="Cấp cứu và an toàn">🚨</button>
+      </header>
+      <SubTabs tab={tab} onGo={setTab}/>
+      {searchOpen && <SearchSheet onClose={()=>setSearchOpen(false)} onGo={k=>{ setSearchOpen(false); setTab(k); }}/>}
+      {menuOpen && <MenuSheet onClose={()=>setMenuOpen(false)}/>}
+
+      {tab==='potty' && <PottyTab/>}
+      {tab==='memory' && <MemoryTab child={child}/>}
+
+      {tab==='home' && <HomeTab child={child} months={months} ageLabel={ageLabel} growth={growth}
+        words={words} wordsThisWeek={wordsThisWeek} vac={vac} mile={mile} skills={skills} skillDone={skillDone}
+        pack={pack} packDone={packDone} gDone={gDone} ill={ill} schoolDays={schoolDays} go={setTab}
+        onEdit={()=>setEditChild(true)}/>}
+      {tab==='safe' && <SafetyTab child={child} growth={growth}/>}
+
+      {tab==='develop' && <div>
+        <div className="sec-title">🎯 Mốc phát triển</div>
+        <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>Chỉ hiện mốc đúng độ tuổi của bé — tích mốc bé đã làm được.</div>
+        {months==null
+          ? <div className="empty muted">Nhập ngày sinh bé ở trên để hiện mốc đúng tuổi.</div>
+          : (()=>{ const b=CHILD_MILESTONES.find(x=>months>=x.lo&&months<x.hi)||CHILD_MILESTONES[CHILD_MILESTONES.length-1];
+              return <div className="item" style={{borderLeft:'4px solid var(--brand)'}}>
+                <div className="it-top"><h4>⭐ {b.band} <span className="muted" style={{fontSize:11,fontWeight:400}}>(bé {months} tháng)</span></h4></div>
+                <div>{b.items.map(it=>{ const k=b.band+'|'+it; const on=!!mile[k];
+                  return <button key={it} className="pill" style={{margin:'3px 6px 3px 0',padding:'7px 11px',fontSize:12.5,background:on?'var(--good)':'var(--surface-2)',color:on?'#fff':'var(--brand-ink)'}} onClick={()=>tg(mile,setMile,k)}>{on?'✓ ':''}{it}</button>; })}</div>
+              </div>; })()}
+        <div className="sec-title">🗣️ Mốc ngôn ngữ <span className="grow"></span><span className="muted" style={{fontSize:12.5}}>{words.length} từ · +{wordsThisWeek} tuần này</span></div>
+        <div className="card">
+          <div className="row" style={{gap:6}}>
+            <input className="inp grow" placeholder="Thêm từ bé mới nói được…" value={wordIn} onChange={e=>setWordIn(e.target.value)} onKeyDown={e=>{ if(e.key==='Enter') addWord(); }}/>
+            <button className="btn sm" onClick={addWord}>＋</button>
+          </div>
+          {words.length===0 && <div className="muted" style={{fontSize:12.5,marginTop:8}}>Ghi lại mỗi từ mới — vài tháng nhìn lại sẽ rất đáng yêu 💕</div>}
+          {words.length>0 && <div style={{marginTop:8}}>{words.slice(0,40).map(w=>(
+            <span key={w.id} className="pill" style={{margin:'3px 6px 3px 0',padding:'6px 10px',fontSize:12.5}}>{w.word} <span onClick={()=>{ if(confirm('Xoá từ này?')) setWords(words.filter(x=>x.id!==w.id)); }} style={{cursor:'pointer',marginLeft:3,opacity:.6}}>✕</span></span>
+          ))}</div>}
+        </div>
+        <Collapse id="child-devflags" defaultOpen={false} title="Khi nào nên cho con đi khám phát triển">
+          <div className="note" style={{marginTop:0}}>Đây là những dấu hiệu nên đi khám để được đánh giá, KHÔNG phải kết luận gì về con. Can thiệp sớm luôn hiệu quả hơn chờ xem.</div>
+          {DEV_REDFLAGS.map(g=>(
+            <div key={g.m} className="item">
+              <b style={{fontSize:'var(--t-sm)'}}>{g.m}</b>
+              {bullets(g.items,{marginTop:6})}
+            </div>
+          ))}
+        </Collapse>
+        <Collapse id="child-speech-delay" defaultOpen={false} title="🗣️ Con chậm nói? Xem gợi ý xử lý">
+          <ul style={{margin:'4px 0 0',paddingLeft:18,fontSize:12.5,lineHeight:1.65}}>
+            <li style={{marginBottom:4}}>Nói chuyện & mô tả mọi việc đang làm cùng con mỗi ngày; hỏi rồi chờ con phản hồi thay vì tự trả lời luôn.</li>
+            <li style={{marginBottom:4}}>Đọc sách tranh, gọi tên đồ vật, hát cùng con hằng ngày để tăng vốn từ một cách tự nhiên.</li>
+            <li style={{marginBottom:4}}>Hạn chế tối đa màn hình (tivi/điện thoại) — màn hình không thay thế được tương tác trực tiếp với con.</li>
+            <li style={{marginBottom:4}}>Chờ đợi, tạo cơ hội để con chủ động nói/ra hiệu trước, tránh đoán ý và đáp ứng ngay khi con chỉ cần chỉ tay.</li>
+            <li style={{marginBottom:4}}>Để ý thêm dấu hiệu đi kèm: ít giao tiếp mắt, không phản ứng khi gọi tên, không bắt chước âm thanh/cử chỉ.</li>
+            <li style={{marginBottom:4}}>Nếu 18–24 tháng con nói rất ít từ, hoặc 2 tuổi chưa ghép được 2 từ, nên cho con khám chuyên khoa (nhi khoa/âm ngữ trị liệu) sớm — can thiệp càng sớm càng hiệu quả.</li>
+          </ul>
+        </Collapse>
+      </div>}
+
+      {tab==='play' && <div>
+        <div className="muted center" style={{fontSize:11,margin:'10px 14px'}}>🎲 Trò chơi giúp bé phát triển (~20–24 tháng), chia theo nhóm kỹ năng. Trang chủ có thẻ <b>Chơi với con hôm nay</b> để gợi ý ngẫu nhiên.</div>
+        <Collapse id="child-play" defaultOpen={false} title="🎲 Trò chơi theo nhóm kỹ năng">
+        {['🤸 Vận động','🧩 Tư duy','🗣️ Ngôn ngữ','🎨 Khéo tay'].map(cat=>(
+          <div key={cat}>
+            <div className="sec-title">{cat}</div>
+            {PLAY_LIB.filter(p=>p.c===cat).map((p,i)=>(
+              <div key={i} className="item" style={{padding:'9px 13px'}}>
+                <div className="it-top"><h4 style={{fontSize:14}}>{p.n}</h4></div>
+                <div className="muted" style={{fontSize:12.5,marginTop:2,lineHeight:1.5}}>{p.d}</div>
+              </div>
+            ))}
+          </div>
+        ))}
+        </Collapse>
+        <div className="muted center" style={{fontSize:11,margin:'6px 14px 8px'}}>Chơi cùng con 15–20 phút mỗi ngày giúp bé gắn kết & phát triển toàn diện 💛</div>
+        <Collapse id="child-cafe" defaultOpen={false} title="☕ Cafe / khu vui chơi cho bé ở Hà Nội">
+        <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>Gần → xa tính từ nhà (Núi Trúc). Giá & taxi khứ hồi là ước tính (taxi ~13.5k/km, 2 chiều).</div>
+        {KIDS_CAFES.map(c=>({...c,km:haversine(NHA.lat,NHA.lng,c.lat,c.lng)})).sort((a,b)=>a.km-b.km).map((c,i)=>(
+          <div key={i} className="item" style={{padding:'9px 13px'}}>
+            <div className="it-top"><h4 style={{fontSize:14}}>☕ {c.n}</h4><span className="pill" style={{flex:'0 0 auto'}}>{c.km.toFixed(1)} km</span></div>
+            <div className="muted" style={{fontSize:12.5,marginTop:3}}>📍 {c.a}</div>
+            <div style={{fontSize:12.5,marginTop:3}}>💵 {c.p}{c.note?' · '+c.note:''}</div>
+            <div className="muted" style={{fontSize:12.5,marginTop:3}}>🚕 Taxi khứ hồi ~<b>{taxiRoundK(c.km)}k</b> <span style={{opacity:.7}}>(ước tính 2 chiều)</span></div>
+            <div style={{marginTop:6}}><a className="pill" style={{textDecoration:'none'}} href={'https://www.google.com/maps/dir/?api=1&origin='+encodeURIComponent('Núi Trúc, Ba Đình, Hà Nội')+'&destination='+encodeURIComponent(c.n+', '+c.a+', Hà Nội')} target="_blank" rel="noreferrer">🗺️ Chỉ đường</a></div>
+          </div>
+        ))}
+        </Collapse>
+        <Collapse id="child-trippack" defaultOpen={false} title="🧳 Đồ mang đi chơi xa">
+          <TripPack/>
+        </Collapse>
+        <Collapse id="child-triptips" defaultOpen={false} title="🚗 Ra khỏi nhà cùng con">
+          <GuideList items={TRIP_TIPS} keyOf={x=>x.n} titleOf={x=>x.n} iconOf={x=>x.icon} render={x=>bullets(x.tips)}/>
+        </Collapse>
+        <Collapse id="child-weekend" defaultOpen={false} title="🗓️ Cuối tuần làm gì với con">
+          <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>Mấy khung ngày để khỏi phải nghĩ từ đầu vào sáng thứ Bảy.</div>
+          <GuideList items={WEEKEND_PLANS} keyOf={x=>x.n} titleOf={x=>x.n} iconOf={x=>x.icon} render={x=>bullets(x.plan)}/>
+        </Collapse>
+        <Collapse id="child-screen" defaultOpen={false} title="📺 Màn hình — nếu buộc phải cho xem">
+          <div className="card">
+            <div style={{fontSize:12,fontWeight:800}}>NGUYÊN TẮC</div>
+            {bullets(SCREEN_GUIDE.rules||[],{marginTop:3})}
+            <div style={{marginTop:9,fontSize:12,fontWeight:800,color:'var(--good)'}}>CHỌN NỘI DUNG NÀO</div>
+            {bullets(SCREEN_GUIDE.pick||[],{marginTop:3})}
+            <div style={{marginTop:9,fontSize:12,fontWeight:800,color:'#b04a3d'}}>TẮT SAO CHO KHÔNG THÀNH TRẬN</div>
+            {bullets(SCREEN_GUIDE.off||[],{marginTop:3})}
+          </div>
+        </Collapse>
+      </div>}
+
+      {tab==='health' && <div>
+        <div className="sec-title">Khám & sàng lọc định kỳ</div>
+        {CHECKUP_SCHEDULE.map(x=>(
+          <div key={x.n} className="item">
+            <div className="row"><span style={{fontSize:20,flex:'0 0 auto'}}>{x.icon}</span>
+              <div className="grow"><b style={{fontSize:'var(--t-sm)'}}>{x.n}</b>
+                <div style={{fontSize:'var(--t-xs)',color:'var(--brand)',fontWeight:600,marginTop:2}}>{x.w}</div>
+                <div className="muted" style={{fontSize:'var(--t-xs)',marginTop:3,lineHeight:1.55}}>{x.d}</div></div></div>
+          </div>
+        ))}
+        <Collapse id="child-vac" defaultOpen={false} title="💉 Lịch tiêm chủng" right={months!=null && <button className="muted" style={{fontSize:11}} onClick={()=>setShowAllVac(v=>!v)}>{showAllVac?'Theo tuổi bé':'Xem tất cả'}</button>}>
+        <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>{months!=null&&!showAllVac?`Chỉ hiện mốc hợp tuổi ${child.name||'bé'} (~${months} tháng) — tích mũi đã tiêm.`:'Tham khảo (TCMR + dịch vụ) — tích mũi đã tiêm.'}</div>
+        {(()=>{ const vacList=CHILD_VACCINES.filter(v=> showAllVac||months==null||(vacAgeMonths(v.age)>=months-3&&vacAgeMonths(v.age)<=months+12));
+          if(!vacList.length) return <div className="empty muted">Không có mốc tiêm nào quanh tuổi này — bấm “Xem tất cả”.</div>;
+          return vacList.map(v=>{ const due=months!=null&&vacAgeMonths(v.age)<=months; const allDone=v.items.every(it=>vac[v.age+'|'+it]);
+          return <div key={v.age} className="item" style={due&&!allDone?{borderLeft:'4px solid var(--brand)'}:null}>
+            <div className="it-top"><h4>{v.age}{due&&!allDone?' · đến hạn':''}{allDone?' ✅':''}</h4></div>
+            <div>{v.items.map(it=>{ const k=v.age+'|'+it; const on=!!vac[k];
+              return <button key={it} className="pill" style={{margin:'3px 6px 3px 0',padding:'7px 11px',fontSize:12.5,background:on?'var(--good)':'var(--surface-2)',color:on?'#fff':'var(--brand-ink)'}} onClick={()=>tg(vac,setVac,k)}>{on?'✓ ':''}{it}</button>; })}</div>
+          </div>; }); })()}
+        </Collapse>
+        <div className="sec-title">📈 So với chuẩn WHO</div>
+        <GrowthWHO growth={growth} child={child} months={months}/>
+
+        <div className="sec-title">📏 Chiều cao & cân nặng</div>
+        <div className="card">
+          <div className="row" style={{gap:8}}>
+            <div className="field grow" style={{margin:0}}><label>Cân nặng (kg)</label><input className="inp" type="number" value={gw} onChange={e=>setGw(e.target.value)} placeholder="vd 11.5"/></div>
+            <div className="field grow" style={{margin:0}}><label>Chiều cao (cm)</label><input className="inp" type="number" value={gh} onChange={e=>setGh(e.target.value)} placeholder="vd 82"/></div>
+          </div>
+          <button className="btn" style={{marginTop:8}} onClick={addGrowth}>📏 Ghi hôm nay</button>
+          {last && <div className="muted" style={{fontSize:12.5,marginTop:8}}>Gần nhất ({fmtDateVN(last.date)}): {last.w?last.w+'kg':''}{last.w&&last.h?' · ':''}{last.h?last.h+'cm':''}</div>}
+        </div>
+        {months!=null && months>=18 && months<=24 && <div className="muted center" style={{fontSize:11,margin:'2px 14px 8px'}}>Tham khảo ~20 tháng (WHO): bé trai ~10.5–12.5kg / 81–86cm; bé gái ~10–12kg / 80–85cm.</div>}
+        {growth.map(e=>(
+          <div key={e.id} className="row" style={{padding:'6px 14px',borderBottom:'1px solid var(--line)',fontSize:12.5}}>
+            <span className="muted grow">{fmtDateVN(e.date)}</span>
+            <span>{e.w?'⚖️ '+e.w+'kg':''}{e.w&&e.h?'  ':''}{e.h?'📐 '+e.h+'cm':''}</span>
+            <button className="iconbtn" onClick={()=>{ if(confirm('Xoá lần đo này?')) setGrowth(growth.filter(x=>x.id!==e.id)); }}>🗑️</button>
+          </div>
+        ))}
+        <div className="sec-title">🤒 Nhật ký ốm</div>
+        <div className="card">
+          <div style={{display:'flex',flexWrap:'wrap',gap:6}}>{ILL_SYMPTOMS.map(s=>{ const on=illForm.symptoms.indexOf(s)>=0;
+            return <button key={s} className="pill" style={{padding:'6px 10px',fontSize:12.5,background:on?'var(--brand)':'var(--surface-2)',color:on?'#fff':'var(--brand-ink)'}} onClick={()=>toggleSym(s)}>{on?'✓ ':''}{s}</button>; })}</div>
+          <input className="inp" style={{marginTop:8}} placeholder="Thuốc đã dùng (vd: hạ sốt Hapacol…)" value={illForm.meds} onChange={e=>setIllForm({...illForm,meds:e.target.value})}/>
+          <input className="inp" style={{marginTop:8}} placeholder="Ghi chú thêm (nhiệt độ, bác sĩ dặn…)" value={illForm.note} onChange={e=>setIllForm({...illForm,note:e.target.value})}/>
+          <button className="btn" style={{marginTop:8}} onClick={addIll}>＋ Ghi đợt ốm (hôm nay)</button>
+        </div>
+        {ill.map(x=>(
+          <div key={x.id} className="item" style={x.recovered?{opacity:.7}:{borderLeft:'4px solid #e0a341'}}>
+            <div className="it-top"><h4>{x.recovered?'✅ Đã khỏi':'🤒 Đang ốm'}</h4>
+              <button className="xbtn" aria-label="Xoá" onClick={()=>{ if(confirm('Xoá đợt ốm này?')) setIll(ill.filter(y=>y.id!==x.id)); }}>✕</button></div>
+            <div className="muted" style={{fontSize:12.5,marginTop:2}}>Bắt đầu {fmtDateVN(x.date)}{x.recovered?` · khỏi ${fmtDateVN(x.recovered)} (${Math.max(1,Math.round((new Date(x.recovered)-new Date(x.date))/86400000))} ngày)`:''}</div>
+            {x.symptoms.length>0 && <div style={{fontSize:12.5,marginTop:4}}>{x.symptoms.join(' · ')}</div>}
+            {x.meds && <div className="muted" style={{fontSize:12.5,marginTop:2}}>💊 {x.meds}</div>}
+            {x.note && <div className="muted" style={{fontSize:12.5,marginTop:2}}>{x.note}</div>}
+            <button className="pill" style={{marginTop:6}} onClick={()=>recover(x.id)}>{x.recovered?'↩︎ Đánh dấu chưa khỏi':'✅ Đã khỏi hôm nay'}</button>
+          </div>
+        ))}
+        <div className="sec-title">🩺 Hồ sơ y tế gửi cô</div>
+        <div className="card">
+          <div className="field" style={{margin:0}}><label>Dị ứng</label><input className="inp" value={med.allergy||''} onChange={e=>setMed({...med,allergy:e.target.value})} placeholder="Thức ăn / thuốc bé dị ứng…"/></div>
+          <div className="field" style={{margin:'8px 0 0'}}><label>Thuốc đang dùng</label><input className="inp" value={med.meds||''} onChange={e=>setMed({...med,meds:e.target.value})} placeholder="Nếu có"/></div>
+          <div className="field" style={{margin:'8px 0 0'}}><label>Thói quen ngủ</label><input className="inp" value={med.sleep||''} onChange={e=>setMed({...med,sleep:e.target.value})} placeholder="vd: ngủ trưa 12h30, cần ôm gối…"/></div>
+          <div className="field" style={{margin:'8px 0 0'}}><label>Ghi chú cho cô</label><textarea className="inp" value={med.note||''} onChange={e=>setMed({...med,note:e.target.value})} placeholder="Tính cách, món sợ, cách dỗ…"/></div>
+          <button className="btn" style={{marginTop:10}} onClick={exportMed}>🖨️ Xuất để in / gửi cô</button>
+        </div>
+
+        <Collapse id="child-postvac" defaultOpen={false} title="💉 Sau khi tiêm — theo dõi 48 giờ">
+          <div className="card">
+            <div style={{fontSize:13,lineHeight:1.6}}>⏱️ {POST_VACCINE.first}</div>
+            <div style={{marginTop:9,fontSize:12,fontWeight:800,color:'var(--good)'}}>BÌNH THƯỜNG</div>
+            {bullets(POST_VACCINE.normal||[],{marginTop:3})}
+            <div style={{marginTop:9,fontSize:12,fontWeight:800}}>CHĂM THẾ NÀO</div>
+            {bullets(POST_VACCINE.care||[],{marginTop:3})}
+            <div className="callout er">
+              <div className="h">🚨 Đi viện ngay khi</div>
+              {bullets(POST_VACCINE.er||[],{fontSize:12.5})}
+            </div>
+          </div>
+        </Collapse>
+
+        <Collapse id="child-constip" defaultOpen={false} title="💩 Táo bón">
+          <div className="card">
+            <div className="muted" style={{fontSize:12.5,lineHeight:1.6}}>{CONSTIPATION.lead}</div>
+            <div style={{marginTop:9,fontSize:12,fontWeight:800}}>DẤU HIỆU</div>
+            {bullets(CONSTIPATION.signs||[],{marginTop:3})}
+            <div style={{marginTop:9,fontSize:12,fontWeight:800,color:'var(--good)'}}>LÀM GÌ</div>
+            {bullets(CONSTIPATION.do||[],{marginTop:3})}
+            <div className="callout er">
+              <div className="h">Nên cho đi khám khi</div>
+              {bullets(CONSTIPATION.er||[],{fontSize:12.5})}
+            </div>
+          </div>
+        </Collapse>
+
+        <Collapse id="child-dress" defaultOpen={false} title="🌡️ Trời thế này mặc gì cho bé">
+          {DRESS_TEMP.map(d=>(
+            <div key={d.t} className="item" style={{padding:'9px 13px'}}>
+              <div className="row"><span style={{fontSize:19,flex:'0 0 auto'}}>{d.ic}</span>
+                <div className="grow"><b style={{fontSize:13.5}}>{d.t}</b>
+                  <div className="muted" style={{fontSize:12.5,marginTop:2,lineHeight:1.5}}>{d.d}</div></div></div>
+            </div>
+          ))}
+          <div className="card"><div className="muted" style={{fontSize:12.5,lineHeight:1.7}}>{DRESS_RULES.map((t,i)=><div key={i}>• {t}</div>)}</div></div>
+        </Collapse>
+
+        <Collapse id="child-season" defaultOpen={false} title="🗓️ Bệnh theo mùa ở Hà Nội">
+          {SEASON_ILL.map(s=>(
+            <div key={s.s} className="item">
+              <div className="it-top"><h4 style={{fontSize:13.5}}>{s.s}</h4></div>
+              <div style={{marginTop:5,display:'flex',flexWrap:'wrap',gap:5}}>{s.ill.map(i=><span key={i} className="pill">{i}</span>)}</div>
+              <div style={{marginTop:7,fontSize:12,fontWeight:800,color:'var(--good)'}}>PHÒNG THẾ NÀO</div>
+              {bullets(s.do,{marginTop:3,fontSize:12.5})}
+            </div>
+          ))}
+        </Collapse>
+
+        <Collapse id="child-scary" defaultOpen={false} title="😖 Việc bé sợ — rửa mũi, cắt móng, uống thuốc…">
+          <GuideList items={SCARY_TASKS} keyOf={x=>x.n} titleOf={x=>x.n} iconOf={x=>x.icon} render={x=>bullets(x.tips)}/>
+        </Collapse>
+      </div>}
+
+      {tab==='sleep' && <div>
+        <div className="note">Ngủ đủ và đúng nếp là thứ ảnh hưởng tới cả ngày của bé lẫn của bố mẹ nhiều hơn bất cứ mục nào khác trong app này.</div>
+        <div className="sec-title">Cần ngủ bao nhiêu</div>
+        {SLEEP_NEED.map(x=>(
+          <div key={x.a} className="item">
+            <div className="row"><b className="grow" style={{fontSize:'var(--t-sm)'}}>{x.a}</b>
+              <span className="pill on">{x.t}</span></div>
+            <div className="muted" style={{fontSize:'var(--t-xs)',marginTop:4}}>{x.n}</div>
+          </div>
+        ))}
+        <div className="sec-title">Trình tự đi ngủ</div>
+        <div className="note" style={{marginBottom:8}}>Cùng một trình tự mỗi tối quan trọng hơn việc trong đó có gì.</div>
+        {SLEEP_ROUTINE.map(x=>(
+          <div key={x.t} className="item">
+            <b style={{fontSize:'var(--t-sm)'}}>{x.t}</b>
+            <div className="muted" style={{fontSize:'var(--t-xs)',marginTop:3,lineHeight:1.6}}>{x.d}</div>
+          </div>
+        ))}
+        <Collapse id="child-sleepfix" defaultOpen={false} title="Vướng ở đâu">
+          <GuideList items={SLEEP_FIX} keyOf={x=>x.n} titleOf={x=>x.n} iconOf={x=>x.icon} render={x=>bullets(x.tips)}/>
+        </Collapse>
+      </div>}
+
+      {tab==='teeth' && <div>
+        <div className="note">{TEETH_CARE.lead}</div>
+        <div className="sec-title">Chăm răng hằng ngày</div>
+        <div className="card">{bullets(TEETH_CARE.daily||[])}</div>
+        <div className="sec-title">Thứ tự mọc răng</div>
+        <div className="muted center" style={{fontSize:'var(--t-xs)',margin:'0 16px 8px'}}>Mốc tham khảo — sớm muộn vài tháng đều bình thường.</div>
+        {TEETH_ORDER.map((x,i)=>(
+          <div key={x.n} className="item">
+            <div className="row"><span className="pill">{i+1}</span>
+              <div className="grow"><b style={{fontSize:'var(--t-sm)'}}>{x.n}</b>
+                <div className="muted" style={{fontSize:'var(--t-xs)',marginTop:2}}>{x.w}</div></div></div>
+          </div>
+        ))}
+        <Collapse id="child-teething" defaultOpen={false} title="Bé đang mọc răng">
+          <div className="card">{bullets(TEETH_CARE.teething||[])}</div>
+        </Collapse>
+        <Collapse id="child-dentist" defaultOpen={false} title="Khám răng khi nào">
+          <div className="card">{bullets(TEETH_CARE.visit||[])}</div>
+        </Collapse>
+      </div>}
+
+      {tab==='eat' && <div>
+        <div className="sec-title">🍎 Ăn uống & chăm sóc {months!=null?`(~${months} tháng)`:''}</div>
+        <div className="card"><div className="muted" style={{fontSize:14,lineHeight:1.8}}>{CHILD_TIPS.map((t,i)=><div key={i}>{t}</div>)}</div></div>
+        <Collapse id="child-wean" defaultOpen={false} title="🍚 Thực đơn ăn dặm / ăn thô cả tuần">
+        <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>Gợi ý cho bé ~18–24 tháng (cơm nát + món mềm). Điều chỉnh theo khẩu vị bé nhé.</div>
+        {WEAN_MENU.map((m,i)=>(
+          <div key={i} className="item">
+            <div className="it-top"><h4>{m.d}</h4></div>
+            <div style={{fontSize:12.5,lineHeight:1.7,marginTop:2}}>
+              <div>🌅 <b>Sáng:</b> {m.sang}</div>
+              <div>🍎 <b>Phụ:</b> {m.phu}</div>
+              <div>🍚 <b>Trưa:</b> {m.trua}</div>
+              <div>🌙 <b>Tối:</b> {m.toi}</div>
+            </div>
+          </div>
+        ))}
+        </Collapse>
+      </div>}
+
+      {tab==='school' && <div>
+        <div className="sec-title">⏳ Đếm ngược ngày nhập học</div>
+        <div className="card">
+          <div className="field" style={{margin:0}}><label>Ngày bé đi học</label>
+            <input className="inp" type="date" value={child.schoolDate||''} onChange={e=>setChild({...child,schoolDate:e.target.value})}/></div>
+          {schoolDays!=null && <div className="center" style={{marginTop:10}}>
+            {schoolDays>0 ? <><div style={{fontSize:26,fontWeight:800,color:'var(--brand)'}}>{schoolDays} ngày</div><div className="muted" style={{fontSize:12.5}}>nữa là bé tới lớp — {fmtDateVN(child.schoolDate)} 🎒</div></>
+              : schoolDays===0 ? <div style={{fontSize:18,fontWeight:700}}>🎉 Hôm nay bé đi học!</div>
+              : <div className="muted">Bé đã đi học được {Math.abs(schoolDays)} ngày 💪</div>}
+          </div>}
+        </div>
+        <Collapse id="child-pack" defaultOpen={false} title="🎒 Đồ mang đi lớp" right={<span className="muted" style={{fontSize:12.5}}>{packDone}/{CHILD_PACK.length}</span>}>
+        <div className="card" style={{padding:'4px 13px'}}>
+          {CHILD_PACK.map(it=>(
+            <div key={it} className="row" style={{padding:'8px 0',borderBottom:'1px solid var(--line)'}}>
+              <button className="tick" onClick={()=>tg(pack,setPack,it)} style={{fontSize:19}}>{pack[it]?'✅':'⬜'}</button>
+              <span className="grow" style={{fontSize:14,textDecoration:pack[it]?'line-through':'none',opacity:pack[it]?.6:1}}>{it}</span>
+            </div>
+          ))}
+          <button className="muted" style={{fontSize:11,margin:'8px 0'}} onClick={()=>{ if(confirm('Bỏ đánh dấu tất cả để chuẩn bị cho hôm sau?')) setPack({}); }}>↻ Đặt lại cho hôm sau</button>
+        </div>
+        </Collapse>
+        <Collapse id="child-skills" defaultOpen={false} title="🌟 Kỹ năng tự lập" right={<span className="muted" style={{fontSize:12.5}}>{skillDone}/{CHILD_SKILLS.length}</span>}>
+        <div className="prog" style={{margin:'0 14px'}}><i style={{width:(skillDone/CHILD_SKILLS.length*100)+'%'}}></i></div>
+        <div className="card" style={{padding:'4px 13px',marginTop:8}}>
+          {CHILD_SKILLS.map(it=>(
+            <div key={it} className="row" style={{padding:'8px 0',borderBottom:'1px solid var(--line)'}}>
+              <button className="tick" onClick={()=>tg(skills,setSkills,it)} style={{fontSize:19}}>{skills[it]?'✅':'⬜'}</button>
+              <span className="grow" style={{fontSize:14,textDecoration:skills[it]?'line-through':'none',opacity:skills[it]?.6:1}}>{it}</span>
+            </div>
+          ))}
+        </div>
+        </Collapse>
+        <Collapse id="child-schoolpick" defaultOpen={false} title="🏫 Chọn trường mầm non">
+          <SchoolPicker/>
+        </Collapse>
+        <Collapse id="child-schoolstart" defaultOpen={false} title="📆 Lịch làm quen ngày đầu đi lớp">
+          <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>Tăng dần thay vì thả cả ngày ngay hôm đầu — bé quen nhanh hơn và ít ốm hơn.</div>
+          {SCHOOL_START.map(s=>(
+            <div key={s.d} className="item" style={{padding:'9px 13px'}}>
+              <b style={{fontSize:13.5}}>{s.d}</b>
+              <div className="muted" style={{fontSize:12.5,marginTop:2,lineHeight:1.55}}>{s.t}</div>
+            </div>
+          ))}
+        </Collapse>
+        <Collapse id="child-teachernote" defaultOpen={false} title="📝 Tờ dặn cô">
+          <TeacherNote child={child} people={people}/>
+        </Collapse>
+        <Collapse id="child-schoolill" defaultOpen={false} title="🦠 Bệnh hay lây ở lớp — nghỉ mấy ngày">
+          <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>Số ngày nghỉ là mức thường được khuyến cáo; trường và bác sĩ có thể yêu cầu khác.</div>
+          <GuideList items={SCHOOL_ILL} keyOf={x=>x.n} titleOf={x=>x.n} iconOf={x=>x.icon} render={x=>(
+            <div style={{fontSize:13,lineHeight:1.6}}>
+              <div><b>Dấu hiệu:</b> {x.sign}</div>
+              <div style={{marginTop:4}}><b>Nghỉ học:</b> {x.off}</div>
+              <div className="muted" style={{marginTop:4}}>⚠️ {x.note}</div>
+            </div>
+          )}/>
+        </Collapse>
+        <Collapse id="child-docs" defaultOpen={false} title="🗂️ Giấy tờ của bé">
+          <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>Danh sách để soát cho đủ. Bản chụp thì cất bên <b>Just Us → Giấy tờ</b> (mã hoá đầu-cuối) — đừng lưu thành kho thứ hai ở đây.</div>
+          {CHILD_DOCS.map(d=>(
+            <div key={d.n} className="item" style={{padding:'9px 13px'}}>
+              <div className="row"><span style={{fontSize:19,flex:'0 0 auto'}}>{d.icon}</span>
+                <div className="grow"><b style={{fontSize:13.5}}>{d.n}</b>
+                  <div className="muted" style={{fontSize:12.5,marginTop:2,lineHeight:1.5}}>{d.d}</div></div>
+                <button className="tick" onClick={()=>setDocs(s=>{ const n={...s}; if(n[d.n]) delete n[d.n]; else n[d.n]=true; return n; })} style={{fontSize:19}}>{docs[d.n]?'✅':'⬜'}</button></div>
+            </div>
+          ))}
+          <div style={{margin:'10px 14px'}}><a className="btn soft" href="../index.html" style={{display:'block',textAlign:'center',textDecoration:'none'}}>🔒 Mở mục Giấy tờ bên Just Us</a></div>
+        </Collapse>
+      </div>}
+
+      {tab==='family' && <div>
+        <Collapse id="child-twos" defaultOpen={false} title="🌪️ “Khủng hoảng tuổi lên 2” là gì">
+          <div className="card">
+            <div style={{fontSize:13.5,lineHeight:1.65}}>{TWOS_CRISIS.what}</div>
+            <div className="muted" style={{fontSize:12.5,marginTop:8,lineHeight:1.6}}>🕐 {TWOS_CRISIS.when}</div>
+            <div style={{marginTop:9,fontSize:12,fontWeight:800}}>NHÌN RA Ở ĐÂU</div>
+            {bullets(TWOS_CRISIS.signs||[],{marginTop:3})}
+            <div style={{marginTop:9,fontSize:12,fontWeight:800,color:'var(--good)'}}>ĐI QUA CHO NHẸ</div>
+            {bullets(TWOS_CRISIS.help||[],{marginTop:3})}
+            <div className="muted" style={{fontSize:12.5,marginTop:9,lineHeight:1.6}}>🌤️ {TWOS_CRISIS.end}</div>
+          </div>
+        </Collapse>
+        <Collapse id="child-burnout" defaultOpen={false} title="🫂 Bố mẹ đuối sức">
+          <div className="card">
+            <div className="muted" style={{fontSize:12.5,lineHeight:1.6}}>{PARENT_BURNOUT.lead}</div>
+            <div style={{marginTop:9,fontSize:12,fontWeight:800}}>DẤU HIỆU</div>
+            {bullets(PARENT_BURNOUT.signs||[],{marginTop:3})}
+            <div style={{marginTop:9,fontSize:12,fontWeight:800,color:'var(--good)'}}>LÀM ĐƯỢC NGAY HÔM NAY</div>
+            {bullets(PARENT_BURNOUT.now||[],{marginTop:3})}
+            <div style={{marginTop:9,fontSize:12,fontWeight:800}}>SAN SẺ VỚI NHAU</div>
+            {bullets(PARENT_BURNOUT.share||[],{marginTop:3})}
+            <div className="callout er"><div className="h">Khi nào cần người giúp</div>
+              <div style={{fontSize:12.5,lineHeight:1.6}}>{PARENT_BURNOUT.help}</div></div>
+          </div>
+        </Collapse>
+        <Collapse id="child-parenting" defaultOpen={false} title="🤝 Thống nhất cách dạy con">
+          <ParentingAgreement/>
+        </Collapse>
+        <Collapse id="child-duty" defaultOpen={false} title="🤝 Ai lo việc nào">
+          <DutyBoard people={people}/>
+        </Collapse>
+      </div>}
+
+      {tab==='parent' && <div>
+        <Collapse id="child-scripts" defaultOpen={false} title="💬 Con đang ăn vạ — nói câu gì bây giờ">
+          <TantrumScripts/>
+        </Collapse>
+        <Collapse id="child-behavior" defaultOpen={false} title="🧭 Hành vi tuổi lên 2">
+          <GuideList items={CHILD_BEHAVIOR} keyOf={x=>x.title} titleOf={x=>x.title} iconOf={x=>x.icon} render={x=>(
+            <div>
+              <div className="muted" style={{fontSize:12.5,lineHeight:1.6}}>{x.lead}</div>
+              {bullets(x.steps,{marginTop:7})}
+              {x.note && <div className="muted" style={{fontSize:11.5,marginTop:7,lineHeight:1.55}}>⚠️ {x.note}</div>}
+            </div>
+          )}/>
+        </Collapse>
+        <Collapse id="child-chores" defaultOpen={false} title="🧹 Việc nhà vừa sức bé 2 tuổi">
+          <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>Tuổi này bé thật sự thích giúp. Qua tuổi này là hết hứng, nên tận dụng đúng lúc.</div>
+          {CHORES_2Y.map(c=>(
+            <div key={c.n} className="item" style={{padding:'9px 13px'}}>
+              <div className="row"><span style={{fontSize:19,flex:'0 0 auto'}}>{c.icon}</span>
+                <div className="grow"><b style={{fontSize:13.5}}>{c.n}</b>
+                  <div className="muted" style={{fontSize:12.5,marginTop:2}}>{c.d}</div></div></div>
+            </div>
+          ))}
+        </Collapse>
+        <Collapse id="child-corner" defaultOpen={false} title="🪜 Bày nhà cho bé tự làm được">
+          <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>Mục “Kỹ năng tự lập” dạy bé cách làm; phần này là bày nhà sao cho bé làm được mà không cần gọi mẹ.</div>
+          {SELF_CORNER.map(c=>(
+            <div key={c.n} className="item" style={{padding:'9px 13px'}}>
+              <div className="row"><span style={{fontSize:19,flex:'0 0 auto'}}>{c.icon}</span>
+                <div className="grow"><b style={{fontSize:13.5}}>{c.n}</b>
+                  <div className="muted" style={{fontSize:12.5,marginTop:2,lineHeight:1.5}}>{c.d}</div></div></div>
+            </div>
+          ))}
+        </Collapse>
+        <Collapse id="child-skillguides" defaultOpen={false} title="🌱 Dạy kỹ năng tự túc đầu tiên">
+        <div className="muted center" style={{fontSize:11,margin:'0 14px 6px'}}>Bấm từng kỹ năng để xem cách dạy theo bước. Mỗi bé một nhịp — cứ từ từ, khen nhiều 💛</div>
+        {SKILL_GUIDES.filter(g=>!gDone[g.name]).map(g=><SkillGuide key={g.name} g={g} done={false} onTick={()=>setGDone({...gDone,[g.name]:true})}/>)}
+        {SKILL_GUIDES.some(g=>gDone[g.name]) && <div className="muted" style={{fontSize:11,margin:'10px 14px 4px'}}>✅ Bé đã biết ({SKILL_GUIDES.filter(g=>gDone[g.name]).length}) — bấm nút xanh để bỏ đánh dấu:</div>}
+        {SKILL_GUIDES.filter(g=>gDone[g.name]).map(g=><SkillGuide key={g.name} g={g} done={true} onTick={()=>{ const n={...gDone}; delete n[g.name]; setGDone(n); }}/>)}
+        </Collapse>
+        <Collapse id="child-issues" defaultOpen={false} title="🧩 Vấn đề thường gặp & cách xử lý">
+          <div className="muted center" style={{fontSize:11,margin:'0 14px 6px'}}>Bấm vào chủ đề để xem gợi ý.</div>
+          <div className="card">
+            <div style={{display:'flex',flexWrap:'wrap',gap:6}}>
+              {CHILD_ISSUES.map(f=><button key={f.title} className="pill" onClick={()=>setBrowseIssue(f)}>{f.icon} {f.title}</button>)}
+            </div>
+          </div>
+        </Collapse>
+        {browseIssue && <Sheet title={browseIssue.icon+' '+browseIssue.title} onClose={()=>setBrowseIssue(null)}>
+          <ul style={{margin:'4px 0 0',paddingLeft:18,fontSize:14,lineHeight:1.7}}>{browseIssue.tips.map((t,i)=><li key={i} style={{marginBottom:7}}>{t}</li>)}</ul>
+        </Sheet>}
+        {/* Nhật ký "điều đầu tiên" đã chuyển sang tab 📔 Kỷ niệm cho gọn một mối */}
+        <div className="sec-title">😤 Nhật ký “cơn ăn vạ”</div>
+        <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>Ghi tình huống + cách xử lý hiệu quả để lần sau rút kinh nghiệm.</div>
+        <div className="card">
+          <input className="inp" placeholder="Tình huống (vd: không cho xem TV thì khóc)" value={tanForm.situation} onChange={e=>setTanForm({...tanForm,situation:e.target.value})}/>
+          <input className="inp" style={{marginTop:8}} placeholder="Cách mình đã xử lý" value={tanForm.handling} onChange={e=>setTanForm({...tanForm,handling:e.target.value})}/>
+          <button className="btn" style={{marginTop:8}} onClick={addTantrum}>＋ Ghi lại</button>
+        </div>
+        {tantrum.map(x=>(
+          <div key={x.id} className="item">
+            <div className="it-top"><h4 style={{fontSize:14}}>😤 {x.situation}</h4>
+              <button className="xbtn" aria-label="Xoá" onClick={()=>{ if(confirm('Xoá ghi chép này?')) setTantrum(tantrum.filter(y=>y.id!==x.id)); }}>✕</button></div>
+            {x.handling && <div className="muted" style={{fontSize:12.5,marginTop:3}}>💡 Cách xử lý: {x.handling}</div>}
+            <div className="row" style={{marginTop:6,gap:6}}><span className="muted" style={{fontSize:11}}>{fmtDateVN(x.date)} · Hiệu quả?</span>
+              <button className="pill" style={{background:x.worked===true?'var(--good)':'var(--surface-2)',color:x.worked===true?'#fff':'var(--brand-ink)'}} onClick={()=>setTanWorked(x.id,true)}>👍 Có</button>
+              <button className="pill" style={{background:x.worked===false?'#b06b6b':'var(--surface-2)',color:x.worked===false?'#fff':'var(--brand-ink)'}} onClick={()=>setTanWorked(x.id,false)}>👎 Không</button></div>
+          </div>
+        ))}
+      </div>}
+      <Dock tab={tab} onGo={setTab} alertGroups={alertGroups}/>
+    </div>
+  );
+}
+
+/* ============ Vỏ app ============ */
+function App(){
+  const setup=store.get('ju.setup',{})||{};
+  const people={a:setup.a||{name:'Bố',avatar:'🧑'}, b:setup.b||{name:'Mẹ',avatar:'👩'}};
+  const me=store.get('ju.me',setup.me||'a');
+  // Dữ liệu tĩnh hỏng thì nói thẳng, đừng vẽ các mục rỗng một cách im lặng
+  if(!(CHILD_VACCINES||[]).length && !(EMERGENCY||[]).length){
+    return (
+      <div className="app">
+        <header className="hdr"><div className="id"><span className="mark">🐿️</span>
+          <span className="nm">Sóc</span></div></header>
+        <div className="card" style={{marginTop:24}}>
+          <b style={{fontSize:'var(--t-lg)'}}>Chưa tải được nội dung</b>
+          <div className="muted" style={{fontSize:'var(--t-sm)',margin:'8px 0 14px',lineHeight:1.6}}>
+            App không đọc được <code>data/child.json</code>. Thường là do lần đầu mở mà không có mạng.
+            Bật mạng rồi tải lại trang là xong — sau lần đầu thì app chạy được cả khi offline.
+          </div>
+          <button className="btn" onClick={()=>location.reload()}>↻ Tải lại</button>
+          <a className="btn ghost" href="../index.html" style={{marginTop:10,textDecoration:'none'}}>← Về Just Us</a>
+        </div>
+      </div>
+    );
+  }
+  return (
+    <div className="app">
+      <ChildCare people={people} me={me}/>
+    </div>
+  );
+}
+
+window.__SC_OK=true;
+const __root=ReactDOM.createRoot(document.getElementById('root'));
+const __mount=()=>{ try{ __root.render(<App/>); }catch(e){ console.error(e); } };
+const __ready=window.__JU_DATA_READY||Promise.resolve();
+Promise.race([__ready,new Promise(r=>setTimeout(r,5000))]).then(__mount,__mount);
+__ready.then(__mount,()=>{});
+// Nối đám mây sau khi đã vẽ xong (không chặn màn hình)
+Cloud.init();
+window.addEventListener('ju:remote',()=>{});
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden && Cloud.ready) Cloud.pull(); });
+</script>
+
+<script>
+if('serviceWorker' in navigator){
+  window.addEventListener('load',function(){ navigator.serviceWorker.register('sw.js').catch(function(){}); });
+}
+</script>
+</body>
+</html>
