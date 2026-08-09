@@ -2472,5 +2472,227 @@
    "n": "Cuối tuần",
    "d": "Người dẫn chính các hoạt động cuối tuần"
   }
+ ],
+ "SLEEP_NEED": [
+  {
+   "a": "0–3 tháng",
+   "t": "14–17 giờ",
+   "n": "Ngủ rải nhiều giấc ngắn cả ngày lẫn đêm."
+  },
+  {
+   "a": "4–11 tháng",
+   "t": "12–16 giờ",
+   "n": "2–3 giấc ban ngày, đêm dài dần."
+  },
+  {
+   "a": "1–2 tuổi",
+   "t": "11–14 giờ",
+   "n": "Còn 1 giấc trưa (có bé 18 tháng mới bỏ giấc thứ hai)."
+  },
+  {
+   "a": "3–5 tuổi",
+   "t": "10–13 giờ",
+   "n": "Giấc trưa ngắn dần rồi bỏ hẳn."
+  }
+ ],
+ "SLEEP_ROUTINE": [
+  {
+   "t": "Trước 60 phút",
+   "d": "Tắt hết màn hình. Giảm đèn, hạ tiếng nói trong nhà."
+  },
+  {
+   "t": "Trước 30 phút",
+   "d": "Tắm nước ấm — hạ thân nhiệt sau tắm là tín hiệu buồn ngủ rất mạnh."
+  },
+  {
+   "t": "Trước 20 phút",
+   "d": "Thay đồ ngủ, uống nốt ngụm sữa, đánh răng."
+  },
+  {
+   "t": "Trước 10 phút",
+   "d": "Đọc 1–2 quyển sách, cùng một chỗ, cùng một tư thế mỗi tối."
+  },
+  {
+   "t": "Lúc đặt xuống",
+   "d": "Đặt bé xuống khi còn thức nhưng đã buồn ngủ — đó là điểm mấu chốt để bé tự chìm vào giấc."
+  },
+  {
+   "t": "Cả tuần",
+   "d": "Giữ đúng một trình tự và một khung giờ, kể cả cuối tuần. Nếp quan trọng hơn nội dung."
+  }
+ ],
+ "SLEEP_FIX": [
+  {
+   "icon": "🌙",
+   "n": "Khó vào giấc, lăn lộn cả tiếng",
+   "tips": [
+    "Kiểm giấc trưa trước đã: ngủ trưa sau 15h30 hoặc ngủ quá 2 tiếng thì tối rất khó ngủ.",
+    "Kéo giờ đi ngủ SỚM lên 20–30 phút. Bé quá mệt lại càng khó ngủ chứ không dễ hơn.",
+    "Phòng tối hẳn, mát 26–28°C, có thể bật tiếng ồn trắng nhẹ.",
+    "Vận động ngoài trời ban ngày; tránh chơi kích thích trong 1 giờ cuối."
+   ]
+  },
+  {
+   "icon": "😴",
+   "n": "Dậy nhiều lần trong đêm",
+   "tips": [
+    "Tuổi này tỉnh giấc ngắn giữa đêm là bình thường — vấn đề là bé chưa tự ngủ lại được.",
+    "Vỗ về tại chỗ trước, đừng bế lên ngay; giảm dần mức can thiệp qua từng đêm.",
+    "Giữ đêm tối và im — không bật đèn sáng, không nói chuyện, không cho chơi.",
+    "Đói thật hay chỉ theo thói quen: thử giảm dần lượng sữa đêm.",
+    "Mọc răng, ốm, hoặc vừa có thay đổi lớn (đi lớp, chuyển phòng) thì đây chỉ là giai đoạn."
+   ]
+  },
+  {
+   "icon": "🌅",
+   "n": "Dậy quá sớm (trước 5–6 giờ)",
+   "tips": [
+    "Che kín ánh sáng sớm bằng rèm dày.",
+    "Thử lùi giờ đi ngủ MUỘN 15 phút, hoặc ngược lại cho ngủ sớm hơn — mỗi bé một kiểu, thử một tuần rồi mới kết luận.",
+    "Không cho bắt đầu ngày ngay: giữ phòng tối và yên tới giờ dậy đã định.",
+    "Xem lại giấc trưa có quá dài không."
+   ]
+  },
+  {
+   "icon": "🛏️",
+   "n": "Chuyển từ cũi sang giường",
+   "tips": [
+    "Chưa cần vội — chỉ chuyển khi bé trèo ra được khỏi cũi hoặc cần cũi cho em bé.",
+    "Đặt giường ở đúng chỗ cũi cũ, giữ nguyên chăn gối quen.",
+    "Chắn cạnh giường và dọn sạch đồ nguy hiểm trong phòng: giờ bé đi lại được ban đêm.",
+    "Vài tuần đầu bé ra khỏi giường liên tục là bình thường — dắt về, ít nói, lặp lại."
+   ]
+  },
+  {
+   "icon": "👻",
+   "n": "Sợ bóng tối, sợ một mình",
+   "tips": [
+    "Đèn ngủ ấm rất mờ; không dùng đèn trắng.",
+    "Đừng phủ nhận (\"làm gì có gì đâu\") — công nhận rồi trấn an: \"mẹ ở ngay ngoài cửa\".",
+    "Cho bé một \"bạn gác\": gấu bông, khăn quen.",
+    "Ngồi cạnh rồi lùi ghế ra xa dần mỗi tối, thay vì biến mất đột ngột."
+   ]
+  }
+ ],
+ "TEETH_ORDER": [
+  {
+   "n": "2 răng cửa giữa hàm dưới",
+   "w": "khoảng 6–10 tháng"
+  },
+  {
+   "n": "2 răng cửa giữa hàm trên",
+   "w": "khoảng 8–12 tháng"
+  },
+  {
+   "n": "2 răng cửa bên hàm trên",
+   "w": "khoảng 9–13 tháng"
+  },
+  {
+   "n": "2 răng cửa bên hàm dưới",
+   "w": "khoảng 10–16 tháng"
+  },
+  {
+   "n": "4 răng hàm sữa thứ nhất",
+   "w": "khoảng 13–19 tháng"
+  },
+  {
+   "n": "4 răng nanh",
+   "w": "khoảng 16–23 tháng"
+  },
+  {
+   "n": "4 răng hàm sữa thứ hai",
+   "w": "khoảng 23–33 tháng — mọc đau nhất, nhiều nhà tưởng con ốm"
+  }
+ ],
+ "TEETH_CARE": {
+  "lead": "Đủ 20 răng sữa vào khoảng 2,5–3 tuổi. Răng sữa sâu vẫn ảnh hưởng tới răng vĩnh viễn mọc sau, nên không có chuyện \"răng sữa rụng đằng nào cũng được\".",
+  "daily": [
+   "Đánh 2 lần mỗi ngày, quan trọng nhất là lần trước khi đi ngủ.",
+   "Kem có fluor, lượng bằng hạt gạo cho bé dưới 3 tuổi.",
+   "Bé tự chải trước cho quen, rồi bố mẹ chải lại — trẻ dưới 7–8 tuổi chưa tự làm sạch được.",
+   "Không cho ngậm bình sữa khi ngủ; sữa đọng cả đêm là nguyên nhân sâu răng số một ở tuổi này.",
+   "Hạn chế đồ ngọt dính răng và nước ép uống rả rích cả ngày."
+  ],
+  "visit": [
+   "Khám răng lần đầu trong vòng 6 tháng kể từ khi mọc chiếc răng đầu tiên, chậm nhất là lúc 12 tháng.",
+   "Sau đó khoảng 6 tháng một lần.",
+   "Đi khám sớm hơn nếu thấy đốm trắng đục hoặc nâu trên răng, bé kêu đau, hoặc lợi sưng."
+  ],
+  "teething": [
+   "Mọc răng có thể làm bé chảy dãi, cắn đồ, quấy, ngủ kém, sốt nhẹ.",
+   "Sốt cao trên 38,5°C, tiêu chảy nhiều hay li bì thì KHÔNG phải do mọc răng — đi khám.",
+   "Cho gặm vòng mọc răng để mát; khăn sạch ướp lạnh cũng được.",
+   "Không bôi mật ong, không dùng gel tê không rõ nguồn gốc."
+  ]
+ },
+ "CHECKUP_SCHEDULE": [
+  {
+   "icon": "🩺",
+   "n": "Khám sức khoẻ định kỳ",
+   "w": "12, 18, 24 tháng, sau đó mỗi năm một lần",
+   "d": "Cân đo, đánh giá phát triển, soát dinh dưỡng và tiêm chủng."
+  },
+  {
+   "icon": "🦷",
+   "n": "Khám răng",
+   "w": "lần đầu trước 12 tháng, sau đó 6 tháng/lần",
+   "d": "Phát hiện sâu răng sớm và hướng dẫn chải răng đúng."
+  },
+  {
+   "icon": "👁️",
+   "n": "Khám mắt",
+   "w": "sàng lọc từ khoảng 3 tuổi, sớm hơn nếu có dấu hiệu",
+   "d": "Lác, nheo mắt, dụi mắt nhiều, cúi sát khi xem — đi khám ngay không đợi tuổi."
+  },
+  {
+   "icon": "📏",
+   "n": "Cân đo tại nhà",
+   "w": "mỗi 1–3 tháng ở tuổi này",
+   "d": "Ghi vào app để nhìn đường tăng trưởng, quan trọng hơn một lần đo lẻ."
+  },
+  {
+   "icon": "🪱",
+   "n": "Tẩy giun",
+   "w": "từ 24 tháng, nhắc lại mỗi 6 tháng",
+   "d": "Theo hướng dẫn y tế địa phương; cả nhà thường tẩy cùng một đợt. Dưới 24 tháng không tự mua thuốc cho bé."
+  }
+ ],
+ "DEV_REDFLAGS": [
+  {
+   "m": "Khoảng 18 tháng",
+   "items": [
+    "Chưa nói được từ đơn nào",
+    "Không chỉ tay để khoe hoặc để xin",
+    "Không phản ứng khi được gọi tên",
+    "Chưa đi được",
+    "Không bắt chước cử chỉ, nét mặt"
+   ]
+  },
+  {
+   "m": "Khoảng 24 tháng",
+   "items": [
+    "Chưa ghép được hai từ (vd \"mẹ bế\")",
+    "Không chơi giả vờ (cho búp bê ăn, giả nghe điện thoại)",
+    "Không quan tâm tới trẻ khác",
+    "Đi lại còn rất loạng choạng",
+    "Ít nhìn vào mắt người đối diện"
+   ]
+  },
+  {
+   "m": "Khoảng 36 tháng",
+   "items": [
+    "Người ngoài gia đình không hiểu bé nói gì",
+    "Không nói được câu ngắn",
+    "Không hiểu chỉ dẫn đơn giản hai bước",
+    "Hay ngã, không leo được cầu thang",
+    "Không chơi cùng trẻ khác, không chơi giả vờ"
+   ]
+  },
+  {
+   "m": "Bất kỳ lúc nào",
+   "items": [
+    "MẤT kỹ năng đã từng làm được (đang nói rồi thôi nói, đang đi rồi thôi đi) — đây là dấu hiệu cần đi khám ngay, không chờ mốc"
+   ]
+  }
  ]
 }

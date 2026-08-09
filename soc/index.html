@@ -22,376 +22,242 @@
 <script crossorigin src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.23.6/babel.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.js"></script>
-
 <style>
+/* =========================================================================
+   Bộ nhận diện riêng của app Sóc.
+   Trước đây app mược da "Sổ tay" của Just Us (giấy be, viền đứt, thẻ nghiêng,
+   chữ viết tay). Da đó hợp app đôi, nhưng ở đây nó làm phần y tế trông kém
+   tin cậy, và tệ hơn: màu chính của nó là đỏ gạch, gần trùng với màu cấp cứu
+   nên thứ quan trọng nhất lại không nổi lên được.
+   Nay Sóc có hệ màu riêng, và ĐỎ CHỈ DÙNG CHO CẤP CỨU — không dùng ở đâu khác.
+   ========================================================================= */
 :root{
-  --bg:#fbf7f6; --bg2:#f6eef0; --card:#ffffff; --text:#2a2228; --muted:#8a7c82;
-  --line:#efe6ea; --primary:#d6446e; --primary2:#f2789d; --on-primary:#fff;
-  --accent:#b65cff; --chip:#fbedf2; --chip-tx:#a83458; --good:#2bb673; --warn:#e8a13a;
-  --heart:#ff4d76; --shadow:0 1px 2px rgba(40,20,30,.05),0 6px 18px rgba(40,20,30,.05); --radius:16px;
+  --bg:#eef2f4; --surface:#ffffff; --surface-2:#f6f9fa; --raised:#ffffff;
+  --ink:#0f1a20; --ink-2:#4c6472; --ink-3:#7b909c;
+  --line:#dde5e9; --line-2:#eaf0f2;
+  --brand:#0d6a7a; --brand-2:#128ea3; --brand-soft:#e0eff2; --brand-ink:#0a5462;
+  --good:#1d7a4d; --good-soft:#e2f2e9;
+  --warn:#a86400; --warn-soft:#fcf0dc;
+  --danger:#bd3226; --danger-2:#d8503f; --danger-soft:#fbe9e6;
+  --on-brand:#ffffff;
+  --shadow-1:0 1px 2px rgba(15,26,32,.06);
+  --shadow-2:0 1px 2px rgba(15,26,32,.05), 0 10px 24px -14px rgba(15,26,32,.28);
+  --r-sm:9px; --r:14px; --r-lg:20px;
+  --t-xs:12px; --t-sm:13.5px; --t-md:15px; --t-lg:17px; --t-xl:21px; --t-2xl:30px;
+  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:22px; --sp-6:30px;
+  --gut:16px;
 }
-/* ===== Themes ===== */
-body.theme-rose{ }
-body.theme-peach{
-  --bg:#fff4ec; --bg2:#ffe7d6; --card:#fff; --text:#4a3326; --muted:#a98a76;
-  --line:#f6d9c4; --primary:#f0803c; --primary2:#ffb27a; --accent:#e85d5d;
-  --chip:#ffe3cf; --chip-tx:#b85b22; --heart:#ff6a4d;
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0c1215; --surface:#141d21; --surface-2:#19242a; --raised:#1c282e;
+    --ink:#e9f0f2; --ink-2:#a2b7c0; --ink-3:#7b929c;
+    --line:#26343a; --line-2:#1f2b31;
+    --brand:#4cb4c7; --brand-2:#6bcbdb; --brand-soft:#12333b; --brand-ink:#9ddfeb;
+    --good:#4cb782; --good-soft:#12312270;
+    --warn:#d9a253; --warn-soft:#32270f;
+    --danger:#e2705f; --danger-2:#ef8574; --danger-soft:#3a1c18;
+    --on-brand:#06222a;
+    --shadow-1:0 1px 2px rgba(0,0,0,.4);
+    --shadow-2:0 2px 4px rgba(0,0,0,.4), 0 12px 28px -16px rgba(0,0,0,.7);
+  }
 }
-body.theme-lavender{
-  --bg:#f4f0ff; --bg2:#e9e1ff; --card:#fff; --text:#352a4a; --muted:#8d7fae;
-  --line:#e2d7f7; --primary:#8b5cf6; --primary2:#b794ff; --accent:#e85d8a;
-  --chip:#ebe1ff; --chip-tx:#6d3fc0; --heart:#c44dff;
-}
-body.theme-ocean{
-  --bg:#eef9fb; --bg2:#d9f0f5; --card:#fff; --text:#1f3a42; --muted:#6f97a1;
-  --line:#cdeaef; --primary:#119cb0; --primary2:#5fd0dd; --accent:#1f6feb;
-  --chip:#d4f1f5; --chip-tx:#0a7080; --heart:#ff5a8a;
-}
-body.theme-forest{
-  --bg:#eef7ef; --bg2:#dcefe0; --card:#fff; --text:#26392b; --muted:#74917a;
-  --line:#cfe9d3; --primary:#2f9e57; --primary2:#74d28d; --accent:#d98a2b;
-  --chip:#d7f0db; --chip-tx:#1f7a42; --heart:#ff5a7a;
-}
-body.theme-night{
-  --bg:#171221; --bg2:#221a30; --card:#241b33; --text:#f3e9f5; --muted:#a892b8;
-  --line:#3a2c4d; --primary:#ff6f9d; --primary2:#c277ff; --accent:#7aa2ff;
-  --chip:#3a2740; --chip-tx:#ffb3cd; --heart:#ff6f9d; --on-primary:#1a1024;
-  --shadow:0 12px 34px rgba(0,0,0,.45);
-}
-body.theme-cherry{
-  --bg:#fff1f0; --bg2:#ffe0dd; --card:#fff; --text:#43282a; --muted:#b08a8a;
-  --line:#f6d3cf; --primary:#e03131; --primary2:#ff7a7a; --accent:#d6336c;
-  --chip:#ffe0dd; --chip-tx:#c92a2a; --heart:#ff3b5c;
-}
-body.theme-sky{
-  --bg:#eef5ff; --bg2:#dbe9ff; --card:#fff; --text:#23344a; --muted:#7d93ad;
-  --line:#d3e2f7; --primary:#3b82f6; --primary2:#7cb0ff; --accent:#7048e8;
-  --chip:#dbe9ff; --chip-tx:#1c5bd6; --heart:#ff5a8a;
-}
-body.theme-mocha{
-  --bg:#f6efe9; --bg2:#ece0d4; --card:#fffaf6; --text:#3e2f25; --muted:#a08a78;
-  --line:#e6d6c7; --primary:#b07a4f; --primary2:#d6a878; --accent:#c0392b;
-  --chip:#ecdccd; --chip-tx:#8a5a36; --heart:#e0607a;
-}
-/* Chế độ tối — phủ lên bất kỳ theme màu nào đang chọn, giữ nguyên màu nhấn (--primary/--accent) của theme đó */
 body.dark{
-  --bg:#171221; --bg2:#221a30; --card:#241b33; --text:#f3e9f5; --muted:#a892b8;
-  --line:#3a2c4d; --chip:#3a2740; --chip-tx:#ffb3cd;
-  --shadow:0 12px 34px rgba(0,0,0,.45);
+  --bg:#0c1215; --surface:#141d21; --surface-2:#19242a; --raised:#1c282e;
+  --ink:#e9f0f2; --ink-2:#a2b7c0; --ink-3:#7b929c;
+  --line:#26343a; --line-2:#1f2b31;
+  --brand:#4cb4c7; --brand-2:#6bcbdb; --brand-soft:#12333b; --brand-ink:#9ddfeb;
+  --good:#4cb782; --good-soft:#123122;
+  --warn:#d9a253; --warn-soft:#32270f;
+  --danger:#e2705f; --danger-2:#ef8574; --danger-soft:#3a1c18;
+  --on-brand:#06222a;
+  --shadow-1:0 1px 2px rgba(0,0,0,.4);
+  --shadow-2:0 2px 4px rgba(0,0,0,.4), 0 12px 28px -16px rgba(0,0,0,.7);
 }
 
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;padding:0}
 body{
-  font-family:'Be Vietnam Pro','Segoe UI',system-ui,-apple-system,Roboto,Arial,sans-serif;
-  font-size:14px; line-height:1.5; letter-spacing:.1px;
-  -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; text-rendering:optimizeLegibility;
-  background:linear-gradient(180deg,var(--bg),var(--bg2));
-  color:var(--text); min-height:100vh; transition:background .3s,color .3s;
+  font-family:'Be Vietnam Pro',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  font-size:var(--t-md); line-height:1.55; letter-spacing:.1px;
+  -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+  background:var(--bg); color:var(--ink); min-height:100vh;
 }
-#root{max-width:480px;margin:0 auto;min-height:100vh;position:relative}
-.app{padding:0 0 calc(96px + env(safe-area-inset-bottom,0px))}
-button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
-input,textarea,select{font-family:inherit;font-size:15px}
-a{color:var(--primary)}
+#root{max-width:520px;margin:0 auto;min-height:100vh;position:relative;background:var(--bg)}
+.app{padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;font-size:inherit}
+input,textarea,select{font-family:inherit;font-size:var(--t-md);color:var(--ink)}
+a{color:var(--brand)}
+:focus-visible{outline:2px solid var(--brand);outline-offset:2px;border-radius:4px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 
-/* Header */
-.topbar{position:sticky;top:0;z-index:40;backdrop-filter:blur(10px);
-  background:linear-gradient(180deg,rgba(255,255,255,.85),rgba(255,255,255,.4));
-  border-bottom:1px solid var(--line);padding:10px 14px;display:flex;align-items:center;gap:10px}
-body.theme-night .topbar{background:linear-gradient(180deg,rgba(36,27,51,.9),rgba(36,27,51,.5))}
-.brand{font-weight:700;font-size:18px;letter-spacing:.3px;display:flex;align-items:center;gap:6px}
-.brand .heart{color:var(--heart)}
-.who{margin-left:auto;display:flex;align-items:center;gap:6px;background:var(--chip);
-  color:var(--chip-tx);border-radius:999px;padding:5px 10px;font-size:12.5px;font-weight:700}
-.who .av{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:#fff;font-size:14px}
+/* ===== Thanh trên: tên bé + nút cấp cứu luôn trong tầm tay ===== */
+.hdr{position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:10px;
+  padding:10px var(--gut);background:color-mix(in srgb,var(--bg) 88%,transparent);
+  backdrop-filter:saturate(1.4) blur(10px);border-bottom:1px solid var(--line)}
+.hdr .id{display:flex;align-items:center;gap:9px;min-width:0;flex:1}
+.hdr .mark{width:32px;height:32px;border-radius:10px;background:var(--brand-soft);
+  display:grid;place-items:center;font-size:18px;flex:0 0 auto}
+.hdr .nm{font-size:var(--t-md);font-weight:700;line-height:1.2;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hdr .sub{font-size:var(--t-xs);color:var(--ink-2);line-height:1.25}
+.hdr-btn{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;
+  background:var(--surface);border:1px solid var(--line);font-size:17px;flex:0 0 auto}
+.hdr-btn.sos{background:var(--danger);border-color:var(--danger);color:#fff}
 
-/* Cards & generic */
-.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
-  box-shadow:none;padding:14px;margin:12px 14px}
-.sec-title{font-weight:700;font-size:14px;margin:18px 14px 6px;display:flex;align-items:center;gap:8px}
-.muted{color:var(--muted)}
-/* Đồng bộ định dạng text các thẻ Trang chủ: tiêu đề (.hc-title) + nội dung (.hc-lead nổi bật / .hc-body phụ) */
-.hc-title{font-size:14px;font-weight:700;color:var(--text);line-height:1.35}
-.hc-act{font-size:11px;color:var(--muted);font-weight:500;flex:0 0 auto;white-space:nowrap}
-.hc-lead{font-size:14px;font-weight:600;color:var(--text);line-height:1.45;margin:6px 0 9px}
-.hc-body{font-size:12.5px;color:var(--muted);line-height:1.55}
-.row{display:flex;gap:10px;align-items:center}
-.pill{display:inline-flex;align-items:center;gap:5px;background:var(--chip);color:var(--chip-tx);
-  border-radius:999px;padding:3px 10px;font-size:11px;font-weight:600}
-.btn{background:linear-gradient(135deg,var(--primary),var(--primary2));color:var(--on-primary);
-  border-radius:14px;padding:11px 14px;font-weight:700;font-size:14px;display:inline-flex;
-  align-items:center;justify-content:center;gap:7px;box-shadow:var(--shadow);width:100%}
-.btn.sm{padding:8px 12px;font-size:13px;width:auto}
-.btn.ghost{background:transparent;color:var(--primary);border:1.5px solid var(--primary);box-shadow:none}
-.btn.soft{background:var(--chip);color:var(--chip-tx);box-shadow:none}
-.iconbtn{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;background:var(--chip);color:var(--chip-tx);font-size:15px}
-
-/* Inputs */
-.field{display:flex;flex-direction:column;gap:5px;margin-bottom:10px}
-.field label{font-size:12.5px;font-weight:700;color:var(--muted)}
-.inp{background:var(--bg);border:1.5px solid var(--line);border-radius:14px;padding:11px 12px;width:100%;color:var(--text)}
-textarea.inp{resize:vertical;min-height:64px}
-.seg{display:flex;gap:6px;background:var(--chip);border-radius:14px;padding:5px;margin:12px 14px;overflow:auto}
-.seg button{flex:0 0 auto;padding:8px 13px;border-radius:10px;font-weight:700;font-size:13px;color:var(--chip-tx);white-space:nowrap}
-.seg button.on{background:var(--card);color:var(--primary);box-shadow:0 3px 10px rgba(0,0,0,.08)}
-/* Thanh menu gọn: cuộn ngang, mỗi mục 1 viên nhỏ (icon + chữ cùng dòng) */
-/* Menu Mẫu C: lưới ô, icon trên — chữ dưới, KHÔNG cuộn ngang */
-.segbar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;padding:8px 14px 2px}
-.segpill{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:9px 3px;border-radius:12px;background:var(--card);border:1px solid var(--line);color:var(--text);font-weight:600;font-size:11px;line-height:1.15;text-align:center;cursor:pointer;min-height:54px}
-.segpill .segic{font-size:19px;line-height:1}
-.segpill.on{background:var(--primary);color:var(--on-primary);border-color:var(--primary);box-shadow:var(--shadow)}
-/* Menu Nhà mình (Mẫu 4): 6 icon tròn chọn nhóm + tab gạch chân cho mục con */
-.usm4{padding:10px 14px 2px}
-.usm4-groups{display:flex;justify-content:space-between;gap:8px;max-width:360px;margin:0 auto}
-.usm4-dot{flex:0 0 auto;width:48px;height:48px;border-radius:50%;background:var(--card);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:20px;line-height:1;padding:0;cursor:pointer}
-.usm4-dot.on{background:var(--primary);border-color:var(--primary);box-shadow:0 0 0 3px rgba(0,0,0,.06),var(--shadow)}
-.usm4-name{text-align:center;font-weight:700;font-size:15px;color:var(--text);margin:11px 0 2px}
-.usm4-tabs{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 12px;border-top:1px solid var(--line);padding-top:9px;margin-top:8px}
-.usm4-tab{display:inline-flex;align-items:center;gap:5px;background:none;border:0;border-bottom:2px solid transparent;color:var(--muted);font-weight:700;font-size:12.5px;line-height:1;padding:2px 1px 6px;cursor:pointer}
-.usm4-tab .segic{font-size:14px;line-height:1}
-.usm4-tab.on{color:var(--primary);border-bottom-color:var(--primary)}
-.segpill.seg-ro{color:var(--muted);border-style:dashed;font-weight:600}
-.filters .flt-ro{border-style:dashed;color:var(--muted)}
-.usm4-dot.usm4-ro{border-style:dashed;color:var(--muted);font-size:16px}
-.usm4-tab.usm4-ro{color:var(--muted)}
-/* Mục gập gọn (Collapse) */
-.col-h{cursor:pointer;user-select:none;display:inline-flex;align-items:center;gap:5px}
-.col-chev{font-size:11px;color:var(--muted);width:11px;display:inline-block;text-align:center}
-
-/* Filter chips */
-.filters{display:flex;gap:7px;margin:10px 14px 0;flex-wrap:wrap}
-.filters button{font-size:12.5px;font-weight:600;padding:7px 13px;border-radius:999px;background:var(--card);
-  border:1.5px solid var(--line);color:var(--muted)}
-.filters button.on{background:var(--primary);color:var(--on-primary);border-color:var(--primary)}
-
-/* List item card */
-.item{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 13px;margin:10px 14px;box-shadow:none}
+/* ===== Nội dung ===== */
+.wrap{padding:0 0 var(--sp-5)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
+  box-shadow:var(--shadow-1);padding:var(--sp-4);margin:var(--sp-3) var(--gut)}
+.item{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
+  box-shadow:var(--shadow-1);padding:13px 14px;margin:var(--sp-2) var(--gut)}
 .item .it-top{display:flex;align-items:flex-start;gap:8px}
-.item h4{margin:0;font-size:14px;font-weight:700;flex:1;line-height:1.35}
-.item.dn h4{text-decoration:line-through;opacity:.6}
-.it-note{font-size:13px;color:var(--text);opacity:.92;margin:6px 0 0;white-space:pre-wrap}
-.it-meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;align-items:center}
-.av-sm{width:20px;height:20px;border-radius:50%;background:var(--chip);display:grid;place-items:center;font-size:12px}
-.heartbtn{font-size:18px;line-height:1}
-.heartbtn.on{color:var(--heart)}
-.stars{font-size:14px;letter-spacing:1px;color:var(--warn)}
-.empty{text-align:center;color:var(--muted);padding:30px 20px;font-size:13px;line-height:1.55}
-.empty .big{font-size:38px;display:block;margin-bottom:8px}
-
-/* Home */
-.hero{margin:14px;border-radius:22px;overflow:hidden;position:relative;min-height:188px;display:flex;flex-direction:column;justify-content:flex-end;
-  background:linear-gradient(135deg,var(--primary),var(--accent));color:#fff;padding:15px 18px;box-shadow:var(--shadow)}
-.hero .names{font-size:15px;font-weight:700;display:flex;align-items:center;gap:6px;flex-wrap:wrap;text-shadow:0 1px 5px rgba(0,0,0,.4)}
-.hero .count{font-size:36px;font-weight:800;margin-top:2px;line-height:1.04;text-shadow:0 1px 7px rgba(0,0,0,.45)}
-.hero .sub{opacity:.96;font-size:12.5px;margin-top:3px;text-shadow:0 1px 5px rgba(0,0,0,.45)}
-.hero .cover{position:absolute;inset:0;background-size:cover;background-position:center;opacity:1;z-index:0}
-.hero .scrim{position:absolute;inset:0;z-index:0;background:linear-gradient(to top,rgba(35,8,35,.66),rgba(35,8,35,.10) 58%,rgba(35,8,35,.30))}
-.hero .badges{position:absolute;top:12px;right:12px;z-index:1;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;max-width:62%}
-.hero .badges .b{background:rgba(255,255,255,.92);color:#993556;font-size:11px;font-weight:700;padding:4px 9px;border-radius:20px;white-space:nowrap}
-.hero .inner{position:relative;z-index:1}
-.stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:12px 14px}
-.stat{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px;box-shadow:none}
-.stat .n{font-size:22px;font-weight:700;color:var(--primary)}
-.stat .l{font-size:12.5px;color:var(--muted);font-weight:600}
-/* ===== Trang chủ · phong cách tối giản thanh lịch (mẫu 3) — chỉ áp cho .homev3 ===== */
-.homev3{font-family:var(--home-font,inherit)}
-.homev3 .hero:not(.hascover){background:none;color:var(--text);box-shadow:none;min-height:0;border-radius:0;margin:8px 20px 2px;padding:16px 0 2px;text-align:center;align-items:center}
-.homev3 .hero:not(.hascover) > button{display:none}
-.homev3 .hero:not(.hascover) .inner{order:1}
-.homev3 .hero:not(.hascover) .names{text-shadow:none;justify-content:center;color:var(--muted);font-weight:600;font-size:11px;letter-spacing:2.5px;text-transform:uppercase}
-.homev3 .hero:not(.hascover) .count{text-shadow:none;font-family:Georgia,"Times New Roman",serif;font-weight:500;font-size:44px;letter-spacing:-1px;color:var(--text);margin-top:6px;line-height:1.05}
-.homev3 .hero:not(.hascover) .sub{text-shadow:none;color:var(--muted)}
-.homev3 .hero:not(.hascover) .badges{order:3;position:static;max-width:none;justify-content:center;margin:12px 0 0}
-.homev3 .hero:not(.hascover) .badges .b{background:transparent;border:1px solid var(--line);color:var(--primary);box-shadow:none;font-weight:600}
-.homev3 .card{box-shadow:none;border:none;border-top:1px solid var(--line);border-radius:0;background:transparent;margin:0 20px;padding:15px 0}
-.homev3 .item{box-shadow:none;border:none;border-top:1px solid var(--line);border-radius:0;background:transparent;margin:0 20px;padding:11px 0}
-.homev3 .stat{box-shadow:none}
-.homev3 .stat .n{font-family:Georgia,"Times New Roman",serif;font-weight:500}
-.homev3 .hc-title{font-size:11px;font-weight:600;letter-spacing:1.3px;text-transform:uppercase;color:var(--primary)}
-.homev3 .item h4{font-weight:600;font-size:14px}
-.homev3 .sec-title{font-size:11px;font-weight:600;letter-spacing:1.3px;text-transform:uppercase;color:var(--primary)}
-.mood-pick{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
-.mood-pick button{font-size:22px;width:42px;height:42px;border-radius:12px;background:var(--bg);border:1.5px solid var(--line)}
-.mood-pick button.on{border-color:var(--primary);background:var(--chip)}
-
-/* Progress */
-.prog{height:10px;border-radius:999px;background:var(--chip);overflow:hidden;margin-top:8px}
-.prog > i{display:block;height:100%;background:linear-gradient(90deg,var(--primary),var(--primary2))}
-
-/* Photos */
-.gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:10px 14px}
-.gallery .ph{position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;background:var(--chip)}
-.gallery .ph img{width:100%;height:100%;object-fit:cover;display:block}
-.gallery .ph .cap{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(transparent,rgba(0,0,0,.6));
-  color:#fff;font-size:10px;padding:10px 6px 4px}
-/* Nhiều ảnh: dải thumbnail + khung chọn ảnh */
-.phrow{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:6px}
-.phrow .th{position:relative;line-height:0;cursor:pointer;border-radius:8px;overflow:hidden;background:var(--chip);flex:0 0 auto}
-.phrow .th img{display:block}
-.phrow .more{width:56px;height:56px;border-radius:8px;background:var(--chip);color:var(--chip-tx);
-  display:grid;place-items:center;font-size:12.5;font-weight:700;cursor:pointer;flex:0 0 auto}
-.phlab{font-size:11.5;color:var(--muted);margin-top:8px}
-.phpick{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-.phpick .cell{position:relative}
-.phpick .cell img{border-radius:8px;object-fit:cover;display:block}
-.phpick .cell .x{position:absolute;top:-7px;right:-7px;background:var(--card);border:1px solid var(--line);
-  border-radius:50%;width:20px;height:20px;font-size:11;color:var(--muted);line-height:1;padding:0}
-
-/* Map */
-#map{height:340px;border-radius:16px;margin:10px 14px;border:1px solid var(--line);overflow:hidden}
-
-/* Bottom nav */
-/* Floating Dock (phong cách #3): thanh nổi tách rời, tab đang chọn nhô lên thành nút tròn */
-.nav{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(12px + env(safe-area-inset-bottom,0px));
-  width:calc(100% - 28px);max-width:452px;z-index:50;display:flex;align-items:flex-end;padding:8px 6px;
-  background:var(--card);border:1px solid var(--line);border-radius:26px;
-  box-shadow:0 14px 32px -10px rgba(40,20,30,.30),0 4px 12px -6px rgba(40,20,30,.14)}
-.nav button{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--muted);font-size:10px;font-weight:600;white-space:nowrap;background:none;transition:color .2s ease}
-.nav button .ic{font-size:20px;line-height:1;height:38px;width:38px;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:transform .26s cubic-bezier(.34,1.4,.5,1),background .2s ease,box-shadow .26s ease}
-.nav button .ic svg{display:block;width:22px;height:22px}
-.nav button.on{color:var(--primary)}
-.nav button.on .ic{background:linear-gradient(145deg,var(--primary2),var(--primary));color:var(--on-primary,#fff);transform:translateY(-12px);box-shadow:0 10px 18px -4px color-mix(in srgb,var(--primary) 55%,transparent)}
-
-/* Modal */
-.ov{position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;justify-content:center}
-.sheet{background:var(--card);width:100%;max-width:480px;border-radius:22px 22px 0 0;padding:16px 16px 22px;max-height:88vh;overflow:auto;animation:up .25s ease}
-@keyframes up{from{transform:translateY(40px);opacity:.5}to{transform:translateY(0);opacity:1}}
-.sheet h3{margin:2px 0 14px;font-size:18px}
-.sheet .x{position:absolute;right:16px;top:14px;font-size:22px;color:var(--muted)}
-.flash{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:99;background:var(--text);color:var(--card);
-  padding:10px 16px;border-radius:999px;font-size:13px;font-weight:700;box-shadow:0 8px 24px rgba(0,0,0,.25)}
-.emoji-row{display:flex;gap:6px;flex-wrap:wrap}
-.emoji-row button{font-size:22px;width:40px;height:40px;border-radius:10px;background:var(--bg);border:1.5px solid var(--line)}
-.emoji-row button.on{border-color:var(--primary);background:var(--chip)}
-.dim{opacity:.55}
+.item h4{margin:0;font-size:var(--t-sm);font-weight:700;flex:1;line-height:1.4}
+.sec-title{font-weight:700;font-size:var(--t-xs);letter-spacing:1.2px;text-transform:uppercase;
+  color:var(--ink-3);margin:var(--sp-5) var(--gut) var(--sp-2);display:flex;align-items:center;gap:8px}
+.muted{color:var(--ink-2)}
+.row{display:flex;gap:10px;align-items:center}
+.grow{flex:1;min-width:0}
 .center{text-align:center}
-.grow{flex:1}
-.danger{color:#e0436b}
-.linkout{color:var(--primary);font-weight:700;font-size:13px;text-decoration:none;word-break:break-all}
+.empty{text-align:center;color:var(--ink-2);padding:26px 20px;font-size:var(--t-sm);line-height:1.6}
 
-/* ============================================================
-   Skin "Sổ tay" (scrapbook) v2 — theme riêng, chỉ áp khi body.theme-sotay.
-   Chữ ký: giấy · thẻ hơi nghiêng · bóng cứng lệch · viền đứt · washi tape.
-   ============================================================ */
-body.theme-sotay{
-  --bg:#efe7db; --bg2:#e7ddca; --card:#fffdf7; --text:#3d352c; --muted:#95896f;
-  --line:#cdba97; --primary:#c65b52; --primary2:#e0906f; --on-primary:#fff;
-  --accent:#a8553f; --chip:#f2e7cf; --chip-tx:#96682f; --good:#5f8a5a; --warn:#d99a3a;
-  --heart:#d76a6a; --shadow:3px 4px 0 rgba(74,58,40,.16); --radius:6px;
-  background:
-    repeating-linear-gradient(0deg, transparent 0 28px, rgba(150,120,80,.06) 28px 29px),
-    linear-gradient(180deg,var(--bg),var(--bg2));
-  background-attachment:fixed;
-}
-/* Thẻ & dòng danh sách = mảnh giấy: viền đứt + bóng cứng lệch rõ, bo góc nhỏ */
-body.theme-sotay .card,
-body.theme-sotay .item,
-body.theme-sotay .stat,
-body.theme-sotay .homev3 .card,
-body.theme-sotay .homev3 .item,
-body.theme-sotay .ju-now{
-  background:var(--card); border:1px dashed var(--line); border-radius:6px;
-  box-shadow:3px 4px 0 rgba(74,58,40,.16);
-}
-body.theme-sotay .homev3 .card,
-body.theme-sotay .homev3 .item{ margin:13px 16px; padding:13px 14px; }
-body.theme-sotay .ju-now{ border:1px dashed var(--line) !important; border-radius:6px !important; }
-/* Nghiêng ngẫu nhiên THẬT: góc gán riêng cho từng thẻ bằng JS qua biến --rot
-   (xem hàm applySotayTilt). Mỗi thẻ một góc, cả 2 chiều → không dồn một bên. */
-body.theme-sotay .card,
-body.theme-sotay .item{ transform:rotate(var(--rot,0deg)); transform-origin:50% 50%; }
-body.theme-sotay .ju-now{ transform:rotate(-1.3deg); transform-origin:50% 50%; }
-/* Washi tape trên thẻ "Bây giờ nên làm" */
-body.theme-sotay .ju-now{ position:relative; overflow:visible; }
-body.theme-sotay .ju-now::before{
-  content:""; position:absolute; top:-10px; left:50%;
-  width:70px; height:19px; transform:translateX(-50%) rotate(-3deg);
-  background:repeating-linear-gradient(45deg, rgba(216,169,79,.55) 0 7px, rgba(216,169,79,.34) 7px 14px);
-  border:1px solid rgba(190,140,60,.35); pointer-events:none;
-}
-/* Tiêu đề mục = chữ viết tay + vệt bút dạ quang */
-body.theme-sotay .sec-title,
-body.theme-sotay .homev3 .sec-title,
-body.theme-sotay .homev3 .hc-title{
-  font-family:'Patrick Hand',"Segoe Script",cursive; font-weight:400;
-  text-transform:none; letter-spacing:.2px; color:var(--accent); font-size:16px;
-}
-body.theme-sotay .homev3 .hc-title{
-  display:inline; background:linear-gradient(180deg,transparent 55%, rgba(224,169,79,.42) 55% 92%, transparent 92%);
-  padding:0 2px;
-}
-body.theme-sotay .homev3 .sec-title{
-  background:linear-gradient(180deg,transparent 58%, rgba(224,169,79,.38) 58% 92%, transparent 92%);
-}
-/* Nhãn "Bây giờ nên làm" (inline) cũng nét viết tay cho đồng bộ */
-body.theme-sotay .now-lbl{
-  font-family:'Patrick Hand',"Segoe Script",cursive !important; text-transform:none !important;
-  letter-spacing:.2px !important; font-size:15px !important; font-weight:400 !important; color:var(--accent) !important;
-}
-/* Chip / pill / nút lọc = mẩu băng giấy (góc gần vuông) */
-body.theme-sotay .pill{ border-radius:2px; }
-body.theme-sotay .filters button{ border-radius:3px; }
-body.theme-sotay .seg{ border-radius:6px; }
-body.theme-sotay .seg button{ border-radius:4px; }
-/* Thanh điều hướng = mép giấy khâu (gạch đứt) */
-body.theme-sotay .nav{ background:var(--card); border:1px dashed var(--line); }
-/* Washi tape + tên viết tay trên "măng-sét" trang chủ */
-body.theme-sotay .homev3 .hero:not(.hascover){ position:relative; padding-top:30px; }
-body.theme-sotay .homev3 .hero:not(.hascover)::before{
-  content:""; position:absolute; top:5px; left:50%;
-  width:80px; height:20px; transform:translateX(-50%) rotate(-2.5deg);
-  background:repeating-linear-gradient(45deg, rgba(216,169,79,.55) 0 7px, rgba(216,169,79,.34) 7px 14px);
-  border:1px solid rgba(190,140,60,.35); pointer-events:none;
-}
-body.theme-sotay .homev3 .hero:not(.hascover) .names{
-  font-family:'Patrick Hand',"Segoe Script",cursive;
-  text-transform:none; letter-spacing:.4px; font-size:17px; color:var(--accent);
-}
-/* Đơn vị "ngày" & phụ đề dưới số cũng nét viết tay cho ăn nhập */
-body.theme-sotay .homev3 .hero:not(.hascover) .sub{
-  font-family:'Patrick Hand',"Segoe Script",cursive; font-size:13.5px;
-}
-/* (Đã bỏ tape trên các thẻ trang chủ cho đỡ rối — chỉ nhấn nhá ở măng-sét
-   và thẻ "Bây giờ nên làm".) */
-/* ===== Riêng cho app Sóc ===== */
-.sc-head{padding:18px 16px 6px;text-align:center}
-.sc-head h1{margin:0;font-size:22px;color:var(--primary)}
-.sc-head p{margin:4px 0 0;font-size:12.5px;color:var(--muted)}
-.sc-back{display:block;text-align:center;margin:18px 14px 30px;text-decoration:none}
-.sc-sync{margin:0 14px 4px;font-size:11px;color:var(--muted);text-align:center}
-/* Thanh cấp cứu — luôn thấy ở đầu app */
-.sc-sos{display:flex;align-items:center;gap:10px;margin:10px 14px;padding:11px 13px;border-radius:10px;
-  background:linear-gradient(135deg,#c0392b,#e0654f);color:#fff;box-shadow:var(--shadow);cursor:pointer;
-  border:none;width:calc(100% - 28px);text-align:left}
-.sc-sos b{font-size:14.5px;display:block}
-.sc-sos small{font-size:10.5px;opacity:.9}
-.sc-sos .ic{font-size:23px;line-height:1;flex:0 0 auto}
-/* Khối "đi viện ngay" trong bài sơ cứu */
-.sc-er{border:1.5px solid #c0392b;background:rgba(192,57,43,.07);border-radius:10px;padding:9px 11px;margin-top:9px}
-.sc-er .h{color:#c0392b;font-weight:800;font-size:12.5px;margin-bottom:4px}
-.sc-do li{margin-bottom:5px}
-.sc-dont{color:#b04a3d}
-.sc-disc{font-size:10.5px;color:var(--muted);line-height:1.55;margin:8px 14px 0;
-  border-left:2px solid var(--line);padding-left:9px}
-/* Trang chủ — mẫu 05 (bảng chỉ số) + mẫu 03 (lưới ô lớn) */
-.sc-stats{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:11px 14px}
-.sc-stat{margin:0;padding:11px 12px}
-.sc-lbl{font-size:10px;color:var(--muted);font-weight:600}
-.sc-num{font-family:Georgia,"Times New Roman",serif;font-weight:500;letter-spacing:-.5px;
-  font-variant-numeric:tabular-nums;color:var(--text);font-size:21px;line-height:1.2}
-.sc-num .u{font-size:12px}
-.sc-tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:11px 14px}
-.sc-tile{margin:0;padding:15px 7px;text-align:center;cursor:pointer;display:block;width:100%;
-  color:inherit;font-family:inherit}
-.sc-tile .ic{font-size:27px;line-height:1.1;display:block}
-.sc-tile b{display:block;font-size:13.5px;margin-top:4px}
-.sc-tile small{color:var(--muted);font-size:10.5px;display:block;margin-top:1px}
-.sc-hero{text-align:center;padding:16px 16px 2px}
-.sc-hero .av{width:74px;height:74px;border-radius:50%;background:var(--chip);border:2px dashed var(--line);
-  margin:0 auto;display:grid;place-items:center;font-size:38px;box-shadow:var(--shadow)}
-.sc-hero .nm{font-size:22px;font-weight:800;color:var(--primary);margin-top:9px;line-height:1.2}
-.sc-hero .ag{font-family:Georgia,"Times New Roman",serif;font-size:14px;margin-top:1px}
+.pill{display:inline-flex;align-items:center;gap:5px;background:var(--surface-2);
+  color:var(--ink-2);border:1px solid var(--line);border-radius:999px;
+  padding:6px 12px;font-size:var(--t-xs);font-weight:600;min-height:32px}
+.pill.on{background:var(--brand);border-color:var(--brand);color:var(--on-brand)}
+.pill.good{background:var(--good-soft);border-color:transparent;color:var(--good)}
+.pill.warn{background:var(--warn-soft);border-color:transparent;color:var(--warn)}
+.pill.hot{background:var(--danger);border-color:var(--danger);color:#fff}
+
+.btn{background:var(--brand);color:var(--on-brand);border-radius:var(--r-sm);
+  padding:12px 16px;font-weight:700;font-size:var(--t-sm);display:inline-flex;
+  align-items:center;justify-content:center;gap:7px;width:100%;min-height:46px;
+  box-shadow:var(--shadow-1)}
+.btn.sm{padding:9px 13px;width:auto;min-height:40px}
+.btn.soft{background:var(--brand-soft);color:var(--brand-ink);box-shadow:none}
+.btn.ghost{background:transparent;color:var(--brand);border:1.5px solid var(--line);box-shadow:none}
+.btn.danger{background:var(--danger);color:#fff}
+.iconbtn{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;
+  background:var(--surface-2);border:1px solid var(--line);color:var(--ink-2);font-size:15px;flex:0 0 auto}
+.xbtn{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;
+  color:var(--ink-3);font-size:15px;flex:0 0 auto}
+.tick{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;font-size:19px;flex:0 0 auto}
+
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:var(--sp-3)}
+.field label{font-size:var(--t-xs);font-weight:700;color:var(--ink-2)}
+.inp{background:var(--surface-2);border:1.5px solid var(--line);border-radius:var(--r-sm);
+  padding:12px 13px;width:100%;color:var(--ink);min-height:46px}
+.inp::placeholder{color:var(--ink-3)}
+.inp:focus{border-color:var(--brand);outline:none}
+textarea.inp{resize:vertical;min-height:72px;line-height:1.55}
+
+.prog{height:8px;border-radius:999px;background:var(--line-2);overflow:hidden;margin-top:8px}
+.prog > i{display:block;height:100%;background:var(--brand);border-radius:999px}
+
+/* ===== Điều hướng hai tầng =====
+   Dưới: 5 nhóm chính. Trong nhóm: hàng tab gạch chân.
+   Trước đây 10 mục nằm trong một lưới 3 hàng, chiếm gần một phần tư màn hình
+   ở MỌI trang và không cho biết mục nào đang cần để ý. */
+.dock{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:100%;max-width:520px;
+  z-index:50;display:flex;background:color-mix(in srgb,var(--surface) 92%,transparent);
+  backdrop-filter:saturate(1.4) blur(12px);border-top:1px solid var(--line);
+  padding:6px 4px calc(6px + env(safe-area-inset-bottom,0px))}
+.dock button{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:2px;
+  color:var(--ink-3);font-size:10.5px;font-weight:600;padding:5px 2px;border-radius:11px;
+  min-height:52px;justify-content:center;position:relative}
+.dock button .ic{font-size:20px;line-height:1.15}
+.dock button.on{color:var(--brand)}
+.dock button .dot{position:absolute;top:5px;right:calc(50% - 17px);width:7px;height:7px;
+  border-radius:50%;background:var(--warn);border:1.5px solid var(--surface)}
+
+.subtabs{display:flex;gap:2px;overflow-x:auto;padding:2px var(--gut) 0;
+  border-bottom:1px solid var(--line);scrollbar-width:none}
+.subtabs::-webkit-scrollbar{display:none}
+.subtabs button{flex:0 0 auto;padding:11px 12px 9px;font-size:var(--t-sm);font-weight:600;
+  color:var(--ink-2);border-bottom:2.5px solid transparent;white-space:nowrap;min-height:44px}
+.subtabs button.on{color:var(--brand);border-bottom-color:var(--brand)}
+
+/* ===== Khối mở ra đọc ===== */
+.col-h{cursor:pointer;user-select:none;display:inline-flex;align-items:center;gap:6px;
+  min-height:40px;font-size:var(--t-xs);letter-spacing:1.2px;text-transform:uppercase}
+.col-chev{font-size:10px;color:var(--ink-3);width:11px;text-align:center}
+
+/* ===== Cấp cứu: đỏ chỉ ở đây ===== */
+.sos-bar{display:flex;align-items:center;gap:11px;margin:var(--sp-3) var(--gut);
+  padding:13px 14px;border-radius:var(--r);background:var(--danger);color:#fff;
+  width:calc(100% - var(--gut)*2);text-align:left;box-shadow:var(--shadow-1);min-height:56px}
+.sos-bar b{font-size:var(--t-sm);display:block;font-weight:700}
+.sos-bar small{font-size:11.5px;opacity:.92;display:block}
+.sos-bar .ic{font-size:22px;flex:0 0 auto}
+.callout{border-radius:var(--r-sm);padding:11px 13px;margin-top:10px;font-size:var(--t-sm);line-height:1.6}
+.callout.er{background:var(--danger-soft);border-left:3px solid var(--danger)}
+.callout.er .h{color:var(--danger);font-weight:800;font-size:var(--t-xs);
+  text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px}
+.callout.tip{background:var(--brand-soft);border-left:3px solid var(--brand)}
+.lbl-do{font-size:var(--t-xs);font-weight:800;color:var(--good);letter-spacing:.8px;text-transform:uppercase}
+.lbl-dont{font-size:var(--t-xs);font-weight:800;color:var(--danger);letter-spacing:.8px;text-transform:uppercase}
+.lbl-neutral{font-size:var(--t-xs);font-weight:800;color:var(--ink-2);letter-spacing:.8px;text-transform:uppercase}
+.note{font-size:var(--t-xs);color:var(--ink-2);line-height:1.6;margin:var(--sp-3) var(--gut) 0;
+  border-left:2px solid var(--line);padding-left:11px}
+
+/* ===== Trang chủ ===== */
+.hero{text-align:center;padding:var(--sp-5) var(--gut) var(--sp-2)}
+.hero .av{width:78px;height:78px;border-radius:26px;background:var(--brand-soft);
+  margin:0 auto;display:grid;place-items:center;font-size:38px;box-shadow:var(--shadow-1)}
+.hero .nm{font-size:var(--t-xl);font-weight:800;margin-top:11px;line-height:1.2}
+.hero .ag{font-size:var(--t-sm);color:var(--ink-2);margin-top:2px;font-variant-numeric:tabular-nums}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:var(--sp-3) var(--gut)}
+.stat{margin:0;padding:13px 14px}
+.stat .k{font-size:11.5px;color:var(--ink-2);font-weight:600}
+.stat .v{font-size:var(--t-xl);font-weight:700;line-height:1.2;font-variant-numeric:tabular-nums;margin-top:1px}
+.stat .v .u{font-size:var(--t-sm);font-weight:600;color:var(--ink-2)}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:var(--sp-3) var(--gut)}
+.tile{margin:0;padding:16px 9px;text-align:center;display:block;width:100%;min-height:96px}
+.tile .ic{font-size:25px;line-height:1.15;display:block}
+.tile b{display:block;font-size:var(--t-sm);margin-top:5px}
+.tile small{color:var(--ink-2);font-size:11.5px;display:block;margin-top:1px}
+.alert{display:flex;align-items:center;gap:10px;padding:12px 14px;margin:var(--sp-2) var(--gut);
+  background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--warn);
+  border-radius:var(--r);box-shadow:var(--shadow-1);width:calc(100% - var(--gut)*2);text-align:left;min-height:52px}
+
+/* ===== Tấm che (sheet) ===== */
+.ov{position:fixed;inset:0;z-index:80;background:rgba(6,14,18,.5);display:flex;
+  align-items:flex-end;justify-content:center}
+.sheet{background:var(--surface);width:100%;max-width:520px;border-radius:var(--r-lg) var(--r-lg) 0 0;
+  padding:var(--sp-4) var(--sp-4) var(--sp-6);max-height:88vh;overflow:auto;position:relative;
+  animation:up .22s ease}
+@keyframes up{from{transform:translateY(30px);opacity:.6}to{transform:translateY(0);opacity:1}}
+.sheet h3{margin:0 34px 12px 0;font-size:var(--t-lg)}
+.sheet .x{position:absolute;right:12px;top:12px;width:36px;height:36px;border-radius:10px;
+  display:grid;place-items:center;color:var(--ink-2);font-size:17px}
+
+/* ===== Tìm kiếm ===== */
+.hit{display:block;width:100%;text-align:left;margin:var(--sp-2) 0;padding:12px 13px;
+  background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-sm)}
+.hit .where{font-size:11px;color:var(--brand);font-weight:700;letter-spacing:.6px;text-transform:uppercase}
+.hit .t{font-size:var(--t-sm);font-weight:600;margin-top:2px}
+.hit .s{font-size:var(--t-xs);color:var(--ink-2);margin-top:2px;line-height:1.5}
+
+/* ===== Lưới 30 ngày tập bô ===== */
+.grid30{display:grid;grid-template-columns:repeat(10,1fr);gap:4px}
+.grid30 span{aspect-ratio:1;border-radius:5px;font-size:9px;display:grid;place-items:center;
+  color:var(--ink-3);background:var(--line-2);font-variant-numeric:tabular-nums}
+.grid30 span.dry{background:var(--good);color:#fff}
+.grid30 span.wet{background:var(--warn-soft);color:var(--warn)}
+
+/* ===== Trạng thái nạp / lỗi ===== */
+.skel{margin:var(--sp-3) var(--gut);height:74px;border-radius:var(--r);
+  background:linear-gradient(90deg,var(--line-2) 25%,var(--surface-2) 50%,var(--line-2) 75%);
+  background-size:400% 100%;animation:sh 1.3s ease-in-out infinite}
+@keyframes sh{0%{background-position:100% 0}100%{background-position:0 0}}
+
+/* Tiện ích nhỏ dùng lại */
+.num{font-variant-numeric:tabular-nums;font-weight:700;line-height:1.2}
+.num .u{font-size:var(--t-sm);font-weight:600;color:var(--ink-2)}
+.bul{margin:0;padding-left:19px;font-size:var(--t-sm);line-height:1.65}
+.bul li{margin-bottom:6px}
+.bul.dont{color:var(--danger)}
+.collapse{margin:0}
+.col-body{margin:0}
 </style>
 </head>
 <body>
@@ -430,6 +296,9 @@ body.theme-sotay .homev3 .hero:not(.hascover) .sub{
     DRESS_TEMP:[], DRESS_RULES:[], SEASON_ILL:[], SCARY_TASKS:[], WEEKEND_PLANS:[], CHILD_DOCS:[],
     // Đợt 2: tập bô + chuẩn tăng trưởng WHO (hai khoá WHO_* là object theo giới tính)
     POTTY_READY:[], POTTY_TIMES:[], POTTY_FIX:[], WHO_WEIGHT:{}, WHO_HEIGHT:{},
+    // Bổ sung: giấc ngủ · răng · khám & sàng lọc định kỳ
+    SLEEP_NEED:[], SLEEP_ROUTINE:[], SLEEP_FIX:[], TEETH_ORDER:[], CHECKUP_SCHEDULE:[], DEV_REDFLAGS:[],
+    TEETH_CARE:{},
     // Đợt 3: đi lớp · ra khỏi nhà · tâm lý bé và bố mẹ
     SCHOOL_START:[], SCHOOL_ILL:[], TEACHER_NOTE:[], TRIP_PACK:[], TRIP_TIPS:[], DUTY_SLOTS:[],
     SCHOOL_PICK:{}, TWOS_CRISIS:{}, PARENT_BURNOUT:{},
@@ -590,7 +459,7 @@ function CloudImg({path,style,alt}){
   useEffect(()=>{ let live=true; if(!path){ setUrl(null); return; }
     Cloud.signedUrl(path).then(u=>{ if(live) setUrl(u); }).catch(()=>{});
     return ()=>{ live=false; }; },[path]);
-  if(!url) return <div style={Object.assign({background:'var(--chip)',display:'grid',placeItems:'center',fontSize:20},style||{})}>🖼️</div>;
+  if(!url) return <div style={Object.assign({background:'var(--surface-2)',display:'grid',placeItems:'center',fontSize:20},style||{})}>🖼️</div>;
   return <img src={url} alt={alt||''} style={Object.assign({objectFit:'cover',display:'block'},style||{})}/>;
 }
 
@@ -664,14 +533,45 @@ function Sheet({title,onClose,children}){
     </div>
   );
 }
-// Bản gọn của FilterBar bên Just Us: app này không có phần sắp xếp lại menu.
-function FilterBar({items, value, onChange}){
+/* ============ Điều hướng hai tầng ============
+   Trước đây 10 mục nằm chung một lưới 3 hàng, chiếm gần một phần tư màn hình ở
+   MỌI trang. Nay: 5 nhóm ở thanh dưới, trong nhóm mới có tab con. */
+const NAV=[
+  {k:'home',ic:'🏠',n:'Nhà',tabs:[{k:'home',n:'Trang chủ'}]},
+  {k:'grow',ic:'🌱',n:'Lớn lên',tabs:[
+    {k:'develop',n:'Mốc & lời nói'},{k:'play',n:'Chơi & ra ngoài'},
+    {k:'eat',n:'Ăn uống'},{k:'sleep',n:'Giấc ngủ'},{k:'school',n:'Đi lớp'}]},
+  {k:'care',ic:'🏥',n:'Sức khoẻ',tabs:[
+    {k:'health',n:'Theo dõi & khám'},{k:'teeth',n:'Răng'},
+    {k:'potty',n:'Tập bô'},{k:'safe',n:'An toàn'}]},
+  {k:'raise',ic:'💞',n:'Nuôi dạy',tabs:[{k:'parent',n:'Với con'},{k:'family',n:'Bố mẹ'}]},
+  {k:'keep',ic:'📔',n:'Kỷ niệm',tabs:[{k:'memory',n:'Kỷ niệm'}]},
+];
+const TAB_GROUP={}; NAV.forEach(g=>g.tabs.forEach(t=>{ TAB_GROUP[t.k]=g.k; }));
+const TAB_NAME={}; NAV.forEach(g=>g.tabs.forEach(t=>{ TAB_NAME[t.k]=t.n; }));
+
+function Dock({tab,onGo,alertGroups}){
+  const cur=TAB_GROUP[tab]||'home';
   return (
-    <div className="segbar">
-      {items.map(it=>(
-        <button key={it.k} className={'segpill'+(value===it.k?' on':'')} onClick={()=>onChange(it.k)}>
-          <span className="segic">{it.icon}</span>{it.label}
+    <nav className="dock" aria-label="Chuyển nhóm">
+      {NAV.map(g=>(
+        <button key={g.k} className={cur===g.k?'on':''} onClick={()=>onGo(g.tabs[0].k)}
+          aria-current={cur===g.k?'page':undefined} aria-label={g.n}>
+          <span className="ic" aria-hidden="true">{g.ic}</span>{g.n}
+          {alertGroups&&alertGroups[g.k] && <span className="dot" aria-hidden="true"></span>}
         </button>
+      ))}
+    </nav>
+  );
+}
+function SubTabs({tab,onGo}){
+  const g=NAV.find(x=>x.k===(TAB_GROUP[tab]||'home'));
+  if(!g||g.tabs.length<2) return null;
+  return (
+    <div className="subtabs" role="tablist">
+      {g.tabs.map(t=>(
+        <button key={t.k} role="tab" aria-selected={tab===t.k} className={tab===t.k?'on':''}
+          onClick={()=>onGo(t.k)}>{t.n}</button>
       ))}
     </div>
   );
@@ -722,6 +622,13 @@ const TRIP_TIPS=JUD.TRIP_TIPS;
 const TWOS_CRISIS=JUD.TWOS_CRISIS;
 const PARENT_BURNOUT=JUD.PARENT_BURNOUT;
 const DUTY_SLOTS=JUD.DUTY_SLOTS;
+const SLEEP_NEED=JUD.SLEEP_NEED;
+const SLEEP_ROUTINE=JUD.SLEEP_ROUTINE;
+const SLEEP_FIX=JUD.SLEEP_FIX;
+const TEETH_ORDER=JUD.TEETH_ORDER;
+const TEETH_CARE=JUD.TEETH_CARE;
+const CHECKUP_SCHEDULE=JUD.CHECKUP_SCHEDULE;
+const DEV_REDFLAGS=JUD.DEV_REDFLAGS;
 
 /* ============ Thống nhất cách dạy con ============ */
 function ParentingAgreement(){
@@ -734,7 +641,7 @@ function ParentingAgreement(){
         return <div key={i} className="item">
           <div className="row"><span style={{fontSize:16}}>{st.agreed?'✅':'❓'}</span><b className="grow" style={{fontSize:14}}>{q}</b></div>
           <textarea className="inp" style={{marginTop:6,minHeight:48,fontSize:12.5}} placeholder="Hai đứa thống nhất là…" value={st.note||''} onChange={e=>setPq({...pq,[i]:{...st,note:e.target.value}})}/>
-          <button className="pill" style={{marginTop:6,background:st.agreed?'var(--good)':'var(--chip)',color:st.agreed?'#fff':'var(--chip-tx)'}} onClick={()=>setPq({...pq,[i]:{...st,agreed:!st.agreed}})}>{st.agreed?'✓ Đã thống nhất':'Đánh dấu đã thống nhất'}</button>
+          <button className="pill" style={{marginTop:6,background:st.agreed?'var(--good)':'var(--surface-2)',color:st.agreed?'#fff':'var(--brand-ink)'}} onClick={()=>setPq({...pq,[i]:{...st,agreed:!st.agreed}})}>{st.agreed?'✓ Đã thống nhất':'Đánh dấu đã thống nhất'}</button>
         </div>; })}
     </div>
   );
@@ -750,12 +657,158 @@ function SkillGuide({g,done,onTick}){
         <div className="grow" style={{minWidth:0,cursor:'pointer'}} onClick={()=>setOpen(o=>!o)}>
           <div style={{fontSize:14,fontWeight:700,textDecoration:done?'line-through':'none'}}>{g.name}</div>
           <div className="muted" style={{fontSize:11}}>{open?'':'Bấm để xem cách dạy · '}{g.age}</div></div>
-        {onTick && <button className="pill" style={{flex:'0 0 auto',background:done?'var(--good)':'var(--chip)',color:done?'#fff':'var(--chip-tx)'}} onClick={onTick}>{done?'✓ Đã biết':'Bé đã biết'}</button>}
+        {onTick && <button className="pill" style={{flex:'0 0 auto',background:done?'var(--good)':'var(--surface-2)',color:done?'#fff':'var(--brand-ink)'}} onClick={onTick}>{done?'✓ Đã biết':'Bé đã biết'}</button>}
       </div>
       {open && <ol style={{margin:'8px 0 0',paddingLeft:20,fontSize:12.5,lineHeight:1.6}}>{g.steps.map((s,i)=><li key={i} style={{marginBottom:5}}>{s}</li>)}</ol>}
     </div>
   );
 }
+/* ============ Tìm kiếm toàn app ============
+   44 nhóm nội dung nằm rải trong 13 mục — không có ô tìm thì phải nhớ
+   "sốt co giật nằm tab nào" mới tra được. */
+function searchIndex(){
+  const out=[];
+  const add=(tab,where,title,body)=>out.push({tab,where,title,body:(body||'')});
+  (EMERGENCY||[]).forEach(e=>add('safe','Cấp cứu',e.title,[e.lead].concat(e.do||[],e.dont||[],e.er||[]).join(' ')));
+  (DANGER_ITEMS||[]).forEach(d=>add('safe','Đồ nguy hiểm',d.n,d.why));
+  (HOME_SAFETY||[]).forEach(g=>add('safe','Chống trẻ trong nhà',g.g,(g.items||[]).join(' ')));
+  add('safe','An toàn','Dấu hiệu phải đi viện ngay',(RED_FLAGS||[]).join(' '));
+  (TANTRUM_SCRIPTS||[]).forEach(x=>add('parent','Câu nói khi ăn vạ',x.sit,[x.why].concat(x.say||[],x.avoid||[]).join(' ')));
+  (CHILD_BEHAVIOR||[]).forEach(x=>add('parent','Hành vi',x.title,[x.lead].concat(x.steps||[]).join(' ')));
+  (CHILD_ISSUES||[]).forEach(x=>add('parent','Vấn đề thường gặp',x.title,(x.tips||[]).join(' ')));
+  (SKILL_GUIDES||[]).forEach(x=>add('parent','Dạy kỹ năng',x.name,[x.age].concat(x.steps||[]).join(' ')));
+  (CHORES_2Y||[]).forEach(x=>add('parent','Việc nhà vừa sức',x.n,x.d));
+  (SELF_CORNER||[]).forEach(x=>add('parent','Bày nhà cho bé',x.n,x.d));
+  add('family','Bố mẹ','Khủng hoảng tuổi lên 2',[TWOS_CRISIS.what,TWOS_CRISIS.when].concat(TWOS_CRISIS.signs||[],TWOS_CRISIS.help||[]).join(' '));
+  add('family','Bố mẹ','Bố mẹ đuối sức',[PARENT_BURNOUT.lead].concat(PARENT_BURNOUT.signs||[],PARENT_BURNOUT.now||[],PARENT_BURNOUT.share||[]).join(' '));
+  (SCARY_TASKS||[]).forEach(x=>add('health','Việc bé sợ',x.n,(x.tips||[]).join(' ')));
+  (SEASON_ILL||[]).forEach(x=>add('health','Bệnh theo mùa',x.s,(x.ill||[]).concat(x.do||[]).join(' ')));
+  (DRESS_TEMP||[]).forEach(x=>add('health','Mặc theo nhiệt độ',x.t,x.d));
+  (CHECKUP_SCHEDULE||[]).forEach(x=>add('health','Khám định kỳ',x.n,x.w+' '+x.d));
+  add('health','Sau tiêm','Theo dõi 48 giờ sau tiêm',[POST_VACCINE.first].concat(POST_VACCINE.normal||[],POST_VACCINE.care||[],POST_VACCINE.er||[]).join(' '));
+  add('health','Táo bón','Táo bón',[CONSTIPATION.lead].concat(CONSTIPATION.signs||[],CONSTIPATION.do||[],CONSTIPATION.er||[]).join(' '));
+  (CHILD_VACCINES||[]).forEach(v=>add('health','Tiêm chủng',v.age,(v.items||[]).join(' ')));
+  (SLEEP_FIX||[]).forEach(x=>add('sleep','Giấc ngủ',x.n,(x.tips||[]).join(' ')));
+  (SLEEP_NEED||[]).forEach(x=>add('sleep','Giấc ngủ',x.a+' — '+x.t,x.n));
+  (SLEEP_ROUTINE||[]).forEach(x=>add('sleep','Trình tự đi ngủ',x.t,x.d));
+  (TEETH_ORDER||[]).forEach(x=>add('teeth','Mọc răng',x.n,x.w));
+  add('teeth','Răng','Chăm răng hằng ngày',[TEETH_CARE.lead].concat(TEETH_CARE.daily||[],TEETH_CARE.visit||[],TEETH_CARE.teething||[]).join(' '));
+  (POTTY_FIX||[]).forEach(x=>add('potty','Tập bô',x.n,(x.tips||[]).join(' ')));
+  (POTTY_TIMES||[]).forEach(x=>add('potty','Mốc ngồi bô',x.t,x.d));
+  (DEV_REDFLAGS||[]).forEach(g=>add('develop','Dấu hiệu cần khám',g.m,(g.items||[]).join(' ')));
+  (CHILD_MILESTONES||[]).forEach(b=>add('develop','Mốc phát triển',b.band,(b.items||[]).join(' ')));
+  (PLAY_LIB||[]).forEach(x=>add('play','Trò chơi',x.n,x.c+' '+x.d));
+  (KIDS_CAFES||[]).forEach(x=>add('play','Chỗ chơi ở Hà Nội',x.n,x.a+' '+x.p));
+  (WEEKEND_PLANS||[]).forEach(x=>add('play','Cuối tuần',x.n,(x.plan||[]).join(' ')));
+  (TRIP_TIPS||[]).forEach(x=>add('play','Ra khỏi nhà',x.n,(x.tips||[]).join(' ')));
+  add('play','Màn hình','Màn hình cho bé',[].concat(SCREEN_GUIDE.rules||[],SCREEN_GUIDE.pick||[],SCREEN_GUIDE.off||[]).join(' '));
+  (WEAN_MENU||[]).forEach(x=>add('eat','Thực đơn',x.d,[x.sang,x.phu,x.trua,x.toi].join(' ')));
+  add('eat','Ăn uống','Mẹo ăn uống & chăm sóc',(CHILD_TIPS||[]).join(' '));
+  (SCHOOL_ILL||[]).forEach(x=>add('school','Bệnh ở lớp',x.n,x.sign+' '+x.off+' '+x.note));
+  (SCHOOL_START||[]).forEach(x=>add('school','Làm quen đi lớp',x.d,x.t));
+  add('school','Chọn trường','Chọn trường mầm non',[].concat(SCHOOL_PICK.criteria||[],SCHOOL_PICK.questions||[]).join(' '));
+  (CHILD_DOCS||[]).forEach(x=>add('school','Giấy tờ',x.n,x.d));
+  (PARENTING_QS||[]).forEach(q=>add('family','Thống nhất cách dạy',q,''));
+  return out;
+}
+const _fold=(x)=>(x||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'d');
+let _IDX=null;
+function SearchSheet({onClose,onGo}){
+  const [q,setQ]=useState('');
+  const idx=useMemo(()=>{ if(!_IDX) _IDX=searchIndex(); return _IDX; },[]);
+  const hits=useMemo(()=>{
+    const k=_fold(q.trim()); if(k.length<2) return [];
+    return idx.map(it=>{
+      const t=_fold(it.title), b=_fold(it.body), w=_fold(it.where);
+      let sc=0;
+      if(t.indexOf(k)>=0) sc+=10;
+      if(w.indexOf(k)>=0) sc+=6;   // tên mục cũng đáng kể: gõ "mọc răng" phải ra phần Răng
+      if(b.indexOf(k)>=0) sc+=3;
+      return sc?{...it,sc}:null;
+    }).filter(Boolean).sort((a,b)=>b.sc-a.sc).slice(0,25);
+  },[q,idx]);
+  return (
+    <Sheet title="Tìm trong app" onClose={onClose}>
+      <input className="inp" autoFocus placeholder="vd: sốt co giật, ăn vạ, mọc răng, tè dầm…" value={q} onChange={e=>setQ(e.target.value)}/>
+      {q.trim().length>=2 && hits.length===0 && <div className="empty">Không thấy gì khớp với “{q.trim()}”.</div>}
+      {q.trim().length<2 && <div className="muted" style={{fontSize:'var(--t-xs)',marginTop:10,lineHeight:1.6}}>Gõ từ 2 chữ trở lên. Không cần bỏ dấu — gõ “sot co giat” cũng ra.</div>}
+      {hits.map((h,i)=>(
+        <button key={i} className="hit" onClick={()=>onGo(h.tab)}>
+          <div className="where">{h.where} · {TAB_NAME[h.tab]||h.tab}</div>
+          <div className="t">{h.title}</div>
+          {h.body && <div className="s">{h.body.slice(0,110)}…</div>}
+        </button>
+      ))}
+    </Sheet>
+  );
+}
+
+/* ============ Sao lưu & khôi phục ============
+   Trước đây toàn bộ nhật ký, mốc, ảnh chỉ nằm ở localStorage + đúng một hàng
+   trên Supabase. Không có đường nào lấy dữ liệu ra. */
+function MenuSheet({onClose}){
+  const [msg,setMsg]=useState('');
+  const [st,setSt]=useState(Cloud.status);
+  useEffect(()=>{ Cloud.onChange=setSt; return ()=>{ Cloud.onChange=null; }; },[]);
+  const exportAll=()=>{
+    const dump={app:'soc',version:1,at:new Date().toISOString(),data:{}};
+    CHILD_KEYS.forEach(k=>{ const v=store.get(k,null); if(v!=null) dump.data[k]=v; });
+    const blob=new Blob([JSON.stringify(dump,null,1)],{type:'application/json'});
+    const url=URL.createObjectURL(blob); const a=document.createElement('a');
+    a.href=url; a.download='soc-backup-'+todayISO()+'.json';
+    document.body.appendChild(a); a.click();
+    setTimeout(()=>{ try{document.body.removeChild(a);}catch(_){} URL.revokeObjectURL(url); },600);
+    setMsg('Đã tải file sao lưu về máy.');
+  };
+  const importAll=(e)=>{
+    const f=e.target.files&&e.target.files[0]; e.target.value='';
+    if(!f) return;
+    const rd=new FileReader();
+    rd.onload=()=>{
+      try{
+        const j=JSON.parse(rd.result);
+        const d=(j&&j.data)?j.data:j;
+        const keys=Object.keys(d).filter(k=>CHILD_KEYS.indexOf(k)>=0);
+        if(!keys.length){ setMsg('File này không có dữ liệu của app Sóc.'); return; }
+        if(!confirm('Ghi đè '+keys.length+' nhóm dữ liệu của bé bằng nội dung trong file? Dữ liệu hiện tại trên máy này sẽ bị thay.')) return;
+        keys.forEach(k=>store.set(k,d[k]));
+        window.dispatchEvent(new CustomEvent('ju:remote'));
+        Cloud.schedulePush();
+        setMsg('Đã khôi phục '+keys.length+' nhóm dữ liệu.');
+      }catch(err){ setMsg('File không đọc được — cần đúng file JSON đã xuất từ app Sóc.'); }
+    };
+    rd.readAsText(f);
+  };
+  const synced=store.get('ju.synced',null);
+  return (
+    <Sheet title="Cài đặt & dữ liệu" onClose={onClose}>
+      <div className="card" style={{margin:'0 0 12px'}}>
+        <div className="row"><span style={{fontSize:19}}>{st==='on'?'☁️':'📴'}</span>
+          <div className="grow"><b style={{fontSize:'var(--t-sm)'}}>{st==='on'?'Đang đồng bộ với nửa kia':'Chưa nối đám mây'}</b>
+            <div className="muted" style={{fontSize:'var(--t-xs)',marginTop:2,lineHeight:1.55}}>
+              {st==='on'
+                ? (synced? ('Lần gần nhất: '+new Date(synced).toLocaleString('vi-VN')) : 'Đã nối, chưa có lần ghi nào.')
+                : 'Dữ liệu chỉ nằm trên máy này. Mở Just Us đăng nhập và ghép cặp thì app tự đồng bộ theo.'}
+            </div></div></div>
+      </div>
+      <div className="sec-title" style={{margin:'0 0 8px'}}>Sao lưu</div>
+      <div className="muted" style={{fontSize:'var(--t-xs)',lineHeight:1.6,marginBottom:10}}>
+        Nhật ký, mốc, số đo và đường dẫn ảnh của bé là thứ không mua lại được. Thỉnh thoảng tải một file về máy hoặc gửi vào email cho chắc.
+      </div>
+      <button className="btn" onClick={exportAll}>⬇️ Tải file sao lưu</button>
+      <label className="btn ghost" style={{marginTop:10,display:'flex',cursor:'pointer'}}>
+        ⬆️ Khôi phục từ file
+        <input type="file" accept="application/json,.json" onChange={importAll} style={{display:'none'}}/>
+      </label>
+      {msg && <div className="callout tip" style={{marginTop:12}}>{msg}</div>}
+      <div className="note" style={{margin:'16px 0 0'}}>
+        Ảnh không nằm trong file sao lưu — file chỉ giữ đường dẫn. Ảnh thật nằm trên kho ảnh chung với Just Us.
+      </div>
+      <a className="btn soft" href="../index.html" style={{marginTop:16,textDecoration:'none'}}>← Về Just Us</a>
+    </Sheet>
+  );
+}
+
 /* ============ Trang chủ (mẫu 05 bảng chỉ số + mẫu 03 lưới ô lớn) ============ */
 // Đường cân nặng 6 lần đo gần nhất — vẽ tay bằng SVG, không cần thư viện.
 function Spark({points}){
@@ -768,9 +821,9 @@ function Spark({points}){
   const end=xy[xy.length-1];
   return (
     <svg width={W} height={H} viewBox={'0 0 '+W+' '+H} aria-label="đường cân nặng gần đây">
-      <path d={area} fill="var(--chip)"/>
-      <path d={line} fill="none" stroke="var(--primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-      <circle cx={end[0]} cy={end[1]} r="3" fill="var(--primary)"/>
+      <path d={area} fill="var(--surface-2)"/>
+      <path d={line} fill="none" stroke="var(--brand)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <circle cx={end[0]} cy={end[1]} r="3" fill="var(--brand)"/>
     </svg>
   );
 }
@@ -787,7 +840,7 @@ function SchoolPicker(){
       {list.sort((a,b)=>(b.star||0)-(a.star||0)).map(s=>(
         <div key={s.id} className="item">
           <div className="it-top"><h4 style={{fontSize:14}}>🏫 {s.name}</h4>
-            <button className="muted" onClick={()=>{ if(confirm('Xoá trường này?')) setList(list.filter(x=>x.id!==s.id)); }}>✕</button></div>
+            <button className="xbtn" aria-label="Xoá" onClick={()=>{ if(confirm('Xoá trường này?')) setList(list.filter(x=>x.id!==s.id)); }}>✕</button></div>
           {s.addr && <div className="muted" style={{fontSize:12.5,marginTop:2}}>📍 {s.addr}</div>}
           {s.fee && <div style={{fontSize:12.5,marginTop:2}}>💵 {s.fee}</div>}
           {s.note && <div className="muted" style={{fontSize:12.5,marginTop:3,lineHeight:1.5}}>{s.note}</div>}
@@ -848,7 +901,7 @@ function TripPack(){
       <div className="card" style={{padding:'4px 13px'}}>
         {TRIP_PACK.map(it=>(
           <div key={it} className="row" style={{padding:'8px 0',borderBottom:'1px solid var(--line)'}}>
-            <button onClick={()=>setDone(s=>{ const m={...s}; if(m[it]) delete m[it]; else m[it]=true; return m; })} style={{fontSize:19}}>{done[it]?'✅':'⬜'}</button>
+            <button className="tick" onClick={()=>setDone(s=>{ const m={...s}; if(m[it]) delete m[it]; else m[it]=true; return m; })} style={{fontSize:19}}>{done[it]?'✅':'⬜'}</button>
             <span className="grow" style={{fontSize:13.5,textDecoration:done[it]?'line-through':'none',opacity:done[it]?.6:1}}>{it}</span>
           </div>
         ))}
@@ -872,7 +925,7 @@ function DutyBoard({people}){
               <div className="muted" style={{fontSize:11.5}}>{s.d}</div></div></div>
           <div className="row" style={{marginTop:6,gap:5,flexWrap:'wrap'}}>
             {WHO.map(w=>(
-              <button key={w.k} className="pill" style={duty[s.k]===w.k?{background:'var(--primary)',color:'var(--on-primary)'}:{}}
+              <button key={w.k} className="pill" style={duty[s.k]===w.k?{background:'var(--brand)',color:'var(--on-brand)'}:{}}
                 onClick={()=>setDuty({...duty,[s.k]:duty[s.k]===w.k?'':w.k})}>{w.l}</button>
             ))}
           </div>
@@ -930,7 +983,7 @@ function MemoryTab({child}){
         <div key={x.id} className="item" style={{padding:'9px 13px'}}>
           <div className="row"><span className="muted" style={{fontSize:11,flex:'0 0 auto'}}>{fmtDateVN(x.date)}</span>
             <span className="grow" style={{fontSize:13.5}}>{x.text}</span>
-            <button className="muted" onClick={()=>{ if(confirm('Xoá dòng này?')) setOne(one.filter(y=>y.id!==x.id)); }}>✕</button></div>
+            <button className="xbtn" aria-label="Xoá" onClick={()=>{ if(confirm('Xoá dòng này?')) setOne(one.filter(y=>y.id!==x.id)); }}>✕</button></div>
         </div>
       ))}
 
@@ -965,7 +1018,7 @@ function MemoryTab({child}){
         <div key={x.id} className="item" style={{padding:'9px 13px'}}>
           <div className="row"><div className="grow"><div style={{fontSize:14}}>“{x.text}”</div>
             <div className="muted" style={{fontSize:11,marginTop:2}}>{fmtDateVN(x.date)}</div></div>
-            <button className="muted" onClick={()=>{ if(confirm('Xoá câu này?')) setQuotes(quotes.filter(y=>y.id!==x.id)); }}>✕</button></div>
+            <button className="xbtn" aria-label="Xoá" onClick={()=>{ if(confirm('Xoá câu này?')) setQuotes(quotes.filter(y=>y.id!==x.id)); }}>✕</button></div>
         </div>
       ))}
 
@@ -991,7 +1044,7 @@ function MemoryTab({child}){
         {letters.map(l=>(
           <div key={l.id} className="item">
             <div className="row"><span className="muted grow" style={{fontSize:11}}>✍️ {fmtDateVN(l.date)}</span>
-              <button className="muted" onClick={()=>{ if(confirm('Xoá lá thư này?')) setLetters(letters.filter(y=>y.id!==l.id)); }}>✕</button></div>
+              <button className="xbtn" aria-label="Xoá" onClick={()=>{ if(confirm('Xoá lá thư này?')) setLetters(letters.filter(y=>y.id!==l.id)); }}>✕</button></div>
             <div style={{fontSize:13.5,marginTop:4,whiteSpace:'pre-wrap',lineHeight:1.6}}>{l.text}</div>
           </div>
         ))}
@@ -1047,20 +1100,20 @@ function GrowthChart({growth,child,months,kind}){
   return (
     <svg width="100%" viewBox={'0 0 '+W+' '+H} style={{display:'block'}} role="img"
       aria-label={'Biểu đồ '+(kind==='h'?'chiều cao':'cân nặng')+' của bé so với dải chuẩn WHO'}>
-      <path d={bandArea} fill="var(--chip)" opacity="0.75"/>
+      <path d={bandArea} fill="var(--surface-2)" opacity="0.75"/>
       <path d={path(1)} fill="none" stroke="var(--line)" strokeWidth="1"/>
       <path d={path(3)} fill="none" stroke="var(--line)" strokeWidth="1"/>
-      <path d={path(2)} fill="none" stroke="var(--muted)" strokeWidth="1" strokeDasharray="3 3"/>
+      <path d={path(2)} fill="none" stroke="var(--ink-2)" strokeWidth="1" strokeDasharray="3 3"/>
       {ticks.map(t=>(<g key={t}>
         <line x1={X(t)} y1={H-B} x2={X(t)} y2={H-B+3} stroke="var(--line)"/>
-        <text x={X(t)} y={H-B+13} fontSize="8" fill="var(--muted)" textAnchor="middle">{t}</text>
+        <text x={X(t)} y={H-B+13} fontSize="8" fill="var(--ink-2)" textAnchor="middle">{t}</text>
       </g>))}
-      <text x="2" y={Y(y1)+8} fontSize="8" fill="var(--muted)">{Math.round(y1)}</text>
-      <text x="2" y={Y(y0)} fontSize="8" fill="var(--muted)">{Math.round(y0)}</text>
-      <text x={W-R} y={H-B+13} fontSize="8" fill="var(--muted)" textAnchor="end">tháng tuổi</text>
-      {pts.length>1 && <path d={kidPath} fill="none" stroke="var(--primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>}
-      {pts.map((p,i)=><circle key={i} cx={X(p.m)} cy={Y(p.v)} r={i===pts.length-1?3.5:2.2} fill="var(--primary)"/>)}
-      {pts.length>0 && <text x={X(pts[pts.length-1].m)} y={Y(pts[pts.length-1].v)-6} fontSize="9" fill="var(--primary)" textAnchor="middle" fontWeight="700">{pts[pts.length-1].v}{unit}</text>}
+      <text x="2" y={Y(y1)+8} fontSize="8" fill="var(--ink-2)">{Math.round(y1)}</text>
+      <text x="2" y={Y(y0)} fontSize="8" fill="var(--ink-2)">{Math.round(y0)}</text>
+      <text x={W-R} y={H-B+13} fontSize="8" fill="var(--ink-2)" textAnchor="end">tháng tuổi</text>
+      {pts.length>1 && <path d={kidPath} fill="none" stroke="var(--brand)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>}
+      {pts.map((p,i)=><circle key={i} cx={X(p.m)} cy={Y(p.v)} r={i===pts.length-1?3.5:2.2} fill="var(--brand)"/>)}
+      {pts.length>0 && <text x={X(pts[pts.length-1].m)} y={Y(pts[pts.length-1].v)-6} fontSize="9" fill="var(--brand)" textAnchor="middle" fontWeight="700">{pts[pts.length-1].v}{unit}</text>}
     </svg>
   );
 }
@@ -1075,8 +1128,8 @@ function GrowthWHO({growth,child,months}){
   return (
     <div>
       <div className="row" style={{margin:'0 14px 6px',gap:7}}>
-        <button className="pill" style={kind==='w'?{background:'var(--primary)',color:'var(--on-primary)'}:{}} onClick={()=>setKind('w')}>⚖️ Cân nặng</button>
-        <button className="pill" style={kind==='h'?{background:'var(--primary)',color:'var(--on-primary)'}:{}} onClick={()=>setKind('h')}>📐 Chiều cao</button>
+        <button className="pill" style={kind==='w'?{background:'var(--brand)',color:'var(--on-brand)'}:{}} onClick={()=>setKind('w')}>⚖️ Cân nặng</button>
+        <button className="pill" style={kind==='h'?{background:'var(--brand)',color:'var(--on-brand)'}:{}} onClick={()=>setKind('h')}>📐 Chiều cao</button>
       </div>
       <div className="card">
         <GrowthChart growth={growth} child={child} months={months} kind={kind}/>
@@ -1093,7 +1146,7 @@ function GrowthWHO({growth,child,months}){
         </div>
       </div>}
       {v==null && <div className="muted center" style={{fontSize:12,margin:'0 14px'}}>Chưa có số đo {kind==='h'?'chiều cao':'cân nặng'} nào — ghi ở phần “Chiều cao & cân nặng” bên dưới.</div>}
-      <div className="sc-disc">{months!=null&&months>36 && <><b>Bé đã trên 36 tháng</b> — bảng trong app dừng ở mốc 36 tháng nên phần so sánh bên trên chỉ còn tham khảo rất thô. </>}Bảng chuẩn trong app là bản <b>rút gọn theo mốc 3 tháng</b> của chuẩn WHO 0–36 tháng, số đã làm tròn và giữa hai mốc thì nội suy — dùng để nhìn xu hướng, không thay bảng chuẩn của bác sĩ. Một lần đo lệch dải không có nhiều ý nghĩa bằng việc đường của bé đi lên đều đặn. Thấy bé rơi ra ngoài dải hoặc đứng cân nhiều tháng thì cho đi khám dinh dưỡng.</div>
+      <div className="note">{months!=null&&months>36 && <><b>Bé đã trên 36 tháng</b> — bảng trong app dừng ở mốc 36 tháng nên phần so sánh bên trên chỉ còn tham khảo rất thô. </>}Bảng chuẩn trong app là bản <b>rút gọn theo mốc 3 tháng</b> của chuẩn WHO 0–36 tháng, số đã làm tròn và giữa hai mốc thì nội suy — dùng để nhìn xu hướng, không thay bảng chuẩn của bác sĩ. Một lần đo lệch dải không có nhiều ý nghĩa bằng việc đường của bé đi lên đều đặn. Thấy bé rơi ra ngoài dải hoặc đứng cân nhiều tháng thì cho đi khám dinh dưỡng.</div>
     </div>
   );
 }
@@ -1129,7 +1182,7 @@ function PottyTab(){
   const started=!!p.start;
   return (
     <div>
-      {!started && <div className="card" style={{background:'linear-gradient(135deg,var(--chip),var(--card))'}}>
+      {!started && <div className="card" style={{background:'linear-gradient(135deg,var(--surface-2),var(--surface))'}}>
         <b style={{fontSize:14}}>🚽 Bé sẵn sàng bỏ bỉm chưa?</b>
         <div className="muted" style={{fontSize:12,margin:'4px 0 8px',lineHeight:1.55}}>Tick những dấu hiệu bé đã có. Từ khoảng 4 dấu hiệu trở lên là thời điểm thuận lợi — chưa đủ thì cứ đợi thêm, bắt đầu sớm quá thường kéo dài hơn.</div>
         <div className="prog"><i style={{width:(readyN/POTTY_READY.length*100)+'%'}}></i></div>
@@ -1138,7 +1191,7 @@ function PottyTab(){
       {!started && <div className="card" style={{padding:'4px 13px'}}>
         {POTTY_READY.map(r=>(
           <div key={r} className="row" style={{padding:'8px 0',borderBottom:'1px solid var(--line)'}}>
-            <button onClick={()=>{ const n={...ready}; if(n[r]) delete n[r]; else n[r]=true; set({ready:n}); }} style={{fontSize:19}}>{ready[r]?'✅':'⬜'}</button>
+            <button className="tick" onClick={()=>{ const n={...ready}; if(n[r]) delete n[r]; else n[r]=true; set({ready:n}); }} style={{fontSize:19}}>{ready[r]?'✅':'⬜'}</button>
             <span className="grow" style={{fontSize:13.5}}>{r}</span>
           </div>
         ))}
@@ -1148,9 +1201,9 @@ function PottyTab(){
       </div>}
 
       {started && <>
-        <div className="card center" style={{background:'linear-gradient(135deg,var(--chip),var(--card))'}}>
+        <div className="card center" style={{background:'linear-gradient(135deg,var(--surface-2),var(--surface))'}}>
           <div className="muted" style={{fontSize:11}}>Chuỗi ngày khô liên tiếp</div>
-          <div style={{fontSize:34,fontWeight:800,color:'var(--primary)',lineHeight:1.15}}>{streak}</div>
+          <div style={{fontSize:34,fontWeight:800,color:'var(--brand)',lineHeight:1.15}}>{streak}</div>
           <div className="muted" style={{fontSize:11}}>bắt đầu tập từ {fmtDateVN(p.start)}</div>
         </div>
         <div className="sec-title">✍️ Hôm nay</div>
@@ -1168,11 +1221,9 @@ function PottyTab(){
         </div>
         <div className="sec-title">📅 30 ngày gần đây</div>
         <div className="card">
-          <div style={{display:'grid',gridTemplateColumns:'repeat(10,1fr)',gap:4}}>
+          <div className="grid30">
             {days.map(d=>(
-              <div key={d.iso} title={fmtDateVN(d.iso)} style={{aspectRatio:'1',borderRadius:4,fontSize:8,
-                display:'grid',placeItems:'center',color:d.st==='dry'?'#fff':'var(--muted)',
-                background:d.st==='dry'?'var(--good)':(d.st==='wet'?'var(--warn)':'var(--chip)')}}>{d.d}</div>
+              <span key={d.iso} title={fmtDateVN(d.iso)} className={d.st||''}>{d.d}</span>
             ))}
           </div>
           <div className="row" style={{gap:10,marginTop:7,flexWrap:'wrap'}}>
@@ -1198,7 +1249,7 @@ function PottyTab(){
       <Collapse id="child-pottyfix" defaultOpen={false} title="🧩 Vướng ở đâu">
         <GuideList items={POTTY_FIX} keyOf={x=>x.n} titleOf={x=>x.n} iconOf={x=>x.icon} render={x=>bullets(x.tips)}/>
       </Collapse>
-      <div className="sc-disc">Bỏ bỉm là việc của bé, không phải cuộc thi của bố mẹ. Bé quanh 2 tuổi mà chưa sẵn sàng thì đợi thêm vài tháng vẫn hoàn toàn bình thường. Nếu bé nhịn đi nặng nhiều ngày, xem thêm mục Táo bón bên tab Sức khoẻ.</div>
+      <div className="note">Bỏ bỉm là việc của bé, không phải cuộc thi của bố mẹ. Bé quanh 2 tuổi mà chưa sẵn sàng thì đợi thêm vài tháng vẫn hoàn toàn bình thường. Nếu bé nhịn đi nặng nhiều ngày, xem thêm mục Táo bón bên tab Sức khoẻ.</div>
     </div>
   );
 }
@@ -1324,7 +1375,7 @@ function HomeTab({child,months,ageLabel,growth,words,wordsThisWeek,vac,mile,skil
 
   return (
     <div>
-      <div className="sc-hero">
+      <div className="hero">
         <div className="av">🐿️</div>
         <div className="nm">{child.name||'Bé yêu'}</div>
         <div className="ag">{ageLabel}</div>
@@ -1336,24 +1387,24 @@ function HomeTab({child,months,ageLabel,growth,words,wordsThisWeek,vac,mile,skil
         <div className="row"><span className="grow"><b style={{fontSize:14}}>Cân nặng</b></span>
           {last && <span className="muted" style={{fontSize:10.5}}>đo {fmtDateVN(last.date)}</span>}</div>
         <div className="row" style={{alignItems:'flex-end',marginTop:3}}>
-          <div className="sc-num" style={{fontSize:31}}>{last&&last.w? last.w : '—'}<span className="u"> kg</span></div>
+          <div className="num" style={{fontSize:31}}>{last&&last.w? last.w : '—'}<span className="u"> kg</span></div>
           <span className="grow"></span>
           <Spark points={weights}/>
         </div>
         {!last && <div className="muted" style={{fontSize:12,marginTop:4}}>Chưa có lần đo nào — ghi ở tab Sức khoẻ.</div>}
       </div>
 
-      <div className="sc-stats">
-        <div className="card sc-stat"><div className="sc-lbl">Chiều cao</div>
-          <div className="sc-num">{last&&last.h? last.h : '—'}<span className="u"> cm</span></div></div>
-        <div className="card sc-stat"><div className="sc-lbl">Từ nói được</div>
-          <div className="sc-num">{words.length}</div>
+      <div className="stats">
+        <div className="card stat"><div className="k">Chiều cao</div>
+          <div className="num">{last&&last.h? last.h : '—'}<span className="u"> cm</span></div></div>
+        <div className="card stat"><div className="k">Từ nói được</div>
+          <div className="num">{words.length}</div>
           <div className="muted" style={{fontSize:10,marginTop:2}}>+{wordsThisWeek} tuần này</div></div>
-        <div className="card sc-stat"><div className="sc-lbl">Mũi đã tiêm</div>
-          <div className="sc-num">{vacDone}<span className="u">/{vacTotal||'—'}</span></div>
+        <div className="card stat"><div className="k">Mũi đã tiêm</div>
+          <div className="num">{vacDone}<span className="u">/{vacTotal||'—'}</span></div>
           <div className="prog" style={{marginTop:5}}><i style={{width:(vacTotal?vacDone/vacTotal*100:0)+'%'}}></i></div></div>
-        <div className="card sc-stat"><div className="sc-lbl">Kỹ năng tự lập</div>
-          <div className="sc-num">{skillDone}<span className="u">/{CHILD_SKILLS.length}</span></div>
+        <div className="card stat"><div className="k">Kỹ năng tự lập</div>
+          <div className="num">{skillDone}<span className="u">/{CHILD_SKILLS.length}</span></div>
           <div className="prog" style={{marginTop:5}}><i style={{width:(skillDone/CHILD_SKILLS.length*100)+'%'}}></i></div></div>
       </div>
 
@@ -1363,15 +1414,15 @@ function HomeTab({child,months,ageLabel,growth,words,wordsThisWeek,vac,mile,skil
           <div key={i} className="item" style={{padding:'10px 13px',cursor:a.go?'pointer':'default'}} onClick={()=>a.go&&go(a.go)}>
             <div className="row"><span style={{fontSize:18,flex:'0 0 auto'}}>{a.ic}</span>
               <span className="grow" style={{fontSize:13.5}}>{a.t}</span>
-              {a.go && <span style={{color:'var(--primary)',fontSize:16}}>›</span>}</div>
+              {a.go && <span style={{color:'var(--brand)',fontSize:16}}>›</span>}</div>
           </div>
         ))}
       </>}
 
       <div className="sec-title">📦 Vào mục nào</div>
-      <div className="sc-tiles">
+      <div className="tiles">
         {TILES.map(t=>(
-          <button key={t.k} className="card sc-tile" onClick={()=>go(t.k)}>
+          <button key={t.k} className="card tile" onClick={()=>go(t.k)}>
             <span className="ic">{t.ic}</span><b>{t.n}</b><small>{t.s}</small>
           </button>
         ))}
@@ -1397,7 +1448,7 @@ function ContactBook(){
           <div className="row"><div className="grow"><b style={{fontSize:14}}>{c.label}</b>
             <div className="muted" style={{fontSize:12.5}}>{c.phone}</div></div>
             <a className="pill" href={'tel:'+c.phone.replace(/[^0-9+]/g,'')} style={{textDecoration:'none'}}>📞 Gọi</a>
-            <button className="muted" onClick={()=>{ if(confirm('Xoá số này?')) setList(list.filter(x=>x.id!==c.id)); }}>✕</button></div>
+            <button className="xbtn" aria-label="Xoá" onClick={()=>{ if(confirm('Xoá số này?')) setList(list.filter(x=>x.id!==c.id)); }}>✕</button></div>
         </div>
       ))}
       <div className="card">
@@ -1425,10 +1476,10 @@ function SafetyTab({child,growth}){
   const totalCount=HOME_SAFETY.reduce((n,g)=>n+g.items.length,0);
   return (
     <div>
-      <div className="card" style={{background:'linear-gradient(135deg,var(--chip),var(--card))'}}>
+      <div className="card" style={{background:'linear-gradient(135deg,var(--surface-2),var(--surface))'}}>
         <div className="row">
           <div className="grow"><div className="muted" style={{fontSize:11}}>Cân nặng mới nhất — bác sĩ luôn hỏi câu này trước</div>
-            <div style={{fontSize:26,fontWeight:800,color:'var(--primary)',lineHeight:1.15}}>{last&&last.w? last.w+' kg' : '— chưa đo'}</div>
+            <div style={{fontSize:26,fontWeight:800,color:'var(--brand)',lineHeight:1.15}}>{last&&last.w? last.w+' kg' : '— chưa đo'}</div>
             {last && <div className="muted" style={{fontSize:11}}>đo {fmtDateVN(last.date)}{last.h?(' · '+last.h+' cm'):''}</div>}</div>
           <span style={{fontSize:30}}>🩺</span>
         </div>
@@ -1445,16 +1496,16 @@ function SafetyTab({child,growth}){
           </div>
           {open===e.title && <div style={{marginTop:8}}>
             {e.lead && <div className="muted" style={{fontSize:12.5,lineHeight:1.6,marginBottom:7}}>{e.lead}</div>}
-            <ul className="sc-do" style={{margin:0,paddingLeft:18,fontSize:13,lineHeight:1.6}}>{e.do.map((t,i)=><li key={i}>{t}</li>)}</ul>
-            {e.dont && e.dont.length>0 && <ul className="sc-do sc-dont" style={{margin:'8px 0 0',paddingLeft:18,fontSize:13,lineHeight:1.6}}>{e.dont.map((t,i)=><li key={i}>{t}</li>)}</ul>}
-            {e.er && e.er.length>0 && <div className="sc-er">
+            <ul className="bul" style={{margin:0,paddingLeft:18,fontSize:13,lineHeight:1.6}}>{e.do.map((t,i)=><li key={i}>{t}</li>)}</ul>
+            {e.dont && e.dont.length>0 && <ul className="bul dont" style={{margin:'8px 0 0',paddingLeft:18,fontSize:13,lineHeight:1.6}}>{e.dont.map((t,i)=><li key={i}>{t}</li>)}</ul>}
+            {e.er && e.er.length>0 && <div className="callout er">
               <div className="h">🚨 Đi viện ngay khi</div>
               <ul style={{margin:0,paddingLeft:16,fontSize:12.5,lineHeight:1.6}}>{e.er.map((t,i)=><li key={i}>{t}</li>)}</ul>
             </div>}
           </div>}
         </div>
       ))}
-      <div className="sc-disc">Đây là hướng dẫn sơ cứu tham khảo để xử lý phút đầu, không thay được bác sĩ. Về thuốc, app chỉ ghi lại loại và liều mà bác sĩ đã kê riêng cho bé — không tự tính liều.</div>
+      <div className="note">Đây là hướng dẫn sơ cứu tham khảo để xử lý phút đầu, không thay được bác sĩ. Về thuốc, app chỉ ghi lại loại và liều mà bác sĩ đã kê riêng cho bé — không tự tính liều.</div>
 
       <div className="sec-title">🚨 Dấu hiệu phải đi viện ngay</div>
       <div className="card"><ul style={{margin:0,paddingLeft:18,fontSize:13,lineHeight:1.7}}>{RED_FLAGS.map((t,i)=><li key={i}>{t}</li>)}</ul></div>
@@ -1481,7 +1532,7 @@ function SafetyTab({child,growth}){
             <div className="card" style={{padding:'4px 13px'}}>
               {g.items.map(it=>(
                 <div key={it} className="row" style={{padding:'8px 0',borderBottom:'1px solid var(--line)'}}>
-                  <button onClick={()=>setSafe(s=>{ const n={...s}; if(n[it]) delete n[it]; else n[it]=true; return n; })} style={{fontSize:19}}>{safe[it]?'✅':'⬜'}</button>
+                  <button className="tick" onClick={()=>setSafe(s=>{ const n={...s}; if(n[it]) delete n[it]; else n[it]=true; return n; })} style={{fontSize:19}}>{safe[it]?'✅':'⬜'}</button>
                   <span className="grow" style={{fontSize:13.5,textDecoration:safe[it]?'line-through':'none',opacity:safe[it]?.6:1}}>{it}</span>
                 </div>
               ))}
@@ -1560,6 +1611,8 @@ function ChildCare({people,me}){
   const [illForm,setIllForm]=useState({symptoms:[],meds:'',note:''});
   const [tanForm,setTanForm]=useState({situation:'',handling:''});
   const [browseIssue,setBrowseIssue]=useState(null);
+  const [searchOpen,setSearchOpen]=useState(false);
+  const [menuOpen,setMenuOpen]=useState(false);
   const months=child.dob? Math.max(0, Math.round((new Date(todayISO()+'T00:00:00')-new Date(child.dob+'T00:00:00'))/(30.44*86400000))) : null;
   const ageLabel = months==null?'chưa đặt ngày sinh' : months<24? months+' tháng tuổi' : Math.floor(months/12)+' tuổi'+(months%12?(' '+(months%12)+' th'):'');
   const tg=(obj,set,key)=>{ const n={...obj}; if(n[key]) delete n[key]; else n[key]=true; set(n); };
@@ -1585,12 +1638,14 @@ function ChildCare({people,me}){
     if(navigator.share) navigator.share({title:'Hồ sơ y tế',text:txt}).catch(()=>{}); else { navigator.clipboard.writeText(txt); alert('Đã copy hồ sơ — dán để gửi cô nhé!'); } };
   const last=growth[0];
   const dueNow=childDueList({child,months,vac,ill,growth,packDone,schoolDays});
+  // Chấm nhắc trên thanh dưới: nhóm nào đang có việc thì hiện chấm
+  const alertGroups={}; dueNow.forEach(d=>{ if(d.go) alertGroups[TAB_GROUP[d.go]||'home']=1; });
   return (
     <div>
       <NotiRunner due={dueNow} childName={child.name}/>
       {/* Trang chủ đã có phần đầu riêng (hero) nên ở đó chỉ hiện thẻ này khi cần điền/sửa */}
       {(tab!=='home' || !child.name || !child.dob || editChild) &&
-      <div className="card" style={{background:'linear-gradient(135deg,var(--chip),var(--card))'}}>
+      <div className="card" style={{background:'linear-gradient(135deg,var(--surface-2),var(--surface))'}}>
         <div className="row"><span style={{fontSize:24}}>👶</span>
           <div className="grow"><b style={{fontSize:15}}>{child.name||'Bé yêu'}</b>
             <div className="muted" style={{fontSize:12.5}}>{ageLabel}{child.gender?(' · '+(child.gender==='nam'?'bé trai':'bé gái')):''}</div></div>
@@ -1607,18 +1662,21 @@ function ChildCare({people,me}){
           {editChild && child.name && child.dob && <button className="btn sm" style={{marginTop:8}} onClick={()=>setEditChild(false)}>✓ Xong</button>}
         </>}
       </div>}
-      {tab!=='safe' && <button className="sc-sos" onClick={()=>setTab('safe')}>
-        <span className="ic">🚨</span>
-        <span style={{flex:1,minWidth:0}}><b>Cấp cứu &amp; an toàn</b>
-          <small>hóc · sốt co giật · bỏng · ngã · nuốt pin · số gọi ngay</small></span>
-        <span style={{fontSize:17,opacity:.85}}>›</span>
-      </button>}
-      <FilterBar value={tab} onChange={setTab} items={[
-        {k:'home',icon:'🏠',label:'Trang chủ'},
-        {k:'develop',icon:'🌱',label:'Phát triển'},{k:'play',icon:'🎲',label:'Chơi với con'},{k:'health',icon:'🏥',label:'Sức khoẻ'},
-        {k:'eat',icon:'🍎',label:'Ăn uống'},{k:'potty',icon:'🚽',label:'Tập bô'},{k:'school',icon:'🎒',label:'Đi học'},
-        {k:'parent',icon:'💞',label:'Nuôi dạy'},{k:'memory',icon:'📔',label:'Kỷ niệm'},{k:'safe',icon:'🚨',label:'An toàn'},
-      ]}/>
+      <header className="hdr">
+        <div className="id">
+          <span className="mark" aria-hidden="true">🐿️</span>
+          <span style={{minWidth:0}}>
+            <span className="nm">{child.name||'Bé yêu'}</span>
+            <span className="sub">{ageLabel}</span>
+          </span>
+        </div>
+        <button className="hdr-btn" onClick={()=>setSearchOpen(true)} aria-label="Tìm trong app">🔍</button>
+        <button className="hdr-btn" onClick={()=>setMenuOpen(true)} aria-label="Cài đặt và sao lưu">⋯</button>
+        <button className="hdr-btn sos" onClick={()=>setTab('safe')} aria-label="Cấp cứu và an toàn">🚨</button>
+      </header>
+      <SubTabs tab={tab} onGo={setTab}/>
+      {searchOpen && <SearchSheet onClose={()=>setSearchOpen(false)} onGo={k=>{ setSearchOpen(false); setTab(k); }}/>}
+      {menuOpen && <MenuSheet onClose={()=>setMenuOpen(false)}/>}
 
       {tab==='potty' && <PottyTab/>}
       {tab==='memory' && <MemoryTab child={child}/>}
@@ -1635,10 +1693,10 @@ function ChildCare({people,me}){
         {months==null
           ? <div className="empty muted">Nhập ngày sinh bé ở trên để hiện mốc đúng tuổi.</div>
           : (()=>{ const b=CHILD_MILESTONES.find(x=>months>=x.lo&&months<x.hi)||CHILD_MILESTONES[CHILD_MILESTONES.length-1];
-              return <div className="item" style={{borderLeft:'4px solid var(--primary)'}}>
+              return <div className="item" style={{borderLeft:'4px solid var(--brand)'}}>
                 <div className="it-top"><h4>⭐ {b.band} <span className="muted" style={{fontSize:11,fontWeight:400}}>(bé {months} tháng)</span></h4></div>
                 <div>{b.items.map(it=>{ const k=b.band+'|'+it; const on=!!mile[k];
-                  return <button key={it} className="pill" style={{margin:'3px 6px 3px 0',padding:'7px 11px',fontSize:12.5,background:on?'var(--good)':'var(--chip)',color:on?'#fff':'var(--chip-tx)'}} onClick={()=>tg(mile,setMile,k)}>{on?'✓ ':''}{it}</button>; })}</div>
+                  return <button key={it} className="pill" style={{margin:'3px 6px 3px 0',padding:'7px 11px',fontSize:12.5,background:on?'var(--good)':'var(--surface-2)',color:on?'#fff':'var(--brand-ink)'}} onClick={()=>tg(mile,setMile,k)}>{on?'✓ ':''}{it}</button>; })}</div>
               </div>; })()}
         <div className="sec-title">🗣️ Mốc ngôn ngữ <span className="grow"></span><span className="muted" style={{fontSize:12.5}}>{words.length} từ · +{wordsThisWeek} tuần này</span></div>
         <div className="card">
@@ -1651,6 +1709,15 @@ function ChildCare({people,me}){
             <span key={w.id} className="pill" style={{margin:'3px 6px 3px 0',padding:'6px 10px',fontSize:12.5}}>{w.word} <span onClick={()=>{ if(confirm('Xoá từ này?')) setWords(words.filter(x=>x.id!==w.id)); }} style={{cursor:'pointer',marginLeft:3,opacity:.6}}>✕</span></span>
           ))}</div>}
         </div>
+        <Collapse id="child-devflags" defaultOpen={false} title="Khi nào nên cho con đi khám phát triển">
+          <div className="note" style={{marginTop:0}}>Đây là những dấu hiệu nên đi khám để được đánh giá, KHÔNG phải kết luận gì về con. Can thiệp sớm luôn hiệu quả hơn chờ xem.</div>
+          {DEV_REDFLAGS.map(g=>(
+            <div key={g.m} className="item">
+              <b style={{fontSize:'var(--t-sm)'}}>{g.m}</b>
+              {bullets(g.items,{marginTop:6})}
+            </div>
+          ))}
+        </Collapse>
         <Collapse id="child-speech-delay" defaultOpen={false} title="🗣️ Con chậm nói? Xem gợi ý xử lý">
           <ul style={{margin:'4px 0 0',paddingLeft:18,fontSize:12.5,lineHeight:1.65}}>
             <li style={{marginBottom:4}}>Nói chuyện & mô tả mọi việc đang làm cùng con mỗi ngày; hỏi rồi chờ con phản hồi thay vì tự trả lời luôn.</li>
@@ -1714,15 +1781,24 @@ function ChildCare({people,me}){
       </div>}
 
       {tab==='health' && <div>
+        <div className="sec-title">Khám & sàng lọc định kỳ</div>
+        {CHECKUP_SCHEDULE.map(x=>(
+          <div key={x.n} className="item">
+            <div className="row"><span style={{fontSize:20,flex:'0 0 auto'}}>{x.icon}</span>
+              <div className="grow"><b style={{fontSize:'var(--t-sm)'}}>{x.n}</b>
+                <div style={{fontSize:'var(--t-xs)',color:'var(--brand)',fontWeight:600,marginTop:2}}>{x.w}</div>
+                <div className="muted" style={{fontSize:'var(--t-xs)',marginTop:3,lineHeight:1.55}}>{x.d}</div></div></div>
+          </div>
+        ))}
         <Collapse id="child-vac" defaultOpen={false} title="💉 Lịch tiêm chủng" right={months!=null && <button className="muted" style={{fontSize:11}} onClick={()=>setShowAllVac(v=>!v)}>{showAllVac?'Theo tuổi bé':'Xem tất cả'}</button>}>
         <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>{months!=null&&!showAllVac?`Chỉ hiện mốc hợp tuổi ${child.name||'bé'} (~${months} tháng) — tích mũi đã tiêm.`:'Tham khảo (TCMR + dịch vụ) — tích mũi đã tiêm.'}</div>
         {(()=>{ const vacList=CHILD_VACCINES.filter(v=> showAllVac||months==null||(vacAgeMonths(v.age)>=months-3&&vacAgeMonths(v.age)<=months+12));
           if(!vacList.length) return <div className="empty muted">Không có mốc tiêm nào quanh tuổi này — bấm “Xem tất cả”.</div>;
           return vacList.map(v=>{ const due=months!=null&&vacAgeMonths(v.age)<=months; const allDone=v.items.every(it=>vac[v.age+'|'+it]);
-          return <div key={v.age} className="item" style={due&&!allDone?{borderLeft:'4px solid var(--primary)'}:null}>
+          return <div key={v.age} className="item" style={due&&!allDone?{borderLeft:'4px solid var(--brand)'}:null}>
             <div className="it-top"><h4>{v.age}{due&&!allDone?' · đến hạn':''}{allDone?' ✅':''}</h4></div>
             <div>{v.items.map(it=>{ const k=v.age+'|'+it; const on=!!vac[k];
-              return <button key={it} className="pill" style={{margin:'3px 6px 3px 0',padding:'7px 11px',fontSize:12.5,background:on?'var(--good)':'var(--chip)',color:on?'#fff':'var(--chip-tx)'}} onClick={()=>tg(vac,setVac,k)}>{on?'✓ ':''}{it}</button>; })}</div>
+              return <button key={it} className="pill" style={{margin:'3px 6px 3px 0',padding:'7px 11px',fontSize:12.5,background:on?'var(--good)':'var(--surface-2)',color:on?'#fff':'var(--brand-ink)'}} onClick={()=>tg(vac,setVac,k)}>{on?'✓ ':''}{it}</button>; })}</div>
           </div>; }); })()}
         </Collapse>
         <div className="sec-title">📈 So với chuẩn WHO</div>
@@ -1748,7 +1824,7 @@ function ChildCare({people,me}){
         <div className="sec-title">🤒 Nhật ký ốm</div>
         <div className="card">
           <div style={{display:'flex',flexWrap:'wrap',gap:6}}>{ILL_SYMPTOMS.map(s=>{ const on=illForm.symptoms.indexOf(s)>=0;
-            return <button key={s} className="pill" style={{padding:'6px 10px',fontSize:12.5,background:on?'var(--primary)':'var(--chip)',color:on?'#fff':'var(--chip-tx)'}} onClick={()=>toggleSym(s)}>{on?'✓ ':''}{s}</button>; })}</div>
+            return <button key={s} className="pill" style={{padding:'6px 10px',fontSize:12.5,background:on?'var(--brand)':'var(--surface-2)',color:on?'#fff':'var(--brand-ink)'}} onClick={()=>toggleSym(s)}>{on?'✓ ':''}{s}</button>; })}</div>
           <input className="inp" style={{marginTop:8}} placeholder="Thuốc đã dùng (vd: hạ sốt Hapacol…)" value={illForm.meds} onChange={e=>setIllForm({...illForm,meds:e.target.value})}/>
           <input className="inp" style={{marginTop:8}} placeholder="Ghi chú thêm (nhiệt độ, bác sĩ dặn…)" value={illForm.note} onChange={e=>setIllForm({...illForm,note:e.target.value})}/>
           <button className="btn" style={{marginTop:8}} onClick={addIll}>＋ Ghi đợt ốm (hôm nay)</button>
@@ -1756,7 +1832,7 @@ function ChildCare({people,me}){
         {ill.map(x=>(
           <div key={x.id} className="item" style={x.recovered?{opacity:.7}:{borderLeft:'4px solid #e0a341'}}>
             <div className="it-top"><h4>{x.recovered?'✅ Đã khỏi':'🤒 Đang ốm'}</h4>
-              <button className="muted" onClick={()=>{ if(confirm('Xoá đợt ốm này?')) setIll(ill.filter(y=>y.id!==x.id)); }}>✕</button></div>
+              <button className="xbtn" aria-label="Xoá" onClick={()=>{ if(confirm('Xoá đợt ốm này?')) setIll(ill.filter(y=>y.id!==x.id)); }}>✕</button></div>
             <div className="muted" style={{fontSize:12.5,marginTop:2}}>Bắt đầu {fmtDateVN(x.date)}{x.recovered?` · khỏi ${fmtDateVN(x.recovered)} (${Math.max(1,Math.round((new Date(x.recovered)-new Date(x.date))/86400000))} ngày)`:''}</div>
             {x.symptoms.length>0 && <div style={{fontSize:12.5,marginTop:4}}>{x.symptoms.join(' · ')}</div>}
             {x.meds && <div className="muted" style={{fontSize:12.5,marginTop:2}}>💊 {x.meds}</div>}
@@ -1780,7 +1856,7 @@ function ChildCare({people,me}){
             {bullets(POST_VACCINE.normal||[],{marginTop:3})}
             <div style={{marginTop:9,fontSize:12,fontWeight:800}}>CHĂM THẾ NÀO</div>
             {bullets(POST_VACCINE.care||[],{marginTop:3})}
-            <div className="sc-er">
+            <div className="callout er">
               <div className="h">🚨 Đi viện ngay khi</div>
               {bullets(POST_VACCINE.er||[],{fontSize:12.5})}
             </div>
@@ -1794,7 +1870,7 @@ function ChildCare({people,me}){
             {bullets(CONSTIPATION.signs||[],{marginTop:3})}
             <div style={{marginTop:9,fontSize:12,fontWeight:800,color:'var(--good)'}}>LÀM GÌ</div>
             {bullets(CONSTIPATION.do||[],{marginTop:3})}
-            <div className="sc-er">
+            <div className="callout er">
               <div className="h">Nên cho đi khám khi</div>
               {bullets(CONSTIPATION.er||[],{fontSize:12.5})}
             </div>
@@ -1828,6 +1904,50 @@ function ChildCare({people,me}){
         </Collapse>
       </div>}
 
+      {tab==='sleep' && <div>
+        <div className="note">Ngủ đủ và đúng nếp là thứ ảnh hưởng tới cả ngày của bé lẫn của bố mẹ nhiều hơn bất cứ mục nào khác trong app này.</div>
+        <div className="sec-title">Cần ngủ bao nhiêu</div>
+        {SLEEP_NEED.map(x=>(
+          <div key={x.a} className="item">
+            <div className="row"><b className="grow" style={{fontSize:'var(--t-sm)'}}>{x.a}</b>
+              <span className="pill on">{x.t}</span></div>
+            <div className="muted" style={{fontSize:'var(--t-xs)',marginTop:4}}>{x.n}</div>
+          </div>
+        ))}
+        <div className="sec-title">Trình tự đi ngủ</div>
+        <div className="note" style={{marginBottom:8}}>Cùng một trình tự mỗi tối quan trọng hơn việc trong đó có gì.</div>
+        {SLEEP_ROUTINE.map(x=>(
+          <div key={x.t} className="item">
+            <b style={{fontSize:'var(--t-sm)'}}>{x.t}</b>
+            <div className="muted" style={{fontSize:'var(--t-xs)',marginTop:3,lineHeight:1.6}}>{x.d}</div>
+          </div>
+        ))}
+        <Collapse id="child-sleepfix" defaultOpen={false} title="Vướng ở đâu">
+          <GuideList items={SLEEP_FIX} keyOf={x=>x.n} titleOf={x=>x.n} iconOf={x=>x.icon} render={x=>bullets(x.tips)}/>
+        </Collapse>
+      </div>}
+
+      {tab==='teeth' && <div>
+        <div className="note">{TEETH_CARE.lead}</div>
+        <div className="sec-title">Chăm răng hằng ngày</div>
+        <div className="card">{bullets(TEETH_CARE.daily||[])}</div>
+        <div className="sec-title">Thứ tự mọc răng</div>
+        <div className="muted center" style={{fontSize:'var(--t-xs)',margin:'0 16px 8px'}}>Mốc tham khảo — sớm muộn vài tháng đều bình thường.</div>
+        {TEETH_ORDER.map((x,i)=>(
+          <div key={x.n} className="item">
+            <div className="row"><span className="pill">{i+1}</span>
+              <div className="grow"><b style={{fontSize:'var(--t-sm)'}}>{x.n}</b>
+                <div className="muted" style={{fontSize:'var(--t-xs)',marginTop:2}}>{x.w}</div></div></div>
+          </div>
+        ))}
+        <Collapse id="child-teething" defaultOpen={false} title="Bé đang mọc răng">
+          <div className="card">{bullets(TEETH_CARE.teething||[])}</div>
+        </Collapse>
+        <Collapse id="child-dentist" defaultOpen={false} title="Khám răng khi nào">
+          <div className="card">{bullets(TEETH_CARE.visit||[])}</div>
+        </Collapse>
+      </div>}
+
       {tab==='eat' && <div>
         <div className="sec-title">🍎 Ăn uống & chăm sóc {months!=null?`(~${months} tháng)`:''}</div>
         <div className="card"><div className="muted" style={{fontSize:14,lineHeight:1.8}}>{CHILD_TIPS.map((t,i)=><div key={i}>{t}</div>)}</div></div>
@@ -1853,7 +1973,7 @@ function ChildCare({people,me}){
           <div className="field" style={{margin:0}}><label>Ngày bé đi học</label>
             <input className="inp" type="date" value={child.schoolDate||''} onChange={e=>setChild({...child,schoolDate:e.target.value})}/></div>
           {schoolDays!=null && <div className="center" style={{marginTop:10}}>
-            {schoolDays>0 ? <><div style={{fontSize:26,fontWeight:800,color:'var(--primary)'}}>{schoolDays} ngày</div><div className="muted" style={{fontSize:12.5}}>nữa là bé tới lớp — {fmtDateVN(child.schoolDate)} 🎒</div></>
+            {schoolDays>0 ? <><div style={{fontSize:26,fontWeight:800,color:'var(--brand)'}}>{schoolDays} ngày</div><div className="muted" style={{fontSize:12.5}}>nữa là bé tới lớp — {fmtDateVN(child.schoolDate)} 🎒</div></>
               : schoolDays===0 ? <div style={{fontSize:18,fontWeight:700}}>🎉 Hôm nay bé đi học!</div>
               : <div className="muted">Bé đã đi học được {Math.abs(schoolDays)} ngày 💪</div>}
           </div>}
@@ -1862,7 +1982,7 @@ function ChildCare({people,me}){
         <div className="card" style={{padding:'4px 13px'}}>
           {CHILD_PACK.map(it=>(
             <div key={it} className="row" style={{padding:'8px 0',borderBottom:'1px solid var(--line)'}}>
-              <button onClick={()=>tg(pack,setPack,it)} style={{fontSize:19}}>{pack[it]?'✅':'⬜'}</button>
+              <button className="tick" onClick={()=>tg(pack,setPack,it)} style={{fontSize:19}}>{pack[it]?'✅':'⬜'}</button>
               <span className="grow" style={{fontSize:14,textDecoration:pack[it]?'line-through':'none',opacity:pack[it]?.6:1}}>{it}</span>
             </div>
           ))}
@@ -1874,7 +1994,7 @@ function ChildCare({people,me}){
         <div className="card" style={{padding:'4px 13px',marginTop:8}}>
           {CHILD_SKILLS.map(it=>(
             <div key={it} className="row" style={{padding:'8px 0',borderBottom:'1px solid var(--line)'}}>
-              <button onClick={()=>tg(skills,setSkills,it)} style={{fontSize:19}}>{skills[it]?'✅':'⬜'}</button>
+              <button className="tick" onClick={()=>tg(skills,setSkills,it)} style={{fontSize:19}}>{skills[it]?'✅':'⬜'}</button>
               <span className="grow" style={{fontSize:14,textDecoration:skills[it]?'line-through':'none',opacity:skills[it]?.6:1}}>{it}</span>
             </div>
           ))}
@@ -1912,14 +2032,14 @@ function ChildCare({people,me}){
               <div className="row"><span style={{fontSize:19,flex:'0 0 auto'}}>{d.icon}</span>
                 <div className="grow"><b style={{fontSize:13.5}}>{d.n}</b>
                   <div className="muted" style={{fontSize:12.5,marginTop:2,lineHeight:1.5}}>{d.d}</div></div>
-                <button onClick={()=>setDocs(s=>{ const n={...s}; if(n[d.n]) delete n[d.n]; else n[d.n]=true; return n; })} style={{fontSize:19}}>{docs[d.n]?'✅':'⬜'}</button></div>
+                <button className="tick" onClick={()=>setDocs(s=>{ const n={...s}; if(n[d.n]) delete n[d.n]; else n[d.n]=true; return n; })} style={{fontSize:19}}>{docs[d.n]?'✅':'⬜'}</button></div>
             </div>
           ))}
           <div style={{margin:'10px 14px'}}><a className="btn soft" href="../index.html" style={{display:'block',textAlign:'center',textDecoration:'none'}}>🔒 Mở mục Giấy tờ bên Just Us</a></div>
         </Collapse>
       </div>}
 
-      {tab==='parent' && <div>
+      {tab==='family' && <div>
         <Collapse id="child-twos" defaultOpen={false} title="🌪️ “Khủng hoảng tuổi lên 2” là gì">
           <div className="card">
             <div style={{fontSize:13.5,lineHeight:1.65}}>{TWOS_CRISIS.what}</div>
@@ -1940,13 +2060,19 @@ function ChildCare({people,me}){
             {bullets(PARENT_BURNOUT.now||[],{marginTop:3})}
             <div style={{marginTop:9,fontSize:12,fontWeight:800}}>SAN SẺ VỚI NHAU</div>
             {bullets(PARENT_BURNOUT.share||[],{marginTop:3})}
-            <div className="sc-er"><div className="h">Khi nào cần người giúp</div>
+            <div className="callout er"><div className="h">Khi nào cần người giúp</div>
               <div style={{fontSize:12.5,lineHeight:1.6}}>{PARENT_BURNOUT.help}</div></div>
           </div>
+        </Collapse>
+        <Collapse id="child-parenting" defaultOpen={false} title="🤝 Thống nhất cách dạy con">
+          <ParentingAgreement/>
         </Collapse>
         <Collapse id="child-duty" defaultOpen={false} title="🤝 Ai lo việc nào">
           <DutyBoard people={people}/>
         </Collapse>
+      </div>}
+
+      {tab==='parent' && <div>
         <Collapse id="child-scripts" defaultOpen={false} title="💬 Con đang ăn vạ — nói câu gì bây giờ">
           <TantrumScripts/>
         </Collapse>
@@ -1979,9 +2105,6 @@ function ChildCare({people,me}){
             </div>
           ))}
         </Collapse>
-        <Collapse id="child-parenting" defaultOpen={false} title="🤝 Thống nhất cách dạy con">
-          <ParentingAgreement/>
-        </Collapse>
         <Collapse id="child-skillguides" defaultOpen={false} title="🌱 Dạy kỹ năng tự túc đầu tiên">
         <div className="muted center" style={{fontSize:11,margin:'0 14px 6px'}}>Bấm từng kỹ năng để xem cách dạy theo bước. Mỗi bé một nhịp — cứ từ từ, khen nhiều 💛</div>
         {SKILL_GUIDES.filter(g=>!gDone[g.name]).map(g=><SkillGuide key={g.name} g={g} done={false} onTick={()=>setGDone({...gDone,[g.name]:true})}/>)}
@@ -2010,38 +2133,45 @@ function ChildCare({people,me}){
         {tantrum.map(x=>(
           <div key={x.id} className="item">
             <div className="it-top"><h4 style={{fontSize:14}}>😤 {x.situation}</h4>
-              <button className="muted" onClick={()=>{ if(confirm('Xoá ghi chép này?')) setTantrum(tantrum.filter(y=>y.id!==x.id)); }}>✕</button></div>
+              <button className="xbtn" aria-label="Xoá" onClick={()=>{ if(confirm('Xoá ghi chép này?')) setTantrum(tantrum.filter(y=>y.id!==x.id)); }}>✕</button></div>
             {x.handling && <div className="muted" style={{fontSize:12.5,marginTop:3}}>💡 Cách xử lý: {x.handling}</div>}
             <div className="row" style={{marginTop:6,gap:6}}><span className="muted" style={{fontSize:11}}>{fmtDateVN(x.date)} · Hiệu quả?</span>
-              <button className="pill" style={{background:x.worked===true?'var(--good)':'var(--chip)',color:x.worked===true?'#fff':'var(--chip-tx)'}} onClick={()=>setTanWorked(x.id,true)}>👍 Có</button>
-              <button className="pill" style={{background:x.worked===false?'#b06b6b':'var(--chip)',color:x.worked===false?'#fff':'var(--chip-tx)'}} onClick={()=>setTanWorked(x.id,false)}>👎 Không</button></div>
+              <button className="pill" style={{background:x.worked===true?'var(--good)':'var(--surface-2)',color:x.worked===true?'#fff':'var(--brand-ink)'}} onClick={()=>setTanWorked(x.id,true)}>👍 Có</button>
+              <button className="pill" style={{background:x.worked===false?'#b06b6b':'var(--surface-2)',color:x.worked===false?'#fff':'var(--brand-ink)'}} onClick={()=>setTanWorked(x.id,false)}>👎 Không</button></div>
           </div>
         ))}
       </div>}
+      <Dock tab={tab} onGo={setTab} alertGroups={alertGroups}/>
     </div>
   );
 }
 
 /* ============ Vỏ app ============ */
-function SyncBadge(){
-  const [st,setSt]=useState(Cloud.status);
-  useEffect(()=>{ Cloud.onChange=setSt; return ()=>{ Cloud.onChange=null; }; },[]);
-  if(st!=='on') return <div className="sc-sync">📴 Chưa nối đám mây — dữ liệu lưu trên máy này. Mở <b>Just Us</b> đăng nhập &amp; ghép cặp là app này tự đồng bộ theo.</div>;
-  return <div className="sc-sync">☁️ Đang đồng bộ với nửa kia</div>;
-}
 function App(){
   const setup=store.get('ju.setup',{})||{};
   const people={a:setup.a||{name:'Bố',avatar:'🧑'}, b:setup.b||{name:'Mẹ',avatar:'👩'}};
   const me=store.get('ju.me',setup.me||'a');
+  // Dữ liệu tĩnh hỏng thì nói thẳng, đừng vẽ các mục rỗng một cách im lặng
+  if(!(CHILD_VACCINES||[]).length && !(EMERGENCY||[]).length){
+    return (
+      <div className="app">
+        <header className="hdr"><div className="id"><span className="mark">🐿️</span>
+          <span className="nm">Sóc</span></div></header>
+        <div className="card" style={{marginTop:24}}>
+          <b style={{fontSize:'var(--t-lg)'}}>Chưa tải được nội dung</b>
+          <div className="muted" style={{fontSize:'var(--t-sm)',margin:'8px 0 14px',lineHeight:1.6}}>
+            App không đọc được <code>data/child.json</code>. Thường là do lần đầu mở mà không có mạng.
+            Bật mạng rồi tải lại trang là xong — sau lần đầu thì app chạy được cả khi offline.
+          </div>
+          <button className="btn" onClick={()=>location.reload()}>↻ Tải lại</button>
+          <a className="btn ghost" href="../index.html" style={{marginTop:10,textDecoration:'none'}}>← Về Just Us</a>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="app">
-      <div className="sc-head">
-        <h1>🐿️ Sóc</h1>
-        <p>Phát triển · chơi với con · sức khoẻ · ăn uống · đi học · nuôi dạy</p>
-      </div>
-      <SyncBadge/>
       <ChildCare people={people} me={me}/>
-      <a className="btn soft sc-back" href="../index.html">← Về Just Us 💞</a>
     </div>
   );
 }
