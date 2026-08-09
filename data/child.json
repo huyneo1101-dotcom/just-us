@@ -2476,36 +2476,48 @@
  "SLEEP_NEED": [
   {
    "a": "0–3 tháng",
+   "lo": 0,
+   "hi": 4,
    "t": "14–17 giờ",
    "g": "nhiều giấc ngắn cả ngày lẫn đêm",
    "n": "Chưa phân biệt ngày đêm, ngủ rải rác theo cữ ăn."
   },
   {
    "a": "4–11 tháng",
+   "lo": 4,
+   "hi": 12,
    "t": "12–16 giờ",
    "g": "2–3 giấc ngày",
    "n": "Đêm dài dần; nhiều bé bắt đầu ngủ liền mạch."
   },
   {
    "a": "12–18 tháng",
+   "lo": 12,
+   "hi": 18,
    "t": "11–14 giờ",
    "g": "2 → 1 giấc",
    "n": "Khoảng 15–18 tháng bé thường gộp còn một giấc trưa."
   },
   {
    "a": "18–24 tháng",
+   "lo": 18,
+   "hi": 24,
    "t": "11–14 giờ",
    "g": "1 giấc trưa 1,5–2,5 giờ",
-   "n": "Đêm khoảng 10–12 giờ. Đây là mốc con nhà mình đang ở."
+   "n": "Đêm khoảng 10–12 giờ."
   },
   {
    "a": "2–3 tuổi",
+   "lo": 24,
+   "hi": 36,
    "t": "11–14 giờ",
    "g": "1 giấc trưa 1–2 giờ",
    "n": "Giấc trưa nên kết thúc trước 15:00 để tối bé còn buồn ngủ."
   },
   {
    "a": "3–5 tuổi",
+   "lo": 36,
+   "hi": 60,
    "t": "10–13 giờ",
    "g": "giấc trưa thưa dần",
    "n": "Nhiều bé bỏ hẳn giấc ngày, bù lại ngủ đêm sớm hơn."
@@ -3005,5 +3017,72 @@
   "E": "🏗️ Kỹ thuật",
   "A": "🎨 Nghệ thuật",
   "M": "🔢 Toán"
- }
+ },
+ "DAY_EVENTS": [
+  {
+   "k": "an-het",
+   "icon": "🍚",
+   "label": "Ăn hết",
+   "g": "Ăn"
+  },
+  {
+   "k": "an-it",
+   "icon": "🥄",
+   "label": "Ăn ít",
+   "g": "Ăn"
+  },
+  {
+   "k": "bo-bua",
+   "icon": "🚫",
+   "label": "Bỏ bữa",
+   "g": "Ăn"
+  },
+  {
+   "k": "ngu-trua",
+   "icon": "😴",
+   "label": "Ngủ trưa",
+   "g": "Ngủ"
+  },
+  {
+   "k": "ngu-dem",
+   "icon": "🌙",
+   "label": "Ngủ đêm",
+   "g": "Ngủ"
+  },
+  {
+   "k": "thuc-dem",
+   "icon": "😖",
+   "label": "Thức đêm",
+   "g": "Ngủ"
+  },
+  {
+   "k": "di-i",
+   "icon": "💩",
+   "label": "Đi ị",
+   "g": "Khác"
+  },
+  {
+   "k": "an-va",
+   "icon": "😤",
+   "label": "Ăn vạ",
+   "g": "Khác"
+  },
+  {
+   "k": "vui-ve",
+   "icon": "😄",
+   "label": "Vui vẻ",
+   "g": "Khác"
+  },
+  {
+   "k": "om-met",
+   "icon": "🤒",
+   "label": "Mệt, sốt",
+   "g": "Khác"
+  }
+ ],
+ "DAY_GROUPS": [
+  "Ăn",
+  "Ngủ",
+  "Khác"
+ ]
 }

@@ -303,6 +303,8 @@ textarea.inp{resize:vertical;min-height:72px;line-height:1.55}
     SLEEP_MORE:[], POTTY_PREP:[], POTTY_STEPS:[],
     MONTESSORI_PRINCIPLES:[], MONTESSORI_ACT:[], MONTESSORI_MAT:[],
     STEAM_PRINCIPLES:[], STEAM_ACT:[], STEAM_LABEL:{},
+    // Ghi một chạm: nhãn các nút bấm-là-xong ở trang chủ
+    DAY_EVENTS:[], DAY_GROUPS:[],
     // Đợt 3: đi lớp · ra khỏi nhà · tâm lý bé và bố mẹ
     SCHOOL_START:[], SCHOOL_ILL:[], TEACHER_NOTE:[], TRIP_PACK:[], TRIP_TIPS:[], DUTY_SLOTS:[],
     SCHOOL_PICK:{}, TWOS_CRISIS:{}, PARENT_BURNOUT:{},
@@ -360,7 +362,7 @@ const SB_KEY='sb_publishable_DMMPv5L2kGhrHTxeQ72iKw_dIh13iT1';
 const CHILD_KEYS=['ju.child','ju.childGrowth','ju.childVaccines','ju.childMilestones','ju.childDiary',
   'ju.childPack','ju.childSkills','ju.childMed','ju.childIllness','ju.childWords','ju.childTantrum',
   'ju.childParenting','ju.skillGuidesDone','ju.childContacts','ju.childSafety','ju.childDocs',
-  'ju.childPotty','ju.childNoti',
+  'ju.childPotty','ju.childNoti','ju.childDay',
   'ju.childSchools','ju.childTeacherNote','ju.childTripPack','ju.childDuty',
   'ju.childOneLine','ju.childQuotes','ju.childLetters','ju.childPhotos'];
 let _sb=null;
@@ -627,6 +629,9 @@ const TWOS_CRISIS=JUD.TWOS_CRISIS;
 const PARENT_BURNOUT=JUD.PARENT_BURNOUT;
 const DUTY_SLOTS=JUD.DUTY_SLOTS;
 const SLEEP_NEED=JUD.SLEEP_NEED;
+const DAY_EVENTS=JUD.DAY_EVENTS;
+const DAY_GROUPS=JUD.DAY_GROUPS;
+const dayEv=(k)=>DAY_EVENTS.find(x=>x.k===k)||{icon:'•',label:k};
 const SLEEP_ROUTINE=JUD.SLEEP_ROUTINE;
 const SLEEP_FIX=JUD.SLEEP_FIX;
 const TEETH_ORDER=JUD.TEETH_ORDER;
@@ -703,6 +708,8 @@ function searchIndex(){
   (CHILD_VACCINES||[]).forEach(v=>add('health','Tiêm chủng',v.age,(v.items||[]).join(' ')));
   (SLEEP_FIX||[]).forEach(x=>add('sleep','Giấc ngủ',x.n,(x.tips||[]).join(' ')));
   (SLEEP_NEED||[]).forEach(x=>add('sleep','Giấc ngủ',x.a+' — '+x.t,x.g+' '+x.n));
+  add('home','Ghi một chạm','Bấm một cái là xong — ăn, ngủ, ăn vạ',(DAY_EVENTS||[]).map(x=>x.label).join(' '));
+  add('health','Ăn ngủ trong ngày','Xem lại 7 ngày ăn ngủ của bé',(DAY_EVENTS||[]).map(x=>x.label).join(' '));
   (SLEEP_ROUTINE||[]).forEach(x=>add('sleep','Trình tự đi ngủ',x.t,x.d));
   (SLEEP_MORE||[]).forEach(x=>add('sleep','Giấc ngày & cai ti đêm',x.n,(x.tips||[]).join(' ')));
   (TEETH_ORDER||[]).forEach(x=>add('teeth','Mọc răng',x.n,x.w));
@@ -847,6 +854,38 @@ function Spark({points}){
       <circle cx={end[0]} cy={end[1]} r="3" fill="var(--brand)"/>
     </svg>
   );
+}
+
+/* Đọc thay vì gõ — Web Speech API, miễn phí, có sẵn trên Chrome Android và Safari iOS.
+   Máy không hỗ trợ thì nút tự ẩn, bố mẹ vẫn gõ tay như cũ. */
+function MicBtn({onText}){
+  const [on,setOn]=useState(false); const ref=useRef(null);
+  const SR=(typeof window!=='undefined')&&(window.SpeechRecognition||window.webkitSpeechRecognition);
+  useEffect(()=>()=>{ try{ ref.current&&ref.current.abort(); }catch(_){} },[]);
+  if(!SR) return null;
+  const bam=()=>{
+    if(on){ try{ ref.current&&ref.current.stop(); }catch(_){} return; }
+    try{
+      const r=new SR(); r.lang='vi-VN'; r.interimResults=false; r.maxAlternatives=1;
+      r.onresult=e=>{ try{ const t=e.results[0][0].transcript; if(t) onText(t); }catch(_){} };
+      r.onend=()=>{ setOn(false); ref.current=null; };
+      r.onerror=()=>{ setOn(false); ref.current=null; };
+      ref.current=r; r.start(); setOn(true);
+    }catch(_){ setOn(false); ref.current=null; }
+  };
+  return <button className="btn sm" title="Đọc thay vì gõ" aria-label="Đọc thay vì gõ" onClick={bam}
+    style={on?{flex:'0 0 auto',background:'var(--brand)',color:'var(--on-brand)'}:{flex:'0 0 auto',background:'var(--surface-2)',color:'var(--brand-ink)'}}>{on?'⏹️':'🎤'}</button>;
+}
+
+/* Nội dung viết cho một dải tuổi cụ thể. Bé lớn ra khỏi dải thì phải KÊU, không im lặng
+   để nội dung cũ trông như vẫn đúng — đó là cách một cẩm nang tự lỗi thời mà không ai biết. */
+function BandNote({lo,hi,months,what}){
+  const ngoai = months!=null && (months<lo||months>=hi);
+  return <div className="note" style={ngoai?{borderLeft:'3px solid var(--warn)'}:null}>
+    {ngoai
+      ? '⚠️ '+what+' này viết cho bé '+lo+'–'+hi+' tháng, con nhà mình đã '+months+' tháng — cần cập nhật lại.'
+      : what+' cho bé '+lo+'–'+hi+' tháng'+(months!=null?' (con đang '+months+' tháng)':'')+'.'}
+  </div>;
 }
 
 /* ============ Nhóm A — đi lớp ============ */
@@ -998,6 +1037,7 @@ function MemoryTab({child}){
       <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>Một câu thôi. Dễ giữ hơn nhật ký dài, và vài năm nữa đọc lại mới thấy quý.</div>
       <div className="row" style={{margin:'0 14px',gap:8}}>
         <input className="inp grow" placeholder={wroteToday?'Sửa dòng hôm nay…':'Hôm nay con…'} value={t1} onChange={e=>setT1(e.target.value)} onKeyDown={e=>{ if(e.key==='Enter') addOne(); }}/>
+        <MicBtn onText={t=>setT1(t)}/>
         <button className="btn sm" onClick={addOne}>＋</button>
       </div>
       {one.slice(0,14).map(x=>(
@@ -1033,6 +1073,7 @@ function MemoryTab({child}){
       <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>Câu bé tự chế ra — khác mục “từ mới” bên tab Phát triển.</div>
       <div className="row" style={{margin:'0 14px',gap:8}}>
         <input className="inp grow" placeholder="vd: “mẹ ơi trăng bị ướt”" value={t2} onChange={e=>setT2(e.target.value)} onKeyDown={e=>{ if(e.key==='Enter') addQuote(); }}/>
+        <MicBtn onText={t=>setT2(t)}/>
         <button className="btn sm" onClick={addQuote}>＋</button>
       </div>
       {quotes.slice(0,12).map(x=>(
@@ -1046,6 +1087,7 @@ function MemoryTab({child}){
       <div className="sec-title">📔 Điều đầu tiên</div>
       <div className="row" style={{margin:'0 14px',gap:8}}>
         <input className="inp grow" placeholder="Lần đầu con… (nói, bước đi, tự xúc…)" value={t3} onChange={e=>setT3(e.target.value)} onKeyDown={e=>{ if(e.key==='Enter') addFirst(); }}/>
+        <MicBtn onText={t=>setT3(t)}/>
         <button className="btn sm" onClick={addFirst}>＋</button>
       </div>
       {diary.slice(0,10).map(d=>(
@@ -1304,7 +1346,10 @@ function childDueList({child,months,vac,ill,growth,packDone,schoolDays}){
   if(vacMissing.length) out.push({id:'vacmiss',ic:'💉',t:'Còn mũi chưa tiêm: '+vacMissing.map(v=>v.age).join(', '),go:'health'});
   if(nextVac&&nextVacDays!=null&&nextVacDays>=0&&nextVacDays<=60) out.push({id:'vacnext'+nextVac.age,ic:'💉',t:'Mũi '+nextVac.age+' còn '+nextVacDays+' ngày',go:'health'});
   if(schoolDays!=null&&schoolDays>=0&&schoolDays<=60) out.push({id:'school',ic:'🎒',t:'Đi lớp còn '+schoolDays+' ngày · đồ đã soạn '+packDone+'/'+CHILD_PACK.length,go:'school'});
-  if(sickOpen.length) out.push({id:'sick'+sickOpen[0].id,ic:'🤒',t:'Đợt ốm từ '+fmtDateVN(sickOpen[0].date)+' chưa đánh dấu đã khỏi',go:'health'});
+  if(sickOpen.length){ const dOm=daysFromToday(sickOpen[0].date);
+    out.push({id:'sick'+sickOpen[0].id,ic:'🤒',t:'Đợt ốm từ '+fmtDateVN(sickOpen[0].date)+(dOm!=null&&dOm<0?(' ('+Math.abs(dOm)+' ngày)'):'')+' chưa đánh dấu đã khỏi'+(dOm!=null&&dOm<=-3?' — chưa đỡ thì cho đi khám':''),go:'health'}); }
+  // Bé đã đi lớp rồi mà balo còn thiếu món thì vẫn phải nhắc, không chỉ nhắc trước ngày nhập học.
+  if(schoolDays!=null&&schoolDays<=0&&packDone<CHILD_PACK.length) out.push({id:'pack',ic:'🎒',t:'Còn '+(CHILD_PACK.length-packDone)+' món chưa soạn vào balo đi lớp',go:'school'});
   if(daysSinceMeasure!=null&&daysSinceMeasure<=-30) out.push({id:'measure',ic:'📏',t:'Đã '+Math.abs(daysSinceMeasure)+' ngày chưa đo cân nặng',go:'health'});
   if(!child.dob) out.push({id:'dob',ic:'🎂',t:'Chưa nhập ngày sinh — nhập để app hiện đúng mốc theo tuổi',go:null});
   return out;
@@ -1371,7 +1416,7 @@ function NotiSettings({due}){
   );
 }
 
-function HomeTab({child,months,ageLabel,growth,words,wordsThisWeek,vac,mile,skills,skillDone,pack,packDone,gDone,ill,schoolDays,go,onEdit}){
+function HomeTab({child,months,ageLabel,growth,words,wordsThisWeek,vac,mile,skills,skillDone,pack,packDone,gDone,ill,schoolDays,go,onEdit,dayLog,addDay,delDay}){
   const last=growth[0];
   const weights=growth.filter(g=>g.w!=null).slice(0,6).map(g=>g.w).reverse();
   const band=months==null?null:(CHILD_MILESTONES.find(x=>months>=x.lo&&months<x.hi)||CHILD_MILESTONES[CHILD_MILESTONES.length-1]);
@@ -1389,6 +1434,7 @@ function HomeTab({child,months,ageLabel,growth,words,wordsThisWeek,vac,mile,skil
   const nextVacDays=(nextVac&&child.dob)? daysFromToday(new Date(new Date(child.dob+'T00:00:00').getTime()+vacAgeMonths(nextVac.age)*30.44*86400000).toISOString().slice(0,10)) : null;
 
   const alerts=childDueList({child,months,vac,ill,growth,packDone,schoolDays});
+  const dayToday=(dayLog||[]).filter(x=>x.date===todayISO());
   // Nhãn nhỏ cho hai ô mới, đọc thẳng từ localStorage cho gọn (không cần thêm prop)
   const potty=store.get('ju.childPotty',{})||{};
   const pottyLabel=potty.start?'đang tập':'chưa bắt đầu';
@@ -1442,6 +1488,30 @@ function HomeTab({child,months,ageLabel,growth,words,wordsThisWeek,vac,mile,skil
           <div className="prog" style={{marginTop:5}}><i style={{width:(skillDone/CHILD_SKILLS.length*100)+'%'}}></i></div></div>
       </div>
 
+      <div className="sec-title">👆 Bấm một cái là xong</div>
+      <div className="card">
+        <div className="row"><span className="muted grow" style={{fontSize:'var(--t-xs)'}}>Không cần gõ chữ — bấm đúng việc vừa xảy ra, app tự ghi kèm giờ.</span>
+          {dayToday.length>0 && <span className="pill on" style={{flex:'0 0 auto'}}>{dayToday.length} lần hôm nay</span>}</div>
+        {DAY_GROUPS.map(g=>(
+          <div key={g} className="row" style={{gap:6,marginTop:7,flexWrap:'wrap'}}>
+            <span className="muted" style={{fontSize:'var(--t-xs)',width:34,flex:'0 0 auto'}}>{g}</span>
+            {DAY_EVENTS.filter(x=>x.g===g).map(x=>(
+              <button key={x.k} className="pill" style={{padding:'8px 12px'}} onClick={()=>addDay(x.k)}>{x.icon} {x.label}</button>
+            ))}
+          </div>
+        ))}
+        {dayToday.length>0 && <div style={{marginTop:9,borderTop:'1px solid var(--line)',paddingTop:7}}>
+          {dayToday.slice(0,10).map(x=>(
+            <div key={x.id} className="row" style={{fontSize:'var(--t-sm)',padding:'3px 0'}}>
+              <span className="muted" style={{width:44,flex:'0 0 auto'}}>{x.at}</span>
+              <span className="grow">{dayEv(x.k).icon} {dayEv(x.k).label}</span>
+              <button className="xbtn" aria-label="Xoá" onClick={()=>delDay(x.id)}>✕</button>
+            </div>
+          ))}
+          <div className="muted" style={{fontSize:'var(--t-xs)',marginTop:5}}>Xem lại nhiều ngày ở mục 🏥 Theo dõi &amp; khám.</div>
+        </div>}
+      </div>
+
       {alerts.length>0 && <>
         <div className="sec-title">📌 Cần để ý</div>
         {alerts.map((a,i)=>(
@@ -1470,8 +1540,9 @@ function HomeTab({child,months,ageLabel,growth,words,wordsThisWeek,vac,mile,skil
 
 /* ============ An toàn & cấp cứu ============ */
 // Danh bạ khẩn — bố mẹ tự điền, lưu ju.childContacts (đồng bộ cùng các khoá Sóc khác)
-function ContactBook(){
-  const [list,setList]=useLocal('ju.childContacts',[]);
+// Nhận list/setList từ SafetyTab: thanh "Gọi ngay" ghim ở đầu tab cũng đọc đúng dữ liệu này,
+// hai chỗ cùng useLocal một khoá thì chỗ nào thêm số chỗ kia vẫn hiện bản cũ.
+function ContactBook({list,setList}){
   const [f,setF]=useState({label:'',phone:''});
   const add=()=>{ if(!f.label.trim()||!f.phone.trim()) return; setList([...list,{id:uid(),label:f.label.trim(),phone:f.phone.trim()}]); setF({label:'',phone:''}); };
   return (
@@ -1495,9 +1566,6 @@ function ContactBook(){
         <input className="inp" style={{marginTop:8}} type="tel" placeholder="Số điện thoại" value={f.phone} onChange={e=>setF({...f,phone:e.target.value})}/>
         <button className="btn" style={{marginTop:8}} onClick={add}>＋ Lưu số</button>
       </div>
-      <div className="row" style={{margin:'0 14px',gap:8}}>
-        <a className="btn" href="tel:115" style={{textDecoration:'none',background:'linear-gradient(135deg,#c0392b,#e0654f)'}}>📞 115 — Cấp cứu</a>
-      </div>
     </div>
   );
 }
@@ -1505,11 +1573,24 @@ function ContactBook(){
 function SafetyTab({child,growth}){
   const [open,setOpen]=useState(null);
   const [safe,setSafe]=useLocal('ju.childSafety',{});
+  const [contacts,setContacts]=useLocal('ju.childContacts',[]);
   const last=growth&&growth[0];
   const doneCount=HOME_SAFETY.reduce((n,g)=>n+g.items.filter(it=>safe[it]).length,0);
   const totalCount=HOME_SAFETY.reduce((n,g)=>n+g.items.length,0);
   return (
     <div>
+      {/* Ghim đầu tab: lúc cuống thì không ai còn bình tĩnh mà cuộn tìm số. */}
+      <div className="card" style={{borderLeft:'4px solid var(--danger)'}}>
+        <b style={{fontSize:'var(--t-sm)'}}>📞 Gọi ngay</b>
+        <div style={{display:'flex',flexWrap:'wrap',gap:6,marginTop:7}}>
+          <a className="pill" href="tel:115" style={{textDecoration:'none',background:'var(--danger)',color:'#fff',padding:'8px 13px',fontWeight:700}}>🚑 115 Cấp cứu</a>
+          {contacts.map(c=>(
+            <a key={c.id} className="pill" href={'tel:'+c.phone.replace(/[^0-9+]/g,'')} style={{textDecoration:'none',padding:'8px 13px'}}>📞 {c.label}</a>
+          ))}
+        </div>
+        {contacts.length===0 && <div className="muted" style={{fontSize:'var(--t-xs)',marginTop:7}}>Thêm số bác sĩ / bệnh viện quen ở mục 📞 Số gọi khi cần ngay dưới đây.</div>}
+      </div>
+
       <div className="card" style={{background:'linear-gradient(135deg,var(--surface-2),var(--surface))'}}>
         <div className="row">
           <div className="grow"><div className="muted" style={{fontSize:11}}>Cân nặng mới nhất — bác sĩ luôn hỏi câu này trước</div>
@@ -1545,7 +1626,7 @@ function SafetyTab({child,growth}){
       <div className="card"><ul style={{margin:0,paddingLeft:18,fontSize:13,lineHeight:1.7}}>{RED_FLAGS.map((t,i)=><li key={i}>{t}</li>)}</ul></div>
 
       <div className="sec-title">📞 Số gọi khi cần</div>
-      <ContactBook/>
+      <ContactBook list={contacts} setList={setContacts}/>
 
       <Collapse id="child-danger" defaultOpen={false} title="⚠️ Thứ nguy hiểm cần cất khỏi tầm với">
         <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>Thử nhanh: lọt qua lõi giấy vệ sinh là bé nuốt được.</div>
@@ -1637,6 +1718,7 @@ function ChildCare({people,me}){
   const [words,setWords]=useLocal('ju.childWords',[]);
   const [tantrum,setTantrum]=useLocal('ju.childTantrum',[]);
   const [docs,setDocs]=useLocal('ju.childDocs',{});
+  const [dayLog,setDayLog]=useLocal('ju.childDay',[]);
   const [showAllVac,setShowAllVac]=useState(false);
   const [tab,setTab]=useState('home');
   const [editChild,setEditChild]=useState(false);
@@ -1657,6 +1739,11 @@ function ChildCare({people,me}){
   const recover=(id)=> setIll(ill.map(x=>x.id===id?{...x,recovered:x.recovered?'':todayISO()}:x));
   const addTantrum=()=>{ if(!tanForm.situation.trim()) return; setTantrum([{id:uid(),date:todayISO(),situation:tanForm.situation.trim(),handling:tanForm.handling.trim(),worked:null},...tantrum]); setTanForm({situation:'',handling:''}); };
   const setTanWorked=(id,v)=> setTantrum(tantrum.map(x=>x.id===id?{...x,worked:x.worked===v?null:v}:x));
+  // Ghi một chạm — giữ 600 lần gần nhất cho khỏi phình hàng dữ liệu của cả cặp.
+  // Cập nhật theo dạng hàm: bấm hai nút liền tay thì lần sau không đè mất lần trước.
+  const addDay=(k)=>{ const now=new Date(); const at=pad(now.getHours())+':'+pad(now.getMinutes());
+    setDayLog(prev=>[{id:uid(),date:todayISO(),at,k},...prev].slice(0,600)); celebrate(['✓']); };
+  const delDay=(id)=> setDayLog(prev=>prev.filter(x=>x.id!==id));
   const schoolDays=child.schoolDate? daysFromToday(child.schoolDate) : null;
   const packDone=CHILD_PACK.filter(it=>pack[it]).length;
   const skillDone=CHILD_SKILLS.filter(it=>skills[it]).length;
@@ -1718,6 +1805,7 @@ function ChildCare({people,me}){
       {tab==='home' && <HomeTab child={child} months={months} ageLabel={ageLabel} growth={growth}
         words={words} wordsThisWeek={wordsThisWeek} vac={vac} mile={mile} skills={skills} skillDone={skillDone}
         pack={pack} packDone={packDone} gDone={gDone} ill={ill} schoolDays={schoolDays} go={setTab}
+        dayLog={dayLog} addDay={addDay} delDay={delDay}
         onEdit={()=>setEditChild(true)}/>}
       {tab==='safe' && <SafetyTab child={child} growth={growth}/>}
 
@@ -1736,6 +1824,7 @@ function ChildCare({people,me}){
         <div className="card">
           <div className="row" style={{gap:6}}>
             <input className="inp grow" placeholder="Thêm từ bé mới nói được…" value={wordIn} onChange={e=>setWordIn(e.target.value)} onKeyDown={e=>{ if(e.key==='Enter') addWord(); }}/>
+            <MicBtn onText={t=>setWordIn(t)}/>
             <button className="btn sm" onClick={addWord}>＋</button>
           </div>
           {words.length===0 && <div className="muted" style={{fontSize:12.5,marginTop:8}}>Ghi lại mỗi từ mới — vài tháng nhìn lại sẽ rất đáng yêu 💕</div>}
@@ -1765,7 +1854,8 @@ function ChildCare({people,me}){
       </div>}
 
       {tab==='play' && <div>
-        <div className="muted center" style={{fontSize:11,margin:'10px 14px'}}>🎲 Trò chơi giúp bé phát triển (~20–24 tháng), chia theo nhóm kỹ năng. Trang chủ có thẻ <b>Chơi với con hôm nay</b> để gợi ý ngẫu nhiên.</div>
+        <BandNote lo={18} hi={24} months={months} what="Bộ trò chơi"/>
+        <div className="muted center" style={{fontSize:11,margin:'10px 14px'}}>🎲 Chia theo nhóm kỹ năng. Trang chủ có thẻ <b>Chơi với con hôm nay</b> để gợi ý ngẫu nhiên.</div>
         <Collapse id="child-play" defaultOpen={false} title="🎲 Trò chơi theo nhóm kỹ năng">
         {['🤸 Vận động','🧩 Tư duy','🗣️ Ngôn ngữ','🎨 Khéo tay'].map(cat=>(
           <div key={cat}>
@@ -1862,6 +1952,19 @@ function ChildCare({people,me}){
       </div>}
 
       {tab==='health' && <div>
+        <div className="sec-title">🍚😴 Ăn ngủ trong ngày</div>
+        {dayLog.length===0
+          ? <div className="note">Chưa ghi lần nào. Sang trang chủ 🏠, mục “Bấm một cái là xong” — mỗi lần bé ăn, ngủ hay ăn vạ thì bấm một nút, app tự ghi giờ. Vài ngày là thấy nếp của con.</div>
+          : (()=>{ const ngay=[...new Set(dayLog.map(x=>x.date))].sort().reverse().slice(0,7);
+              return ngay.map(d=>{ const items=dayLog.filter(x=>x.date===d).sort((a,b)=>(a.at||'').localeCompare(b.at||''));
+                return <div key={d} className="item">
+                  <div className="row"><b className="grow" style={{fontSize:'var(--t-sm)'}}>{fmtDateVN(d)}{d===todayISO()?' · hôm nay':''}</b>
+                    <span className="muted" style={{fontSize:'var(--t-xs)'}}>{items.length} lần</span></div>
+                  <div style={{marginTop:4}}>{items.map(x=>(
+                    <span key={x.id} className="pill" style={{margin:'3px 6px 3px 0',padding:'5px 9px',fontSize:'var(--t-xs)'}}>{dayEv(x.k).icon} {dayEv(x.k).label} <span className="muted">{x.at}</span></span>
+                  ))}</div>
+                </div>; });
+            })()}
         <div className="sec-title">Khám & sàng lọc định kỳ</div>
         {CHECKUP_SCHEDULE.map(x=>(
           <div key={x.n} className="item">
@@ -1988,13 +2091,14 @@ function ChildCare({people,me}){
       {tab==='sleep' && <div>
         <div className="note">Ngủ đủ và đúng nếp là thứ ảnh hưởng tới cả ngày của bé lẫn của bố mẹ nhiều hơn bất cứ mục nào khác trong app này.</div>
         <div className="sec-title">Cần ngủ bao nhiêu</div>
-        {SLEEP_NEED.map(x=>(
-          <div key={x.a} className="item">
-            <div className="row"><b className="grow" style={{fontSize:'var(--t-sm)'}}>{x.a}</b>
+        {SLEEP_NEED.map(x=>{ const dang=months!=null&&x.lo!=null&&months>=x.lo&&months<x.hi;
+          return (
+          <div key={x.a} className="item" style={dang?{borderLeft:'3px solid var(--brand)'}:null}>
+            <div className="row"><b className="grow" style={{fontSize:'var(--t-sm)'}}>{x.a}{dang?' · con đang ở mốc này':''}</b>
               <span className="pill on">{x.t}</span></div>
             <div className="muted" style={{fontSize:'var(--t-xs)',marginTop:4}}>{x.g?'💤 '+x.g+' · ':''}{x.n}</div>
           </div>
-        ))}
+          ); })}
         <div className="note" style={{marginTop:8}}>Số giờ đã tính cả giấc ngày. Mỗi bé lệch một chút vẫn bình thường — dấu hiệu ngủ đủ là ban ngày bé tỉnh táo và vui vẻ.</div>
         <div className="sec-title">Trình tự đi ngủ</div>
         <div className="note" style={{marginBottom:8}}>Cùng một trình tự mỗi tối quan trọng hơn việc trong đó có gì.</div>
@@ -2037,7 +2141,8 @@ function ChildCare({people,me}){
         <div className="sec-title">🍎 Ăn uống & chăm sóc {months!=null?`(~${months} tháng)`:''}</div>
         <div className="card"><div className="muted" style={{fontSize:14,lineHeight:1.8}}>{CHILD_TIPS.map((t,i)=><div key={i}>{t}</div>)}</div></div>
         <Collapse id="child-wean" defaultOpen={false} title="🍚 Thực đơn ăn dặm / ăn thô cả tuần">
-        <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>Gợi ý cho bé ~18–24 tháng (cơm nát + món mềm). Điều chỉnh theo khẩu vị bé nhé.</div>
+        <BandNote lo={18} hi={24} months={months} what="Thực đơn"/>
+        <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>Cơm nát + món mềm. Điều chỉnh theo khẩu vị bé nhé.</div>
         {WEAN_MENU.map((m,i)=>(
           <div key={i} className="item">
             <div className="it-top"><h4>{m.d}</h4></div>

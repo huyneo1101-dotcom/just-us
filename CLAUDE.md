@@ -4,7 +4,7 @@ App tĩnh: UI + logic + CSS nằm trong `index.html` (~7810 dòng, ~676KB — v�
 
 ## Quy tắc làm việc với file này
 - **KHÔNG đọc cả `index.html` (~676KB, ~7810 dòng)** — LUÔN grep định vị rồi Read cửa sổ nhỏ (xem skill `bigfile-nav`).
-- Sửa nội dung đáng kể → **bump `CACHE` trong `sw.js`** (hiện: `justus-v34`; có thêm cache phụ `justus-noti`).
+- Sửa nội dung đáng kể → **bump `CACHE` trong `sw.js`** (hiện: `justus-v35`; có thêm cache phụ `justus-noti`).
 - Babel transpile trong trình duyệt: lỗi cú pháp = trắng màn hình. Kiểm tra Console sau khi sửa.
 
 ## Dữ liệu tĩnh tách rời (`data/*.json`)
@@ -16,7 +16,7 @@ Các mảng nội dung lớn KHÔNG còn nằm trong `index.html` — sửa nộ
 | `data/dishes.json` | `MENU_GOALS` `EASY_DISHES` `DISHES` (232 món) |
 | `data/prompts.json` | `QUESTIONS` `QUIZ_Q` `CHALLENGES` `TALK_TOPICS` |
 | `data/hanoi.json` | `HANOI_CATS` `HANOI_SPOTS` |
-| `data/child.json` | 60 khoá nội dung nuôi con — nhóm gốc (`CHILD_VACCINES` `CHILD_MILESTONES` `CHILD_TIPS` `CHILD_PACK` `CHILD_SKILLS` `PLAY_LIB` `WEAN_MENU` `PARENTING_QS` `ILL_SYMPTOMS` `KIDS_CAFES` `SKILL_GUIDES` `CHILD_ISSUES`) + nhóm đợt 1 (`EMERGENCY` `RED_FLAGS` `DANGER_ITEMS` `HOME_SAFETY` `CONTACT_SUGGEST` `TANTRUM_SCRIPTS` `CHILD_BEHAVIOR` `CHORES_2Y` `SELF_CORNER` `DRESS_TEMP` `DRESS_RULES` `SEASON_ILL` `SCARY_TASKS` `WEEKEND_PLANS` `CHILD_DOCS` + 3 **object** `POST_VACCINE` `CONSTIPATION` `SCREEN_GUIDE`) + nhóm đợt 2 (`POTTY_READY` `POTTY_TIMES` `POTTY_FIX` + 2 **object** `WHO_WEIGHT` `WHO_HEIGHT`) + nhóm đợt 3 (`SCHOOL_START` `SCHOOL_ILL` `TEACHER_NOTE` `TRIP_PACK` `TRIP_TIPS` `DUTY_SLOTS` + 3 **object** `SCHOOL_PICK` `TWOS_CRISIS` `PARENT_BURNOUT`) + nhóm bổ sung (`SLEEP_NEED` `SLEEP_ROUTINE` `SLEEP_FIX` `TEETH_ORDER` `CHECKUP_SCHEDULE` `DEV_REDFLAGS` + object `TEETH_CARE`) + nhóm đợt 4 (`SLEEP_MORE` `POTTY_PREP` `POTTY_STEPS` `MONTESSORI_PRINCIPLES` `MONTESSORI_ACT` `MONTESSORI_MAT` `STEAM_PRINCIPLES` `STEAM_ACT` + object `STEAM_LABEL`) — **dùng chung** cho app Sóc (`soc/`) và trang chủ Just Us |
+| `data/child.json` | 62 khoá nội dung nuôi con — nhóm gốc (`CHILD_VACCINES` `CHILD_MILESTONES` `CHILD_TIPS` `CHILD_PACK` `CHILD_SKILLS` `PLAY_LIB` `WEAN_MENU` `PARENTING_QS` `ILL_SYMPTOMS` `KIDS_CAFES` `SKILL_GUIDES` `CHILD_ISSUES`) + nhóm đợt 1 (`EMERGENCY` `RED_FLAGS` `DANGER_ITEMS` `HOME_SAFETY` `CONTACT_SUGGEST` `TANTRUM_SCRIPTS` `CHILD_BEHAVIOR` `CHORES_2Y` `SELF_CORNER` `DRESS_TEMP` `DRESS_RULES` `SEASON_ILL` `SCARY_TASKS` `WEEKEND_PLANS` `CHILD_DOCS` + 3 **object** `POST_VACCINE` `CONSTIPATION` `SCREEN_GUIDE`) + nhóm đợt 2 (`POTTY_READY` `POTTY_TIMES` `POTTY_FIX` + 2 **object** `WHO_WEIGHT` `WHO_HEIGHT`) + nhóm đợt 3 (`SCHOOL_START` `SCHOOL_ILL` `TEACHER_NOTE` `TRIP_PACK` `TRIP_TIPS` `DUTY_SLOTS` + 3 **object** `SCHOOL_PICK` `TWOS_CRISIS` `PARENT_BURNOUT`) + nhóm bổ sung (`SLEEP_NEED` `SLEEP_ROUTINE` `SLEEP_FIX` `TEETH_ORDER` `CHECKUP_SCHEDULE` `DEV_REDFLAGS` + object `TEETH_CARE`) + nhóm đợt 4 (`SLEEP_MORE` `POTTY_PREP` `POTTY_STEPS` `MONTESSORI_PRINCIPLES` `MONTESSORI_ACT` `MONTESSORI_MAT` `STEAM_PRINCIPLES` `STEAM_ACT` + object `STEAM_LABEL`) + nhóm đợt 5 (`DAY_EVENTS` `DAY_GROUPS`) — **dùng chung** cho app Sóc (`soc/`) và trang chủ Just Us |
 
 Cách hoạt động: một `<script>` ngay trước khối `text/babel` tạo `window.JUD` với mảng/object RỖNG rồi `fetch` các JSON và **đổ dữ liệu vào đúng chỗ cũ** (giữ nguyên identity, vì trong khối babel viết `const DISHES=JUD.DISHES;` chạy ngay lập tức). App chỉ vẽ sau khi dữ liệu về (tối đa chờ 5s rồi vẽ trước, dữ liệu về muộn thì vẽ lại).
 - Thêm mảng dữ liệu mới → thêm khoá vào JSON **và** thêm placeholder rỗng đúng kiểu trong `window.JUD`.
@@ -89,6 +89,24 @@ kèm cột giấc ngày (trường `g`); tab **Tập bô** thêm "chuẩn bị t
 - Phần giấc ngủ và tập bô **gộp** với `SLEEP_ROUTINE`/`SLEEP_FIX`/`POTTY_READY`/`POTTY_TIMES`/`POTTY_FIX`
   đã có, không chép đè: chỉ đưa sang phần app Sóc còn thiếu.
 
+**Đợt 5 (2026-08-09) — ghi một chạm · ghi bằng giọng nói · gọi nhanh · tự kêu khi lệch tuổi:**
+- **Ghi một chạm** (`ju.childDay`): thẻ "👆 Bấm một cái là xong" ở trang chủ, 10 nút chia 3 nhóm
+  (`DAY_EVENTS`/`DAY_GROUPS` trong `data/child.json`), bấm là ghi kèm giờ, giữ 600 lần gần nhất.
+  Tab **Theo dõi & khám** hiện lại 07 ngày gần nhất. `addDay`/`delDay` **bắt buộc dùng dạng hàm cập nhật**
+  (`setDayLog(prev=>…)`) — bấm hai nút liền tay mà tính từ biến cũ thì lần sau đè mất lần trước.
+- **`MicBtn`** — đọc thay vì gõ (Web Speech `vi-VN`), gắn ở ô từ mới và 3 ô của tab Kỷ niệm.
+  Máy không hỗ trợ thì nút tự ẩn. Dùng `--brand` chứ **không** dùng `--danger` (đỏ chỉ dành cho cấp cứu).
+- **`BandNote`** — nội dung viết cho một dải tuổi thì tự KÊU khi con lớn ra khỏi dải (thực đơn ăn dặm ·
+  bộ trò chơi, cùng dải 18–24 tháng). `SLEEP_NEED` nay có `lo`/`hi` tính bằng tháng nên app tự tô mốc con
+  đang ở, thay cho câu ghi cứng "đây là mốc con nhà mình đang ở" (đã gỡ khỏi `data/child.json`).
+- **Gọi nhanh**: thẻ "📞 Gọi ngay" ghim ở **đầu** tab An toàn (115 + số đã lưu). State `ju.childContacts`
+  **đã nâng lên `SafetyTab`** và truyền xuống `ContactBook` qua props — trước đó hai chỗ cùng `useLocal`
+  một khoá thì thêm số ở dưới mà thanh ghim vẫn hiện bản cũ.
+- **`childDueList`** thêm nhắc balo khi bé **đã đi lớp rồi** mà còn món chưa soạn (cũ chỉ nhắc trong 60 ngày
+  trước ngày nhập học), và thêm số ngày ốm vào nhắc đợt ốm.
+- Nội dung này vốn là commit `8937352` viết cho `ChildCare` trong `index.html`; bản trên `origin/main` đã tách
+  Sóc sang `soc/` nên 173 dòng đó không có mặt trên cây làm việc — đã chuyển thẳng sang `soc/`.
+
 ### Thiết kế lại (2026-08-09)
 App Sóc **không còn mượn da "Sổ tay"** của Just Us nữa — nó có hệ token riêng trong khối `<style>`
 (`--brand` xanh mòng két, `--surface`, `--ink*`, `--line`, sáng/tối đầy đủ). Lý do đổi: da sổ tay lấy
@@ -133,7 +151,7 @@ lớn** vào từng mục (thêm 🚽 Tập bô và 📔 Kỷ niệm ở đợt 
   liệu khác, và `Cloud.start()` của Just Us (vốn `pull()` đè localStorage khi mở app) không nuốt mất phần
   vừa ghi bên Sóc. `last_writer` ghi là `<device>.soc` để máy kia (và tab Just Us) nhận realtime.
   Chưa đăng nhập/ghép cặp thì app vẫn chạy, chỉ lưu máy này (có dòng báo "📴 Chưa nối đám mây").
-- Cache riêng `soc-v7`. **Ba service worker dùng chung origin**: mỗi `sw.js` chỉ được xoá cache có tiền tố
+- Cache riêng `soc-v8`. **Ba service worker dùng chung origin**: mỗi `sw.js` chỉ được xoá cache có tiền tố
   của chính nó (`justus-*` / `tamlinh-*` / `soc-*`). `soc/sw.js` cache cả `../data/child.json` + `../fonts.css`
   (scope chỉ giới hạn TRANG được điều khiển, không giới hạn URL được chặn) → đổi 2 file đó phải bump `soc-v*`.
 - Deploy: Pages và Netlify đều publish cả thư mục nên `soc/` tự lên, không cần sửa CI.
