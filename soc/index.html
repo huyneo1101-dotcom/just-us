@@ -428,6 +428,8 @@ body.theme-sotay .homev3 .hero:not(.hascover) .sub{
     EMERGENCY:[], RED_FLAGS:[], DANGER_ITEMS:[], HOME_SAFETY:[], CONTACT_SUGGEST:[],
     TANTRUM_SCRIPTS:[], CHILD_BEHAVIOR:[], CHORES_2Y:[], SELF_CORNER:[],
     DRESS_TEMP:[], DRESS_RULES:[], SEASON_ILL:[], SCARY_TASKS:[], WEEKEND_PLANS:[], CHILD_DOCS:[],
+    // Đợt 2: tập bô + chuẩn tăng trưởng WHO (hai khoá WHO_* là object theo giới tính)
+    POTTY_READY:[], POTTY_TIMES:[], POTTY_FIX:[], WHO_WEIGHT:{}, WHO_HEIGHT:{},
     // ba khoá dưới là OBJECT, không phải mảng — fill() xử lý riêng
     POST_VACCINE:{}, CONSTIPATION:{}, SCREEN_GUIDE:{} };
   function fill(dst,src){
@@ -481,7 +483,8 @@ const SB_URL='https://vvgkjgvzjeklaadusbne.supabase.co';
 const SB_KEY='sb_publishable_DMMPv5L2kGhrHTxeQ72iKw_dIh13iT1';
 const CHILD_KEYS=['ju.child','ju.childGrowth','ju.childVaccines','ju.childMilestones','ju.childDiary',
   'ju.childPack','ju.childSkills','ju.childMed','ju.childIllness','ju.childWords','ju.childTantrum',
-  'ju.childParenting','ju.skillGuidesDone','ju.childContacts','ju.childSafety','ju.childDocs'];
+  'ju.childParenting','ju.skillGuidesDone','ju.childContacts','ju.childSafety','ju.childDocs',
+  'ju.childPotty','ju.childNoti'];
 let _sb=null;
 function sbClient(){
   if(_sb) return _sb;
@@ -648,6 +651,11 @@ const CHILD_DOCS=JUD.CHILD_DOCS;
 const POST_VACCINE=JUD.POST_VACCINE;
 const CONSTIPATION=JUD.CONSTIPATION;
 const SCREEN_GUIDE=JUD.SCREEN_GUIDE;
+const POTTY_READY=JUD.POTTY_READY;
+const POTTY_TIMES=JUD.POTTY_TIMES;
+const POTTY_FIX=JUD.POTTY_FIX;
+const WHO_WEIGHT=JUD.WHO_WEIGHT;
+const WHO_HEIGHT=JUD.WHO_HEIGHT;
 
 /* ============ Thống nhất cách dạy con ============ */
 function ParentingAgreement(){
@@ -701,6 +709,292 @@ function Spark({points}){
   );
 }
 
+/* ============ Mục 4 — biểu đồ tăng trưởng theo chuẩn WHO ============ */
+// Nội suy tuyến tính giữa hai mốc 3 tháng của bảng WHO rút gọn.
+function whoAt(table,gender,m){
+  const rows=table[gender==='nu'?'nu':'nam']; if(!rows||!rows.length||m==null) return null;
+  if(m<=rows[0][0]) return rows[0].slice(1);
+  if(m>=rows[rows.length-1][0]) return rows[rows.length-1].slice(1);
+  for(let i=0;i<rows.length-1;i++){
+    const a=rows[i],b=rows[i+1];
+    if(m>=a[0]&&m<=b[0]){ const f=(m-a[0])/(b[0]-a[0]);
+      return [1,2,3].map(j=>a[j]+(b[j]-a[j])*f); }
+  }
+  return null;
+}
+// "Bé đang nằm ở đâu so với chuẩn" — chỉ nói theo dải, không phán chẩn đoán.
+function whoBand(v,ref){
+  if(v==null||!ref) return null;
+  if(v<ref[0]) return {k:'low',t:'thấp hơn dải chuẩn (dưới P3)',c:'#c0392b'};
+  if(v>ref[2]) return {k:'high',t:'cao hơn dải chuẩn (trên P97)',c:'#c0392b'};
+  if(v<ref[1]) return {k:'mid',t:'trong dải chuẩn, dưới mức giữa',c:'var(--good)'};
+  return {k:'mid',t:'trong dải chuẩn, trên mức giữa',c:'var(--good)'};
+}
+function GrowthChart({growth,child,months,kind}){
+  const gender=child.gender==='nu'?'nu':'nam';
+  const table=kind==='h'?WHO_HEIGHT:WHO_WEIGHT;
+  const rows=table[gender]||[];
+  if(!rows.length) return null;
+  const pts=(growth||[]).filter(g=>(kind==='h'?g.h:g.w)!=null && child.dob)
+    .map(g=>({m:Math.max(0,Math.round((new Date(g.date+'T00:00:00')-new Date(child.dob+'T00:00:00'))/(30.44*86400000))), v:(kind==='h'?g.h:g.w)}))
+    .sort((a,b)=>a.m-b.m);
+  const W=300,H=190,L=26,R=6,T=8,B=18;
+  const maxM=Math.min(36,Math.max(12,(months==null?24:months)+6, pts.length?pts[pts.length-1].m+3:0));
+  const inRange=rows.filter(r=>r[0]<=maxM+3);
+  const lo=Math.min(...inRange.map(r=>r[1]), ...pts.map(p=>p.v));
+  const hi=Math.max(...inRange.map(r=>r[3]), ...pts.map(p=>p.v));
+  const pad=(hi-lo)*0.08||1;
+  const y0=lo-pad, y1=hi+pad;
+  const X=m=>L+(m/maxM)*(W-L-R);
+  const Y=v=>T+(1-(v-y0)/(y1-y0))*(H-T-B);
+  const path=(idx)=>inRange.map((r,i)=>(i?'L':'M')+X(r[0]).toFixed(1)+' '+Y(r[idx]).toFixed(1)).join(' ');
+  const bandArea=inRange.map((r,i)=>(i?'L':'M')+X(r[0]).toFixed(1)+' '+Y(r[1]).toFixed(1)).join(' ')
+    +' '+inRange.slice().reverse().map(r=>'L'+X(r[0]).toFixed(1)+' '+Y(r[3]).toFixed(1)).join(' ')+' Z';
+  const kidPath=pts.map((p,i)=>(i?'L':'M')+X(p.m).toFixed(1)+' '+Y(p.v).toFixed(1)).join(' ');
+  const ticks=[0,6,12,18,24,30,36].filter(t=>t<=maxM);
+  const unit=kind==='h'?'cm':'kg';
+  return (
+    <svg width="100%" viewBox={'0 0 '+W+' '+H} style={{display:'block'}} role="img"
+      aria-label={'Biểu đồ '+(kind==='h'?'chiều cao':'cân nặng')+' của bé so với dải chuẩn WHO'}>
+      <path d={bandArea} fill="var(--chip)" opacity="0.75"/>
+      <path d={path(1)} fill="none" stroke="var(--line)" strokeWidth="1"/>
+      <path d={path(3)} fill="none" stroke="var(--line)" strokeWidth="1"/>
+      <path d={path(2)} fill="none" stroke="var(--muted)" strokeWidth="1" strokeDasharray="3 3"/>
+      {ticks.map(t=>(<g key={t}>
+        <line x1={X(t)} y1={H-B} x2={X(t)} y2={H-B+3} stroke="var(--line)"/>
+        <text x={X(t)} y={H-B+13} fontSize="8" fill="var(--muted)" textAnchor="middle">{t}</text>
+      </g>))}
+      <text x="2" y={Y(y1)+8} fontSize="8" fill="var(--muted)">{Math.round(y1)}</text>
+      <text x="2" y={Y(y0)} fontSize="8" fill="var(--muted)">{Math.round(y0)}</text>
+      <text x={W-R} y={H-B+13} fontSize="8" fill="var(--muted)" textAnchor="end">tháng tuổi</text>
+      {pts.length>1 && <path d={kidPath} fill="none" stroke="var(--primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>}
+      {pts.map((p,i)=><circle key={i} cx={X(p.m)} cy={Y(p.v)} r={i===pts.length-1?3.5:2.2} fill="var(--primary)"/>)}
+      {pts.length>0 && <text x={X(pts[pts.length-1].m)} y={Y(pts[pts.length-1].v)-6} fontSize="9" fill="var(--primary)" textAnchor="middle" fontWeight="700">{pts[pts.length-1].v}{unit}</text>}
+    </svg>
+  );
+}
+function GrowthWHO({growth,child,months}){
+  const [kind,setKind]=useState('w');
+  const last=(growth||[])[0];
+  const v=last?(kind==='h'?last.h:last.w):null;
+  const ref=whoAt(kind==='h'?WHO_HEIGHT:WHO_WEIGHT,child.gender,months);
+  const band=whoBand(v,ref);
+  const unit=kind==='h'?'cm':'kg';
+  if(!child.dob) return <div className="empty muted">Nhập ngày sinh của bé ở trang chủ để vẽ được biểu đồ theo tuổi.</div>;
+  return (
+    <div>
+      <div className="row" style={{margin:'0 14px 6px',gap:7}}>
+        <button className="pill" style={kind==='w'?{background:'var(--primary)',color:'var(--on-primary)'}:{}} onClick={()=>setKind('w')}>⚖️ Cân nặng</button>
+        <button className="pill" style={kind==='h'?{background:'var(--primary)',color:'var(--on-primary)'}:{}} onClick={()=>setKind('h')}>📐 Chiều cao</button>
+      </div>
+      <div className="card">
+        <GrowthChart growth={growth} child={child} months={months} kind={kind}/>
+        <div className="row" style={{gap:10,marginTop:6,flexWrap:'wrap'}}>
+          <span className="muted" style={{fontSize:10.5}}>▬ đường của bé</span>
+          <span className="muted" style={{fontSize:10.5}}>▨ dải chuẩn P3–P97</span>
+          <span className="muted" style={{fontSize:10.5}}>┅ mức giữa P50</span>
+        </div>
+      </div>
+      {v!=null && ref && band && <div className="card" style={{borderLeft:'4px solid '+band.c}}>
+        <div style={{fontSize:13.5}}><b>{v} {unit}</b> ở {months} tháng — {band.t}.</div>
+        <div className="muted" style={{fontSize:12,marginTop:4}}>
+          Chuẩn WHO cho {child.gender==='nu'?'bé gái':'bé trai'} {months} tháng: {ref[0].toFixed(1)}–{ref[2].toFixed(1)} {unit}, mức giữa {ref[1].toFixed(1)} {unit}.
+        </div>
+      </div>}
+      {v==null && <div className="muted center" style={{fontSize:12,margin:'0 14px'}}>Chưa có số đo {kind==='h'?'chiều cao':'cân nặng'} nào — ghi ở phần “Chiều cao & cân nặng” bên dưới.</div>}
+      <div className="sc-disc">{months!=null&&months>36 && <><b>Bé đã trên 36 tháng</b> — bảng trong app dừng ở mốc 36 tháng nên phần so sánh bên trên chỉ còn tham khảo rất thô. </>}Bảng chuẩn trong app là bản <b>rút gọn theo mốc 3 tháng</b> của chuẩn WHO 0–36 tháng, số đã làm tròn và giữa hai mốc thì nội suy — dùng để nhìn xu hướng, không thay bảng chuẩn của bác sĩ. Một lần đo lệch dải không có nhiều ý nghĩa bằng việc đường của bé đi lên đều đặn. Thấy bé rơi ra ngoài dải hoặc đứng cân nhiều tháng thì cho đi khám dinh dưỡng.</div>
+    </div>
+  );
+}
+
+/* ============ Mục 3 — bỏ bỉm / tập ngồi bô ============ */
+function PottyTab(){
+  const [p,setP]=useLocal('ju.childPotty',{ready:{},log:{}});
+  const ready=p.ready||{}, log=p.log||{};
+  const readyN=POTTY_READY.filter(r=>ready[r]).length;
+  const today=todayISO();
+  const td=log[today]||{ok:0,acc:0};
+  const set=(patch)=>setP({...p,...patch});
+  const bump=(field,delta)=>{ const cur=log[today]||{ok:0,acc:0};
+    const next={...cur,[field]:Math.max(0,(cur[field]||0)+delta)};
+    set({log:{...log,[today]:next}}); };
+  const toggleNight=()=>{ const cur=log[today]||{ok:0,acc:0};
+    set({log:{...log,[today]:{...cur,night:!cur.night}}}); };
+  const dayOf=(iso)=>{ const d=log[iso]; if(!d) return null;
+    return ((d.acc||0)===0 && (d.ok||0)>0) ? 'dry' : ((d.ok||0)>0||(d.acc||0)>0 ? 'wet' : null); };
+  // chuỗi ngày khô liên tiếp tính lùi từ hôm nay
+  let streak=0;
+  for(let i=0;i<400;i++){
+    const d=new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate()-i);
+    const iso=d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+    const st=dayOf(iso);
+    if(st==='dry') streak++;
+    else if(i===0) continue;  // hôm nay chưa ghi thì chưa tính là đứt
+    else break;
+  }
+  const days=[]; for(let i=29;i>=0;i--){ const d=new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate()-i);
+    const iso=d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+    days.push({iso,st:dayOf(iso),d:d.getDate()}); }
+  const started=!!p.start;
+  return (
+    <div>
+      {!started && <div className="card" style={{background:'linear-gradient(135deg,var(--chip),var(--card))'}}>
+        <b style={{fontSize:14}}>🚽 Bé sẵn sàng bỏ bỉm chưa?</b>
+        <div className="muted" style={{fontSize:12,margin:'4px 0 8px',lineHeight:1.55}}>Tick những dấu hiệu bé đã có. Từ khoảng 4 dấu hiệu trở lên là thời điểm thuận lợi — chưa đủ thì cứ đợi thêm, bắt đầu sớm quá thường kéo dài hơn.</div>
+        <div className="prog"><i style={{width:(readyN/POTTY_READY.length*100)+'%'}}></i></div>
+        <div className="muted" style={{fontSize:11,marginTop:4}}>{readyN}/{POTTY_READY.length} dấu hiệu</div>
+      </div>}
+      {!started && <div className="card" style={{padding:'4px 13px'}}>
+        {POTTY_READY.map(r=>(
+          <div key={r} className="row" style={{padding:'8px 0',borderBottom:'1px solid var(--line)'}}>
+            <button onClick={()=>{ const n={...ready}; if(n[r]) delete n[r]; else n[r]=true; set({ready:n}); }} style={{fontSize:19}}>{ready[r]?'✅':'⬜'}</button>
+            <span className="grow" style={{fontSize:13.5}}>{r}</span>
+          </div>
+        ))}
+      </div>}
+      {!started && <div style={{margin:'10px 14px'}}>
+        <button className="btn" onClick={()=>set({start:todayISO()})}>🚽 Bắt đầu tập từ hôm nay</button>
+      </div>}
+
+      {started && <>
+        <div className="card center" style={{background:'linear-gradient(135deg,var(--chip),var(--card))'}}>
+          <div className="muted" style={{fontSize:11}}>Chuỗi ngày khô liên tiếp</div>
+          <div style={{fontSize:34,fontWeight:800,color:'var(--primary)',lineHeight:1.15}}>{streak}</div>
+          <div className="muted" style={{fontSize:11}}>bắt đầu tập từ {fmtDateVN(p.start)}</div>
+        </div>
+        <div className="sec-title">✍️ Hôm nay</div>
+        <div className="card">
+          <div className="row" style={{gap:8}}>
+            <button className="btn sm grow" onClick={()=>bump('ok',1)}>✓ Đi đúng bô ({td.ok||0})</button>
+            <button className="btn sm soft grow" onClick={()=>bump('acc',1)}>💧 Tè dầm ({td.acc||0})</button>
+          </div>
+          <div className="row" style={{gap:8,marginTop:8}}>
+            <button className="pill" onClick={()=>bump('ok',-1)}>− bô</button>
+            <button className="pill" onClick={()=>bump('acc',-1)}>− dầm</button>
+            <span className="grow"></span>
+            <button className="pill" style={td.night?{background:'var(--good)',color:'#fff'}:{}} onClick={toggleNight}>🌙 Đêm khô</button>
+          </div>
+        </div>
+        <div className="sec-title">📅 30 ngày gần đây</div>
+        <div className="card">
+          <div style={{display:'grid',gridTemplateColumns:'repeat(10,1fr)',gap:4}}>
+            {days.map(d=>(
+              <div key={d.iso} title={fmtDateVN(d.iso)} style={{aspectRatio:'1',borderRadius:4,fontSize:8,
+                display:'grid',placeItems:'center',color:d.st==='dry'?'#fff':'var(--muted)',
+                background:d.st==='dry'?'var(--good)':(d.st==='wet'?'var(--warn)':'var(--chip)')}}>{d.d}</div>
+            ))}
+          </div>
+          <div className="row" style={{gap:10,marginTop:7,flexWrap:'wrap'}}>
+            <span className="muted" style={{fontSize:10.5}}>🟩 ngày khô</span>
+            <span className="muted" style={{fontSize:10.5}}>🟨 có tè dầm</span>
+            <span className="muted" style={{fontSize:10.5}}>⬜ chưa ghi</span>
+          </div>
+        </div>
+        <div style={{margin:'8px 14px'}}>
+          <button className="muted" style={{fontSize:11}} onClick={()=>{ if(confirm('Bỏ đánh dấu "đang tập" và quay lại phần dấu hiệu sẵn sàng? Lịch đã ghi vẫn giữ nguyên.')) set({start:''}); }}>↻ Tạm dừng việc tập</button>
+        </div>
+      </>}
+
+      <Collapse id="child-pottytimes" defaultOpen={false} title="⏰ Cho ngồi bô vào những lúc này">
+        <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>Nhắc theo mốc sinh hoạt hiệu quả hơn hỏi "con có buồn không" — tuổi này bé thường chưa kịp nhận ra.</div>
+        {POTTY_TIMES.map(t=>(
+          <div key={t.t} className="item" style={{padding:'9px 13px'}}>
+            <b style={{fontSize:13.5}}>{t.t}</b>
+            {t.d && <div className="muted" style={{fontSize:12.5,marginTop:2}}>{t.d}</div>}
+          </div>
+        ))}
+      </Collapse>
+      <Collapse id="child-pottyfix" defaultOpen={false} title="🧩 Vướng ở đâu">
+        <GuideList items={POTTY_FIX} keyOf={x=>x.n} titleOf={x=>x.n} iconOf={x=>x.icon} render={x=>bullets(x.tips)}/>
+      </Collapse>
+      <div className="sc-disc">Bỏ bỉm là việc của bé, không phải cuộc thi của bố mẹ. Bé quanh 2 tuổi mà chưa sẵn sàng thì đợi thêm vài tháng vẫn hoàn toàn bình thường. Nếu bé nhịn đi nặng nhiều ngày, xem thêm mục Táo bón bên tab Sức khoẻ.</div>
+    </div>
+  );
+}
+
+/* Việc đến hạn của bé — dùng chung cho thẻ "📌 Cần để ý" ở trang chủ và cho thông báo.
+   Trả về [{id,ic,t,go}]; id dùng để mỗi ngày chỉ báo một lần cho mỗi việc. */
+function childDueList({child,months,vac,ill,growth,packDone,schoolDays}){
+  child=child||{}; vac=vac||{}; growth=growth||[]; ill=ill||[];
+  const out=[];
+  const dueVac=months==null?[]:CHILD_VACCINES.filter(v=>vacAgeMonths(v.age)<=months);
+  const vacMissing=dueVac.filter(v=>!v.items.every(it=>vac[v.age+'|'+it]));
+  const nextVac=months==null?null:CHILD_VACCINES.find(v=>vacAgeMonths(v.age)>months);
+  const nextVacDays=(nextVac&&child.dob)? daysFromToday(new Date(new Date(child.dob+'T00:00:00').getTime()+vacAgeMonths(nextVac.age)*30.44*86400000).toISOString().slice(0,10)) : null;
+  const last=growth[0];
+  const daysSinceMeasure=last? daysFromToday(last.date) : null; // âm = bao nhiêu ngày trước
+  const sickOpen=ill.filter(x=>!x.recovered);
+
+  if(vacMissing.length) out.push({id:'vacmiss',ic:'💉',t:'Còn mũi chưa tiêm: '+vacMissing.map(v=>v.age).join(', '),go:'health'});
+  if(nextVac&&nextVacDays!=null&&nextVacDays>=0&&nextVacDays<=60) out.push({id:'vacnext'+nextVac.age,ic:'💉',t:'Mũi '+nextVac.age+' còn '+nextVacDays+' ngày',go:'health'});
+  if(schoolDays!=null&&schoolDays>=0&&schoolDays<=60) out.push({id:'school',ic:'🎒',t:'Đi lớp còn '+schoolDays+' ngày · đồ đã soạn '+packDone+'/'+CHILD_PACK.length,go:'school'});
+  if(sickOpen.length) out.push({id:'sick'+sickOpen[0].id,ic:'🤒',t:'Đợt ốm từ '+fmtDateVN(sickOpen[0].date)+' chưa đánh dấu đã khỏi',go:'health'});
+  if(daysSinceMeasure!=null&&daysSinceMeasure<=-30) out.push({id:'measure',ic:'📏',t:'Đã '+Math.abs(daysSinceMeasure)+' ngày chưa đo cân nặng',go:'health'});
+  if(!child.dob) out.push({id:'dob',ic:'🎂',t:'Chưa nhập ngày sinh — nhập để app hiện đúng mốc theo tuổi',go:null});
+  return out;
+}
+
+/* ============ Mục 5 — nhắc việc ============
+   App Sóc không có server đẩy (web-push nằm bên Just Us), nên chỉ nhắc được
+   KHI APP ĐANG MỞ: kiểm lúc mở, mỗi 15 phút, và mỗi lần quay lại tab.
+   Mỗi việc chỉ báo một lần trong ngày — dấu vết lưu ở ju.childNotiSeen
+   (riêng từng máy, KHÔNG đồng bộ, để máy kia vẫn được nhắc). */
+function NotiRunner({due,childName}){
+  const [cfg]=useLocal('ju.childNoti',{on:false});
+  const ids=due.map(d=>d.id).join('|');
+  useEffect(()=>{
+    if(!cfg.on || typeof Notification==='undefined') return;
+    const tick=()=>{
+      if(Notification.permission!=='granted') return;
+      const day=todayISO();
+      let seen=store.get('ju.childNotiSeen',null)||{};
+      if(seen.date!==day) seen={date:day,ids:{}};
+      const fresh=due.filter(d=>!seen.ids[d.id]);
+      if(!fresh.length) return;
+      const body=fresh.slice(0,4).map(x=>x.ic+' '+x.t).join('\n');
+      const opts={body,icon:'icon.svg',badge:'icon.svg',tag:'soc-daily-'+day,data:{url:'./'}};
+      const title='🐿️ '+(childName||'Bé')+' — nhắc hôm nay';
+      try{
+        if(navigator.serviceWorker && navigator.serviceWorker.getRegistration){
+          navigator.serviceWorker.getRegistration().then(r=>{
+            if(r&&r.showNotification) r.showNotification(title,opts); else new Notification(title,opts);
+          }).catch(()=>{ try{ new Notification(title,opts); }catch(_){} });
+        } else new Notification(title,opts);
+      }catch(e){}
+      fresh.forEach(f=>{ seen.ids[f.id]=1; });
+      store.set('ju.childNotiSeen',seen);
+    };
+    tick();
+    const iv=setInterval(tick,15*60*1000);
+    const onVis=()=>{ if(!document.hidden) tick(); };
+    document.addEventListener('visibilitychange',onVis);
+    return ()=>{ clearInterval(iv); document.removeEventListener('visibilitychange',onVis); };
+  },[cfg.on,ids,childName]);
+  return null;
+}
+function NotiSettings({due}){
+  const [cfg,setCfg]=useLocal('ju.childNoti',{on:false});
+  const [perm,setPerm]=useState(()=> typeof Notification==='undefined' ? 'unsupported' : Notification.permission);
+  const ask=async()=>{ try{ const r=await Notification.requestPermission(); setPerm(r); if(r==='granted') setCfg({...cfg,on:true}); }catch(e){} };
+  return (
+    <div className="card">
+      <div className="row"><span style={{fontSize:19}}>🔔</span><b className="grow" style={{fontSize:14}}>Nhắc việc của bé</b>
+        {perm==='granted' && <button className="pill" style={cfg.on?{background:'var(--good)',color:'#fff'}:{}} onClick={()=>setCfg({...cfg,on:!cfg.on})}>{cfg.on?'✓ Đang bật':'Đang tắt'}</button>}</div>
+      {perm==='unsupported' && <div className="muted" style={{fontSize:12,marginTop:6}}>Trình duyệt này không hỗ trợ thông báo. Phần “📌 Cần để ý” ở trên vẫn chạy bình thường.</div>}
+      {perm==='default' && <>
+        <div className="muted" style={{fontSize:12,margin:'6px 0 8px',lineHeight:1.55}}>Cho phép thông báo để app nhắc mũi tiêm đến hạn, ngày đi lớp, đợt ốm chưa đánh dấu khỏi và lâu chưa đo.</div>
+        <button className="btn" onClick={ask}>Cho phép thông báo</button></>}
+      {perm==='denied' && <div className="muted" style={{fontSize:12,marginTop:6,lineHeight:1.55}}>Thông báo đang bị chặn cho trang này. Mở phần cài đặt trang trong trình duyệt để bật lại.</div>}
+      {perm==='granted' && <div className="muted" style={{fontSize:12,marginTop:6,lineHeight:1.55}}>
+        {cfg.on? (due.length? ('Đang có '+due.length+' việc — mỗi việc chỉ báo một lần trong ngày.') : 'Đang bật. Hiện không có việc nào đến hạn.') : 'Đang tắt — bấm nút bên trên để bật lại.'}
+      </div>}
+      <div className="muted" style={{fontSize:10.5,marginTop:8,lineHeight:1.5,borderTop:'1px solid var(--line)',paddingTop:7}}>
+        App Sóc chỉ nhắc được <b>khi đang mở</b> (kiểm lúc mở app, mỗi 15 phút và mỗi lần quay lại tab). Thông báo lúc đóng app là việc của Just Us — bên đó có máy chủ đẩy.
+      </div>
+    </div>
+  );
+}
+
 function HomeTab({child,months,ageLabel,growth,words,wordsThisWeek,vac,mile,skills,skillDone,pack,packDone,gDone,ill,schoolDays,go,onEdit}){
   const last=growth[0];
   const weights=growth.filter(g=>g.w!=null).slice(0,6).map(g=>g.w).reverse();
@@ -718,16 +1012,7 @@ function HomeTab({child,months,ageLabel,growth,words,wordsThisWeek,vac,mile,skil
   const nextVac=months==null?null:CHILD_VACCINES.find(v=>vacAgeMonths(v.age)>months);
   const nextVacDays=(nextVac&&child.dob)? daysFromToday(new Date(new Date(child.dob+'T00:00:00').getTime()+vacAgeMonths(nextVac.age)*30.44*86400000).toISOString().slice(0,10)) : null;
 
-  const daysSinceMeasure=last? daysFromToday(last.date) : null; // âm = đã bao nhiêu ngày trước
-  const sickOpen=(ill||[]).filter(x=>!x.recovered);
-
-  const alerts=[];
-  if(vacMissing.length) alerts.push({ic:'💉',t:'Còn mũi chưa tiêm: '+vacMissing.map(v=>v.age).join(', '),go:'health'});
-  if(nextVac&&nextVacDays!=null&&nextVacDays>=0&&nextVacDays<=60) alerts.push({ic:'💉',t:'Mũi '+nextVac.age+' còn '+nextVacDays+' ngày',go:'health'});
-  if(schoolDays!=null&&schoolDays>=0&&schoolDays<=60) alerts.push({ic:'🎒',t:'Đi lớp còn '+schoolDays+' ngày · đồ đã soạn '+packDone+'/'+CHILD_PACK.length,go:'school'});
-  if(sickOpen.length) alerts.push({ic:'🤒',t:'Đợt ốm từ '+fmtDateVN(sickOpen[0].date)+' chưa đánh dấu đã khỏi',go:'health'});
-  if(daysSinceMeasure!=null&&daysSinceMeasure<=-30) alerts.push({ic:'📏',t:'Đã '+Math.abs(daysSinceMeasure)+' ngày chưa đo cân nặng',go:'health'});
-  if(!child.dob) alerts.push({ic:'🎂',t:'Chưa nhập ngày sinh — nhập để app hiện đúng mốc theo tuổi',go:null});
+  const alerts=childDueList({child,months,vac,ill,growth,packDone,schoolDays});
 
   const TILES=[
     {k:'develop',ic:'🌱',n:'Phát triển',s:band?(bandDone+'/'+band.items.length+' mốc'):'chưa có ngày sinh'},
@@ -792,6 +1077,9 @@ function HomeTab({child,months,ageLabel,growth,words,wordsThisWeek,vac,mile,skil
           </button>
         ))}
       </div>
+
+      <div className="sec-title">🔔 Nhắc nhở</div>
+      <NotiSettings due={alerts}/>
     </div>
   );
 }
@@ -999,8 +1287,10 @@ function ChildCare({people,me}){
     try{ const w=window.open('','_blank'); if(w){ w.document.write('<title>Hồ sơ y tế</title><pre style="font-family:system-ui,sans-serif;font-size:15px;white-space:pre-wrap;padding:24px;line-height:1.8">'+txt.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</pre>'); w.document.close(); w.focus(); setTimeout(()=>{ try{w.print();}catch(e){} },350); return; } }catch(e){}
     if(navigator.share) navigator.share({title:'Hồ sơ y tế',text:txt}).catch(()=>{}); else { navigator.clipboard.writeText(txt); alert('Đã copy hồ sơ — dán để gửi cô nhé!'); } };
   const last=growth[0];
+  const dueNow=childDueList({child,months,vac,ill,growth,packDone,schoolDays});
   return (
     <div>
+      <NotiRunner due={dueNow} childName={child.name}/>
       {/* Trang chủ đã có phần đầu riêng (hero) nên ở đó chỉ hiện thẻ này khi cần điền/sửa */}
       {(tab!=='home' || !child.name || !child.dob || editChild) &&
       <div className="card" style={{background:'linear-gradient(135deg,var(--chip),var(--card))'}}>
@@ -1029,9 +1319,11 @@ function ChildCare({people,me}){
       <FilterBar value={tab} onChange={setTab} items={[
         {k:'home',icon:'🏠',label:'Trang chủ'},
         {k:'develop',icon:'🌱',label:'Phát triển'},{k:'play',icon:'🎲',label:'Chơi với con'},{k:'health',icon:'🏥',label:'Sức khoẻ'},
-        {k:'eat',icon:'🍎',label:'Ăn uống'},{k:'school',icon:'🎒',label:'Đi học'},{k:'parent',icon:'💞',label:'Nuôi dạy'},
-        {k:'safe',icon:'🚨',label:'An toàn'},
+        {k:'eat',icon:'🍎',label:'Ăn uống'},{k:'potty',icon:'🚽',label:'Tập bô'},{k:'school',icon:'🎒',label:'Đi học'},
+        {k:'parent',icon:'💞',label:'Nuôi dạy'},{k:'safe',icon:'🚨',label:'An toàn'},
       ]}/>
+
+      {tab==='potty' && <PottyTab/>}
 
       {tab==='home' && <HomeTab child={child} months={months} ageLabel={ageLabel} growth={growth}
         words={words} wordsThisWeek={wordsThisWeek} vac={vac} mile={mile} skills={skills} skillDone={skillDone}
@@ -1129,6 +1421,9 @@ function ChildCare({people,me}){
               return <button key={it} className="pill" style={{margin:'3px 6px 3px 0',padding:'7px 11px',fontSize:12.5,background:on?'var(--good)':'var(--chip)',color:on?'#fff':'var(--chip-tx)'}} onClick={()=>tg(vac,setVac,k)}>{on?'✓ ':''}{it}</button>; })}</div>
           </div>; }); })()}
         </Collapse>
+        <div className="sec-title">📈 So với chuẩn WHO</div>
+        <GrowthWHO growth={growth} child={child} months={months}/>
+
         <div className="sec-title">📏 Chiều cao & cân nặng</div>
         <div className="card">
           <div className="row" style={{gap:8}}>

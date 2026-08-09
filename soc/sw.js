@@ -5,7 +5,7 @@
    của service worker chỉ giới hạn TRANG nào do nó điều khiển, còn request thì nó chặn được cả
    đường dẫn ngoài thư mục — nên hai file trên vẫn vào cache 'soc-*' của app này.
 */
-const CACHE = 'soc-v3';
+const CACHE = 'soc-v4';
 const CDN = ['https://cdn.jsdelivr.net'];
 
 self.addEventListener('install', () => { self.skipWaiting(); });
@@ -51,4 +51,17 @@ self.addEventListener('fetch', (e) => {
       }).catch(() => caches.match(req).then(hit => hit || caches.match('./')))
     );
   }
+});
+
+/* Bấm vào thông báo nhắc việc (do trang gọi showNotification khi app đang mở)
+   → đưa app Sóc lên trước thay vì mở thêm một cửa sổ mới. */
+self.addEventListener('notificationclick', (e) => {
+  e.notification.close();
+  const url = (e.notification.data && e.notification.data.url) || './';
+  e.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(cls => {
+      for (const c of cls) { if (c.url.indexOf('/soc') >= 0 && 'focus' in c) return c.focus(); }
+      if (self.clients.openWindow) return self.clients.openWindow(url);
+    })
+  );
 });
