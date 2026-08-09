@@ -4,7 +4,7 @@ App tĩnh: UI + logic + CSS nằm trong `index.html` (~7810 dòng, ~676KB — v�
 
 ## Quy tắc làm việc với file này
 - **KHÔNG đọc cả `index.html` (~676KB, ~7810 dòng)** — LUÔN grep định vị rồi Read cửa sổ nhỏ (xem skill `bigfile-nav`).
-- Sửa nội dung đáng kể → **bump `CACHE` trong `sw.js`** (hiện: `justus-v35`; có thêm cache phụ `justus-noti`).
+- Sửa nội dung đáng kể → **bump `CACHE` trong `sw.js`** (hiện: `justus-v36`; có thêm cache phụ `justus-noti`).
 - Babel transpile trong trình duyệt: lỗi cú pháp = trắng màn hình. Kiểm tra Console sau khi sửa.
 
 ## Dữ liệu tĩnh tách rời (`data/*.json`)
@@ -16,7 +16,7 @@ Các mảng nội dung lớn KHÔNG còn nằm trong `index.html` — sửa nộ
 | `data/dishes.json` | `MENU_GOALS` `EASY_DISHES` `DISHES` (232 món) |
 | `data/prompts.json` | `QUESTIONS` `QUIZ_Q` `CHALLENGES` `TALK_TOPICS` |
 | `data/hanoi.json` | `HANOI_CATS` `HANOI_SPOTS` |
-| `data/child.json` | 62 khoá nội dung nuôi con — nhóm gốc (`CHILD_VACCINES` `CHILD_MILESTONES` `CHILD_TIPS` `CHILD_PACK` `CHILD_SKILLS` `PLAY_LIB` `WEAN_MENU` `PARENTING_QS` `ILL_SYMPTOMS` `KIDS_CAFES` `SKILL_GUIDES` `CHILD_ISSUES`) + nhóm đợt 1 (`EMERGENCY` `RED_FLAGS` `DANGER_ITEMS` `HOME_SAFETY` `CONTACT_SUGGEST` `TANTRUM_SCRIPTS` `CHILD_BEHAVIOR` `CHORES_2Y` `SELF_CORNER` `DRESS_TEMP` `DRESS_RULES` `SEASON_ILL` `SCARY_TASKS` `WEEKEND_PLANS` `CHILD_DOCS` + 3 **object** `POST_VACCINE` `CONSTIPATION` `SCREEN_GUIDE`) + nhóm đợt 2 (`POTTY_READY` `POTTY_TIMES` `POTTY_FIX` + 2 **object** `WHO_WEIGHT` `WHO_HEIGHT`) + nhóm đợt 3 (`SCHOOL_START` `SCHOOL_ILL` `TEACHER_NOTE` `TRIP_PACK` `TRIP_TIPS` `DUTY_SLOTS` + 3 **object** `SCHOOL_PICK` `TWOS_CRISIS` `PARENT_BURNOUT`) + nhóm bổ sung (`SLEEP_NEED` `SLEEP_ROUTINE` `SLEEP_FIX` `TEETH_ORDER` `CHECKUP_SCHEDULE` `DEV_REDFLAGS` + object `TEETH_CARE`) + nhóm đợt 4 (`SLEEP_MORE` `POTTY_PREP` `POTTY_STEPS` `MONTESSORI_PRINCIPLES` `MONTESSORI_ACT` `MONTESSORI_MAT` `STEAM_PRINCIPLES` `STEAM_ACT` + object `STEAM_LABEL`) + nhóm đợt 5 (`DAY_EVENTS` `DAY_GROUPS`) — **dùng chung** cho app Sóc (`soc/`) và trang chủ Just Us |
+| `data/child.json` | **CHỈ app Sóc (`soc/`) nạp file này — `index.html` KHÔNG còn nạp** (2026-08-09). 62 khoá nội dung nuôi con — nhóm gốc (`CHILD_VACCINES` `CHILD_MILESTONES` `CHILD_TIPS` `CHILD_PACK` `CHILD_SKILLS` `PLAY_LIB` `WEAN_MENU` `PARENTING_QS` `ILL_SYMPTOMS` `KIDS_CAFES` `SKILL_GUIDES` `CHILD_ISSUES`) + nhóm đợt 1 (`EMERGENCY` `RED_FLAGS` `DANGER_ITEMS` `HOME_SAFETY` `CONTACT_SUGGEST` `TANTRUM_SCRIPTS` `CHILD_BEHAVIOR` `CHORES_2Y` `SELF_CORNER` `DRESS_TEMP` `DRESS_RULES` `SEASON_ILL` `SCARY_TASKS` `WEEKEND_PLANS` `CHILD_DOCS` + 3 **object** `POST_VACCINE` `CONSTIPATION` `SCREEN_GUIDE`) + nhóm đợt 2 (`POTTY_READY` `POTTY_TIMES` `POTTY_FIX` + 2 **object** `WHO_WEIGHT` `WHO_HEIGHT`) + nhóm đợt 3 (`SCHOOL_START` `SCHOOL_ILL` `TEACHER_NOTE` `TRIP_PACK` `TRIP_TIPS` `DUTY_SLOTS` + 3 **object** `SCHOOL_PICK` `TWOS_CRISIS` `PARENT_BURNOUT`) + nhóm bổ sung (`SLEEP_NEED` `SLEEP_ROUTINE` `SLEEP_FIX` `TEETH_ORDER` `CHECKUP_SCHEDULE` `DEV_REDFLAGS` + object `TEETH_CARE`) + nhóm đợt 4 (`SLEEP_MORE` `POTTY_PREP` `POTTY_STEPS` `MONTESSORI_PRINCIPLES` `MONTESSORI_ACT` `MONTESSORI_MAT` `STEAM_PRINCIPLES` `STEAM_ACT` + object `STEAM_LABEL`) + nhóm đợt 5 (`DAY_EVENTS` `DAY_GROUPS`) |
 
 Cách hoạt động: một `<script>` ngay trước khối `text/babel` tạo `window.JUD` với mảng/object RỖNG rồi `fetch` các JSON và **đổ dữ liệu vào đúng chỗ cũ** (giữ nguyên identity, vì trong khối babel viết `const DISHES=JUD.DISHES;` chạy ngay lập tức). App chỉ vẽ sau khi dữ liệu về (tối đa chờ 5s rồi vẽ trước, dữ liệu về muộn thì vẽ lại).
 - Thêm mảng dữ liệu mới → thêm khoá vào JSON **và** thêm placeholder rỗng đúng kiểu trong `window.JUD`.
@@ -136,14 +136,16 @@ từ nói được · mũi đã tiêm · kỹ năng tự lập), giữa là **�
 ngày, đếm ngược đi lớp, đợt ốm chưa đánh dấu khỏi, lâu chưa đo) — bấm là nhảy đúng tab; dưới là **lưới 8 ô
 lớn** vào từng mục (thêm 🚽 Tập bô và 📔 Kỷ niệm ở đợt 3). Thẻ hồ sơ bé cũ chỉ còn hiện ở trang chủ khi chưa điền đủ hoặc đang bấm sửa.
 
-- Vào từ Just Us: tab dưới **🐿️ Sóc** giờ chỉ là **màn cửa vào** (`ChildLauncher`, ~dòng 4463) với nút
-  "Mở app Sóc →" (`href="soc/"`). Component `ChildCare` KHÔNG còn trong `index.html`.
-- Ngoài ra tab **Cá nhân** có **bảng app** (`AppBoard`, hằng `APP_BOARD`) gom mọi app riêng về một chỗ:
+- **Gỡ hẳn Sóc khỏi Just Us (2026-08-09):** `index.html` KHÔNG còn tab dưới 🐿️ Sóc, không còn
+  `ChildLauncher`, không còn thẻ trang chủ `ChildPlayCard` ("🧸 Chơi với con hôm nay"), không còn phần
+  của bé trong `TodayMenuCard`, và **không nạp `data/child.json`** nữa (đã bỏ khỏi `FILES` + `window.JUD`).
+  Thanh tab dưới còn **05 mục**; máy nào từng đặt `ju.setup.defaultTab='child'` thì `App` tự lùi về `home`.
+- Vào app Sóc **chỉ còn một đường**: tab **Cá nhân → 📱 App của nhà mình → 🐿️ Sóc** (`href="soc/"`).
+- Bảng app đó là `AppBoard` + hằng `APP_BOARD`, gom mọi app riêng về một chỗ:
   🐿️ Sóc · 🪷 Tâm linh · 💰 VíNhà (chỉ hiện khi đã dán link ở `ju.vinhaUrl`). Tách thêm app mới thì
   thêm một dòng vào `APP_BOARD`, không dựng thẻ riêng nữa.
-- Dữ liệu tĩnh **không nhân bản**: `soc/index.html` fetch `../data/child.json`, còn `index.html` cũng nạp
-  chính file đó nhưng chỉ dùng `PLAY_LIB` + `WEAN_MENU` (thẻ trang chủ "Chơi với con hôm nay" và phần của
-  bé trong "Thực đơn hôm nay"). Sửa nội dung nuôi con → sửa `data/child.json`, cả hai app cùng đổi.
+- Dữ liệu tĩnh nuôi con nay **chỉ một nơi đọc**: `soc/index.html` fetch `../data/child.json`.
+  Sửa nội dung nuôi con → sửa `data/child.json` rồi bump `soc-v*`, không phải bump `justus-v*`.
 - **Cùng origin** với Just Us → chung `localStorage`, mọi khoá `ju.child*` + `ju.skillGuidesDone` giữ nguyên.
 - **Đồng bộ đám mây**: khác Tâm linh, `soc/` CÓ lớp `Cloud` gọn riêng — nó dùng lại **phiên Supabase đã có
   của Just Us** (không tự đăng nhập / ghép cặp) và chỉ đụng vào `CHILD_KEYS`: kéo về thì chỉ ghi đè khoá của
@@ -156,8 +158,10 @@ lớn** vào từng mục (thêm 🚽 Tập bô và 📔 Kỷ niệm ở đợt 
   (scope chỉ giới hạn TRANG được điều khiển, không giới hạn URL được chặn) → đổi 2 file đó phải bump `soc-v*`.
 - Deploy: Pages và Netlify đều publish cả thư mục nên `soc/` tự lên, không cần sửa CI.
 
-**Vẫn nằm trong `index.html` (KHÔNG tách):** `ju.child` còn được đọc ở `ChildPlayCard`, `TodayMenuCard`
-(phần của bé) và mục Sức khỏe gia đình; `DEFAULT_ROUTINE` / lịch sinh hoạt vẫn nhắc việc liên quan tới bé.
+**Vẫn nằm trong `index.html` (KHÔNG tách):** những chỗ nói về con nhưng là việc của HAI VỢ CHỒNG, không
+phải app nuôi con — mục Sức khỏe gia đình (thành viên `child`, đọc `ju.child` lấy tên), chế độ nấu ăn
+"🐿️ Đang trông Sóc", `DEFAULT_ROUTINE` / lịch sinh hoạt trong ngày, chi tiêu ví `m_soc` lấy từ VíNhà,
+và nhóm câu đố "👶 Nuôi con" trong `KnowledgeQuiz`.
 
 ## Dữ liệu (localStorage, tiền tố `ju.`)
 | Khoá | Ý nghĩa | Kiểu |
@@ -187,8 +191,8 @@ lớn** vào từng mục (thêm 🚽 Tập bô và 📔 Kỷ niệm ở đợt 
 - Đồng bộ Supabase: **có** — **ghép cặp bằng mã mời** (RLS giới hạn dữ liệu cho đúng 2 tài khoản trong pair). Object `Cloud` (dòng ~318) dùng RPC `ju_create_couple` / `ju_join_couple(p_code)` / `ju_my_couple` / `ju_leave_couple`; toàn bộ state ghi 1 hàng vào bảng `justus_data` theo `couple_id`, realtime qua `postgres_changes`, ảnh lưu ở storage bucket `justus-photos`. Xem skill `supabase-sync` (pattern B). Migration: skill `local-store`.
 
 ## Bản đồ component chính
-- `App` — dòng ~7668; 6 tab dưới (`MAIN_TABS`, dòng 7648): 🏠 Tổ ấm (`home`) · 🏡 Nhà mình (`us`) · 💞 Chúng mình (`talk`) · 🗺️ Hẹn hò (`date`) · 🐿️ Sóc (`child` — chỉ là cửa vào app `soc/`) · 🙋 Cá nhân (`me`).
-- `Cloud` (~452) — lớp Supabase. `MENU_REGISTRY` (~5145) — cấu hình sub-tab/segment của từng màn. Nhiều component con: `Home`, `DateTab`, `UsTab`, `TalkTab`, `Profile`, `ChildLauncher`, `LoveJar`, `DailyQuestion`, `WeeklyCheckin`, `CheckIns`, `Timeline`, `Coupons`, `WishTab`, `HanoiCatalog`, `Reminders`…
+- `App` — 5 tab dưới (`MAIN_TABS`): 🏠 Tổ ấm (`home`) · 🏡 Nhà mình (`us`) · 💞 Chúng mình (`talk`) · 🗺️ Hẹn hò (`date`) · 🙋 Cá nhân (`me`). Tab 🐿️ Sóc đã gỡ.
+- `Cloud` (~452) — lớp Supabase. `MENU_REGISTRY` (~5145) — cấu hình sub-tab/segment của từng màn. Nhiều component con: `Home`, `DateTab`, `UsTab`, `TalkTab`, `Profile`, `AppBoard`, `LoveJar`, `DailyQuestion`, `WeeklyCheckin`, `CheckIns`, `Timeline`, `Coupons`, `WishTab`, `HanoiCatalog`, `Reminders`…
 
 ## PWA / Thông báo
 - Service worker + manifest đầy đủ (`manifest.json`, `sw.js`, icon SVG).

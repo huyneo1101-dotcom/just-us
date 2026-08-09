@@ -403,7 +403,7 @@ setTimeout(function(){
      để index.html nhẹ đi ~450KB và Babel transpile ít hơn. Nạp xong mới vẽ App. -->
 <script>
 (function(){
-  var FILES=['data/suggest.json','data/dishes.json','data/prompts.json','data/hanoi.json','data/child.json'];
+  var FILES=['data/suggest.json','data/dishes.json','data/prompts.json','data/hanoi.json'];
   // Giữ NGUYÊN identity của mảng/object: code trong khối babel làm "const X=JUD.X" ngay khi chạy,
   // nên dữ liệu về sau phải đổ vào chính chỗ cũ chứ không gán đè.
   window.JUD={
@@ -411,9 +411,7 @@ setTimeout(function(){
     BUCKET_SUGGEST:[], FOOD_SUGGEST:[], GIFT_SUGGEST:[], WATCH_SUGGEST:[], COUPON_SUGGEST:[], LOVEJAR_SUGGEST:[],
     MENU_GOALS:[], EASY_DISHES:[], DISHES:[],
     QUESTIONS:[], QUIZ_Q:[], CHALLENGES:[], TALK_TOPICS:[],
-    HANOI_CATS:[], HANOI_SPOTS:[],
-    // Dùng chung data/child.json với app Sóc (soc/) — ở đây chỉ cần 2 mảng cho trang chủ
-    PLAY_LIB:[], WEAN_MENU:[]
+    HANOI_CATS:[], HANOI_SPOTS:[]
   };
   function fill(dst,src){
     if(Array.isArray(dst)&&Array.isArray(src)){ dst.length=0; Array.prototype.push.apply(dst,src); }
@@ -1916,7 +1914,6 @@ function Home({setup,setSetup,people,me,go}){
     </div>),
     todos:<TodosCard go={go}/>,
     now:<NowCard people={people} go={go}/>,
-    childplay:<ChildPlayCard/>,
     onthisday:<OnThisDay/>,
     mood:<MoodCard people={people} me={me}/>,
     challenge:<DailyChallenge/>,
@@ -4606,14 +4603,12 @@ function WeeklyMenu({me,people}){
     </div>
   );
 }
-/* ============ Nuôi con (🐿️ Sóc) — ĐÃ TÁCH thành app riêng ở thư mục soc/ ============
-   Toàn bộ màn Nuôi con (mốc phát triển, tiêm chủng, ăn dặm, đi lớp, dạy con…) cùng dữ
-   liệu tĩnh của nó đã chuyển sang soc/index.html + data/child.json.
-   Ở đây chỉ giữ 2 mảng mà TRANG CHỦ còn dùng: thẻ "Chơi với con hôm nay" (PLAY_LIB) và
-   phần của bé trong thẻ "Thực đơn hôm nay" (WEAN_MENU) — đọc từ chính data/child.json
-   nên sửa nội dung một chỗ là cả hai app cùng đổi. */
-const PLAY_LIB=JUD.PLAY_LIB;
-const WEAN_MENU=JUD.WEAN_MENU;
+/* ============ Nuôi con (🐿️ Sóc) — KHÔNG CÒN Ở ĐÂY ============
+   Toàn bộ phần Nuôi con đã sang app riêng soc/index.html + data/child.json: mốc phát
+   triển, tiêm chủng, ăn dặm, chơi với con, đi lớp, dạy con, kỷ niệm.
+   Just Us không còn tab 🐿️, không còn thẻ trang chủ "Chơi với con hôm nay", không còn
+   phần của bé trong "Thực đơn hôm nay", và không nạp data/child.json nữa.
+   Đường vào app Sóc nằm ở tab Cá nhân → 📱 App của nhà mình (APP_BOARD ngay dưới). */
 /* Bảng app của nhà mình — mọi app riêng gom về một chỗ ở tab Cá nhân.
    Cùng origin nên chung localStorage: mở app nào cũng là dữ liệu cũ. */
 const APP_BOARD=[
@@ -4640,44 +4635,6 @@ function AppBoard(){
             <div className="muted" style={{fontSize:12,marginTop:2,lineHeight:1.5}}>Tiền nong của cả nhà — app riêng, mở ở tab mới</div></div>
           <span style={{fontSize:17,color:'var(--primary)'}}>↗</span></div>
       </a>}
-    </div>
-  );
-}
-// Tab 🐿️ Sóc giờ là cửa vào app riêng (giữ tab cho quen tay, vẫn một chạm là tới).
-function ChildLauncher(){
-  const [child]=useLocal('ju.child',{});
-  const months=(child&&child.dob)? Math.max(0, Math.round((new Date(todayISO()+'T00:00:00')-new Date(child.dob+'T00:00:00'))/(30.44*86400000))) : null;
-  const ageLabel = months==null?null : months<24? months+' tháng tuổi' : Math.floor(months/12)+' tuổi'+(months%12?(' '+(months%12)+' th'):'');
-  /* Bám theo hằng NAV trong soc/index.html — đổi nhóm bên đó thì sửa luôn danh sách này. */
-  const MUC=[
-    ['🏠','Nhà','Trang chủ: việc hôm nay, ghi một chạm, nhắc chủ động'],
-    ['🌱','Lớn lên','Mốc & lời nói · chơi và ra ngoài · học sớm · ăn uống · giấc ngủ · đi lớp'],
-    ['🏥','Sức khoẻ','Theo dõi & khám · răng · tập bô · an toàn và cấp cứu'],
-    ['💞','Nuôi dạy','Với con: thống nhất cách dạy, ăn vạ · Bố mẹ: chia việc, giữ sức'],
-    ['📔','Kỷ niệm','Nhật ký "điều đầu tiên" · ảnh · thư cho con · câu nói đáng nhớ'],
-  ];
-  return (
-    <div>
-      <div className="card center" style={{background:'linear-gradient(135deg,var(--chip),var(--card))'}}>
-        <div style={{fontSize:44,lineHeight:1}}>🐿️</div>
-        <div style={{fontSize:16,fontWeight:800,marginTop:6}}>{(child&&child.name)||'Sóc'}</div>
-        {ageLabel && <div className="muted" style={{fontSize:12.5,marginTop:2}}>{ageLabel}</div>}
-        <div className="muted" style={{fontSize:12.5,margin:'10px 0 0',lineHeight:1.6}}>
-          Phần <b>Nuôi con</b> giờ là một app riêng — mở nhanh hơn và cài được ra màn hình chính như một app độc lập.
-        </div>
-        <a className="btn" style={{marginTop:12,textDecoration:'none'}} href="soc/">Mở app Sóc →</a>
-      </div>
-      <div className="muted center" style={{fontSize:11,margin:'0 14px'}}>Vẫn là dữ liệu cũ của bé (chung máy, chung tài khoản) và vẫn đồng bộ hai máy như trước.</div>
-      <div className="sec-title">📦 Trong app Sóc có gì</div>
-      <div className="card" style={{padding:'4px 13px'}}>
-        {MUC.map(m=>(
-          <div key={m[1]} className="row" style={{padding:'9px 0',borderBottom:'1px solid var(--line)',alignItems:'flex-start'}}>
-            <span style={{fontSize:19,flex:'0 0 auto'}}>{m[0]}</span>
-            <div className="grow"><div style={{fontSize:14,fontWeight:700}}>{m[1]}</div>
-              <div className="muted" style={{fontSize:12}}>{m[2]}</div></div>
-          </div>
-        ))}
-      </div>
     </div>
   );
 }
@@ -7167,40 +7124,19 @@ function PhotoLightbox({photo,photos,index,title,onClose}){
   </div></div>;
 }
 
-function ChildPlayCard(){
-  const child=store.get('ju.child',{})||{};
-  const [i,setI]=useState(()=>Math.floor(Math.random()*PLAY_LIB.length));
-  if(!child.name && !child.dob) return null;
-  const p=PLAY_LIB[i]||PLAY_LIB[0];
-  const next=()=>{ let n=i; if(PLAY_LIB.length>1){ while(n===i) n=Math.floor(Math.random()*PLAY_LIB.length); } setI(n); };
-  return (
-    <div className="card">
-      <div className="row"><span className="hc-title">🧸 Chơi với con hôm nay</span><span className="grow"></span><button className="btn sm soft" onClick={next}>🎲 Đổi</button></div>
-      <div className="hc-lead" style={{margin:'6px 0 4px'}}>{p.c} {p.n}</div>
-      <div className="hc-body">{p.d}</div>
-    </div>
-  );
-}
+/* Thẻ "🧸 Chơi với con hôm nay" đã gỡ — nội dung nuôi con nay chỉ nằm ở app Sóc (soc/). */
 function TodayMenuCard({people,me,go}){
   const [plan]=useLocal('ju.menuPlan',null);
-  const [child]=useLocal('ju.child',{});
   const idx=(new Date().getDay()+6)%7; // Thứ 2 = 0
   const day=plan&&plan.days&&plan.days[idx];
-  const wean=WEAN_MENU[idx];
-  const hasChild=child&&(child.name||child.dob);
   return (
     <div className="card">
       <div className="row"><span className="hc-title">🍱 Thực đơn hôm nay</span><span className="grow"></span><span className="hc-act">{DOW[idx]}</span></div>
       <div style={{marginTop:6}}>
-        <div className="muted" style={{fontSize:11}}>🍽️ Hai vợ chồng:</div>
         {day
           ? <div style={{fontSize:14,lineHeight:1.6,marginTop:1}}>{day.sang && <div>🌅 Sáng: {day.sang}</div>}{(day.man||[]).map((m,i)=><div key={i}>🍖 {m}</div>)}<div>🥣 {day.canh}</div></div>
           : <div className="muted" style={{fontSize:12.5,marginTop:2}}>Chưa có thực đơn tuần — <span style={{color:'var(--primary)',cursor:'pointer'}} onClick={()=>go('us')}>tạo ngay ›</span></div>}
       </div>
-      {hasChild && wean && <div style={{marginTop:8}}>
-        <div className="muted" style={{fontSize:11}}>👶 {child.name||'Bé'}:</div>
-        <div style={{fontSize:12.5,lineHeight:1.6,marginTop:1}}>🌅 {wean.sang} · 🍎 {wean.phu}<br/>🍚 {wean.trua} · 🌙 {wean.toi}</div>
-      </div>}
     </div>
   );
 }
@@ -7272,7 +7208,6 @@ const HOME_CARDS=[
   ['reminders','🔔 Nhắc nhở hôm nay'],
   ['upcoming','⏳ Sắp tới (2 tuần)'],
   ['todos','✅ Việc cần làm'],
-  ['childplay','🧸 Chơi với con'],
   ['onthisday','📆 Ngày này năm xưa'],
   ['mood','🙂 Tâm trạng'],
   ['challenge','🎯 Thử thách đôi'],
@@ -7867,7 +7802,7 @@ function KnowledgeQuiz({onClose}){
     </div>
   );
 }
-const MAIN_TABS=[['home','🏠','Tổ ấm'],['us','🏡','Nhà mình'],['talk','💞','Chúng mình'],['date','🗺️','Hẹn hò'],['child','🐿️','Sóc'],['me','🙋','Cá nhân']];
+const MAIN_TABS=[['home','🏠','Tổ ấm'],['us','🏡','Nhà mình'],['talk','💞','Chúng mình'],['date','🗺️','Hẹn hò'],['me','🙋','Cá nhân']];
 /* Icon nét cho thanh điều hướng (đồng bộ 1 độ dày) — emoji vẫn giữ cho nội dung */
 function NavIcon({k}){
   const svg=(children)=>(<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">{children}</svg>);
@@ -7880,8 +7815,6 @@ function NavIcon({k}){
     case 'talk': return svg(<React.Fragment><path d="M9.5 15.5C6.7 13.6 5 12.1 5 10.1 5 8.6 6.1 7.5 7.6 7.5c.9 0 1.6.4 1.9 1 .3-.6 1-1 1.9-1 1.5 0 2.6 1.1 2.6 2.6 0 2-1.7 3.5-4.5 5.4z"/><path d="M15 18c-2.4-1.6-3.8-2.9-3.8-4.6 0-1.3.9-2.2 2.2-2.2.8 0 1.4.4 1.6.8.2-.4.8-.8 1.6-.8 1.3 0 2.2.9 2.2 2.2 0 1.7-1.4 3-3.8 4.6z"/></React.Fragment>);
     // Hẹn hò — Hai ly cụng nhau
     case 'date': return svg(<React.Fragment><path d="M5.6 4h4l-.4 3.3a1.6 1.6 0 0 1-3.2 0z"/><path d="M7.6 8.9V19M5.6 19h4"/><path d="M14.4 4h4l-.4 3.3a1.6 1.6 0 0 1-3.2 0z"/><path d="M16.4 8.9V19M14.4 19h4"/></React.Fragment>);
-    // Sóc — Hạt sồi
-    case 'child': return svg(<React.Fragment><path d="M7 8.6c0 4 2.2 8 5 8s5-4 5-8z"/><path d="M6 8.6c0-1.9 2.7-3.4 6-3.4s6 1.5 6 3.4z"/><path d="M6.3 8.6h11.4M12 5.2V3.6"/></React.Fragment>);
     // Cá nhân — Người + trái tim
     case 'me': return svg(<React.Fragment><circle cx="10" cy="8" r="3.3"/><path d="M4 19a6 6 0 0 1 11-3.2"/><path d="M18 21c-1.6-1.1-2.7-2-2.7-3.2 0-.9.7-1.6 1.6-1.6.6 0 1 .3 1.1.6.1-.3.5-.6 1.1-.6.9 0 1.6.7 1.6 1.6 0 1.2-1.1 2.1-2.7 3.2z"/></React.Fragment>);
     default: return null;
@@ -7889,7 +7822,8 @@ function NavIcon({k}){
 }
 function App(){
   const [setup,setSetup]=useLocal('ju.setup',null);
-  const [tab,setTab]=useState(()=>(setup&&setup.defaultTab)||'home');
+  // Máy nào từng đặt tab mặc định là 'child' (tab Sóc đã gỡ) thì lùi về Tổ ấm, không hiện màn trắng.
+  const [tab,setTab]=useState(()=>{ const t=(setup&&setup.defaultTab)||'home'; return MAIN_TABS.some(x=>x[0]===t)?t:'home'; });
   const [me,setMe]=useState(()=> store.get('ju.me', (store.get('ju.setup',{})||{}).me || 'a'));
   const [flashMsg,setFlashMsg]=useState('');
   const [showSearch,setShowSearch]=useState(false);
@@ -7958,7 +7892,6 @@ function App(){
       {showQuiz && <KnowledgeQuiz onClose={()=>setShowQuiz(false)}/>}
 
       {tab==='home' && <Home setup={setup} setSetup={setSetup} people={people} me={me} go={setTab}/>}
-      {tab==='child' && <ChildLauncher/>}
       {tab==='date' && <DateTab people={people} me={me} flash={flash}/>}
       {tab==='us' && <UsTab people={people} me={me} flash={flash}/>}
       {tab==='talk' && <TalkTab people={people} me={me} flash={flash}/>}
