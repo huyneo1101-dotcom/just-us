@@ -1,0 +1,14 @@
+{
+  "name": "Tâm linh · Nhà mình",
+  "short_name": "Tâm linh",
+  "description": "Ngày lễ âm lịch, kinh Phật, văn khấn, tử vi, thần số, quán chay và mâm cỗ cúng.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#fbf7f6",
+  "theme_color": "#d6446e",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

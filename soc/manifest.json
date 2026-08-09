@@ -1,0 +1,15 @@
+{
+  "name": "Sóc · Nuôi con",
+  "short_name": "Sóc",
+  "description": "Mốc phát triển, trò chơi, tiêm chủng, ăn dặm, đi lớp và cách dạy con — của riêng nhà mình.",
+  "lang": "vi",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#efe7db",
+  "theme_color": "#c65b52",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
