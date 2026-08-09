@@ -16,7 +16,7 @@ Các mảng nội dung lớn KHÔNG còn nằm trong `index.html` — sửa nộ
 | `data/dishes.json` | `MENU_GOALS` `EASY_DISHES` `DISHES` (232 món) |
 | `data/prompts.json` | `QUESTIONS` `QUIZ_Q` `CHALLENGES` `TALK_TOPICS` |
 | `data/hanoi.json` | `HANOI_CATS` `HANOI_SPOTS` |
-| `data/child.json` | 51 khoá nội dung nuôi con — nhóm gốc (`CHILD_VACCINES` `CHILD_MILESTONES` `CHILD_TIPS` `CHILD_PACK` `CHILD_SKILLS` `PLAY_LIB` `WEAN_MENU` `PARENTING_QS` `ILL_SYMPTOMS` `KIDS_CAFES` `SKILL_GUIDES` `CHILD_ISSUES`) + nhóm đợt 1 (`EMERGENCY` `RED_FLAGS` `DANGER_ITEMS` `HOME_SAFETY` `CONTACT_SUGGEST` `TANTRUM_SCRIPTS` `CHILD_BEHAVIOR` `CHORES_2Y` `SELF_CORNER` `DRESS_TEMP` `DRESS_RULES` `SEASON_ILL` `SCARY_TASKS` `WEEKEND_PLANS` `CHILD_DOCS` + 3 **object** `POST_VACCINE` `CONSTIPATION` `SCREEN_GUIDE`) + nhóm đợt 2 (`POTTY_READY` `POTTY_TIMES` `POTTY_FIX` + 2 **object** `WHO_WEIGHT` `WHO_HEIGHT`) + nhóm đợt 3 (`SCHOOL_START` `SCHOOL_ILL` `TEACHER_NOTE` `TRIP_PACK` `TRIP_TIPS` `DUTY_SLOTS` + 3 **object** `SCHOOL_PICK` `TWOS_CRISIS` `PARENT_BURNOUT`) + nhóm bổ sung (`SLEEP_NEED` `SLEEP_ROUTINE` `SLEEP_FIX` `TEETH_ORDER` `CHECKUP_SCHEDULE` `DEV_REDFLAGS` + object `TEETH_CARE`) — **dùng chung** cho app Sóc (`soc/`) và trang chủ Just Us |
+| `data/child.json` | 60 khoá nội dung nuôi con — nhóm gốc (`CHILD_VACCINES` `CHILD_MILESTONES` `CHILD_TIPS` `CHILD_PACK` `CHILD_SKILLS` `PLAY_LIB` `WEAN_MENU` `PARENTING_QS` `ILL_SYMPTOMS` `KIDS_CAFES` `SKILL_GUIDES` `CHILD_ISSUES`) + nhóm đợt 1 (`EMERGENCY` `RED_FLAGS` `DANGER_ITEMS` `HOME_SAFETY` `CONTACT_SUGGEST` `TANTRUM_SCRIPTS` `CHILD_BEHAVIOR` `CHORES_2Y` `SELF_CORNER` `DRESS_TEMP` `DRESS_RULES` `SEASON_ILL` `SCARY_TASKS` `WEEKEND_PLANS` `CHILD_DOCS` + 3 **object** `POST_VACCINE` `CONSTIPATION` `SCREEN_GUIDE`) + nhóm đợt 2 (`POTTY_READY` `POTTY_TIMES` `POTTY_FIX` + 2 **object** `WHO_WEIGHT` `WHO_HEIGHT`) + nhóm đợt 3 (`SCHOOL_START` `SCHOOL_ILL` `TEACHER_NOTE` `TRIP_PACK` `TRIP_TIPS` `DUTY_SLOTS` + 3 **object** `SCHOOL_PICK` `TWOS_CRISIS` `PARENT_BURNOUT`) + nhóm bổ sung (`SLEEP_NEED` `SLEEP_ROUTINE` `SLEEP_FIX` `TEETH_ORDER` `CHECKUP_SCHEDULE` `DEV_REDFLAGS` + object `TEETH_CARE`) + nhóm đợt 4 (`SLEEP_MORE` `POTTY_PREP` `POTTY_STEPS` `MONTESSORI_PRINCIPLES` `MONTESSORI_ACT` `MONTESSORI_MAT` `STEAM_PRINCIPLES` `STEAM_ACT` + object `STEAM_LABEL`) — **dùng chung** cho app Sóc (`soc/`) và trang chủ Just Us |
 
 Cách hoạt động: một `<script>` ngay trước khối `text/babel` tạo `window.JUD` với mảng/object RỖNG rồi `fetch` các JSON và **đổ dữ liệu vào đúng chỗ cũ** (giữ nguyên identity, vì trong khối babel viết `const DISHES=JUD.DISHES;` chạy ngay lập tức). App chỉ vẽ sau khi dữ liệu về (tối đa chờ 5s rồi vẽ trước, dữ liệu về muộn thì vẽ lại).
 - Thêm mảng dữ liệu mới → thêm khoá vào JSON **và** thêm placeholder rỗng đúng kiểu trong `window.JUD`.
@@ -77,6 +77,18 @@ Nuôi dạy sang đây**; state `ju.childDiary` giờ chỉ do `MemoryTab` giữ
   Chưa ghép cặp thì không tải ảnh được, app báo rõ chứ không im lặng.
 - `GuideList` + `bullets()` là hai helper dùng lại cho mọi mục "bấm mở ra đọc".
 
+**Đợt 4 (nội dung, 2026-08-09) đã thêm:** sub-tab mới **🌱 Lớn lên → Học sớm** (`tab==='learn'`) gồm
+**Montessori tại nhà** (10 nguyên lý · hoạt động mẫu 2 nhóm tuổi · đồ chơi và vật liệu) và **STEAM cho bé**
+(nguyên lý chơi · hoạt động mẫu 2 nhóm tuổi có nhãn S/T/E/A/M qua `STEAM_LABEL`); tab **Giấc ngủ** thêm khối
+"giấc ngày · cai ti đêm · ác mộng" (`SLEEP_MORE`) và bảng `SLEEP_NEED` tách mốc **12–18** và **18–24 tháng**
+kèm cột giấc ngày (trường `g`); tab **Tập bô** thêm "chuẩn bị trước khi bắt đầu" (`POTTY_PREP`) và
+**bảy bước cai bỉm** (`POTTY_STEPS`).
+- Nội dung này vốn viết cho `ChildCare` trong `index.html` (commit `f721818`, cơ chế `GUIDE_KEYS`), nhưng
+  bản trên `origin/main` đã tách Sóc sang `soc/` nên **đã chuyển thẳng sang đây và bỏ `GUIDE_KEYS`** —
+  app Sóc tra nội dung bằng `searchIndex()` chứ không bằng chuỗi khoá từng mảng.
+- Phần giấc ngủ và tập bô **gộp** với `SLEEP_ROUTINE`/`SLEEP_FIX`/`POTTY_READY`/`POTTY_TIMES`/`POTTY_FIX`
+  đã có, không chép đè: chỉ đưa sang phần app Sóc còn thiếu.
+
 ### Thiết kế lại (2026-08-09)
 App Sóc **không còn mượn da "Sổ tay"** của Just Us nữa — nó có hệ token riêng trong khối `<style>`
 (`--brand` xanh mòng két, `--surface`, `--ink*`, `--line`, sáng/tối đầy đủ). Lý do đổi: da sổ tay lấy
@@ -85,8 +97,8 @@ App Sóc **không còn mượn da "Sổ tay"** của Just Us nữa — nó có h
 - Sửa giao diện thì sửa token, đừng viết màu thẳng vào style nội tuyến.
 - Muốn quay lại da sổ tay thì thay đúng khối `<style>` của `soc/index.html`, phần JS không phụ thuộc.
 
-**Điều hướng hai tầng** thay cho lưới 10 pill cũ: hằng `NAV` chia 13 mục vào **5 nhóm** —
-🏠 Nhà · 🌱 Lớn lên (mốc & lời nói · chơi & ra ngoài · ăn uống · giấc ngủ · đi lớp) ·
+**Điều hướng hai tầng** thay cho lưới 10 pill cũ: hằng `NAV` chia 14 mục vào **5 nhóm** —
+🏠 Nhà · 🌱 Lớn lên (mốc & lời nói · chơi & ra ngoài · học sớm · ăn uống · giấc ngủ · đi lớp) ·
 🏥 Sức khoẻ (theo dõi & khám · răng · tập bô · an toàn) · 💞 Nuôi dạy (với con · bố mẹ) · 📔 Kỷ niệm.
 `Dock` là thanh dưới cố định (có chấm nhắc khi nhóm đó đang có việc), `SubTabs` là hàng tab con.
 Thêm mục mới → thêm vào `NAV`, `TAB_GROUP`/`TAB_NAME` tự suy ra.
@@ -121,7 +133,7 @@ lớn** vào từng mục (thêm 🚽 Tập bô và 📔 Kỷ niệm ở đợt 
   liệu khác, và `Cloud.start()` của Just Us (vốn `pull()` đè localStorage khi mở app) không nuốt mất phần
   vừa ghi bên Sóc. `last_writer` ghi là `<device>.soc` để máy kia (và tab Just Us) nhận realtime.
   Chưa đăng nhập/ghép cặp thì app vẫn chạy, chỉ lưu máy này (có dòng báo "📴 Chưa nối đám mây").
-- Cache riêng `soc-v6`. **Ba service worker dùng chung origin**: mỗi `sw.js` chỉ được xoá cache có tiền tố
+- Cache riêng `soc-v7`. **Ba service worker dùng chung origin**: mỗi `sw.js` chỉ được xoá cache có tiền tố
   của chính nó (`justus-*` / `tamlinh-*` / `soc-*`). `soc/sw.js` cache cả `../data/child.json` + `../fonts.css`
   (scope chỉ giới hạn TRANG được điều khiển, không giới hạn URL được chặn) → đổi 2 file đó phải bump `soc-v*`.
 - Deploy: Pages và Netlify đều publish cả thư mục nên `soc/` tự lên, không cần sửa CI.

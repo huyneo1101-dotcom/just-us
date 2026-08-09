@@ -2477,22 +2477,38 @@
   {
    "a": "0–3 tháng",
    "t": "14–17 giờ",
-   "n": "Ngủ rải nhiều giấc ngắn cả ngày lẫn đêm."
+   "g": "nhiều giấc ngắn cả ngày lẫn đêm",
+   "n": "Chưa phân biệt ngày đêm, ngủ rải rác theo cữ ăn."
   },
   {
    "a": "4–11 tháng",
    "t": "12–16 giờ",
-   "n": "2–3 giấc ban ngày, đêm dài dần."
+   "g": "2–3 giấc ngày",
+   "n": "Đêm dài dần; nhiều bé bắt đầu ngủ liền mạch."
   },
   {
-   "a": "1–2 tuổi",
+   "a": "12–18 tháng",
    "t": "11–14 giờ",
-   "n": "Còn 1 giấc trưa (có bé 18 tháng mới bỏ giấc thứ hai)."
+   "g": "2 → 1 giấc",
+   "n": "Khoảng 15–18 tháng bé thường gộp còn một giấc trưa."
+  },
+  {
+   "a": "18–24 tháng",
+   "t": "11–14 giờ",
+   "g": "1 giấc trưa 1,5–2,5 giờ",
+   "n": "Đêm khoảng 10–12 giờ. Đây là mốc con nhà mình đang ở."
+  },
+  {
+   "a": "2–3 tuổi",
+   "t": "11–14 giờ",
+   "g": "1 giấc trưa 1–2 giờ",
+   "n": "Giấc trưa nên kết thúc trước 15:00 để tối bé còn buồn ngủ."
   },
   {
    "a": "3–5 tuổi",
    "t": "10–13 giờ",
-   "n": "Giấc trưa ngắn dần rồi bỏ hẳn."
+   "g": "giấc trưa thưa dần",
+   "n": "Nhiều bé bỏ hẳn giấc ngày, bù lại ngủ đêm sớm hơn."
   }
  ],
  "SLEEP_ROUTINE": [
@@ -2694,5 +2710,300 @@
     "MẤT kỹ năng đã từng làm được (đang nói rồi thôi nói, đang đi rồi thôi đi) — đây là dấu hiệu cần đi khám ngay, không chờ mốc"
    ]
   }
- ]
+ ],
+ "SLEEP_MORE": [
+  {
+   "icon": "☀️",
+   "n": "Giấc ngày và khoảng thức",
+   "tips": [
+    "Từ 18 tháng, đa số bé còn một giấc trưa dài 1,5–2,5 giờ, bắt đầu trong khoảng 12:00–13:00.",
+    "Kết thúc giấc trưa trước 15:00. Ngủ ngày muộn hoặc quá dài là lý do phổ biến nhất khiến tối bé không chịu ngủ.",
+    "Ngược lại, bỏ giấc trưa cũng làm bé quá mệt, cáu gắt và khó vào giấc hơn — mệt quá không đồng nghĩa với dễ ngủ.",
+    "Dấu hiệu bé sẵn sàng bỏ giấc trưa (thường 3–4 tuổi): nằm cả tiếng không ngủ, hoặc ngủ trưa xong thì tối thức tới khuya, kéo dài nhiều tuần liền.",
+    "Cho bé ra ngoài trời và vận động vào buổi sáng; ánh sáng ban ngày giúp đồng hồ sinh học của bé chạy đúng."
+   ]
+  },
+  {
+   "icon": "🍼",
+   "n": "Cai ti đêm",
+   "tips": [
+    "Từ khoảng 12 tháng, bé khoẻ mạnh, tăng cân tốt thường không còn cần bú đêm để no — phần lớn cữ đêm còn lại là thói quen trấn an.",
+    "Kiểm tra trước: bé ăn đủ 3 bữa và các bữa phụ ban ngày chưa, cữ tối có quá sát giờ ngủ không. Bù đủ ban ngày rồi hẵng cắt đêm.",
+    "Cắt DẦN, đừng cắt đột ngột: mỗi 2–3 đêm giảm khoảng 20–30 ml sữa mỗi cữ, hoặc rút ngắn thời gian bú vài phút, cho tới khi bỏ hẳn.",
+    "Cách khác cũng hiệu quả: giãn dần khoảng cách, đêm nay đáp ứng sau 5 phút thì vài đêm sau chờ 10 phút, trong lúc chờ vẫn vỗ về bằng lời cho bé biết bố mẹ vẫn ở đây.",
+    "Thay bú bằng cách an ủi khác: vỗ lưng, xoa đầu, nói nhỏ một câu quen thuộc; không bật đèn sáng, không bế ra khỏi phòng, không trò chuyện vui vẻ.",
+    "Người ít cho bú nhất nên là người dỗ bé những đêm đầu — bé ngửi thấy hơi sữa thì rất khó bỏ.",
+    "Ba đến năm đêm đầu bé sẽ phản ứng mạnh hơn rồi giảm dần. Cả nhà thống nhất trước, làm giống nhau mọi đêm, đừng đêm cho đêm không.",
+    "Hoãn lại nếu bé đang ốm, đang mọc răng, vừa đi lớp hoặc nhà vừa có xáo trộn."
+   ]
+  },
+  {
+   "icon": "👻",
+   "n": "Ác mộng, hoảng sợ ban đêm và khi nào cần khám",
+   "tips": [
+    "Ác mộng thường vào nửa đêm về sáng: bé tỉnh hẳn, sợ, nhớ giấc mơ và cần được dỗ.",
+    "Hoảng sợ ban đêm thì khác hẳn: xảy ra đầu đêm, bé la hét giãy giụa nhưng vẫn đang ngủ, sáng dậy không nhớ gì. Không đánh thức bé, chỉ giữ cho bé an toàn rồi chờ qua.",
+    "Khoảng 18–24 tháng bé hay có đợt trở nếp do lo sợ xa cách: chơi trò ú oà ban ngày, chào tạm biệt rõ ràng rồi quay lại đúng hẹn giúp bé yên tâm hơn.",
+    "Nên hỏi bác sĩ nếu bé ngáy to đều đặn, ngừng thở lúc ngủ, thở bằng miệng, hoặc ngày nào cũng buồn ngủ dù đã ngủ đủ giờ."
+   ]
+  }
+ ],
+ "POTTY_PREP": [
+  "Mua bô riêng đặt sàn — bé chống được chân xuống đất sẽ dễ rặn và bớt sợ hơn ngồi bồn cầu cao.",
+  "Để bô ở chỗ bé hay chơi trong vài ngày đầu, cho bé ngồi thử khi vẫn mặc nguyên quần, coi như một đồ vật thân quen.",
+  "Chuẩn bị 8–10 quần chip và quần dài rộng, dễ tự tụt; tạm cất váy bó, quần yếm, quần cài khuy.",
+  "Dạy trước từ để bé báo: “tè”, “ị”, “đi bô”. Cả nhà dùng chung một bộ từ.",
+  "Đọc sách tranh về đi vệ sinh, cho bé xem anh chị hoặc bố mẹ cùng giới làm mẫu.",
+  "Thống nhất cách làm giữa bố, mẹ và ông bà hoặc cô giáo trước khi bắt đầu.",
+  "Chọn thời điểm nhà không xáo trộn: không sát ngày đi lớp, chuyển nhà, có em bé, hay đợt bé đang ốm."
+ ],
+ "POTTY_STEPS": [
+  {
+   "n": "Bước 1 — Bỏ bỉm ban ngày ở nhà",
+   "d": "Cho bé mặc quần chip để cảm nhận rõ khi ướt. Bỉm quần kéo lên tụt xuống thường làm bé lẫn với bỉm, nên bỏ hẳn sẽ nhanh hơn."
+  },
+  {
+   "n": "Bước 2 — Ngồi bô theo mốc cố định",
+   "d": "Ngay sau khi ngủ dậy, sau ăn 20–30 phút, trước khi ra khỏi nhà, trước khi đi ngủ. Mỗi lần ngồi 3–5 phút, không bắt ngồi lâu."
+  },
+  {
+   "n": "Bước 3 — Đọc dấu hiệu riêng của bé",
+   "d": "Đứng im, nhăn mặt, nấp vào góc là lúc hỏi ngay “con muốn đi bô không”, thay vì hỏi liên tục cả ngày."
+  },
+  {
+   "n": "Bước 4 — Khen ngay và khen cụ thể",
+   "d": "“Con tự đi bô giỏi quá”. Ôm, vỗ tay, dán sticker đều được; không cần thưởng bằng bánh kẹo."
+  },
+  {
+   "n": "Bước 5 — Dạy trọn quy trình",
+   "d": "Tụt quần → ngồi → lau (bé gái lau từ trước ra sau) → kéo quần → đổ bô → rửa tay. Rửa tay là phần không được bỏ."
+  },
+  {
+   "n": "Bước 6 — Mang theo khi ra ngoài",
+   "d": "Bô hoặc bệ ngồi gấp, một bộ quần áo thay và túi đựng đồ ướt; đi đâu cũng cho bé đi vệ sinh trước."
+  },
+  {
+   "n": "Bước 7 — Bỏ bỉm đêm sau cùng",
+   "d": "Có thể muộn hơn ban ngày vài tháng tới vài năm. Chỉ bỏ khi bé đã khô bỉm nhiều buổi sáng liền."
+  }
+ ],
+ "MONTESSORI_PRINCIPLES": [
+  "Theo con, đừng kéo con: quan sát xem con đang mê việc gì rồi đưa hoạt động vừa sức, thay vì áp lịch học của người lớn.",
+  "Môi trường chuẩn bị sẵn: đồ của con để thấp trong tầm với, mỗi thứ một chỗ cố định, số lượng ít mà gọn để con tự lấy và tự cất.",
+  "Tự do trong giới hạn: con được chọn làm gì, làm bao lâu, trong một khuôn khổ an toàn và vài quy tắc rõ ràng, không đổi.",
+  "Giai đoạn nhạy cảm: quanh 18–36 tháng con đặc biệt say mê trật tự, đồ vật nhỏ, vận động chính xác và ngôn ngữ — đó là lúc dạy các việc ấy nhàn nhất.",
+  "Dùng đồ thật cỡ nhỏ: chổi nhỏ, ca nước thuỷ tinh nhỏ, dao bơ cắt chuối. Đồ thật khiến con thấy mình đang làm việc thật.",
+  "Chú trọng quá trình hơn kết quả: con lau nhà ướt hơn lúc đầu vẫn là thành công, vì cái con luyện là động tác và sự tập trung.",
+  "Làm mẫu chậm và ít lời: tay làm thì miệng đừng giảng. Làm chậm từng động tác cho con nhìn rõ, rồi lùi lại để con tự làm.",
+  "Đừng ngắt lời khi con đang tập trung, kể cả để khen. Tập trung là thứ quý nhất cần được bảo vệ.",
+  "Khen việc, không khen người: “con tự rót đầy cốc rồi đấy” thay cho “con giỏi quá”. Bớt phần thưởng và hình phạt, để việc tự nó có ý nghĩa.",
+  "Một bộ đồ chơi giải quyết một kỹ năng, bày ra khay riêng, luân phiên vài tuần một lần thay vì đổ hết ra sàn."
+ ],
+ "MONTESSORI_ACT": [
+  {
+   "band": "18–24 tháng",
+   "items": [
+    {
+     "n": "Rót nước từ ca nhỏ sang cốc",
+     "d": "Ca thuỷ tinh nhỏ, rót ít nước, để sẵn khăn lau bên cạnh cho con tự dọn khi đổ."
+    },
+    {
+     "n": "Xúc và chuyển hạt",
+     "d": "Dùng thìa chuyển đậu to hoặc hạt gỗ giữa hai bát. Luyện cổ tay để sau này cầm bút."
+    },
+    {
+     "n": "Lau bàn, lau nước đổ",
+     "d": "Khăn nhỏ vừa tay con, treo ở móc thấp. Đổ nước ra là cơ hội luyện chứ không phải sự cố."
+    },
+    {
+     "n": "Cất giày, cất đồ chơi đúng chỗ",
+     "d": "Kệ thấp, dán hình từng loại. Con 18–24 tháng rất thích mọi thứ đúng chỗ của nó."
+    },
+    {
+     "n": "Bỏ hình khối vào lỗ, xâu vòng hạt to",
+     "d": "Luyện phối hợp tay–mắt và khái niệm hình dạng, kích thước."
+    },
+    {
+     "n": "Tưới cây, cho vật nuôi ăn",
+     "d": "Bình tưới nhỏ. Việc chăm sóc sinh vật sống giúp con thấy mình có ích trong nhà."
+    },
+    {
+     "n": "Bỏ quần áo bẩn vào giỏ, cất thìa vào ngăn",
+     "d": "Ghép con vào việc nhà thật sự, làm cùng người lớn."
+    },
+    {
+     "n": "Đọc sách tranh gọi tên đồ vật thật",
+     "d": "Ưu tiên tranh ảnh thực tế thay vì hình hoạt hình, gọi đúng tên: “quả cam”, không phải “quả tròn tròn”."
+    }
+   ]
+  },
+  {
+   "band": "2–3 tuổi",
+   "items": [
+    {
+     "n": "Tự mặc, tự cởi quần áo",
+     "d": "Ghế thấp, quần áo rộng, một giỏ đồ để con tự chọn giữa hai bộ."
+    },
+    {
+     "n": "Phết bơ, cắt chuối bằng dao bơ",
+     "d": "Dao nhựa hoặc dao bơ không sắc, thớt nhỏ. Con tự làm được bữa phụ cho mình."
+    },
+    {
+     "n": "Phân loại theo màu, theo kích thước",
+     "d": "Chia cúc áo, tất, khối gỗ vào các bát khác nhau — nền của toán học sau này."
+    },
+    {
+     "n": "Ghép hình 4–8 mảnh, chốt gỗ theo cỡ",
+     "d": "Tăng dần độ khó, luôn để con tự phát hiện chỗ sai thay vì người lớn chỉ ngay."
+    },
+    {
+     "n": "Túi bí mật",
+     "d": "Bỏ vài đồ quen vào túi vải, con thò tay sờ rồi đoán tên. Luyện xúc giác và vốn từ."
+    },
+    {
+     "n": "Quét nhà, gấp khăn, tráng bát của mình",
+     "d": "Chổi và cây lau cỡ trẻ em, ghế kê ở bồn rửa."
+    },
+    {
+     "n": "Khay ngôn ngữ theo chủ đề",
+     "d": "Mỗi tuần một chủ đề (rau củ, phương tiện), bày vật thật kèm thẻ hình, gọi tên rồi kể chuyện quanh nó."
+    }
+   ]
+  }
+ ],
+ "MONTESSORI_MAT": [
+  "Kệ thấp mở, chỉ bày 6–8 khay hoạt động, thay luân phiên hai tuần một lần.",
+  "Khay và giỏ nhỏ để gom trọn một hoạt động vào một chỗ.",
+  "Ca rót, cốc thuỷ tinh nhỏ, khăn lau vừa tay, chổi và hót rác cỡ trẻ em.",
+  "Bộ chuyển hạt: hai bát, thìa, kẹp gắp, đậu hoặc hạt gỗ đủ to để không nuốt được.",
+  "Khối gỗ, chốt gỗ nhiều cỡ, bảng luồn dây, khung tập cài cúc và kéo khoá.",
+  "Sách tranh ảnh thật, thẻ hình gọi tên theo chủ đề.",
+  "Gương thấp, móc treo áo thấp, ghế bục để con tự với tới bồn rửa.",
+  "Đồ chơi bằng gỗ, vải, kim loại — nhiều chất liệu để tay con cảm nhận khác nhau."
+ ],
+ "STEAM_PRINCIPLES": [
+  "STEAM gồm 05 mảng: Khoa học (S) · Công nghệ (T) · Kỹ thuật (E) · Nghệ thuật (A) · Toán (M). Với trẻ nhỏ, đây không phải môn học mà là cách chơi.",
+  "Ở tuổi này mục tiêu không phải kiến thức, mà là thói quen: tò mò, dám thử, thử sai rồi thử lại.",
+  "Hỏi câu mở thay vì hỏi đáp án: “con thử đoán xem cái nào chìm”, “nếu mình bỏ thêm một khối nữa thì sao nhỉ”.",
+  "Để con tự làm và tự hỏng. Tháp đổ là lúc con học nhiều nhất, đừng dựng hộ.",
+  "Đặt tên cho việc đang xảy ra ngay lúc con làm: nổi, chìm, nặng, nhẹ, cao hơn, ít hơn. Vốn từ khoa học và toán học vào đầu con qua lời nói hằng ngày.",
+  "Chơi vật liệu thật, càng ít pin và màn hình càng tốt. Công nghệ ở tuổi này là cái kẹp, cái ròng rọc, cái phễu — không phải máy tính bảng.",
+  "Toán trong sinh hoạt: đếm bậc cầu thang, chia bánh làm đôi, xếp giày thành đôi, so cốc to cốc nhỏ.",
+  "Một hoạt động 5–15 phút là đủ. Con chán thì dừng, hôm khác quay lại.",
+  "An toàn trước: mọi vật nhỏ hơn nắp chai đều có nguy cơ hóc, luôn ngồi cạnh con khi chơi nước, hạt, đất nặn."
+ ],
+ "STEAM_ACT": [
+  {
+   "band": "18–24 tháng",
+   "items": [
+    {
+     "t": "S",
+     "n": "Chìm hay nổi",
+     "d": "Chậu nước, vài món đồ khác nhau. Cho con thả từng thứ, gọi tên “nổi” và “chìm” mỗi lần."
+    },
+    {
+     "t": "S",
+     "n": "Rót và đong nước",
+     "d": "Ca, phễu, cốc nhiều cỡ trong chậu. Con thấy cùng lượng nước mà đầy cốc nhỏ, chỉ lưng cốc to."
+    },
+    {
+     "t": "E",
+     "n": "Xếp tháp rồi cho đổ",
+     "d": "Khối gỗ hoặc cốc chồng. Hỏi con làm sao cho tháp cao hơn mà không đổ."
+    },
+    {
+     "t": "E",
+     "n": "Đường trượt cho bóng",
+     "d": "Ống giấy vệ sinh dán nghiêng lên tường, thả bóng nhỏ. Đổi độ dốc xem bóng chạy nhanh chậm khác nhau."
+    },
+    {
+     "t": "A",
+     "n": "Vẽ ngón tay, in dấu rau củ",
+     "d": "Màu an toàn cho bé, giấy khổ to. Cắt đôi bắp cải, mướp đắng chấm màu in lên giấy."
+    },
+    {
+     "t": "A",
+     "n": "Chai âm thanh",
+     "d": "Chai nhựa đựng gạo, đậu, chuông nhỏ, vặn chặt nắp. Lắc và nghe tiếng khác nhau, gõ theo nhịp bài hát."
+    },
+    {
+     "t": "M",
+     "n": "Phân loại theo màu",
+     "d": "Bỏ nắp chai hoặc khối gỗ vào các bát cùng màu."
+    },
+    {
+     "t": "M",
+     "n": "Đếm trong sinh hoạt",
+     "d": "Đếm bậc cầu thang, đếm miếng chuối, đếm ngón chân khi đi tất."
+    },
+    {
+     "t": "T",
+     "n": "Kẹp, phễu, ròng rọc mini",
+     "d": "Kẹp gắp bông, đổ hạt qua phễu, kéo giỏ đồ chơi bằng dây — công cụ đầu tiên của con."
+    }
+   ]
+  },
+  {
+   "band": "2–3 tuổi",
+   "items": [
+    {
+     "t": "S",
+     "n": "Gieo hạt đậu trong bông ẩm",
+     "d": "Để lọ trong suốt cạnh cửa sổ, mỗi ngày cùng con nhìn và kể xem hạt đổi thế nào."
+    },
+    {
+     "t": "S",
+     "n": "Bóng nước xà phòng, đá tan",
+     "d": "Thổi bong bóng, để viên đá ngoài nắng và trong bóng râm rồi so xem bên nào tan trước."
+    },
+    {
+     "t": "S",
+     "n": "Trộn màu",
+     "d": "Ba cốc nước màu đỏ, vàng, xanh; cho con tự trộn và gọi tên màu mới hiện ra."
+    },
+    {
+     "t": "E",
+     "n": "Xây cầu cho ô tô đi qua",
+     "d": "Sách, hộp giấy làm trụ, bìa cứng làm mặt cầu. Cầu sập thì cùng bàn cách sửa."
+    },
+    {
+     "t": "E",
+     "n": "Nhà bằng hộp giấy",
+     "d": "Hộp bìa, băng dính giấy, kéo an toàn. Con quyết định cửa ở đâu, cửa sổ ở đâu."
+    },
+    {
+     "t": "A",
+     "n": "Nặn đất, dán tranh cắt xé",
+     "d": "Xé giấy màu rồi dán thành hình. Xé giấy còn luyện đúng nhóm cơ tay để sau này cầm bút."
+    },
+    {
+     "t": "A",
+     "n": "Nhảy theo nhạc, đóng vai",
+     "d": "Chơi bán hàng, khám bệnh cho gấu bông — nền của ngôn ngữ và kỹ năng xã hội."
+    },
+    {
+     "t": "M",
+     "n": "Ghép đôi tất, xếp theo cỡ",
+     "d": "Xếp cốc hoặc hộp từ to đến nhỏ, tìm hai chiếc tất giống nhau trong giỏ."
+    },
+    {
+     "t": "M",
+     "n": "Chia phần bằng nhau",
+     "d": "Chia bánh, chia nho cho cả nhà, mỗi người một phần — khái niệm chia và bằng nhau."
+    },
+    {
+     "t": "T",
+     "n": "Chụp ảnh, bấm hẹn giờ",
+     "d": "Cho con bấm máy ảnh chụp thứ con thích, hoặc canh đồng hồ hẹn giờ 2 phút lúc đánh răng."
+    }
+   ]
+  }
+ ],
+ "STEAM_LABEL": {
+  "S": "🔬 Khoa học",
+  "T": "⚙️ Công nghệ",
+  "E": "🏗️ Kỹ thuật",
+  "A": "🎨 Nghệ thuật",
+  "M": "🔢 Toán"
+ }
 }

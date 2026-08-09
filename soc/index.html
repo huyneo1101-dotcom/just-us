@@ -299,6 +299,10 @@ textarea.inp{resize:vertical;min-height:72px;line-height:1.55}
     // Bổ sung: giấc ngủ · răng · khám & sàng lọc định kỳ
     SLEEP_NEED:[], SLEEP_ROUTINE:[], SLEEP_FIX:[], TEETH_ORDER:[], CHECKUP_SCHEDULE:[], DEV_REDFLAGS:[],
     TEETH_CARE:{},
+    // Đợt 4: giấc ngày & cai ti đêm · chuẩn bị và các bước cai bỉm · Montessori · STEAM
+    SLEEP_MORE:[], POTTY_PREP:[], POTTY_STEPS:[],
+    MONTESSORI_PRINCIPLES:[], MONTESSORI_ACT:[], MONTESSORI_MAT:[],
+    STEAM_PRINCIPLES:[], STEAM_ACT:[], STEAM_LABEL:{},
     // Đợt 3: đi lớp · ra khỏi nhà · tâm lý bé và bố mẹ
     SCHOOL_START:[], SCHOOL_ILL:[], TEACHER_NOTE:[], TRIP_PACK:[], TRIP_TIPS:[], DUTY_SLOTS:[],
     SCHOOL_PICK:{}, TWOS_CRISIS:{}, PARENT_BURNOUT:{},
@@ -539,7 +543,7 @@ function Sheet({title,onClose,children}){
 const NAV=[
   {k:'home',ic:'🏠',n:'Nhà',tabs:[{k:'home',n:'Trang chủ'}]},
   {k:'grow',ic:'🌱',n:'Lớn lên',tabs:[
-    {k:'develop',n:'Mốc & lời nói'},{k:'play',n:'Chơi & ra ngoài'},
+    {k:'develop',n:'Mốc & lời nói'},{k:'play',n:'Chơi & ra ngoài'},{k:'learn',n:'Học sớm'},
     {k:'eat',n:'Ăn uống'},{k:'sleep',n:'Giấc ngủ'},{k:'school',n:'Đi lớp'}]},
   {k:'care',ic:'🏥',n:'Sức khoẻ',tabs:[
     {k:'health',n:'Theo dõi & khám'},{k:'teeth',n:'Răng'},
@@ -629,6 +633,15 @@ const TEETH_ORDER=JUD.TEETH_ORDER;
 const TEETH_CARE=JUD.TEETH_CARE;
 const CHECKUP_SCHEDULE=JUD.CHECKUP_SCHEDULE;
 const DEV_REDFLAGS=JUD.DEV_REDFLAGS;
+const SLEEP_MORE=JUD.SLEEP_MORE;
+const POTTY_PREP=JUD.POTTY_PREP;
+const POTTY_STEPS=JUD.POTTY_STEPS;
+const MONTESSORI_PRINCIPLES=JUD.MONTESSORI_PRINCIPLES;
+const MONTESSORI_ACT=JUD.MONTESSORI_ACT;
+const MONTESSORI_MAT=JUD.MONTESSORI_MAT;
+const STEAM_PRINCIPLES=JUD.STEAM_PRINCIPLES;
+const STEAM_ACT=JUD.STEAM_ACT;
+const STEAM_LABEL=JUD.STEAM_LABEL;
 
 /* ============ Thống nhất cách dạy con ============ */
 function ParentingAgreement(){
@@ -664,7 +677,7 @@ function SkillGuide({g,done,onTick}){
   );
 }
 /* ============ Tìm kiếm toàn app ============
-   44 nhóm nội dung nằm rải trong 13 mục — không có ô tìm thì phải nhớ
+   Hơn 50 nhóm nội dung nằm rải trong 14 mục — không có ô tìm thì phải nhớ
    "sốt co giật nằm tab nào" mới tra được. */
 function searchIndex(){
   const out=[];
@@ -689,12 +702,20 @@ function searchIndex(){
   add('health','Táo bón','Táo bón',[CONSTIPATION.lead].concat(CONSTIPATION.signs||[],CONSTIPATION.do||[],CONSTIPATION.er||[]).join(' '));
   (CHILD_VACCINES||[]).forEach(v=>add('health','Tiêm chủng',v.age,(v.items||[]).join(' ')));
   (SLEEP_FIX||[]).forEach(x=>add('sleep','Giấc ngủ',x.n,(x.tips||[]).join(' ')));
-  (SLEEP_NEED||[]).forEach(x=>add('sleep','Giấc ngủ',x.a+' — '+x.t,x.n));
+  (SLEEP_NEED||[]).forEach(x=>add('sleep','Giấc ngủ',x.a+' — '+x.t,x.g+' '+x.n));
   (SLEEP_ROUTINE||[]).forEach(x=>add('sleep','Trình tự đi ngủ',x.t,x.d));
+  (SLEEP_MORE||[]).forEach(x=>add('sleep','Giấc ngày & cai ti đêm',x.n,(x.tips||[]).join(' ')));
   (TEETH_ORDER||[]).forEach(x=>add('teeth','Mọc răng',x.n,x.w));
   add('teeth','Răng','Chăm răng hằng ngày',[TEETH_CARE.lead].concat(TEETH_CARE.daily||[],TEETH_CARE.visit||[],TEETH_CARE.teething||[]).join(' '));
   (POTTY_FIX||[]).forEach(x=>add('potty','Tập bô',x.n,(x.tips||[]).join(' ')));
   (POTTY_TIMES||[]).forEach(x=>add('potty','Mốc ngồi bô',x.t,x.d));
+  add('potty','Chuẩn bị cai bỉm','Chuẩn bị trước khi bỏ bỉm',(POTTY_PREP||[]).join(' '));
+  (POTTY_STEPS||[]).forEach(x=>add('potty','Các bước cai bỉm',x.n,x.d));
+  add('learn','Montessori','Montessori tại nhà — nguyên lý',(MONTESSORI_PRINCIPLES||[]).join(' '));
+  add('learn','Montessori','Đồ chơi & vật liệu Montessori',(MONTESSORI_MAT||[]).join(' '));
+  (MONTESSORI_ACT||[]).forEach(g=>(g.items||[]).forEach(x=>add('learn','Montessori '+g.band,x.n,x.d)));
+  add('learn','STEAM','STEAM cho bé — nguyên lý',(STEAM_PRINCIPLES||[]).join(' '));
+  (STEAM_ACT||[]).forEach(g=>(g.items||[]).forEach(x=>add('learn','STEAM '+g.band,x.n,(STEAM_LABEL[x.t]||'')+' '+x.d)));
   (DEV_REDFLAGS||[]).forEach(g=>add('develop','Dấu hiệu cần khám',g.m,(g.items||[]).join(' ')));
   (CHILD_MILESTONES||[]).forEach(b=>add('develop','Mốc phát triển',b.band,(b.items||[]).join(' ')));
   (PLAY_LIB||[]).forEach(x=>add('play','Trò chơi',x.n,x.c+' '+x.d));
@@ -1237,6 +1258,19 @@ function PottyTab(){
         </div>
       </>}
 
+      <Collapse id="child-pottyprep" defaultOpen={false} title="🧺 Chuẩn bị trước khi bắt đầu">
+        <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>Sắm và thống nhất trước vài ngày, tới lúc bỏ bỉm là cả nhà làm giống nhau.</div>
+        <div className="card">{bullets(POTTY_PREP||[])}</div>
+      </Collapse>
+      <Collapse id="child-pottysteps" defaultOpen={false} title="👣 Bảy bước cai bỉm">
+        <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>Làm tuần tự, không nhảy bước. Bước 7 (bỏ bỉm đêm) thường tới muộn hơn hẳn.</div>
+        {POTTY_STEPS.map(s=>(
+          <div key={s.n} className="item" style={{padding:'9px 13px'}}>
+            <b style={{fontSize:13.5}}>{s.n}</b>
+            <div className="muted" style={{fontSize:12.5,marginTop:2,lineHeight:1.55}}>{s.d}</div>
+          </div>
+        ))}
+      </Collapse>
       <Collapse id="child-pottytimes" defaultOpen={false} title="⏰ Cho ngồi bô vào những lúc này">
         <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>Nhắc theo mốc sinh hoạt hiệu quả hơn hỏi "con có buồn không" — tuổi này bé thường chưa kịp nhận ra.</div>
         {POTTY_TIMES.map(t=>(
@@ -1780,6 +1814,53 @@ function ChildCare({people,me}){
         </Collapse>
       </div>}
 
+      {tab==='learn' && <div>
+        <div className="note">Hai lối chơi để con học sớm, cùng dùng đồ có sẵn trong nhà. Montessori rèn con tự làm; STEAM rèn con tò mò và dám thử. Mỗi lần 5–15 phút là đủ.</div>
+
+        <div className="sec-title">🧺 Montessori tại nhà</div>
+        <div className="muted center" style={{fontSize:'var(--t-xs)',margin:'0 14px 6px'}}>Không cần mua bộ giáo cụ đắt tiền — phần lớn là sắp lại nhà cửa cho bé tự làm được.</div>
+        <Collapse id="child-monte-principle" defaultOpen={false} title="Mười nguyên lý cốt lõi">
+          <div className="card">{bullets(MONTESSORI_PRINCIPLES||[])}</div>
+        </Collapse>
+        <Collapse id="child-monte-act" defaultOpen={false} title="Hoạt động mẫu theo tuổi">
+        {MONTESSORI_ACT.map(g=>(
+          <div key={g.band}>
+            <div className="sec-title">{g.band}</div>
+            {g.items.map(x=>(
+              <div key={x.n} className="item" style={{padding:'9px 13px'}}>
+                <b style={{fontSize:13.5}}>{x.n}</b>
+                <div className="muted" style={{fontSize:12.5,marginTop:2,lineHeight:1.55}}>{x.d}</div>
+              </div>
+            ))}
+          </div>
+        ))}
+        </Collapse>
+        <Collapse id="child-monte-mat" defaultOpen={false} title="Đồ chơi & vật liệu gợi ý">
+          <div className="card">{bullets(MONTESSORI_MAT||[])}</div>
+        </Collapse>
+
+        <div className="sec-title">🔬 STEAM cho bé</div>
+        <div className="muted center" style={{fontSize:'var(--t-xs)',margin:'0 14px 6px'}}>Ở tuổi này STEAM là cách chơi, không phải môn học. Đồ dùng chủ yếu có sẵn trong bếp.</div>
+        <Collapse id="child-steam-principle" defaultOpen={false} title="Nguyên lý & cách chơi cùng con">
+          <div className="card">{bullets(STEAM_PRINCIPLES||[])}</div>
+        </Collapse>
+        <Collapse id="child-steam-act" defaultOpen={false} title="Hoạt động mẫu theo tuổi">
+        {STEAM_ACT.map(g=>(
+          <div key={g.band}>
+            <div className="sec-title">{g.band}</div>
+            {g.items.map(x=>(
+              <div key={x.n} className="item" style={{padding:'9px 13px'}}>
+                <div className="row"><b className="grow" style={{fontSize:13.5}}>{x.n}</b>
+                  <span className="pill" style={{flex:'0 0 auto'}}>{STEAM_LABEL[x.t]}</span></div>
+                <div className="muted" style={{fontSize:12.5,marginTop:2,lineHeight:1.55}}>{x.d}</div>
+              </div>
+            ))}
+          </div>
+        ))}
+        </Collapse>
+        <div className="note">An toàn trước: mọi vật nhỏ hơn nắp chai đều có nguy cơ hóc. Luôn ngồi cạnh con khi chơi nước, hạt hoặc đất nặn.</div>
+      </div>}
+
       {tab==='health' && <div>
         <div className="sec-title">Khám & sàng lọc định kỳ</div>
         {CHECKUP_SCHEDULE.map(x=>(
@@ -1911,9 +1992,10 @@ function ChildCare({people,me}){
           <div key={x.a} className="item">
             <div className="row"><b className="grow" style={{fontSize:'var(--t-sm)'}}>{x.a}</b>
               <span className="pill on">{x.t}</span></div>
-            <div className="muted" style={{fontSize:'var(--t-xs)',marginTop:4}}>{x.n}</div>
+            <div className="muted" style={{fontSize:'var(--t-xs)',marginTop:4}}>{x.g?'💤 '+x.g+' · ':''}{x.n}</div>
           </div>
         ))}
+        <div className="note" style={{marginTop:8}}>Số giờ đã tính cả giấc ngày. Mỗi bé lệch một chút vẫn bình thường — dấu hiệu ngủ đủ là ban ngày bé tỉnh táo và vui vẻ.</div>
         <div className="sec-title">Trình tự đi ngủ</div>
         <div className="note" style={{marginBottom:8}}>Cùng một trình tự mỗi tối quan trọng hơn việc trong đó có gì.</div>
         {SLEEP_ROUTINE.map(x=>(
@@ -1922,6 +2004,9 @@ function ChildCare({people,me}){
             <div className="muted" style={{fontSize:'var(--t-xs)',marginTop:3,lineHeight:1.6}}>{x.d}</div>
           </div>
         ))}
+        <Collapse id="child-sleepmore" defaultOpen={false} title="Giấc ngày · cai ti đêm · ác mộng">
+          <GuideList items={SLEEP_MORE} keyOf={x=>x.n} titleOf={x=>x.n} iconOf={x=>x.icon} render={x=>bullets(x.tips)}/>
+        </Collapse>
         <Collapse id="child-sleepfix" defaultOpen={false} title="Vướng ở đâu">
           <GuideList items={SLEEP_FIX} keyOf={x=>x.n} titleOf={x=>x.n} iconOf={x=>x.icon} render={x=>bullets(x.tips)}/>
         </Collapse>
