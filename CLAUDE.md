@@ -4,7 +4,7 @@ App tĩnh: UI + logic + CSS nằm trong `index.html` (~7810 dòng, ~676KB — v�
 
 ## Quy tắc làm việc với file này
 - **KHÔNG đọc cả `index.html` (~676KB, ~7810 dòng)** — LUÔN grep định vị rồi Read cửa sổ nhỏ (xem skill `bigfile-nav`).
-- Sửa nội dung đáng kể → **bump `CACHE` trong `sw.js`** (hiện: `justus-v30`; có thêm cache phụ `justus-noti`).
+- Sửa nội dung đáng kể → **bump `CACHE` trong `sw.js`** (hiện: `justus-v31`; có thêm cache phụ `justus-noti`).
 - Babel transpile trong trình duyệt: lỗi cú pháp = trắng màn hình. Kiểm tra Console sau khi sửa.
 
 ## Dữ liệu tĩnh tách rời (`data/*.json`)
@@ -16,7 +16,7 @@ Các mảng nội dung lớn KHÔNG còn nằm trong `index.html` — sửa nộ
 | `data/dishes.json` | `MENU_GOALS` `EASY_DISHES` `DISHES` (232 món) |
 | `data/prompts.json` | `QUESTIONS` `QUIZ_Q` `CHALLENGES` `TALK_TOPICS` |
 | `data/hanoi.json` | `HANOI_CATS` `HANOI_SPOTS` |
-| `data/child.json` | 30 khoá nội dung nuôi con — nhóm gốc (`CHILD_VACCINES` `CHILD_MILESTONES` `CHILD_TIPS` `CHILD_PACK` `CHILD_SKILLS` `PLAY_LIB` `WEAN_MENU` `PARENTING_QS` `ILL_SYMPTOMS` `KIDS_CAFES` `SKILL_GUIDES` `CHILD_ISSUES`) + nhóm đợt 1 (`EMERGENCY` `RED_FLAGS` `DANGER_ITEMS` `HOME_SAFETY` `CONTACT_SUGGEST` `TANTRUM_SCRIPTS` `CHILD_BEHAVIOR` `CHORES_2Y` `SELF_CORNER` `DRESS_TEMP` `DRESS_RULES` `SEASON_ILL` `SCARY_TASKS` `WEEKEND_PLANS` `CHILD_DOCS` + 3 **object** `POST_VACCINE` `CONSTIPATION` `SCREEN_GUIDE`) — **dùng chung** cho app Sóc (`soc/`) và trang chủ Just Us |
+| `data/child.json` | 35 khoá nội dung nuôi con — nhóm gốc (`CHILD_VACCINES` `CHILD_MILESTONES` `CHILD_TIPS` `CHILD_PACK` `CHILD_SKILLS` `PLAY_LIB` `WEAN_MENU` `PARENTING_QS` `ILL_SYMPTOMS` `KIDS_CAFES` `SKILL_GUIDES` `CHILD_ISSUES`) + nhóm đợt 1 (`EMERGENCY` `RED_FLAGS` `DANGER_ITEMS` `HOME_SAFETY` `CONTACT_SUGGEST` `TANTRUM_SCRIPTS` `CHILD_BEHAVIOR` `CHORES_2Y` `SELF_CORNER` `DRESS_TEMP` `DRESS_RULES` `SEASON_ILL` `SCARY_TASKS` `WEEKEND_PLANS` `CHILD_DOCS` + 3 **object** `POST_VACCINE` `CONSTIPATION` `SCREEN_GUIDE`) + nhóm đợt 2 (`POTTY_READY` `POTTY_TIMES` `POTTY_FIX` + 2 **object** `WHO_WEIGHT` `WHO_HEIGHT`) — **dùng chung** cho app Sóc (`soc/`) và trang chủ Just Us |
 
 Cách hoạt động: một `<script>` ngay trước khối `text/babel` tạo `window.JUD` với mảng/object RỖNG rồi `fetch` các JSON và **đổ dữ liệu vào đúng chỗ cũ** (giữ nguyên identity, vì trong khối babel viết `const DISHES=JUD.DISHES;` chạy ngay lập tức). App chỉ vẽ sau khi dữ liệu về (tối đa chờ 5s rồi vẽ trước, dữ liệu về muộn thì vẽ lại).
 - Thêm mảng dữ liệu mới → thêm khoá vào JSON **và** thêm placeholder rỗng đúng kiểu trong `window.JUD`.
@@ -53,6 +53,16 @@ sơ cứu 8 tình huống, dấu hiệu đi viện ngay, đồ nguy hiểm, chec
 tuổi lên 2 + quy tắc thân thể; việc nhà vừa sức; bày nhà cho bé tự lập; sau tiêm 48h; táo bón; mặc gì
 theo nhiệt độ; bệnh theo mùa Hà Nội; việc bé sợ; cuối tuần làm gì; màn hình; giấy tờ của bé.
 - Nội dung y tế chỉ là **sơ cứu tham khảo** — app KHÔNG tự tính liều thuốc, chỉ ghi thứ bác sĩ đã kê.
+
+**Đợt 2 (cần code) đã thêm:** sub-tab **🚽 Tập bô** (`PottyTab`) — checklist dấu hiệu sẵn sàng, ghi nhanh
+mỗi ngày, chuỗi ngày khô, lưới 30 ngày, mốc ngồi bô, gỡ vướng; **📈 So với chuẩn WHO** (`GrowthWHO`
++ `GrowthChart`, helper `whoAt`/`whoBand`) trong tab Sức khoẻ — bảng `WHO_WEIGHT`/`WHO_HEIGHT` là bản
+**rút gọn mốc 3 tháng, 0–36 tháng**, nội suy tuyến tính giữa hai mốc, chỉ để nhìn xu hướng; **🔔 nhắc việc**
+(`childDueList` + `NotiRunner` + `NotiSettings`).
+- `childDueList()` là **một nguồn duy nhất** cho cả thẻ "📌 Cần để ý" ở trang chủ lẫn thông báo — sửa
+  luật nhắc thì sửa đúng một chỗ.
+- App Sóc **không có server đẩy**, chỉ nhắc được khi app đang mở (mở app · mỗi 15 phút · quay lại tab).
+  Thông báo lúc đóng app vẫn là việc của Just Us. `soc/sw.js` có `notificationclick` để bấm là focus app.
 - `GuideList` + `bullets()` là hai helper dùng lại cho mọi mục "bấm mở ra đọc".
 
 **Trang chủ** (`HomeTab`) là sub-tab đầu tiên và là màn mặc định khi mở app — ghép hai mẫu đã chọn:
@@ -76,7 +86,7 @@ lớn** vào từng mục. Thẻ hồ sơ bé cũ chỉ còn hiện ở trang ch
   liệu khác, và `Cloud.start()` của Just Us (vốn `pull()` đè localStorage khi mở app) không nuốt mất phần
   vừa ghi bên Sóc. `last_writer` ghi là `<device>.soc` để máy kia (và tab Just Us) nhận realtime.
   Chưa đăng nhập/ghép cặp thì app vẫn chạy, chỉ lưu máy này (có dòng báo "📴 Chưa nối đám mây").
-- Cache riêng `soc-v3`. **Ba service worker dùng chung origin**: mỗi `sw.js` chỉ được xoá cache có tiền tố
+- Cache riêng `soc-v4`. **Ba service worker dùng chung origin**: mỗi `sw.js` chỉ được xoá cache có tiền tố
   của chính nó (`justus-*` / `tamlinh-*` / `soc-*`). `soc/sw.js` cache cả `../data/child.json` + `../fonts.css`
   (scope chỉ giới hạn TRANG được điều khiển, không giới hạn URL được chặn) → đổi 2 file đó phải bump `soc-v*`.
 - Deploy: Pages và Netlify đều publish cả thư mục nên `soc/` tự lên, không cần sửa CI.
@@ -97,6 +107,7 @@ lớn** vào từng mục. Thẻ hồ sơ bé cũ chỉ còn hiện ở trang ch
 | ↳ mục của `ju.food` / `ju.checkins` | nhiều ảnh ở `photos[]` + ảnh menu ở `menuPhotos[]` (khoá cũ 1 ảnh `photo` vẫn đọc được qua helper `photoList()`, tự gộp khi sửa) | array |
 | `ju.child*` (diary, growth, milestones, vaccines…) | Nhóm dữ liệu "Nuôi con / Sóc" — nay do **app `soc/`** ghi (Just Us chỉ đọc `ju.child`) | array/object |
 | ↳ `ju.childContacts` / `ju.childSafety` / `ju.childDocs` | Danh bạ khẩn · checklist chống trẻ trong nhà · checklist giấy tờ của bé (đợt 1) | array/object |
+| ↳ `ju.childPotty` / `ju.childNoti` | Tập bô (`{start,ready,log}`) · bật/tắt nhắc việc (đợt 2). Dấu vết đã báo nằm ở `ju.childNotiSeen` — **riêng từng máy, KHÔNG đồng bộ** | object |
 | `ju.routine` | Lịch sinh hoạt để nhắc trong ngày | array |
 | `ju.diary` / `ju.mood` / `ju.checkin(s)` | Nhật ký · cảm xúc · weekly check-in | array |
 | `ju.docs` | Giấy tờ — **mã hoá đầu-cuối**: mỗi mục chỉ để thô `id` + `expiry`, phần còn lại (tên, số hiệu, loại, nơi cất, ghi chú, ảnh) nằm trong `enc` (AES-256-GCM base64) | array |

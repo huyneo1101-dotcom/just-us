@@ -1799,5 +1799,429 @@
    "n": "Giấy ra viện, đơn thuốc cũ",
    "d": "Giữ lại các đợt ốm nặng để lần khám sau bác sĩ có căn cứ."
   }
- ]
+ ],
+ "POTTY_READY": [
+  "Bỉm khô liên tục 2 tiếng trở lên, hoặc khô sau giấc ngủ trưa",
+  "Biết báo, hoặc tỏ ra khó chịu khi bỉm ướt và bẩn",
+  "Đi nặng vào giờ tương đối cố định trong ngày",
+  "Tự kéo được quần lên và xuống",
+  "Ngồi vững, tự ngồi xuống đứng lên được",
+  "Làm theo được câu chỉ dẫn đơn giản (\"con ngồi xuống đây nào\")",
+  "Tò mò khi thấy người lớn hoặc anh chị đi vệ sinh",
+  "Có từ để gọi (tè, ị) — kể cả từ riêng của nhà mình"
+ ],
+ "POTTY_TIMES": [
+  {
+   "t": "Ngay khi ngủ dậy",
+   "d": "Bàng quang đầy nhất trong ngày, dễ thành công nhất."
+  },
+  {
+   "t": "Sau bữa sáng 20–30 phút",
+   "d": "Ăn xong ruột hoạt động mạnh, đây là lúc dễ đi nặng."
+  },
+  {
+   "t": "Trước khi ra khỏi nhà",
+   "d": "Đỡ phải cuống cuồng tìm nhà vệ sinh dọc đường."
+  },
+  {
+   "t": "Sau bữa trưa",
+   "d": ""
+  },
+  {
+   "t": "Trước giấc ngủ trưa",
+   "d": ""
+  },
+  {
+   "t": "Sau khi ngủ trưa dậy",
+   "d": ""
+  },
+  {
+   "t": "Sau bữa tối",
+   "d": ""
+  },
+  {
+   "t": "Trước khi đi ngủ",
+   "d": "Vẫn làm kể cả khi đêm còn mặc bỉm."
+  }
+ ],
+ "POTTY_FIX": [
+  {
+   "icon": "🙅",
+   "n": "Bé không chịu ngồi bô",
+   "tips": [
+    "Cho bé ngồi thử khi vẫn mặc nguyên quần, vài ngày liền, chưa cần đi gì cả.",
+    "Để bô ở chỗ bé hay chơi thay vì trong nhà tắm lạnh lẽo.",
+    "Cho bé tự chọn cái bô, dán sticker lên, gọi là \"bô của con\".",
+    "Đọc sách hoặc hát trong lúc ngồi — mỗi lần 2–3 phút, không ép ngồi lâu.",
+    "Bé phản đối gay gắt thì dừng 2–3 tuần rồi bắt đầu lại. Ép chỉ làm chậm thêm."
+   ]
+  },
+  {
+   "icon": "🌙",
+   "n": "Ban ngày khô rồi nhưng đêm vẫn ướt",
+   "tips": [
+    "Bình thường. Khô ban đêm thường tới sau khô ban ngày vài tháng, có bé tới 4–5 tuổi.",
+    "Chỉ bỏ bỉm đêm khi bé đã dậy với bỉm khô nhiều buổi sáng liền.",
+    "Giảm nước trong 1 giờ trước ngủ, cho ngồi bô ngay trước khi lên giường.",
+    "Lót tấm chống thấm dưới ga, để sẵn bộ ga và quần áo thay cạnh giường.",
+    "Không mắng khi bé tè dầm đêm — bé không cố ý và không điều khiển được."
+   ]
+  },
+  {
+   "icon": "🏫",
+   "n": "Ở nhà thì đi, tới lớp thì nhịn",
+   "tips": [
+    "Rất hay gặp: nhà vệ sinh ở lớp lạ, đông bạn, bé ngại.",
+    "Nói với cô để cô nhắc bé vào các mốc cố định, đừng đợi bé tự xin.",
+    "Cho bé mặc đồ dễ tự cởi ở lớp — quần chun, không cúc, không yếm.",
+    "Gửi theo bộ quần áo dự phòng để bé biết lỡ có ướt cũng không sao.",
+    "Nhịn cả buổi dễ dẫn tới táo bón — để ý số lần đi trong tuần."
+   ]
+  },
+  {
+   "icon": "💩",
+   "n": "Đi tè được nhưng nhịn ị",
+   "tips": [
+    "Thường vì một lần đi đau đã làm bé sợ, rồi càng nhịn phân càng cứng.",
+    "Cho ngồi bô sau bữa ăn 15–20 phút, chân phải có chỗ đặt chứ đừng lủng lẳng.",
+    "Tăng nước và chất xơ ngay — xem mục Táo bón bên tab Sức khoẻ.",
+    "Cho phép bé ị vào bỉm một thời gian nếu bé chỉ chịu vậy; giữ phân mềm quan trọng hơn.",
+    "Không mắng, không tỏ ra ghê khi dọn."
+   ]
+  },
+  {
+   "icon": "↩️",
+   "n": "Đang tốt tự nhiên tè dầm lại",
+   "tips": [
+    "Gần như luôn có lý do: ốm, đi lớp, chuyển nhà, có em, bố mẹ đi vắng.",
+    "Quay lại nhắc theo mốc giờ như lúc mới tập, đừng coi là hư.",
+    "Giữ thái độ nhẹ nhàng — phản ứng mạnh làm giai đoạn này kéo dài hơn.",
+    "Kèm tiểu buốt, tiểu nhiều bất thường hoặc sốt thì cho đi khám."
+   ]
+  }
+ ],
+ "WHO_WEIGHT": {
+  "nam": [
+   [
+    0,
+    2.5,
+    3.3,
+    4.3
+   ],
+   [
+    3,
+    5,
+    6.4,
+    8
+   ],
+   [
+    6,
+    6.4,
+    7.9,
+    9.8
+   ],
+   [
+    9,
+    7.2,
+    8.9,
+    11
+   ],
+   [
+    12,
+    7.8,
+    9.6,
+    12
+   ],
+   [
+    15,
+    8.3,
+    10.3,
+    12.8
+   ],
+   [
+    18,
+    8.8,
+    10.9,
+    13.7
+   ],
+   [
+    21,
+    9.2,
+    11.5,
+    14.5
+   ],
+   [
+    24,
+    9.7,
+    12.2,
+    15.3
+   ],
+   [
+    27,
+    10.1,
+    12.7,
+    16.1
+   ],
+   [
+    30,
+    10.5,
+    13.3,
+    16.9
+   ],
+   [
+    33,
+    10.9,
+    13.8,
+    17.6
+   ],
+   [
+    36,
+    11.3,
+    14.3,
+    18.3
+   ]
+  ],
+  "nu": [
+   [
+    0,
+    2.4,
+    3.2,
+    4.2
+   ],
+   [
+    3,
+    4.6,
+    5.8,
+    7.5
+   ],
+   [
+    6,
+    5.8,
+    7.3,
+    9.3
+   ],
+   [
+    9,
+    6.6,
+    8.2,
+    10.5
+   ],
+   [
+    12,
+    7.1,
+    8.9,
+    11.5
+   ],
+   [
+    15,
+    7.6,
+    9.6,
+    12.4
+   ],
+   [
+    18,
+    8.1,
+    10.2,
+    13.2
+   ],
+   [
+    21,
+    8.6,
+    10.9,
+    14
+   ],
+   [
+    24,
+    9,
+    11.5,
+    14.8
+   ],
+   [
+    27,
+    9.5,
+    12.1,
+    15.7
+   ],
+   [
+    30,
+    9.9,
+    12.7,
+    16.5
+   ],
+   [
+    33,
+    10.3,
+    13.3,
+    17.3
+   ],
+   [
+    36,
+    10.8,
+    13.9,
+    18.1
+   ]
+  ]
+ },
+ "WHO_HEIGHT": {
+  "nam": [
+   [
+    0,
+    46.3,
+    49.9,
+    53.4
+   ],
+   [
+    3,
+    57.6,
+    61.4,
+    65.3
+   ],
+   [
+    6,
+    63.6,
+    67.6,
+    71.6
+   ],
+   [
+    9,
+    67.7,
+    72,
+    76.2
+   ],
+   [
+    12,
+    71.3,
+    75.7,
+    80.2
+   ],
+   [
+    15,
+    74.4,
+    79.1,
+    83.9
+   ],
+   [
+    18,
+    77.2,
+    82.3,
+    87.3
+   ],
+   [
+    21,
+    79.7,
+    85.1,
+    90.5
+   ],
+   [
+    24,
+    81.7,
+    87.1,
+    92.9
+   ],
+   [
+    27,
+    83.8,
+    89.4,
+    95
+   ],
+   [
+    30,
+    85.7,
+    91.6,
+    97.5
+   ],
+   [
+    33,
+    87.5,
+    93.8,
+    100
+   ],
+   [
+    36,
+    89.1,
+    96.1,
+    102.3
+   ]
+  ],
+  "nu": [
+   [
+    0,
+    45.6,
+    49.1,
+    52.7
+   ],
+   [
+    3,
+    55.8,
+    59.8,
+    63.8
+   ],
+   [
+    6,
+    61.8,
+    65.7,
+    70
+   ],
+   [
+    9,
+    65.9,
+    70.1,
+    74.5
+   ],
+   [
+    12,
+    69.4,
+    74,
+    78.6
+   ],
+   [
+    15,
+    72.4,
+    77.5,
+    82.5
+   ],
+   [
+    18,
+    75.2,
+    80.7,
+    86
+   ],
+   [
+    21,
+    77.5,
+    83.2,
+    89
+   ],
+   [
+    24,
+    79.6,
+    85.7,
+    91.8
+   ],
+   [
+    27,
+    81.8,
+    88,
+    94.4
+   ],
+   [
+    30,
+    83.6,
+    90.7,
+    97
+   ],
+   [
+    33,
+    85.4,
+    92.9,
+    99.3
+   ],
+   [
+    36,
+    87.4,
+    95.1,
+    102
+   ]
+  ]
+ }
 }
