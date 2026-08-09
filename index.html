@@ -4808,7 +4808,7 @@ const CHILD_TIPS=[
   '🚫 Hạn chế đồ ngọt, nước có ga, đồ chiên mặn; tránh hạt cứng nguyên (dễ hóc).',
   '📚 Đọc sách, gọi tên đồ vật mỗi ngày để kích thích ngôn ngữ.',
   '😴 Ngủ 11–14h/ngày (gồm 1 giấc trưa); vận động ngoài trời mỗi ngày.',
-  '🦷 Đánh răng 2 lần/ngày, kem fluor lượng bằng hạt gạo.',"💧 Cho uống nước đều trong ngày, hạn chế nước ngọt/nước ép đóng hộp.","🦷 Đánh răng 2 lần/ngày, kem có fluor lượng bằng hạt gạo.","😴 Ngủ đủ 11–14 tiếng/ngày (gồm 1 giấc trưa); cố định giờ ngủ.","🚫 Dưới 2 tuổi hạn chế tối đa màn hình; ưu tiên chơi vận động.","🥄 Cho con tự xúc ăn để rèn vận động tinh, chấp nhận rơi vãi.","🧴 Giữ ẩm da mùa hanh; tắm nước ấm vừa, không quá lâu.","🔌 Che chắn ổ điện, góc bàn, cất hóa chất khỏi tầm với của con.","🌡️ Sốt trên 38.5°C hoặc li bì/bỏ bú kéo dài — đưa đi khám sớm.","👟 Cho đi chân trần/đế mềm trong nhà để phát triển bàn chân.","📚 Đọc sách cùng con 10–15 phút mỗi ngày để phát triển ngôn ngữ.",'🥗 Cho con làm quen nhiều loại rau củ từ sớm để đỡ kén ăn về sau.','🤗 Ôm và khen con mỗi ngày — cảm giác an toàn giúp con mạnh dạn khám phá.','🧸 Cho con chơi tự do, để con tự nghĩ trò thay vì lúc nào cũng bày sẵn.','🕐 Giữ giờ ăn, giờ ngủ đều đặn để con có nhịp sinh hoạt ổn định.','👐 Dạy con nói “cảm ơn”, “xin lỗi” bằng cách bố mẹ làm gương mỗi ngày.','🎨 Cho con vẽ, nặn, dán để rèn vận động tinh và trí tưởng tượng.','🌳 Mỗi ngày cho con ra ngoài vận động, tắm nắng sớm để cứng cáp.','🗣️ Lắng nghe và gọi tên cảm xúc của con (“con đang giận à?”) để con học điều tiết.'];
+  '🦷 Đánh răng 2 lần/ngày, kem có fluor lượng bằng hạt gạo.',"💧 Cho uống nước đều trong ngày, hạn chế nước ngọt/nước ép đóng hộp.","🚫 Dưới 2 tuổi hạn chế tối đa màn hình; ưu tiên chơi vận động.","🧴 Giữ ẩm da mùa hanh; tắm nước ấm vừa, không quá lâu.","🔌 Che chắn ổ điện, góc bàn, cất hóa chất khỏi tầm với của con.","🌡️ Sốt trên 38.5°C hoặc li bì/bỏ bú kéo dài — đưa đi khám sớm.","👟 Cho đi chân trần/đế mềm trong nhà để phát triển bàn chân.",'🥗 Cho con làm quen nhiều loại rau củ từ sớm để đỡ kén ăn về sau.','🤗 Ôm và khen con mỗi ngày — cảm giác an toàn giúp con mạnh dạn khám phá.','🧸 Cho con chơi tự do, để con tự nghĩ trò thay vì lúc nào cũng bày sẵn.','🕐 Giữ giờ ăn, giờ ngủ đều đặn để con có nhịp sinh hoạt ổn định.','👐 Dạy con nói “cảm ơn”, “xin lỗi” bằng cách bố mẹ làm gương mỗi ngày.','🎨 Cho con vẽ, nặn, dán để rèn vận động tinh và trí tưởng tượng.','🌳 Mỗi ngày cho con ra ngoài vận động, tắm nắng sớm để cứng cáp.','🗣️ Lắng nghe và gọi tên cảm xúc của con (“con đang giận à?”) để con học điều tiết.'];
 const vacAgeMonths=(label)=>{ if(/sơ sinh/i.test(label)) return 0; const m=label.match(/\d+/); return m?Number(m[0]):0; };
 const CHILD_PACK=['Bỉm (3–4 cái)','Quần áo dự phòng (1–2 bộ)','Bình / cốc nước','Khăn xô lau','Khăn ướt','Sữa / bình sữa','Mũ + áo khoác','Dép / giày','Túi đựng đồ bẩn','Thuốc riêng (nếu có)','Đồ trấn an quen thuộc'];
 const CHILD_SKILLS=['Tự xúc ăn bằng thìa','Tự cầm cốc uống nước','Báo khi muốn đi vệ sinh','Tự cởi giày / dép','Tự rửa & lau tay','Tự cất đồ chơi','Tự cởi áo khoác','Ngủ trưa không cần bế','Gọi tên cô & bạn','Xa bố mẹ không quấy lâu'];
@@ -5005,6 +5005,10 @@ const GUIDE_KEYS=[
   'ăn uống dinh dưỡng thực đơn ăn dặm ăn thô bữa ăn',
   'chơi trò chơi vận động tư duy khéo tay ngôn ngữ học sớm giáo dục',
   'kỹ năng tự túc tự lập dạy con cầm thìa mặc quần áo rửa tay',
+  'giấc ngủ ngủ đêm nếp ngủ giờ ngủ ngủ trưa giấc ngày cai ti đêm bú đêm ru ngủ tự ngủ thức đêm khóc đêm ác mộng ngáy',
+  'cai bỉm bỏ bỉm ngồi bô đi bô vệ sinh tè dầm đái dầm tiểu tiện ị nhịn ị táo bón bỉm đêm quần chip',
+  'montessori tự lập giáo cụ môi trường chuẩn bị khay hoạt động thực tế giai đoạn nhạy cảm kệ thấp đồ chơi gỗ',
+  'steam stem khoa học công nghệ kỹ thuật nghệ thuật toán thí nghiệm khám phá chìm nổi xây tháp trộn màu đếm',
 ];
 /* Sơ cứu & tình huống khẩn — nội dung tham khảo, KHÔNG thay cho khám bác sĩ */
 const CHILD_SOS=[
@@ -5073,6 +5077,158 @@ const CHILD_SOS=[
     'Không bao giờ để con một mình trong nhà tắm, kể cả khi chậu chỉ có ít nước.',
     'Ghi sẵn số cấp cứu 115 và số bác sĩ nhi ở chỗ cả nhà dễ thấy.']},
 ];
+/* ── Cẩm nang: Giấc ngủ ─────────────────────────────────────────── */
+const SLEEP_NEEDS=[
+  {age:'4–12 tháng',tong:'12–16 giờ',ngay:'2–3 giấc ngày',note:'Tính cả giấc ngày. Nhiều bé bắt đầu ngủ đêm dài liền mạch.'},
+  {age:'12–18 tháng',tong:'11–14 giờ',ngay:'2 → 1 giấc',note:'Khoảng 15–18 tháng bé thường gộp còn một giấc trưa.'},
+  {age:'18–24 tháng',tong:'11–14 giờ',ngay:'1 giấc trưa 1,5–2,5 giờ',note:'Đêm khoảng 10–12 giờ. Đây là mốc con nhà mình đang ở.'},
+  {age:'2–3 tuổi',tong:'11–14 giờ',ngay:'1 giấc trưa 1–2 giờ',note:'Giấc trưa kết thúc trước 15:00 để tối bé còn buồn ngủ.'},
+  {age:'3–5 tuổi',tong:'10–13 giờ',ngay:'giấc trưa thưa dần',note:'Nhiều bé bỏ hẳn giấc ngày, bù lại ngủ đêm sớm hơn.'},
+];
+const SLEEP_GUIDE=[
+  {icon:'🌙',title:'Dựng nếp ngủ (việc quan trọng nhất)',tips:[
+    'Cố định giờ đi ngủ và giờ dậy mỗi ngày, kể cả cuối tuần — lệch dưới 30 phút là được.',
+    'Trình tự ngủ 20–30 phút, lặp y hệt mỗi tối: tắm ấm → thay đồ ngủ → uống sữa → đánh răng → đọc sách hoặc hát ru → tắt đèn. Trẻ đoán trước được việc gì sắp tới thì dễ hợp tác hơn.',
+    'Tắt tivi và điện thoại ít nhất 1 giờ trước giờ ngủ; ánh sáng màn hình làm bé khó vào giấc.',
+    'Phòng tối, mát (khoảng 26–28°C), yên; có thể để đèn ngủ rất mờ nếu bé sợ tối.',
+    'Đặt bé xuống khi bé buồn ngủ nhưng CÒN THỨC — đây là điểm mấu chốt để bé học cách tự chìm vào giấc, thay vì cần bế ru mỗi lần tỉnh giữa đêm.',
+    'Cho bé một đồ trấn an quen thuộc (gấu bông nhỏ, khăn xô). Từ 12 tháng trở lên mới để đồ trong cũi.',
+    'Giường và cũi chỉ để ngủ — không cho ăn, không chơi, không dùng làm chỗ phạt.']},
+  {icon:'☀️',title:'Giấc ngày và khoảng thức',tips:[
+    'Từ 18 tháng, đa số bé còn một giấc trưa dài 1,5–2,5 giờ, bắt đầu trong khoảng 12:00–13:00.',
+    'Kết thúc giấc trưa trước 15:00. Ngủ ngày muộn hoặc quá dài là lý do phổ biến nhất khiến tối bé không chịu ngủ.',
+    'Ngược lại, bỏ giấc trưa cũng làm bé quá mệt, cáu gắt và khó vào giấc hơn — mệt quá không đồng nghĩa với dễ ngủ.',
+    'Dấu hiệu bé sẵn sàng bỏ giấc trưa (thường 3–4 tuổi): nằm cả tiếng không ngủ, hoặc ngủ trưa xong thì tối thức tới khuya, kéo dài nhiều tuần liền.',
+    'Cho bé ra ngoài trời và vận động vào buổi sáng; ánh sáng ban ngày giúp đồng hồ sinh học của bé chạy đúng.']},
+  {icon:'🍼',title:'Cai ti đêm',tips:[
+    'Từ khoảng 12 tháng, bé khoẻ mạnh, tăng cân tốt thường không còn cần bú đêm để no — phần lớn cữ đêm còn lại là thói quen trấn an.',
+    'Kiểm tra trước: bé ăn đủ 3 bữa và các bữa phụ ban ngày chưa, cữ tối có quá sát giờ ngủ không. Bù đủ ban ngày rồi hẵng cắt đêm.',
+    'Cắt DẦN, đừng cắt đột ngột: mỗi 2–3 đêm giảm khoảng 20–30 ml sữa mỗi cữ, hoặc rút ngắn thời gian bú vài phút, cho tới khi bỏ hẳn.',
+    'Cách khác cũng hiệu quả: giãn dần khoảng cách, đêm nay đáp ứng sau 5 phút thì vài đêm sau chờ 10 phút, trong lúc chờ vẫn vỗ về bằng lời cho bé biết bố mẹ vẫn ở đây.',
+    'Thay bú bằng cách an ủi khác: vỗ lưng, xoa đầu, nói nhỏ một câu quen thuộc; không bật đèn sáng, không bế ra khỏi phòng, không trò chuyện vui vẻ.',
+    'Người ít cho bú nhất nên là người dỗ bé những đêm đầu — bé ngửi thấy hơi sữa thì rất khó bỏ.',
+    'Ba đến năm đêm đầu bé sẽ phản ứng mạnh hơn rồi giảm dần. Cả nhà thống nhất trước, làm giống nhau mọi đêm, đừng đêm cho đêm không.',
+    'Hoãn lại nếu bé đang ốm, đang mọc răng, vừa đi lớp hoặc nhà vừa có xáo trộn.']},
+  {icon:'😢',title:'Bé tỉnh đêm, khóc đêm, sợ ngủ',tips:[
+    'Tỉnh giấc ngắn giữa đêm là bình thường ở mọi lứa tuổi; vấn đề chỉ là bé có tự ngủ lại được không.',
+    'Khi bé tỉnh, chờ một hai phút trước khi vào — nhiều bé rên vài tiếng rồi tự ngủ tiếp.',
+    'Vào thì vỗ về tại chỗ, giữ phòng tối và giọng nói nhỏ, hạn chế bế lên nếu bé không thực sự cần.',
+    'Khoảng 18–24 tháng bé hay có đợt trở nếp do lo sợ xa cách: chơi trò ú oà ban ngày, chào tạm biệt rõ ràng rồi quay lại đúng hẹn giúp bé yên tâm hơn.',
+    'Ác mộng (nửa đêm về sáng, bé tỉnh hẳn và cần dỗ) khác với hoảng sợ ban đêm (đầu đêm, bé la hét nhưng vẫn ngủ, sáng dậy không nhớ gì) — với hoảng sợ ban đêm thì không đánh thức bé, chỉ giữ cho bé an toàn.',
+    'Nên hỏi bác sĩ nếu bé ngáy to đều đặn, ngừng thở lúc ngủ, thở bằng miệng, hoặc ngày nào cũng buồn ngủ dù ngủ đủ giờ.']},
+];
+/* ── Cẩm nang: Cai bỉm & vệ sinh ────────────────────────────────── */
+const POTTY_GUIDE=[
+  {icon:'✅',title:'Dấu hiệu bé đã sẵn sàng',tips:[
+    'Phần lớn trẻ sẵn sàng trong khoảng 18–30 tháng; có bé muộn hơn và điều đó hoàn toàn bình thường. Bắt đầu quá sớm chỉ kéo dài quá trình chứ không rút ngắn.',
+    'Về cơ thể: bỉm khô liên tục 2 giờ trở lên hoặc khô sau giấc trưa; đi ngoài khá đều giờ; đi vững, tự ngồi xuống đứng lên, tự kéo được quần chun.',
+    'Về nhận thức: bé báo hoặc ra hiệu khi đang tè, ị; khó chịu khi bỉm bẩn; hiểu và làm theo được câu chỉ dẫn đơn giản.',
+    'Về cảm xúc: bé tò mò khi thấy người lớn đi vệ sinh, thích bắt chước, thích được khen khi tự làm được việc.',
+    'Chưa đủ 3 nhóm dấu hiệu trên thì cứ chờ thêm vài tuần rồi thử lại — không có mốc tuổi nào là muộn.',
+    'Chọn thời điểm nhà không xáo trộn: không sát ngày đi lớp, chuyển nhà, có em bé, hay đợt bé đang ốm.']},
+  {icon:'🧺',title:'Chuẩn bị trước khi bắt đầu',tips:[
+    'Mua bô riêng đặt sàn (bé chống được chân xuống đất sẽ dễ rặn và bớt sợ hơn ngồi bồn cầu cao).',
+    'Để bô ở chỗ bé hay chơi trong vài ngày đầu, cho bé ngồi thử khi vẫn mặc nguyên quần, coi như một đồ vật thân quen.',
+    'Chuẩn bị 8–10 quần chip và quần dài rộng, dễ tự tụt; tạm cất váy bó, quần yếm, quần cài khuy.',
+    'Dạy trước từ để bé báo: “tè”, “ị”, “đi bô”. Cả nhà dùng chung một bộ từ.',
+    'Đọc sách tranh về đi vệ sinh, cho bé xem anh chị hoặc bố mẹ cùng giới làm mẫu.',
+    'Thống nhất cách làm giữa bố, mẹ và ông bà hoặc cô giáo trước khi bắt đầu.']},
+  {icon:'👣',title:'Các bước tiến hành',tips:[
+    'Bước 1 — Bỏ bỉm ban ngày ở nhà, cho bé mặc quần chip để bé cảm nhận rõ khi ướt. Bỉm quần kéo lên tụt xuống thường làm bé lẫn với bỉm nên bỏ hẳn sẽ nhanh hơn.',
+    'Bước 2 — Cho ngồi bô theo mốc cố định: ngay sau khi ngủ dậy, sau ăn 20–30 phút, trước khi ra khỏi nhà, trước khi đi ngủ. Mỗi lần ngồi 3–5 phút, không bắt ngồi lâu.',
+    'Bước 3 — Quan sát dấu hiệu riêng của bé (đứng im, nhăn mặt, nấp vào góc) và hỏi ngay “con muốn đi bô không”, thay vì hỏi liên tục cả ngày.',
+    'Bước 4 — Đi đúng bô thì khen ngay và cụ thể: “con tự đi bô giỏi quá”. Ôm, vỗ tay, dán sticker đều được; không cần thưởng bằng bánh kẹo.',
+    'Bước 5 — Dạy trọn quy trình: tụt quần → ngồi → lau (bé gái lau từ trước ra sau) → kéo quần → đổ bô → rửa tay. Rửa tay là phần không được bỏ.',
+    'Bước 6 — Ra ngoài thì mang theo bô hoặc bệ ngồi gấp, một bộ quần áo thay và túi đựng đồ ướt; đi đâu cũng cho bé đi vệ sinh trước.',
+    'Bước 7 — Ban đêm bỏ sau cùng, có thể muộn hơn ban ngày vài tháng tới vài năm. Chỉ bỏ bỉm đêm khi bé đã khô bỉm nhiều buổi sáng liền.']},
+  {icon:'💦',title:'Tè dầm và những lúc đi lùi',tips:[
+    'Tè dầm trong vài tuần đầu là chuyện đương nhiên, không phải bé hư hay bố mẹ làm sai.',
+    'Phản ứng nhẹ nhàng và ngắn gọn: “không sao, lần sau mình đi bô nhé”, rồi cùng bé thay quần. Mắng, phạt hay tỏ ra thất vọng đều làm bé nín nhịn và sợ ngồi bô.',
+    'Bé đang quen bỗng đi lùi thường do có xáo trộn: đi lớp, có em, chuyển nhà, ốm. Quay lại lịch ngồi bô cố định vài ngày là bé vào nếp lại.',
+    'Bé nhịn ị vì từng đau khi táo bón: tăng rau, hoa quả và nước, cho bé vận động; báo bác sĩ nếu bé đau hoặc phân rắn kéo dài. Táo bón là nguyên nhân thường bị bỏ sót nhất.',
+    'Bé sợ bồn cầu, sợ tiếng xả nước: cho dùng bô ngồi sàn, xả nước sau khi bé đã ra ngoài.',
+    'Bé phản đối gay gắt suốt hơn một tuần thì dừng lại, đóng bỉm lại như cũ và thử lại sau 4–8 tuần. Dừng đúng lúc không phải là thất bại.',
+    'Ban đêm: hạn chế uống nhiều sát giờ ngủ, cho đi vệ sinh ngay trước khi lên giường, lót tấm chống thấm dưới ga.',
+    'Đái dầm ban đêm dưới 5 tuổi vẫn nằm trong mức bình thường. Nên hỏi bác sĩ nếu bé trên 5 tuổi còn đái dầm thường xuyên, hoặc bé đã khô ráo lâu rồi bỗng đái dầm trở lại, tiểu buốt, tiểu rắt, nước tiểu nặng mùi.']},
+];
+/* ── Cẩm nang: Montessori ───────────────────────────────────────── */
+const MONTESSORI_PRINCIPLES=[
+  'Theo con, đừng kéo con: quan sát xem con đang mê việc gì rồi đưa hoạt động vừa sức, thay vì áp lịch học của người lớn.',
+  'Môi trường chuẩn bị sẵn: đồ của con để thấp trong tầm với, mỗi thứ một chỗ cố định, số lượng ít mà gọn để con tự lấy và tự cất.',
+  'Tự do trong giới hạn: con được chọn làm gì, làm bao lâu, trong một khuôn khổ an toàn và vài quy tắc rõ ràng, không đổi.',
+  'Giai đoạn nhạy cảm: quanh 18–36 tháng con đặc biệt say mê trật tự, đồ vật nhỏ, vận động chính xác và ngôn ngữ — đó là lúc dạy các việc ấy nhàn nhất.',
+  'Dùng đồ thật cỡ nhỏ: chổi nhỏ, ca nước thuỷ tinh nhỏ, dao bơ cắt chuối. Đồ thật khiến con thấy mình đang làm việc thật.',
+  'Chú trọng quá trình hơn kết quả: con lau nhà ướt hơn lúc đầu vẫn là thành công, vì cái con luyện là động tác và sự tập trung.',
+  'Làm mẫu chậm và ít lời: tay làm thì miệng đừng giảng. Làm chậm từng động tác cho con nhìn rõ, rồi lùi lại để con tự làm.',
+  'Đừng ngắt lời khi con đang tập trung, kể cả để khen. Tập trung là thứ quý nhất cần được bảo vệ.',
+  'Khen việc, không khen người: “con tự rót đầy cốc rồi đấy” thay cho “con giỏi quá”. Bớt phần thưởng và hình phạt, để việc tự nó có ý nghĩa.',
+  'Một bộ đồ chơi giải quyết một kỹ năng, bày ra khay riêng, luân phiên vài tuần một lần thay vì đổ hết ra sàn.',
+];
+const MONTESSORI_ACT=[
+  {band:'18–24 tháng',items:[
+    {n:'Rót nước từ ca nhỏ sang cốc',d:'Ca thuỷ tinh nhỏ, rót ít nước, để sẵn khăn lau bên cạnh cho con tự dọn khi đổ.'},
+    {n:'Xúc và chuyển hạt',d:'Dùng thìa chuyển đậu to hoặc hạt gỗ giữa hai bát. Luyện cổ tay để sau này cầm bút.'},
+    {n:'Lau bàn, lau nước đổ',d:'Khăn nhỏ vừa tay con, treo ở móc thấp. Đổ nước ra là cơ hội luyện chứ không phải sự cố.'},
+    {n:'Cất giày, cất đồ chơi đúng chỗ',d:'Kệ thấp, dán hình từng loại. Con 18–24 tháng rất thích mọi thứ đúng chỗ của nó.'},
+    {n:'Bỏ hình khối vào lỗ, xâu vòng hạt to',d:'Luyện phối hợp tay–mắt và khái niệm hình dạng, kích thước.'},
+    {n:'Tưới cây, cho vật nuôi ăn',d:'Bình tưới nhỏ. Việc chăm sóc sinh vật sống giúp con thấy mình có ích trong nhà.'},
+    {n:'Bỏ quần áo bẩn vào giỏ, cất thìa vào ngăn',d:'Ghép con vào việc nhà thật sự, làm cùng người lớn.'},
+    {n:'Đọc sách tranh gọi tên đồ vật thật',d:'Ưu tiên tranh ảnh thực tế thay vì hình hoạt hình, gọi đúng tên: “quả cam”, không phải “quả tròn tròn”.'}]},
+  {band:'2–3 tuổi',items:[
+    {n:'Tự mặc, tự cởi quần áo',d:'Ghế thấp, quần áo rộng, một giỏ đồ để con tự chọn giữa hai bộ.'},
+    {n:'Phết bơ, cắt chuối bằng dao bơ',d:'Dao nhựa hoặc dao bơ không sắc, thớt nhỏ. Con tự làm được bữa phụ cho mình.'},
+    {n:'Phân loại theo màu, theo kích thước',d:'Chia cúc áo, tất, khối gỗ vào các bát khác nhau — nền của toán học sau này.'},
+    {n:'Ghép hình 4–8 mảnh, chốt gỗ theo cỡ',d:'Tăng dần độ khó, luôn để con tự phát hiện chỗ sai thay vì người lớn chỉ ngay.'},
+    {n:'Túi bí mật',d:'Bỏ vài đồ quen vào túi vải, con thò tay sờ rồi đoán tên. Luyện xúc giác và vốn từ.'},
+    {n:'Quét nhà, gấp khăn, tráng bát của mình',d:'Chổi và cây lau cỡ trẻ em, ghế kê ở bồn rửa.'},
+    {n:'Khay ngôn ngữ theo chủ đề',d:'Mỗi tuần một chủ đề (rau củ, phương tiện), bày vật thật kèm thẻ hình, gọi tên rồi kể chuyện quanh nó.'}]},
+];
+const MONTESSORI_MAT=[
+  'Kệ thấp mở, chỉ bày 6–8 khay hoạt động, thay luân phiên hai tuần một lần.',
+  'Khay và giỏ nhỏ để gom trọn một hoạt động vào một chỗ.',
+  'Ca rót, cốc thuỷ tinh nhỏ, khăn lau vừa tay, chổi và hót rác cỡ trẻ em.',
+  'Bộ chuyển hạt: hai bát, thìa, kẹp gắp, đậu hoặc hạt gỗ đủ to để không nuốt được.',
+  'Khối gỗ, chốt gỗ nhiều cỡ, bảng luồn dây, khung tập cài cúc và kéo khoá.',
+  'Sách tranh ảnh thật, thẻ hình gọi tên theo chủ đề.',
+  'Gương thấp, móc treo áo thấp, ghế bục để con tự với tới bồn rửa.',
+  'Đồ chơi bằng gỗ, vải, kim loại — nhiều chất liệu để tay con cảm nhận khác nhau.',
+];
+/* ── Cẩm nang: STEAM ────────────────────────────────────────────── */
+const STEAM_PRINCIPLES=[
+  'STEAM gồm 05 mảng: Khoa học (S) · Công nghệ (T) · Kỹ thuật (E) · Nghệ thuật (A) · Toán (M). Với trẻ nhỏ, đây không phải môn học mà là cách chơi.',
+  'Ở tuổi này mục tiêu không phải kiến thức, mà là thói quen: tò mò, dám thử, thử sai rồi thử lại.',
+  'Hỏi câu mở thay vì hỏi đáp án: “con thử đoán xem cái nào chìm”, “nếu mình bỏ thêm một khối nữa thì sao nhỉ”.',
+  'Để con tự làm và tự hỏng. Tháp đổ là lúc con học nhiều nhất, đừng dựng hộ.',
+  'Đặt tên cho việc đang xảy ra ngay lúc con làm: nổi, chìm, nặng, nhẹ, cao hơn, ít hơn. Vốn từ khoa học và toán học vào đầu con qua lời nói hằng ngày.',
+  'Chơi vật liệu thật, càng ít pin và màn hình càng tốt. Công nghệ ở tuổi này là cái kẹp, cái ròng rọc, cái phễu — không phải máy tính bảng.',
+  'Toán trong sinh hoạt: đếm bậc cầu thang, chia bánh làm đôi, xếp giày thành đôi, so cốc to cốc nhỏ.',
+  'Một hoạt động 5–15 phút là đủ. Con chán thì dừng, hôm khác quay lại.',
+  'An toàn trước: mọi vật nhỏ hơn nắp chai đều có nguy cơ hóc, luôn ngồi cạnh con khi chơi nước, hạt, đất nặn.',
+];
+const STEAM_ACT=[
+  {band:'18–24 tháng',items:[
+    {t:'S',n:'Chìm hay nổi',d:'Chậu nước, vài món đồ khác nhau. Cho con thả từng thứ, gọi tên “nổi” và “chìm” mỗi lần.'},
+    {t:'S',n:'Rót và đong nước',d:'Ca, phễu, cốc nhiều cỡ trong chậu. Con thấy cùng lượng nước mà đầy cốc nhỏ, chỉ lưng cốc to.'},
+    {t:'E',n:'Xếp tháp rồi cho đổ',d:'Khối gỗ hoặc cốc chồng. Hỏi con làm sao cho tháp cao hơn mà không đổ.'},
+    {t:'E',n:'Đường trượt cho bóng',d:'Ống giấy vệ sinh dán nghiêng lên tường, thả bóng nhỏ. Đổi độ dốc xem bóng chạy nhanh chậm khác nhau.'},
+    {t:'A',n:'Vẽ ngón tay, in dấu rau củ',d:'Màu an toàn cho bé, giấy khổ to. Cắt đôi bắp cải, mướp đắng chấm màu in lên giấy.'},
+    {t:'A',n:'Chai âm thanh',d:'Chai nhựa đựng gạo, đậu, chuông nhỏ, vặn chặt nắp. Lắc và nghe tiếng khác nhau, gõ theo nhịp bài hát.'},
+    {t:'M',n:'Phân loại theo màu',d:'Bỏ nắp chai hoặc khối gỗ vào các bát cùng màu.'},
+    {t:'M',n:'Đếm trong sinh hoạt',d:'Đếm bậc cầu thang, đếm miếng chuối, đếm ngón chân khi đi tất.'},
+    {t:'T',n:'Kẹp, phễu, ròng rọc mini',d:'Kẹp gắp bông, đổ hạt qua phễu, kéo giỏ đồ chơi bằng dây — công cụ đầu tiên của con.'}]},
+  {band:'2–3 tuổi',items:[
+    {t:'S',n:'Gieo hạt đậu trong bông ẩm',d:'Để lọ trong suốt cạnh cửa sổ, mỗi ngày cùng con nhìn và kể xem hạt đổi thế nào.'},
+    {t:'S',n:'Bóng nước xà phòng, đá tan',d:'Thổi bong bóng, để viên đá ngoài nắng và trong bóng râm rồi so xem bên nào tan trước.'},
+    {t:'S',n:'Trộn màu',d:'Ba cốc nước màu đỏ, vàng, xanh; cho con tự trộn và gọi tên màu mới hiện ra.'},
+    {t:'E',n:'Xây cầu cho ô tô đi qua',d:'Sách, hộp giấy làm trụ, bìa cứng làm mặt cầu. Cầu sập thì cùng bàn cách sửa.'},
+    {t:'E',n:'Nhà bằng hộp giấy',d:'Hộp bìa, băng dính giấy, kéo an toàn. Con quyết định cửa ở đâu, cửa sổ ở đâu.'},
+    {t:'A',n:'Nặn đất, dán tranh cắt xé',d:'Xé giấy màu rồi dán thành hình. Xé giấy còn luyện đúng nhóm cơ tay để sau này cầm bút.'},
+    {t:'A',n:'Nhảy theo nhạc, đóng vai',d:'Chơi bán hàng, khám bệnh cho gấu bông — nền của ngôn ngữ và kỹ năng xã hội.'},
+    {t:'M',n:'Ghép đôi tất, xếp theo cỡ',d:'Xếp cốc hoặc hộp từ to đến nhỏ, tìm hai chiếc tất giống nhau trong giỏ.'},
+    {t:'M',n:'Chia phần bằng nhau',d:'Chia bánh, chia nho cho cả nhà, mỗi người một phần — khái niệm chia và bằng nhau.'},
+    {t:'T',n:'Chụp ảnh, bấm hẹn giờ',d:'Cho con bấm máy ảnh chụp thứ con thích, hoặc canh đồng hồ hẹn giờ 2 phút lúc đánh răng.'}]},
+];
+const STEAM_LABEL={S:'🔬 Khoa học',T:'⚙️ Công nghệ',E:'🏗️ Kỹ thuật',A:'🎨 Nghệ thuật',M:'🔢 Toán'};
 function ChildCare({people,me}){
   const [child,setChild]=useLocal('ju.child',{name:'',dob:'',gender:''});
   const [growth,setGrowth]=useLocal('ju.childGrowth',[]);
@@ -5319,7 +5475,7 @@ function ChildCare({people,me}){
 
       {tab==='guide' && <div>
         <div className="row" style={{margin:'10px 14px 4px',gap:6}}>
-          <input className="inp grow" placeholder="🔎 Tìm trong cẩm nang (ăn, thực đơn, chơi, kỹ năng…)" value={gq} onChange={e=>setGq(e.target.value)}/>
+          <input className="inp grow" placeholder="🔎 Tìm trong cẩm nang (ăn, ngủ, cai bỉm, chơi, montessori…)" value={gq} onChange={e=>setGq(e.target.value)}/>
           {gq && <button className="btn sm soft" onClick={()=>setGq('')}>✕</button>}
         </div>
         <div className="muted center" style={{fontSize:11,margin:'0 14px 6px'}}>Kiến thức đọc lúc rảnh. Đang có chuyện cần xử lý ngay thì sang mục 🆘 Gỡ rối.</div>
@@ -5369,6 +5525,86 @@ function ChildCare({people,me}){
           {SKILL_GUIDES.filter(g=>!gDone[g.name]).map(g=><SkillGuide key={g.name} g={g} done={false} onTick={()=>setGDone({...gDone,[g.name]:true})}/>)}
           {SKILL_GUIDES.some(g=>gDone[g.name]) && <div className="muted" style={{fontSize:11,margin:'10px 14px 4px'}}>✅ Bé đã biết ({SKILL_GUIDES.filter(g=>gDone[g.name]).length}) — bấm nút xanh để bỏ đánh dấu:</div>}
           {SKILL_GUIDES.filter(g=>gDone[g.name]).map(g=><SkillGuide key={g.name} g={g} done={true} onTick={()=>{ const n={...gDone}; delete n[g.name]; setGDone(n); }}/>)}
+          </Collapse>
+        </>}
+
+        {gShow(GUIDE_KEYS[3]) && <>
+          <div className="sec-title">😴 Giấc ngủ</div>
+          <div className="muted center" style={{fontSize:11,margin:'0 14px 6px'}}>Ngủ đủ và đúng nếp thì bé ăn ngoan hơn, ít cáu hơn và cả nhà cũng được nghỉ.</div>
+          <Collapse id="child-sleep-need" defaultOpen={false} title="🕰️ Bé cần ngủ bao nhiêu là đủ">
+          {SLEEP_NEEDS.map((s,i)=>(
+            <div key={i} className="item" style={{padding:'9px 13px'}}>
+              <div className="it-top"><h4 style={{fontSize:14}}>{s.age}</h4><span className="pill">{s.tong}/ngày</span></div>
+              <div className="muted" style={{fontSize:12.5,marginTop:2,lineHeight:1.55}}>💤 {s.ngay} · {s.note}</div>
+            </div>
+          ))}
+          <div className="muted" style={{fontSize:11,margin:'8px 14px 2px'}}>Số giờ đã tính cả giấc ngày. Mỗi bé lệch một chút vẫn bình thường — dấu hiệu ngủ đủ là ban ngày bé tỉnh táo và vui vẻ.</div>
+          </Collapse>
+          <Collapse id="child-sleep-tips" defaultOpen={false} title="🌙 Nếp ngủ · giấc ngày · cai ti đêm · thức đêm">
+          {SLEEP_GUIDE.map((f,i)=>(
+            <div key={i} className="card" style={{padding:'10px 13px'}}>
+              <div style={{fontSize:14,fontWeight:700}}>{f.icon} {f.title}</div>
+              <ul style={{margin:'6px 0 0',paddingLeft:18,fontSize:12.5,lineHeight:1.65}}>{f.tips.map((t,j)=><li key={j} style={{marginBottom:4}}>{t}</li>)}</ul>
+            </div>
+          ))}
+          </Collapse>
+        </>}
+
+        {gShow(GUIDE_KEYS[4]) && <>
+          <div className="sec-title">🚽 Cai bỉm & vệ sinh</div>
+          <div className="muted center" style={{fontSize:11,margin:'0 14px 6px'}}>Không có mốc tuổi nào là muộn. Đợi bé sẵn sàng rồi làm sẽ nhanh hơn ép sớm rất nhiều.</div>
+          <Collapse id="child-potty" defaultOpen={false} title="🚽 Từ dấu hiệu sẵn sàng đến khi bỏ hẳn bỉm">
+          {POTTY_GUIDE.map((f,i)=>(
+            <div key={i} className="card" style={{padding:'10px 13px'}}>
+              <div style={{fontSize:14,fontWeight:700}}>{f.icon} {f.title}</div>
+              <ul style={{margin:'6px 0 0',paddingLeft:18,fontSize:12.5,lineHeight:1.65}}>{f.tips.map((t,j)=><li key={j} style={{marginBottom:4}}>{t}</li>)}</ul>
+            </div>
+          ))}
+          </Collapse>
+        </>}
+
+        {gShow(GUIDE_KEYS[5]) && <>
+          <div className="sec-title">🧺 Montessori tại nhà</div>
+          <div className="muted center" style={{fontSize:11,margin:'0 14px 6px'}}>Không cần mua bộ giáo cụ đắt tiền — phần lớn là sắp lại nhà cửa cho bé tự làm được.</div>
+          <Collapse id="child-monte-principle" defaultOpen={false} title="🌱 10 nguyên lý cốt lõi">
+          <div className="card"><ul style={{margin:0,paddingLeft:18,fontSize:12.5,lineHeight:1.7}}>{MONTESSORI_PRINCIPLES.map((t,i)=><li key={i} style={{marginBottom:5}}>{t}</li>)}</ul></div>
+          </Collapse>
+          <Collapse id="child-monte-act" defaultOpen={false} title="🧩 Hoạt động mẫu theo tuổi">
+          {MONTESSORI_ACT.map(g=>(
+            <div key={g.band}>
+              <div className="sec-title">{g.band}</div>
+              {g.items.map((x,i)=>(
+                <div key={i} className="item" style={{padding:'9px 13px'}}>
+                  <div className="it-top"><h4 style={{fontSize:14}}>{x.n}</h4></div>
+                  <div className="muted" style={{fontSize:12.5,marginTop:2,lineHeight:1.55}}>{x.d}</div>
+                </div>
+              ))}
+            </div>
+          ))}
+          </Collapse>
+          <Collapse id="child-monte-mat" defaultOpen={false} title="🧸 Đồ chơi & vật liệu gợi ý">
+          <div className="card"><ul style={{margin:0,paddingLeft:18,fontSize:12.5,lineHeight:1.7}}>{MONTESSORI_MAT.map((t,i)=><li key={i} style={{marginBottom:5}}>{t}</li>)}</ul></div>
+          </Collapse>
+        </>}
+
+        {gShow(GUIDE_KEYS[6]) && <>
+          <div className="sec-title">🔬 STEAM cho bé</div>
+          <div className="muted center" style={{fontSize:11,margin:'0 14px 6px'}}>Ở tuổi này STEAM là cách chơi, không phải môn học. Đồ dùng chủ yếu có sẵn trong bếp.</div>
+          <Collapse id="child-steam-principle" defaultOpen={false} title="🧠 Nguyên lý & cách chơi cùng con">
+          <div className="card"><ul style={{margin:0,paddingLeft:18,fontSize:12.5,lineHeight:1.7}}>{STEAM_PRINCIPLES.map((t,i)=><li key={i} style={{marginBottom:5}}>{t}</li>)}</ul></div>
+          </Collapse>
+          <Collapse id="child-steam-act" defaultOpen={false} title="🧪 Hoạt động mẫu theo tuổi">
+          {STEAM_ACT.map(g=>(
+            <div key={g.band}>
+              <div className="sec-title">{g.band}</div>
+              {g.items.map((x,i)=>(
+                <div key={i} className="item" style={{padding:'9px 13px'}}>
+                  <div className="it-top"><h4 style={{fontSize:14}}>{x.n}</h4><span className="pill">{STEAM_LABEL[x.t]}</span></div>
+                  <div className="muted" style={{fontSize:12.5,marginTop:2,lineHeight:1.55}}>{x.d}</div>
+                </div>
+              ))}
+            </div>
+          ))}
           </Collapse>
         </>}
       </div>}
