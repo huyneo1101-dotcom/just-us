@@ -411,7 +411,7 @@ const store={
 const SB_URL='https://vvgkjgvzjeklaadusbne.supabase.co';
 const SB_KEY='sb_publishable_DMMPv5L2kGhrHTxeQ72iKw_dIh13iT1';
 // Các key được đồng bộ (KHÔNG gồm ju.me/ju.device/ju.sync — đó là riêng từng máy)
-const SYNC_KEYS=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood','ju.qa','ju.timeline','ju.coupons','ju.chores','ju.lovejar','ju.quiz','ju.city','ju.goals','ju.checkin','ju.challengeDone','ju.homecfg','ju.diary','ju.projects','ju.vinhaUrl','ju.checkins','ju.menu','ju.period','ju.menuPlan','ju.accuKey','ju.habits','ju.hiddenSpots','ju.usOrder','ju.eventPrefs','ju.child','ju.childGrowth','ju.childVaccines','ju.childMilestones','ju.childDiary','ju.partnerWishes','ju.todos','ju.spotify','ju.dishPrefs','ju.favDishes','ju.childPack','ju.childSkills','ju.childMed','ju.childIllness','ju.childWords','ju.childTantrum','ju.childParenting','ju.saveTips','ju.saveCustom','ju.funPrefs','ju.routine','ju.routineIssues','ju.noti','ju.family','ju.health','ju.transfers','ju.skillGuidesDone','ju.expenses','ju.budget','ju.vinhaSync','ju.menuOrder','ju.notesSeen','ju.intimacy','ju.intimacySeen','ju.quizKnow','ju.familyRules','ju.expiry','ju.stash','ju.docs','ju.tuvi','ju.thanso','ju.checkinSeen','ju.menuHidden','ju.gameBets','ju.cook','ju.cookLogs','ju.cookRewards','ju.cookHelp','ju.cookPantry'];
+const SYNC_KEYS=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood','ju.qa','ju.timeline','ju.coupons','ju.chores','ju.lovejar','ju.quiz','ju.city','ju.goals','ju.checkin','ju.challengeDone','ju.homecfg','ju.diary','ju.projects','ju.vinhaUrl','ju.checkins','ju.menu','ju.period','ju.menuPlan','ju.accuKey','ju.habits','ju.hiddenSpots','ju.usOrder','ju.eventPrefs','ju.child','ju.childGrowth','ju.childVaccines','ju.childMilestones','ju.childDiary','ju.partnerWishes','ju.todos','ju.spotify','ju.dishPrefs','ju.favDishes','ju.childPack','ju.childSkills','ju.childMed','ju.childIllness','ju.childWords','ju.childTantrum','ju.childParenting','ju.saveTips','ju.saveCustom','ju.funPrefs','ju.routine','ju.routineIssues','ju.noti','ju.family','ju.health','ju.transfers','ju.skillGuidesDone','ju.expenses','ju.budget','ju.vinhaSync','ju.menuOrder','ju.notesSeen','ju.intimacy','ju.intimacySeen','ju.quizKnow','ju.familyRules','ju.expiry','ju.stash','ju.docs','ju.tuvi','ju.thanso','ju.checkinSeen','ju.menuHidden','ju.gameBets','ju.cook','ju.cookLogs','ju.cookRewards','ju.cookHelp','ju.cookPantry','ju.cookFridge'];
 let _sb=null;
 function sbClient(){
   if(_sb) return _sb;
@@ -4830,14 +4830,14 @@ const COOK_BLOCKERS=[
 ];
 // Đồ trữ sẵn — hết cái nào đẩy thẳng sang mục 🛒 Đi chợ.
 const COOK_PANTRY=[
-  {k:'trung',t:'Trứng gà (chục quả)'},
-  {k:'thitbam',t:'Thịt băm chia sẵn túi nhỏ, ngăn đá'},
-  {k:'ga',t:'Ức gà / đùi gà cấp đông'},
-  {k:'dauphu',t:'Đậu phụ'},
-  {k:'rauben',t:'Rau củ để lâu: bí xanh, su su, cà rốt, bắp cải'},
-  {k:'cachua',t:'Cà chua, hành khô, tỏi'},
-  {k:'mien',t:'Mì / miến / bún khô'},
-  {k:'tomkho',t:'Tôm khô (nấu canh nhanh)'},
+  {k:'trung',t:'Trứng gà (chục quả)',map:['trung']},
+  {k:'thitbam',t:'Thịt băm chia sẵn túi nhỏ, ngăn đá',map:['thitbam']},
+  {k:'ga',t:'Ức gà / đùi gà cấp đông',map:['ga']},
+  {k:'dauphu',t:'Đậu phụ',map:['dauphu']},
+  {k:'rauben',t:'Rau củ để lâu: bí xanh, su su, cà rốt, bắp cải',map:['bixanh','carot','rauxanh']},
+  {k:'cachua',t:'Cà chua, hành khô, tỏi',map:['cachua']},
+  {k:'mien',t:'Mì / miến / bún khô',map:['minbun']},
+  {k:'tomkho',t:'Tôm khô (nấu canh nhanh)',map:['tomkho']},
   {k:'cahop',t:'Cá hộp / ruốc / đồ kho sẵn ăn liền'},
   {k:'giavi',t:'Nước mắm, dầu hào, hạt nêm còn dùng được'},
 ];
@@ -4850,6 +4850,78 @@ const COOK_RESCUE=[
   {k:'empty',icon:'🧊',label:'Tủ gần trống',hint:'Nấu được bằng đúng mấy thứ luôn có trong nhà.',
     names:['Trứng ốp la','Trứng đúc thịt','Cơm rang trứng','Mì tôm trứng rau','Đậu phụ sốt cà chua','Trứng luộc dầm mắm','Canh trứng cà chua','Trứng cút kho','Trứng chiên thịt bằm','Canh đậu hũ hẹ']},
 ];
+/* ---- "Có gì nấu nấy": khớp đồ đang có trong tủ với kho món sẵn trong app ----
+   Nguyên liệu trong kho món viết tự do ('3 quả trứng', '80g thịt băm'…) nên phải
+   quy về nhóm bằng từ khoá. Gia vị nền (mắm, muối, tiêu, dầu, tỏi, hành, gừng…)
+   coi như nhà nào cũng có, không tính vào phần "còn thiếu". */
+const COOK_ING_CATS=[{g:'dam',label:'🥩 Đạm'},{g:'tinhbot',label:'🍚 Tinh bột'},{g:'rau',label:'🥬 Rau củ'},{g:'khac',label:'🧺 Đồ khô'}];
+// Sửa vài cụm dễ gây nhận nhầm trước khi dò (vd "rau dền cơm" không phải là cơm).
+const COOK_ING_FIX=[['rau dền cơm','rau dền'],['các loại',''],['mì chính',''],['nước mắm',''],['mắm tôm',''],['mắm nêm',''],['rau ngổ',''],['rau răm',''],['rau mùi',''],['rau thơm',''],['rau sống','']];
+// Thứ tự có ý nghĩa: mục cụ thể phải đứng trước mục chung (mướp đắng trước mướp,
+// tôm khô trước tôm, bông cải trước rau xanh) vì khớp xong là cắt khỏi chuỗi.
+const COOK_INGS=[
+  {k:'tomkho',g:'khac',t:'Tôm khô · ruốc',kw:['tôm khô','ruốc']},
+  {k:'khoqua',g:'rau',t:'Mướp đắng',kw:['mướp đắng','khổ qua']},
+  {k:'bongcai',g:'rau',t:'Bông cải · súp lơ',kw:['bông cải','súp lơ']},
+  {k:'trung',g:'dam',t:'Trứng',kw:['trứng']},
+  {k:'thitbam',g:'dam',t:'Thịt băm',kw:['thịt băm','thịt bằm','thịt xay','nạc băm','nạc xay','vai xay']},
+  {k:'thitlon',g:'dam',t:'Thịt lợn (ba chỉ, nạc…)',kw:['ba chỉ','thịt lợn','thịt heo','chân giò','nạc vai','thăn lợn','thịt thăn','thịt luộc','nạc dăm']},
+  {k:'xuong',g:'dam',t:'Xương · sườn',kw:['sườn','xương','móng giò']},
+  {k:'ga',g:'dam',t:'Gà',kw:['gà']},
+  {k:'bo',g:'dam',t:'Thịt bò',kw:['bò']},
+  {k:'tom',g:'dam',t:'Tôm tươi',kw:['tôm']},
+  {k:'ca',g:'dam',t:'Cá',kw:['cá']},
+  {k:'haisan',g:'dam',t:'Mực · ngao · cua',kw:['mực','ngao','nghêu','cua','ghẹ','hàu','bạch tuộc']},
+  {k:'dauphu',g:'dam',t:'Đậu phụ',kw:['đậu phụ','đậu hũ']},
+  {k:'chagio',g:'dam',t:'Xúc xích · chả · giò',kw:['xúc xích','chả lụa','giò lụa','nem']},
+  {k:'com',g:'tinhbot',t:'Cơm · gạo',kw:['cơm','gạo']},
+  {k:'minbun',g:'tinhbot',t:'Mì · miến · bún · phở',kw:['miến','mì','bún','phở','nui','bánh đa','bánh phở']},
+  {k:'khoaitay',g:'tinhbot',t:'Khoai tây',kw:['khoai tây']},
+  {k:'cachua',g:'rau',t:'Cà chua',kw:['cà chua']},
+  {k:'rauxanh',g:'rau',t:'Rau xanh (muống, cải, ngót…)',kw:['rau muống','cải','mồng tơi','rau ngót','rau đay','bắp cải','xà lách','mớ rau','hẹ','lá lốt','rau lang','rau dền','ngải cứu']},
+  {k:'carot',g:'rau',t:'Cà rốt',kw:['cà rốt']},
+  {k:'hanhtay',g:'rau',t:'Hành tây',kw:['hành tây']},
+  {k:'bixanh',g:'rau',t:'Bí xanh · su su · mướp',kw:['bí xanh','su su','bí đao','mướp']},
+  {k:'bido',g:'rau',t:'Bí đỏ',kw:['bí đỏ']},
+  {k:'catim',g:'rau',t:'Cà tím',kw:['cà tím']},
+  {k:'nam',g:'rau',t:'Nấm',kw:['nấm']},
+  {k:'giado',g:'rau',t:'Giá đỗ',kw:['giá đỗ','giá']},
+  {k:'dauque',g:'rau',t:'Đậu que · đậu bắp',kw:['đậu que','đậu cove','đậu bắp','đậu đũa']},
+  {k:'duachuot',g:'rau',t:'Dưa chuột',kw:['dưa leo','dưa chuột']},
+  {k:'ngo',g:'rau',t:'Ngô · bắp non',kw:['bắp non','ngô']},
+  {k:'dua',g:'rau',t:'Dứa',kw:['dứa']},
+  {k:'rongbien',g:'khac',t:'Rong biển',kw:['rong biển']},
+  {k:'hatsen',g:'khac',t:'Hạt sen',kw:['hạt sen']},
+];
+const COOK_ING_MAP=Object.fromEntries(COOK_INGS.map(x=>[x.k,x]));
+const _ingCache={};
+function cookDishKeys(d){
+  if(_ingCache[d.n]) return _ingCache[d.n];
+  let txt=(d.ing||[]).join(' | ').toLowerCase();
+  COOK_ING_FIX.forEach(([a,b])=>{ txt=txt.split(a).join(b); });
+  const ks=[];
+  COOK_INGS.forEach(ing=>{
+    for(let i=0;i<ing.kw.length;i++){
+      const kw=ing.kw[i];
+      if(txt.indexOf(kw)>=0){ ks.push(ing.k); txt=txt.split(kw).join(' '); break; }
+    }
+  });
+  _ingCache[d.n]=ks; return ks;
+}
+// Trả về danh sách món xếp theo: thiếu ít nhất → món dễ nấu → khớp nhiều nguyên liệu nhất.
+function cookFridgeMatch(have){
+  const H=new Set(have||[]); if(!H.size) return [];
+  const seen={}, out=[];
+  EASY_DISHES.concat(DISHES).forEach(d=>{
+    if(seen[d.n]) return; seen[d.n]=1;
+    const ks=cookDishKeys(d); if(!ks.length) return;
+    const miss=ks.filter(k=>!H.has(k)); const hit=ks.length-miss.length;
+    if(!hit) return; if(miss.length>2) return;
+    out.push({d,miss,hit,ez:(d.g||[]).indexOf('ez')>=0?1:0});
+  });
+  out.sort((a,b)=> a.miss.length-b.miss.length || b.ez-a.ez || b.hit-a.hit);
+  return out;
+}
 const COOK_PRAISE=['Ngon lắm, cảm ơn nhé 😍','Hôm nay ăn no quá, mai nấu nữa nha 🤤','Vất vả rồi, để đó tôi rửa 🧽','Món này ngon hơn ngoài hàng thật 👏','Cảm ơn vì bữa cơm nhà 💛','Mệt vậy mà vẫn nấu, thương ghê 🥰'];
 const COOK_BADGES=[[10,'🥉','Bén tay bếp'],[30,'🥈','Đều đặn'],[60,'🥇','Đầu bếp của nhà'],[120,'🏆','Bếp trưởng'],[250,'👑','Huyền thoại gian bếp']];
 function mondayISO(iso){ const d=iso?new Date(iso+'T00:00:00'):new Date(); d.setHours(0,0,0,0); const w=(d.getDay()+6)%7; d.setDate(d.getDate()-w); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
@@ -4876,6 +4948,9 @@ function KitchenPact({people,me,flash}){
   const [rewards,setRewards]=useLocal('ju.cookRewards',[]);
   const [help,setHelp]=useLocal('ju.cookHelp',{});
   const [pantry,setPantry]=useLocal('ju.cookPantry',{});
+  const [fridge,setFridge]=useLocal('ju.cookFridge',{});
+  const [fridgeOpen,setFridgeOpen]=useState(false);
+  const [fdish,setFdish]=useState(null);
   const [coupons,setCoupons]=useLocal('ju.coupons',[]);
   const [shop,setShop]=useLocal('ju.shop',[]);
   const [favs]=useLocal('ju.favDishes',[]);
@@ -4936,6 +5011,32 @@ function KitchenPact({people,me,flash}){
   const toggleDay=(d)=>{ const s=new Set(days); if(s.has(d)) s.delete(d); else s.add(d); setCfg({...cfg,days:[...s]}); };
   const quickDishes=favs.slice(0,4).map(x=>x.n).concat(EASY_DISHES.filter(d=>d.t==='man').slice(0,8).map(d=>d.n));
   const helpDone=COOK_BLOCKERS.filter(b=>help[b.k]).length;
+  // "Có gì nấu nấy"
+  const fridgeHave=COOK_INGS.filter(x=>fridge[x.k]).map(x=>x.k);
+  const matches=cookFridgeMatch(fridgeHave);
+  const ready=matches.filter(m=>m.miss.length===0);
+  const near=matches.filter(m=>m.miss.length>0);
+  const fromPantry=()=>{ const n={...fridge}; let c=0;
+    COOK_PANTRY.forEach(p=>{ if(pantry[p.k]) (p.map||[]).forEach(k=>{ if(!n[k]){ n[k]=true; c++; } }); });
+    if(!c){ flash&&flash('Chưa có gì mới để chép từ Tủ dự phòng'); return; }
+    setFridge(n); flash&&flash('Đã chép '+c+' nhóm từ 🧺 Tủ dự phòng'); };
+  const missToShop=(miss)=>{
+    const have=new Set(shop.map(s=>s&&s.text));
+    const add=miss.map(k=>(COOK_ING_MAP[k]||{}).t).filter(t=>t&&!have.has(t)).map(t=>({id:uid(),text:t,by:me||'a',done:false}));
+    if(!add.length){ flash&&flash('Đã có trong danh sách Đi chợ rồi'); return; }
+    setShop([...add,...shop]); celebrate(['🛒']); flash&&flash('Đã thêm '+add.length+' món vào 🛒 Đi chợ'); };
+  const DishRow=({m})=>(
+    <div className="item" onClick={()=>setFdish(m.d)} style={{cursor:'pointer'}}>
+      <div className="it-top"><h4>{m.d.t==='canh'?'🥣':'🍖'} {m.d.n}{m.ez?' ⚡':''}</h4></div>
+      <div className="it-meta" style={{flexWrap:'wrap',gap:6}}>
+        {m.miss.length===0
+          ? <span className="pill" style={{background:'var(--good)',color:'#fff'}}>✓ Đủ đồ, nấu được luôn</span>
+          : <span className="pill" style={{background:'var(--warn)',color:'#fff'}}>Thiếu {m.miss.map(k=>(COOK_ING_MAP[k]||{}).t).join(' · ')}</span>}
+        <span className="grow"></span>
+        {m.miss.length>0 && <button className="btn sm soft" onClick={e=>{ e.stopPropagation(); missToShop(m.miss); }}>🛒</button>}
+      </div>
+    </div>
+  );
 
   return (
     <div>
@@ -4969,8 +5070,11 @@ function KitchenPact({people,me,flash}){
         <div className="muted" style={{fontSize:12.5,marginTop:4}}>Đã chốt từ đầu tuần rồi — không phải nghĩ lại "hôm nay có nấu không".</div>
       </div>}
 
-      <div className="row" style={{margin:'10px 14px',gap:8}}>
+      <div className="row" style={{margin:'10px 14px 6px',gap:8}}>
         <button className="btn grow" onClick={()=>{ setF({cook:me,dish:'',wash:'',note:''}); setOpen(true); }}>🍚 Hôm nay nhà mình có nấu</button>
+      </div>
+      <div className="row" style={{margin:'0 14px 10px',gap:8}}>
+        <button className="btn soft grow" onClick={()=>setFridgeOpen(true)}>🧊 Có gì nấu nấy{fridgeHave.length>0?' ('+ready.length+' món)':''}</button>
         <button className="btn sm soft" onClick={()=>setRescue(true)}>🆘 Cứu</button>
       </div>
 
@@ -5107,6 +5211,11 @@ function KitchenPact({people,me,flash}){
             <div className="muted" style={{fontSize:11.5,marginTop:2}}>{r.hint}</div>
           </button>
         ))}
+        <button className="btn soft" style={{display:'block',width:'100%',textAlign:'left',marginBottom:8}}
+          onClick={()=>{ setRescue(null); setFridgeOpen(true); }}>
+          <div style={{fontWeight:700}}>🧊 Có gì nấu nấy</div>
+          <div className="muted" style={{fontSize:11.5,marginTop:2}}>Tick đồ đang có trong tủ, app dò xem nấu được món gì.</div>
+        </button>
         <div className="muted" style={{fontSize:12,marginTop:10,lineHeight:1.6}}>Không chọn được cái nào thì nhớ: <b>1 món mặn + rau luộc vẫn tính là có nấu</b>. Ăn ngoài 1–2 bữa/tuần cũng nằm trong kế hoạch, không phải thất bại.</div>
       </Sheet>}
 
@@ -5119,6 +5228,45 @@ function KitchenPact({people,me,flash}){
           <button className="btn grow" onClick={()=>{ setF({cook:me,dish:pick.dish.n,wash:'',note:''}); setPick(null); setRescue(null); setOpen(true); }}>Nấu món này 🍳</button>
         </div>
         <button className="btn soft" style={{marginTop:8,width:'100%'}} onClick={()=>setPick(null)}>← Chọn chỗ vướng khác</button>
+      </Sheet>}
+
+      {/* Sheet "Có gì nấu nấy" */}
+      {fridgeOpen && !fdish && <Sheet title="🧊 Có gì nấu nấy" onClose={()=>setFridgeOpen(false)}>
+        <div className="muted" style={{fontSize:12.5,marginBottom:8}}>Tick những thứ đang có trong tủ, app dò trong kho {EASY_DISHES.length+DISHES.length} món xem nấu được gì. Mắm muối, dầu, tỏi, hành, gừng coi như nhà nào cũng có nên không tính.</div>
+        <button className="btn soft" style={{marginBottom:10}} onClick={fromPantry}>⤵️ Chép từ 🧺 Tủ dự phòng</button>
+        {COOK_ING_CATS.map(c=>(
+          <div key={c.g} style={{marginBottom:10}}>
+            <div style={{fontSize:12.5,fontWeight:700,marginBottom:5}}>{c.label}</div>
+            <div style={{display:'flex',flexWrap:'wrap',gap:6}}>
+              {COOK_INGS.filter(x=>x.g===c.g).map(x=>(
+                <button key={x.k} className="pill" style={fridge[x.k]?{background:'var(--good)',color:'#fff'}:{}}
+                  onClick={()=>setFridge({...fridge,[x.k]:!fridge[x.k]})}>{fridge[x.k]?'✓ ':''}{x.t}</button>
+              ))}
+            </div>
+          </div>
+        ))}
+        {fridgeHave.length>0 && <button className="btn soft" style={{margin:'2px 0 12px'}} onClick={()=>setFridge({})}>✕ Bỏ chọn hết</button>}
+
+        {fridgeHave.length===0 && <div className="empty" style={{padding:'14px'}}>Tick vài thứ ở trên để xem nấu được món gì.</div>}
+        {fridgeHave.length>0 && <div>
+          <div className="sec-title">✅ Nấu được luôn ({ready.length})</div>
+          {ready.length===0 && <div className="empty" style={{padding:'12px'}}>Chưa đủ đồ cho món nào trọn vẹn — xem mục dưới, thiếu 1–2 thứ thôi.</div>}
+          {ready.slice(0,14).map((m,i)=><DishRow key={'r'+i} m={m}/>)}
+          {ready.length>14 && <div className="muted center" style={{fontSize:11,margin:'4px 0 8px'}}>… và {ready.length-14} món nữa</div>}
+          <div className="sec-title">🛒 Thiếu 1–2 thứ ({near.length})</div>
+          {near.slice(0,10).map((m,i)=><DishRow key={'n'+i} m={m}/>)}
+          {near.length>10 && <div className="muted center" style={{fontSize:11,margin:'4px 0'}}>… và {near.length-10} món nữa</div>}
+          <div className="muted" style={{fontSize:11,marginTop:10,lineHeight:1.6}}>⚡ = món dễ nấu. Gợi ý dựa trên nguyên liệu chính, có thể sót vài món — cứ coi là gợi ý chứ không phải danh sách đầy đủ.</div>
+        </div>}
+      </Sheet>}
+
+      {fdish && <Sheet title={(fdish.t==='canh'?'🥣 ':'🍖 ')+fdish.n} onClose={()=>setFdish(null)}>
+        <div className="muted" style={{fontSize:12.5,marginBottom:8}}>Nguyên liệu: {(fdish.ing||[]).join(' · ')}</div>
+        <div style={{whiteSpace:'pre-wrap',fontSize:14,lineHeight:1.7}}>{fdish.r}</div>
+        <div className="row" style={{gap:8,marginTop:14}}>
+          <button className="btn soft grow" onClick={()=>setFdish(null)}>← Danh sách</button>
+          <button className="btn grow" onClick={()=>{ setF({cook:me,dish:fdish.n,wash:'',note:''}); setFdish(null); setFridgeOpen(false); setOpen(true); }}>Nấu món này 🍳</button>
+        </div>
       </Sheet>}
 
       {/* Sheet khen */}
