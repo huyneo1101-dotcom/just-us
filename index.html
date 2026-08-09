@@ -4612,7 +4612,7 @@ function WeeklyMenu({me,people}){
 /* Bảng app của nhà mình — mọi app riêng gom về một chỗ ở tab Cá nhân.
    Cùng origin nên chung localStorage: mở app nào cũng là dữ liệu cũ. */
 const APP_BOARD=[
-  {k:'soc',icon:'🐿️',name:'Sóc',desc:'Nuôi con: mốc phát triển, tiêm chủng, ăn dặm, đi lớp, an toàn & cấp cứu',href:'soc/'},
+  {k:'soc',icon:'🐿️',name:'Sóc',desc:'Nuôi con: mốc phát triển, tiêm chủng, ăn dặm, đi lớp, an toàn & cấp cứu',href:'https://soc-eiv.pages.dev/',ngoai:true},
   {k:'tamlinh',icon:'🪷',name:'Tâm linh',desc:'Ngày lễ âm lịch, kinh Phật, văn khấn, tử vi, thần số, quán chay, mâm cỗ',href:'tam-linh/'},
 ];
 function AppBoard(){
@@ -4622,11 +4622,11 @@ function AppBoard(){
       <div className="sec-title">📱 App của nhà mình</div>
       <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>Các phần đã tách ra thành app riêng cho nhẹ — cài được lên màn hình chính như app độc lập, dữ liệu vẫn dùng chung với Just Us.</div>
       {APP_BOARD.map(a=>(
-        <a key={a.k} className="item" href={a.href} style={{display:'block',textDecoration:'none',color:'inherit'}}>
+        <a key={a.k} className="item" href={a.href} {...(a.ngoai?{target:'_blank',rel:'noreferrer'}:{})} style={{display:'block',textDecoration:'none',color:'inherit'}}>
           <div className="row"><span style={{fontSize:26,flex:'0 0 auto'}}>{a.icon}</span>
             <div className="grow"><b style={{fontSize:14.5}}>{a.name}</b>
               <div className="muted" style={{fontSize:12,marginTop:2,lineHeight:1.5}}>{a.desc}</div></div>
-            <span style={{fontSize:17,color:'var(--primary)'}}>›</span></div>
+            <span style={{fontSize:17,color:'var(--primary)'}}>{a.ngoai?'↗':'›'}</span></div>
         </a>
       ))}
       {vinha && <a className="item" href={vinha} target="_blank" rel="noreferrer" style={{display:'block',textDecoration:'none',color:'inherit'}}>

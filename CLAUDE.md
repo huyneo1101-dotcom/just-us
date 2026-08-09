@@ -4,7 +4,7 @@ App tĩnh: UI + logic + CSS nằm trong `index.html` (~7810 dòng, ~676KB — v�
 
 ## Quy tắc làm việc với file này
 - **KHÔNG đọc cả `index.html` (~676KB, ~7810 dòng)** — LUÔN grep định vị rồi Read cửa sổ nhỏ (xem skill `bigfile-nav`).
-- Sửa nội dung đáng kể → **bump `CACHE` trong `sw.js`** (hiện: `justus-v36`; có thêm cache phụ `justus-noti`).
+- Sửa nội dung đáng kể → **bump `CACHE` trong `sw.js`** (hiện: `justus-v37`; có thêm cache phụ `justus-noti`).
 - Babel transpile trong trình duyệt: lỗi cú pháp = trắng màn hình. Kiểm tra Console sau khi sửa.
 
 ## Dữ liệu tĩnh tách rời (`data/*.json`)
