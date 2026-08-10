@@ -226,6 +226,13 @@ lệch âm luôn nhỏ hơn ngưỡng), nên bộ ca không chứng minh đượ
 **Đo thật lượt đầu (23:42 ngày 10/08/2026):** 08 món · 07 lấy được giá (Shopee ×5, Dyson,
 Vivaia) · 01 trượt đúng (trang giới thiệu xe Yadea không niêm yết giá).
 
+⚠ **Đăng ký thông báo trên máy Huy đang CHẾT — đo 11/08/2026: `{sent:0, subs:1, loi:["403"]}`.**
+Dòng duy nhất trong `justus_push_subs` có từ 02/07 và `role` rỗng, tức đăng ký từ trước lần đổi
+khoá VAPID. Chữa bằng cách mở app trên điện thoại rồi bật lại thông báo (`subscribePush()` tự huỷ
+và đăng ký lại) — không có đường nào làm hộ từ máy. Mã 403 cố ý KHÔNG tự dọn khỏi bảng (chỉ
+404/410 mới dọn), vì 403 cũng có thể là cấu hình VAPID phía máy chủ sai tạm thời.
+**Trong lúc chưa bật lại, tin báo giá vẫn về đủ qua Telegram.**
+
 **Thông báo đẩy:** `theo-doi-gia.py` gọi thẳng Edge Function `push-notify` với `kind:'price'`.
 Loại này gửi cho **cả hai máy** trong cặp (`moiNguoi: true`), khác `notes` là báo cho người
 còn lại. Sửa function thì phải deploy lại:

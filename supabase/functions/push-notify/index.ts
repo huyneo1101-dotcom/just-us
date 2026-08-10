@@ -98,6 +98,10 @@ Deno.serve(async (req) => {
 
   let sent = 0;
   const stale: string[] = [];
+  // Vì sao phải gom lỗi rồi trả về: trước đây push hỏng thì hàm vẫn trả {ok:true, sent:0}
+  // và lỗi chỉ nằm trong log của Supabase, nên phía gọi thấy "gửi 0 máy" mà không có cách
+  // nào biết là chưa ai đăng ký hay là subscription đã chết — đúng kiểu hỏng câm.
+  const loi: string[] = [];
 
   for (const [sender, list] of bySender) {
     const payload = JSON.stringify({
@@ -119,7 +123,10 @@ Deno.serve(async (req) => {
         // 404/410 = máy đã gỡ app hoặc subscription hết hạn → dọn khỏi bảng.
         const code = (e as { statusCode?: number })?.statusCode;
         if (code === 404 || code === 410) stale.push(s.endpoint);
-        else console.error('push lỗi', code, String(e));
+        else {
+          console.error('push lỗi', code, String(e));
+          loi.push(`${code ?? '?'}: ${String((e as Error)?.message || e).slice(0, 120)}`);
+        }
       }
     }
   }
@@ -128,5 +135,5 @@ Deno.serve(async (req) => {
     await db.from('justus_push_subs').delete().in('endpoint', stale);
   }
 
-  return json({ ok: true, sent, cleaned: stale.length });
+  return json({ ok: true, sent, cleaned: stale.length, subs: subs.length, loi });
 });

@@ -107,7 +107,15 @@ def day_push(couple_id: str, tieu_de: str, than: str) -> None:
             method="POST")
         with urllib.request.urlopen(req, timeout=30) as r:
             g = json.loads(r.read().decode() or "{}")
-        print(f"  🔔 web-push: gửi {g.get('sent', 0)} máy")
+        # In cả số máy đã đăng ký và lý do trượt: "gửi 0 máy" một mình không phân biệt được
+        # "chưa ai bật thông báo" với "đăng ký cũ đã chết", mà hai cái cần hai cách xử khác nhau.
+        them = ""
+        if not g.get("sent"):
+            them = f" (đăng ký: {g.get('subs', 0)}"
+            if g.get("loi"):
+                them += f" · trượt: {'; '.join(g['loi'])[:160]}"
+            them += ")"
+        print(f"  🔔 web-push: gửi {g.get('sent', 0)} máy{them}")
     except Exception as e:
         print(f"  ⚠ không gửi được web-push: {type(e).__name__}")
 
