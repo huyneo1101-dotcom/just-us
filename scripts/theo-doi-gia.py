@@ -85,18 +85,23 @@ def bao(tieu_de: str, than: str, couple_id: str | None = None, gui: bool = True)
     print(f"  📣 {tieu_de} — {than}")
     if not gui:
         return
+    # Đẩy thông báo TRƯỚC, để biết nó có tới máy không rồi mới soạn tin Telegram: push chết
+    # là chuyện im lặng, nếu không nói ra thì cứ tưởng đang nhận đủ hai đường.
+    them = ""
+    if couple_id:
+        ok, vi_sao = day_push(couple_id, tieu_de, than)
+        if not ok:
+            them = f"\n\n⚠️ Thông báo trên máy chưa tới ({vi_sao}). Mở app Just Us một lần là nó tự bật lại."
     try:
         sys.path.insert(0, "/Users/Huy/Claude/congcu")
         from gui_tele import gui_text
-        gui_text(f"{tieu_de}\n{than}")
+        gui_text(f"{tieu_de}\n{than}{them}")
     except Exception as e:
         print(f"  ⚠ không gửi được Telegram: {type(e).__name__}: {e}")
-    if couple_id:
-        day_push(couple_id, tieu_de, than)
 
 
-def day_push(couple_id: str, tieu_de: str, than: str) -> None:
-    """Bắn web-push qua Edge Function push-notify (app đóng vẫn hiện thông báo)."""
+def day_push(couple_id: str, tieu_de: str, than: str) -> tuple[bool, str]:
+    """Bắn web-push qua Edge Function push-notify. Trả (tới được máy nào không, lý do)."""
     try:
         key = sb_admin.khoa_service()
         req = urllib.request.Request(
@@ -109,15 +114,18 @@ def day_push(couple_id: str, tieu_de: str, than: str) -> None:
             g = json.loads(r.read().decode() or "{}")
         # In cả số máy đã đăng ký và lý do trượt: "gửi 0 máy" một mình không phân biệt được
         # "chưa ai bật thông báo" với "đăng ký cũ đã chết", mà hai cái cần hai cách xử khác nhau.
-        them = ""
-        if not g.get("sent"):
-            them = f" (đăng ký: {g.get('subs', 0)}"
-            if g.get("loi"):
-                them += f" · trượt: {'; '.join(g['loi'])[:160]}"
-            them += ")"
-        print(f"  🔔 web-push: gửi {g.get('sent', 0)} máy{them}")
+        so = int(g.get("sent") or 0)
+        if so:
+            print(f"  🔔 web-push: gửi {so} máy")
+            return True, ""
+        vi_sao = ("chưa máy nào đăng ký" if not g.get("subs")
+                  else "đăng ký cũ đã hết hiệu lực" if g.get("loi") else "không rõ")
+        print(f"  🔔 web-push: gửi 0 máy — {vi_sao} (đăng ký: {g.get('subs', 0)}"
+              f"{' · ' + '; '.join(g['loi'])[:120] if g.get('loi') else ''})")
+        return False, vi_sao
     except Exception as e:
-        print(f"  ⚠ không gửi được web-push: {type(e).__name__}")
+        print(f"  ⚠ không gọi được web-push: {type(e).__name__}")
+        return False, "không gọi được máy chủ đẩy tin"
 
 
 # ------------------------------------------------------------------ phần lõi
