@@ -1,3 +1,27 @@
+# ⛔ ĐỌC TRƯỚC KHI SỬA APP — `index.html` LÀ BẢN DỰNG, KHÔNG PHẢI NGUỒN
+
+Từ 10/08/2026 app này không còn bắt điện thoại người dùng tự dịch mã mỗi lần mở.
+Việc dịch chuyển sang Mac lúc dựng bản, nên cấu trúc đổi:
+
+| File | Vai trò |
+|---|---|
+| `nguon/app.jsx` | **mã app — ĐÂY là chỗ sửa** |
+| `nguon/khung.html` | phần HTML bao quanh, chỗ chèn mã đánh dấu `<!--@@APP@@-->` |
+| `index.html` | **bản dựng, sinh tự động — CẤM sửa tay** |
+
+Sửa xong `nguon/app.jsx` thì dựng lại, nếu không thì bản chạy vẫn là mã cũ:
+
+```bash
+python3 /Users/Huy/Claude/HeThong/dungapp/dung.py /Users/Huy/Claude/App/JustUs
+```
+
+**Vì sao phải có dòng cảnh báo này:** sửa thẳng vào `index.html` vẫn chạy được ngay,
+không lỗi nào phát ra — nên không có gì báo cho biết là đã sửa nhầm chỗ. Lần dựng kế
+tiếp mới nuốt mất bản sửa ấy. Công cụ có chốt: thấy `index.html` lệch với dấu vân tay
+của lần dựng trước thì DỪNG và bắt gộp tay, chứ không ghi đè.
+
+---
+
 # Just Us — Của riêng hai đứa (app riêng cho một cặp đôi/vợ chồng)
 
 App tĩnh: UI + logic + CSS nằm trong `index.html` (~7810 dòng, ~676KB — vẫn RẤT LỚN), React 18 + Babel Standalone qua CDN, KHÔNG build step. Deploy tĩnh (GitHub Pages qua Actions + Netlify).
