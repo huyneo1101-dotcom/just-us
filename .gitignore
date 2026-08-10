@@ -19,3 +19,6 @@ index.html.bak
 
 # SQL đã điền sẵn service_role key (script setup-push.sh sinh ra) — KHÔNG được commit
 ju-push-ready.sql
+
+# Bản lưu trước khi chuyển sang dịch sẵn mã (dungapp/dung.py)
+*.truoc-khi-dich.bak
