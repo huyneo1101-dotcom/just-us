@@ -98,6 +98,16 @@ ngày lễ âm lịch · kinh Phật · văn khấn · tử vi · thần số ·
 - Cache riêng `tamlinh-v1`. **Hai service worker dùng chung origin**: mỗi `sw.js` chỉ được xoá cache có
   tiền tố của chính nó (`justus-*` / `tamlinh-*`), nếu không sẽ xoá cache của app kia.
 - Deploy: Pages và Netlify đều publish cả thư mục nên `tam-linh/` tự lên, không cần sửa CI.
+- ⛔ **Từ 10/08/2026 `tam-linh/index.html` là BẢN DỰNG — sửa `tam-linh/nguon/app.jsx` rồi chạy
+  `python3 /Users/Huy/Claude/HeThong/dungapp/dung.py /Users/Huy/Claude/App/JustUs/tam-linh`.**
+  App thôi nạp `@babel/standalone` (601 KB mỗi lần mở). `khoe.py::app_dung_lech_nguon()` nay
+  duyệt thêm một cấp thư mục con nên có canh app này; sửa thẳng bản dựng là ĐỎ.
+- ⚠️ **06 thứ dùng chung với Just Us từng bị bỏ quên lúc tách app (vá 10/08/2026):**
+  `uid` · `celebrate` · `openUrl` · `reduceNum` · `thanSo` · `NUM_MEAN`/`PY_MEAN`. Thiếu chúng
+  thì Tử vi và Thần số ném `ReferenceError` ngay lần bấm nút đầu — nút vẫn vẽ ra, không màn
+  hình nào trắng, nên nhìn không ra là hỏng. **Chép thêm hàm nào từ `nguon/app.jsx` của Just
+  Us sang thì kiểm cả hàm mà nó gọi**, và chạy `python3 tam-linh/thu-tam-linh.py` để đo lại.
+- Giao diện (theme + nền tối) đọc từ khoá `ju.setup` của Just Us qua `apDungGiaoDien()`.
 
 **Vẫn nằm trong `index.html` (KHÔNG tách):** thuật toán âm lịch (`lunar2Solar`, `lunarISO`, `solar2Lunar`,
 `nextTetISO`, `holidaysForYear`, `SPIRIT_FESTIVALS`, `upcomingSpiritual`) vì còn dùng cho ngày giỗ/Tết ở
