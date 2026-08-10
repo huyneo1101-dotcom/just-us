@@ -15,7 +15,22 @@ import webpush from 'npm:web-push@3.6.7';
 
 // Mỗi loại nội dung một dòng — muốn nhắc thêm mục nào (vd 'checkins') thì thêm
 // ở đây VÀ thêm đúng tên khoá đó trong file migration.
-const KINDS: Record<string, { title: (n: number) => string; body: (items: Item[]) => string }> = {
+const KINDS: Record<string, {
+  title: (n: number, items: Item[]) => string;
+  body: (items: Item[]) => string;
+  /** true = gửi cho CẢ HAI máy trong cặp, không phải "báo cho người còn lại". */
+  moiNguoi?: boolean;
+}> = {
+  // Săn giá: script theo-doi-gia.py gọi thẳng hàm này khi một món đang theo dõi hạ giá.
+  // Tin này không do ai trong hai người gửi, nên phải tới cả hai máy — vì thế moiNguoi.
+  price: {
+    moiNguoi: true,
+    title: (_n, items) => String(items[items.length - 1]?.title || '🏷️ Săn giá'),
+    body: (items) => {
+      const t = String(items[items.length - 1]?.body || '').replace(/\s+/g, ' ').trim();
+      return t.length > 160 ? t.slice(0, 157) + '…' : t || 'Mở app để xem giá mới nhé';
+    },
+  },
   notes: {
     title: (n) => (n === 1 ? '💌 Nửa kia vừa nhắn cho bạn' : `💌 Nửa kia vừa nhắn ${n} lời nhắn`),
     // Chỉ lấy lời nhắn mới nhất làm nội dung, cắt ngắn cho vừa khay thông báo.
@@ -27,7 +42,7 @@ const KINDS: Record<string, { title: (n: number) => string; body: (items: Item[]
   },
 };
 
-type Item = { id?: string; by?: string; text?: string; createdAt?: number };
+type Item = { id?: string; by?: string; text?: string; createdAt?: number; title?: string; body?: string };
 type Payload = { couple_id?: string; kind?: string; items?: Item[] };
 
 const VAPID_PUBLIC = Deno.env.get('VAPID_PUBLIC') ?? '';
@@ -61,11 +76,16 @@ Deno.serve(async (req) => {
   );
 
   // Gom theo người gửi: người gửi là 'a' thì phải báo cho 'b', và ngược lại.
+  // Loại tin gửi cho cả hai (vd 'price') không có người gửi nên gom vào một rổ chung.
   const bySender = new Map<string, Item[]>();
-  for (const it of items) {
-    const who = it?.by === 'a' || it?.by === 'b' ? it.by : null;
-    if (!who) continue;
-    bySender.set(who, [...(bySender.get(who) ?? []), it]);
+  if (spec.moiNguoi) {
+    bySender.set('*', items);
+  } else {
+    for (const it of items) {
+      const who = it?.by === 'a' || it?.by === 'b' ? it.by : null;
+      if (!who) continue;
+      bySender.set(who, [...(bySender.get(who) ?? []), it]);
+    }
   }
   if (!bySender.size) return json({ ok: true, sent: 0, note: 'không xác định được người gửi' });
 
@@ -80,15 +100,15 @@ Deno.serve(async (req) => {
   const stale: string[] = [];
 
   for (const [sender, list] of bySender) {
-    const target = sender === 'a' ? 'b' : 'a';
     const payload = JSON.stringify({
-      title: spec.title(list.length),
+      title: spec.title(list.length, list),
       body: spec.body(list),
       tag: `ju-${kind}-${coupleId}`,
       url: './',
     });
+    const nhan = sender === '*' ? subs : subs.filter((x) => x.role === (sender === 'a' ? 'b' : 'a'));
 
-    for (const s of subs.filter((x) => x.role === target)) {
+    for (const s of nhan) {
       try {
         await webpush.sendNotification(
           { endpoint: s.endpoint, keys: { p256dh: s.p256dh, auth: s.auth } },

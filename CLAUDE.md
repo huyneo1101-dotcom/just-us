@@ -181,6 +181,56 @@ chi tiêu ví `m_soc` lấy từ VíNhà, và nhóm câu đố "👶 Nuôi con" 
   - Đổi `VAPID_PUBLIC` = mọi subscription cũ chết; `subscribePush()` đã tự huỷ và đăng ký lại.
   - `justus_push_subs` khoá chính là `endpoint`; function tự xoá dòng khi push trả 404/410.
 
+## Săn giá — theo dõi giá sản phẩm qua link (dựng 10/08/2026)
+
+Vào từ **Hẹn hò → Ước mơ chung → 🏷️ Săn giá** (component `PriceWatch`). Dán link món đang
+ngắm; giá hạ thì có tin Telegram + thông báo đẩy trên điện thoại.
+
+| Mảnh | Nằm ở đâu |
+|---|---|
+| Giao diện | `nguon/app.jsx` — `PriceWatch`, `PriceSpark`, `tienVN`, `khiNao` |
+| Dữ liệu | `ju.pricewatch` (đã trong `SYNC_KEYS`, đồng bộ 2 máy) |
+| Bóc giá | `scripts/bocgia.py` |
+| Chrome thật qua CDP | `scripts/chrome_cdp.py` |
+| Quét + báo | `scripts/theo-doi-gia.py` (LaunchAgent `com.huy.justus-san-gia`, 08:10 · 13:10 · 20:10) |
+| Khoá Supabase | `scripts/sb_admin.py` — service_role key tự lấy qua Supabase CLI, ghi `~/.config/api-keys.env` |
+| Bộ ca kiểm | `scripts/thu_san_gia.py --tu-kiem` — 40 ca (18 PHẢI CHẶN) · 10 bản hỏng, đã nạp `khoe.py::BO_TEST` |
+
+**App KHÔNG tự đo giá** — trình duyệt bị CORS chặn đọc trang của trang bán hàng khác. Máy ở
+nhà đo rồi ghi giá ngược vào `justus_data`; app chỉ nhập link và xem.
+
+**Thang lấy trang** (dừng khi BÓC RA GIÁ, không dừng khi có mã 200 — trang dựng bằng
+JavaScript trả 200 kèm thân rỗng): API riêng của trang (Tiki) → `curl` → `curl_cffi` →
+Chrome không giao diện → **Chrome thật qua CDP**.
+
+⚠ **Shopee: chỉ Chrome THẬT mới lấy được, và phải ghé trang chủ trước.** Đo 10/08/2026 trên
+cùng một link: API `get_pc` trả **403** (mã lỗi 90309999); bản dành cho bot mạng xã hội
+(`facebookexternalhit`) có tên sản phẩm nhưng **cố tình không có giá**; `--headless=new` bị
+đá về trang chủ (thân 199 KB, **0 ký tự ₫**). Ghé `https://shopee.vn/` 10 giây lấy cookie rồi
+`Page.navigate` sang trang sản phẩm thì ra đủ giá kèm JSON-LD. Miền cần cách này khai ở
+`bocgia.MIEN_CAN_GHE`. Link rút gọn `vn.shp.ee` được giải trước (`giai_link`).
+
+⚠ **Bóc giá KHÔNG có lớp "dò số kèm chữ ₫"** — trang bán hàng nào cũng đầy giá của sản phẩm
+gợi ý bên cạnh, lớp đó đọc trúng giá hàng khác mà không dấu hiệu nào phát ra. Chỉ 04 mốc tất
+định: API riêng · JSON-LD · thẻ meta · khoá JSON đặc trưng (và chỉ nhận khi mọi ứng viên
+trùng nhau). Bóc không ra thì ghi lỗi, app hiện "chưa đọc được giá tự động".
+
+⚠ **Ghi ngược vào Supabase bằng phép so-rồi-đổi trên `updated_at`** — app cũng ghi vào chính
+hàng ấy, ghi đè theo bản đọc lúc đầu là nuốt mất thay đổi app vừa lưu. PATCH kèm
+`updated_at=eq.<mốc cũ>`; sửa 0 hàng ⇒ đọc lại rồi thử lần nữa.
+
+⚠ **Ba lớp lọc mức giảm gộp trong `du_giam()`, đừng tách ra** — tách thì chúng che lẫn nhau:
+gỡ điều kiện "phải thấp hơn lần trước" mà còn ngưỡng tiền thì giá TĂNG vẫn bị chặn (chênh
+lệch âm luôn nhỏ hơn ngưỡng), nên bộ ca không chứng minh được lớp nào đang canh việc gì.
+
+**Đo thật lượt đầu (23:42 ngày 10/08/2026):** 08 món · 07 lấy được giá (Shopee ×5, Dyson,
+Vivaia) · 01 trượt đúng (trang giới thiệu xe Yadea không niêm yết giá).
+
+**Thông báo đẩy:** `theo-doi-gia.py` gọi thẳng Edge Function `push-notify` với `kind:'price'`.
+Loại này gửi cho **cả hai máy** trong cặp (`moiNguoi: true`), khác `notes` là báo cho người
+còn lại. Sửa function thì phải deploy lại:
+`~/bin/supabase functions deploy push-notify --project-ref vvgkjgvzjeklaadusbne --workdir /Users/Huy/Claude/App/JustUs`
+
 ## Thư viện (đã pin version, qua cdn.jsdelivr.net)
 - `react@18.2.0` + `react-dom@18.2.0` (production UMD)
 - `@babel/standalone@7.23.6`

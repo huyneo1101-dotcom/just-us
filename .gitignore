@@ -22,3 +22,10 @@ ju-push-ready.sql
 
 # Bản lưu trước khi chuyển sang dịch sẵn mã (dungapp/dung.py)
 *.truoc-khi-dich.bak
+
+# Săn giá: nhật ký chạy (có tên món + giá — dữ liệu riêng), rác bản hỏng của bộ tự kiểm
+scripts/logs/
+scripts/_thu-hong-*
+scripts/__pycache__/
+supabase/.temp/
+tam-linh/__pycache__/

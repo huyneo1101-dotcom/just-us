@@ -13,7 +13,7 @@ const store={
 const SB_URL='https://vvgkjgvzjeklaadusbne.supabase.co';
 const SB_KEY='sb_publishable_DMMPv5L2kGhrHTxeQ72iKw_dIh13iT1';
 // Các key được đồng bộ (KHÔNG gồm ju.me/ju.device/ju.sync — đó là riêng từng máy)
-const SYNC_KEYS=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood','ju.qa','ju.timeline','ju.coupons','ju.chores','ju.lovejar','ju.quiz','ju.city','ju.goals','ju.checkin','ju.challengeDone','ju.homecfg','ju.diary','ju.projects','ju.vinhaUrl','ju.checkins','ju.menu','ju.period','ju.menuPlan','ju.accuKey','ju.habits','ju.hiddenSpots','ju.usOrder','ju.eventPrefs','ju.child','ju.childGrowth','ju.childVaccines','ju.childMilestones','ju.childDiary','ju.partnerWishes','ju.todos','ju.spotify','ju.dishPrefs','ju.favDishes','ju.childPack','ju.childSkills','ju.childMed','ju.childIllness','ju.childWords','ju.childTantrum','ju.childParenting','ju.saveTips','ju.saveCustom','ju.funPrefs','ju.routine','ju.routineIssues','ju.noti','ju.family','ju.health','ju.transfers','ju.skillGuidesDone','ju.expenses','ju.budget','ju.vinhaSync','ju.menuOrder','ju.notesSeen','ju.intimacy','ju.intimacySeen','ju.quizKnow','ju.familyRules','ju.expiry','ju.stash','ju.docs','ju.tuvi','ju.thanso','ju.checkinSeen','ju.menuHidden','ju.gameBets','ju.cook','ju.cookLogs','ju.cookRewards','ju.cookHelp','ju.cookPantry','ju.cookFridge','ju.docsLock','ju.childContacts','ju.childSafety','ju.childDocs','ju.childPotty','ju.childNoti','ju.childSchools','ju.childTeacherNote','ju.childTripPack','ju.childDuty','ju.childOneLine','ju.childQuotes','ju.childLetters','ju.childPhotos'];
+const SYNC_KEYS=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood','ju.qa','ju.timeline','ju.coupons','ju.chores','ju.lovejar','ju.quiz','ju.city','ju.goals','ju.checkin','ju.challengeDone','ju.homecfg','ju.diary','ju.projects','ju.vinhaUrl','ju.checkins','ju.menu','ju.period','ju.menuPlan','ju.accuKey','ju.habits','ju.hiddenSpots','ju.usOrder','ju.eventPrefs','ju.child','ju.childGrowth','ju.childVaccines','ju.childMilestones','ju.childDiary','ju.partnerWishes','ju.todos','ju.spotify','ju.dishPrefs','ju.favDishes','ju.childPack','ju.childSkills','ju.childMed','ju.childIllness','ju.childWords','ju.childTantrum','ju.childParenting','ju.saveTips','ju.saveCustom','ju.funPrefs','ju.routine','ju.routineIssues','ju.noti','ju.family','ju.health','ju.transfers','ju.skillGuidesDone','ju.expenses','ju.budget','ju.vinhaSync','ju.menuOrder','ju.notesSeen','ju.intimacy','ju.intimacySeen','ju.quizKnow','ju.familyRules','ju.expiry','ju.stash','ju.docs','ju.tuvi','ju.thanso','ju.checkinSeen','ju.menuHidden','ju.gameBets','ju.cook','ju.cookLogs','ju.cookRewards','ju.cookHelp','ju.cookPantry','ju.cookFridge','ju.docsLock','ju.childContacts','ju.childSafety','ju.childDocs','ju.childPotty','ju.childNoti','ju.childSchools','ju.childTeacherNote','ju.childTripPack','ju.childDuty','ju.childOneLine','ju.childQuotes','ju.childLetters','ju.childPhotos','ju.pricewatch'];
 let _sb=null;
 function sbClient(){
   if(_sb) return _sb;
@@ -1608,6 +1608,7 @@ function WishTab({people,me,flash}){
         {k:'gift',icon:'🎁',label:'Quà tặng'},{k:'bucket',icon:'🎯',label:'Muốn làm cùng'},
         {k:'watch',icon:'🎬',label:'Xem·Đọc·Nghe'},{k:'music',icon:'🎵',label:'Nhạc đôi'},
         {k:'coupon',icon:'🎟️',label:'Phiếu yêu thương'},{k:'link',icon:'🔗',label:'Link hay'},
+        {k:'price',icon:'🏷️',label:'Săn giá'},
       ]} menuId="wish"/>
       {seg==='gift' && <SimpleList skey="ju.wish" people={people} me={me} addLabel="món quà" doneLabel="Đã tặng"
         fields={['photo','price','link','note']} suggest={GIFT_SUGGEST} claimable showTotal empty={{icon:'🎁',text:'Ghi lại món quà bạn mơ ước — để nửa kia biết đường! Bấm 💡 để xem gợi ý.'}} flash={flash}/>}
@@ -1620,6 +1621,133 @@ function WishTab({people,me,flash}){
       {seg==='coupon' && <Coupons people={people} me={me} flash={flash}/>}
       {seg==='link' && <SimpleList skey="ju.links" people={people} me={me} addLabel="link/bài viết" doneLabel="Đã đọc"
         fields={['link','note']} empty={{icon:'🔗',text:'Gửi nhau bài viết, link hay ở đây.'}} flash={flash}/>}
+      {seg==='price' && <PriceWatch people={people} me={me} flash={flash}/>}
+    </div>
+  );
+}
+
+/* ============ Săn giá: theo dõi giá sản phẩm qua link ============
+   Danh sách nằm ở ju.pricewatch. Máy ở nhà (script scripts/theo-doi-gia.py, chạy 3 lượt
+   mỗi ngày) đọc danh sách này, đo giá từng link rồi ghi giá + lịch sử ngược lại, và bắn
+   Telegram kèm thông báo đẩy khi giá hạ. App chỉ nhập link và xem — KHÔNG tự đo giá,
+   vì trình duyệt bị chặn đọc trang của trang bán hàng khác (CORS).                     */
+function tienVN(n){ if(typeof n!=='number'||!isFinite(n)) return '—'; return Math.round(n).toLocaleString('vi-VN')+'₫'; }
+function khiNao(ms){
+  if(!ms) return 'chưa đo';
+  const p=Math.floor((Date.now()-ms)/60000);
+  if(p<1) return 'vừa xong'; if(p<60) return p+' phút trước';
+  const g=Math.floor(p/60); if(g<24) return g+' giờ trước';
+  return Math.floor(g/24)+' ngày trước';
+}
+function PriceSpark({hist}){
+  const pts=(hist||[]).filter(h=>h&&typeof h.p==='number');
+  if(pts.length<2) return null;
+  const W=104,H=30,ps=pts.slice(-30).map(h=>h.p);
+  const lo=Math.min(...ps),hi=Math.max(...ps),d=(hi-lo)||1;
+  const duong=ps.map((p,i)=>`${(i/(ps.length-1))*W},${H-((p-lo)/d)*(H-4)-2}`).join(' ');
+  const xuong=ps[ps.length-1]<=ps[0];
+  return (
+    <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} aria-hidden="true" style={{display:'block'}}>
+      <polyline points={duong} fill="none" stroke={xuong?'var(--good,#16a34a)':'var(--bad,#dc2626)'} strokeWidth="2" strokeLinejoin="round" strokeLinecap="round"/>
+    </svg>
+  );
+}
+function PriceWatch({people,me,flash}){
+  const [items,setItems]=useLocal('ju.pricewatch',[]);
+  const [url,setUrl]=useState(''); const [ten,setTen]=useState(''); const [dich,setDich]=useState('');
+  const them=()=>{
+    const u=(url||'').trim();
+    if(!/^https?:\/\//i.test(u)){ flash&&flash('Dán link bắt đầu bằng https:// nhé'); return; }
+    const d=parseInt(String(dich).replace(/[^\d]/g,''),10);
+    setItems(prev=>{
+      if(prev.some(x=>x&&x.url===u)){ flash&&flash('Link này đang theo dõi rồi'); return prev; }
+      return [{id:uid(),url:u,name:(ten||'').trim(),target:d>0?d:0,active:true,by:me,addedAt:Date.now()},...prev];
+    });
+    setUrl(''); setTen(''); setDich('');
+    flash&&flash('Đã thêm — máy ở nhà sẽ đo giá trong vài giờ tới ✓');
+  };
+  const doiDich=(id,v)=>{ const d=parseInt(String(v).replace(/[^\d]/g,''),10); setItems(prev=>prev.map(x=>x.id===id?{...x,target:d>0?d:0}:x)); };
+  const bat=(id)=>setItems(prev=>prev.map(x=>x.id===id?{...x,active:x.active===false}:x));
+  const xoa=(id)=>setItems(prev=>prev.filter(x=>x.id!==id));
+  const daXem=(id)=>setItems(prev=>prev.map(x=>x.id===id?{...x,baoLuc:0}:x));
+  const dsSap=[...(items||[])].sort((a,b)=>((b&&b.baoLuc)||0)-((a&&a.baoLuc)||0)||((b&&b.addedAt)||0)-((a&&a.addedAt)||0));
+  return (
+    <div>
+      <div className="card">
+        <div className="row"><span className="hc-title">🏷️ Theo dõi giá</span></div>
+        <div className="muted" style={{fontSize:12.5,margin:'4px 0 10px'}}>
+          Dán link món đang muốn mua. Máy ở nhà đo giá ngày 3 lượt (8h · 13h · 20h); rẻ hơn là báo ngay vào Telegram và hiện thông báo trên máy này.
+        </div>
+        <div className="field"><label>Link sản phẩm</label>
+          <input className="inp" value={url} onChange={e=>setUrl(e.target.value)} placeholder="Dán link Shopee, Tiki, Hasaki…" inputMode="url"/></div>
+        <div className="row" style={{gap:8}}>
+          <div className="field grow" style={{margin:0}}><label>Tên gọi (bỏ trống cũng được)</label>
+            <input className="inp" value={ten} onChange={e=>setTen(e.target.value)} placeholder="Máy hút sữa…"/></div>
+          <div className="field" style={{margin:0,minWidth:130}}><label>Giá mong muốn</label>
+            <input className="inp" value={dich} onChange={e=>setDich(e.target.value)} placeholder="vd 350000" inputMode="numeric"/></div>
+        </div>
+        <button className="btn grow" style={{marginTop:8,width:'100%'}} onClick={them}>Theo dõi món này</button>
+      </div>
+
+      {!dsSap.length && (
+        <div className="card" style={{textAlign:'center',padding:'26px 16px'}}>
+          <div style={{fontSize:34,lineHeight:1.1}}>🏷️</div>
+          <div style={{fontWeight:600,marginTop:6}}>Chưa theo dõi món nào</div>
+          <div className="muted" style={{fontSize:12.5,marginTop:4}}>Dán link món hai đứa đang ngắm ở trên. Khi nào hạ giá sẽ có thông báo, khỏi phải mở app xem đi xem lại.</div>
+        </div>
+      )}
+
+      {dsSap.map(m=>{
+        if(!m||!m.id) return null;
+        const co=typeof m.cur==='number';
+        const nen=typeof m.base==='number'?m.base:null;
+        const lech=co&&nen?m.cur-nen:0;
+        const pc=co&&nen&&nen>0?Math.round(Math.abs(lech)/nen*100):0;
+        const moi=(m.baoLuc||0)>0;
+        const tat=m.active===false;
+        return (
+          <div key={m.id} className="card" style={tat?{opacity:.6}:(moi?{borderColor:'var(--good,#16a34a)'}:{})}>
+            <div className="row" style={{alignItems:'flex-start',gap:8}}>
+              <div className="grow" style={{minWidth:0}}>
+                <div style={{fontWeight:600,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>
+                  {moi&&<span style={{color:'var(--good,#16a34a)'}}>● </span>}{m.name||m.url}
+                </div>
+                <div className="muted" style={{fontSize:11.5,marginTop:2}}>
+                  {khiNao(m.last)}{m.cach?' · '+m.cach.split('/').pop():''}{tat?' · đang tạm dừng':''}
+                </div>
+              </div>
+              <PriceSpark hist={m.hist}/>
+            </div>
+
+            <div className="row" style={{alignItems:'baseline',gap:10,marginTop:8}}>
+              <div style={{fontSize:22,fontWeight:700,fontVariantNumeric:'tabular-nums'}}>{co?tienVN(m.cur):'—'}</div>
+              {co&&nen&&lech!==0&&(
+                <div style={{fontSize:13,fontWeight:600,color:lech<0?'var(--good,#16a34a)':'var(--bad,#dc2626)'}}>
+                  {lech<0?'▼':'▲'} {pc}% <span className="muted" style={{fontWeight:400}}>so với {tienVN(nen)}</span>
+                </div>
+              )}
+            </div>
+
+            {typeof m.low==='number'&&(
+              <div className="muted" style={{fontSize:12,marginTop:2,fontVariantNumeric:'tabular-nums'}}>
+                Thấp nhất từng thấy {tienVN(m.low)}{m.target>0?' · mong muốn '+tienVN(m.target):''}
+              </div>
+            )}
+
+            {m.err&&!co&&<div className="muted" style={{fontSize:12,marginTop:6,color:'var(--bad,#dc2626)'}}>Chưa đọc được giá tự động ở trang này.</div>}
+
+            <div className="row" style={{gap:6,marginTop:10,flexWrap:'wrap'}}>
+              <a className="btn soft" href={m.urlThat||m.url} target="_blank" rel="noreferrer">Mở trang bán</a>
+              <input className="inp" style={{width:118,fontVariantNumeric:'tabular-nums'}} defaultValue={m.target>0?m.target:''} placeholder="giá mong muốn"
+                inputMode="numeric" onBlur={e=>doiDich(m.id,e.target.value)}/>
+              <span className="grow"></span>
+              {moi&&<button className="btn soft" onClick={()=>daXem(m.id)}>Đã xem</button>}
+              <button className="btn soft" onClick={()=>bat(m.id)}>{tat?'Theo dõi lại':'Tạm dừng'}</button>
+              <button className="btn soft" onClick={()=>{ if(confirm('Bỏ theo dõi món này?')) xoa(m.id); }}>Xoá</button>
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -4886,7 +5014,7 @@ const MENU_REGISTRY=[
   {id:'us-groups',label:'Nhà mình · nhóm chính',items:US_GROUPS.map(g=>({k:g.k,icon:g.icon,label:g.label}))},
   ...US_GROUPS.map(g=>({id:'us-'+g.k,label:'Nhà mình · '+g.label,items:g.items.map(k=>US_SEG_MAP[k]).filter(Boolean)})),
   {id:'date',label:'Hẹn hò',items:[{k:'idea',icon:'💡',label:'Ý tưởng'},{k:'hanoi',icon:'📍',label:'Gợi ý HN'},{k:'events',icon:'🎪',label:'Sự kiện HN'},{k:'food',icon:'🍜',label:'Quán & Món'},{k:'checkin',icon:'📸',label:'Check-in ảnh'},{k:'wish',icon:'💝',label:'Ước mơ chung'}]},
-  {id:'wish',label:'Ước mơ chung',items:[{k:'gift',icon:'🎁',label:'Quà tặng'},{k:'bucket',icon:'🎯',label:'Muốn làm cùng'},{k:'watch',icon:'🎬',label:'Xem·Đọc·Nghe'},{k:'music',icon:'🎵',label:'Nhạc đôi'},{k:'coupon',icon:'🎟️',label:'Phiếu yêu thương'},{k:'link',icon:'🔗',label:'Link hay'}]},
+  {id:'wish',label:'Ước mơ chung',items:[{k:'gift',icon:'🎁',label:'Quà tặng'},{k:'bucket',icon:'🎯',label:'Muốn làm cùng'},{k:'watch',icon:'🎬',label:'Xem·Đọc·Nghe'},{k:'music',icon:'🎵',label:'Nhạc đôi'},{k:'coupon',icon:'🎟️',label:'Phiếu yêu thương'},{k:'link',icon:'🔗',label:'Link hay'},{k:'price',icon:'🏷️',label:'Săn giá'}]},
   {id:'talk',label:'Chúng mình',items:[{k:'notes',icon:'💌',label:'Nhắn nhau'},{k:'question',icon:'❓',label:'Câu hỏi'},{k:'wishes',icon:'💛',label:'Mong nhau'},{k:'topics',icon:'🗣️',label:'Chủ đề'},{k:'quiz',icon:'💞',label:'Đố vui'},{k:'game',icon:'🎲',label:'Trò chơi'},{k:'checkin',icon:'📝',label:'Check-in tuần'},{k:'guide',icon:'🕊️',label:'Giao tiếp'},{k:'privacy',icon:'🔒',label:'Riêng tư'}]},
   {id:'intimacy',label:'Chúng mình · Riêng tư',items:[{k:'ibLog',icon:'📝',label:'Nhật ký'},{k:'ibSig',icon:'😏',label:'Tín hiệu'},{k:'ibWant',icon:'🌟',label:'Muốn thử'},{k:'ibHealth',icon:'💛',label:'Cảm xúc'},{k:'ibGame',icon:'🎲',label:'Chơi'},{k:'ibDate',icon:'📅',label:'Hẹn hò'},{k:'ibKnow',icon:'📖',label:'Kiến thức'},{k:'ibLock',icon:'🔒',label:'Riêng tư'}]},
   {id:'health',label:'Cá nhân · Sức khỏe',items:[{k:'health',icon:'🩺',label:'Bệnh nền'},{k:'period',icon:'🌸',label:'Chu kỳ'}]},
