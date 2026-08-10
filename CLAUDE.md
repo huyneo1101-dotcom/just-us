@@ -4,8 +4,48 @@ App tĩnh: UI + logic + CSS nằm trong `index.html` (~7810 dòng, ~676KB — v�
 
 ## Quy tắc làm việc với file này
 - **KHÔNG đọc cả `index.html` (~676KB, ~7810 dòng)** — LUÔN grep định vị rồi Read cửa sổ nhỏ (xem skill `bigfile-nav`).
-- Sửa nội dung đáng kể → **bump `CACHE` trong `sw.js`** (hiện: `justus-v37`; có thêm cache phụ `justus-noti`).
+- Sửa nội dung đáng kể → **bump `CACHE` trong `sw.js`** (hiện: `justus-v38`; có thêm cache phụ `justus-noti`).
 - Babel transpile trong trình duyệt: lỗi cú pháp = trắng màn hình. Kiểm tra Console sau khi sửa.
+
+## ⛔ MỌI SETTER CỦA `useLocal` PHẢI VIẾT DẠNG HÀM CẬP NHẬT (vá 10/08/2026)
+
+`useLocal` (dòng ~589) trả thẳng setter của React. Viết `setItems([{id:uid(),…},...items])`
+là tính từ biến `items` **của lần vẽ TRƯỚC**. Hai thao tác rơi vào cùng một nhịp vẽ thì thao
+tác sau đè mất thao tác trước, và **không có lỗi nào phát ra** — dữ liệu mất trong im lặng,
+người dùng chỉ thấy "bấm hai lần mà chỉ vào một".
+
+Dạng đúng, áp cho cả ba nhóm:
+
+```js
+setItems(prev=>[{id:uid(),…},...prev]);          // thêm
+setItems(prev=>prev.filter(x=>x.id!==id));       // xoá
+setItems(prev=>prev.map(x=>x.id===id?{...x,done:!x.done}:x));  // sửa/đánh dấu
+setPantry(prev=>({...prev,[k]:!prev[k]}));       // state dạng object cũng vậy
+```
+
+**Số đo nghiệm thu 10/08/2026** (mở app thật, bấm 3 lần trong cùng một nhịp rồi đếm bản ghi
+trong `localStorage`):
+
+| Ca đo | Bản chưa vá | Bản đã vá |
+|---|---|---|
+| Thêm 3 việc liên tiếp (`ju.todos`) | **1** | **3** |
+| Đánh dấu xong 3 việc liên tiếp (`ju.todos`) | **1** | **3** |
+
+- Đã vá **111 chỗ**: 107 nhóm mảng (`useLocal`) + 4 ô tích dạng object (Tủ bếp `setPantry`,
+  Việc nhờ `setHelp`, Tủ lạnh `setFridge`, nhóm nhắc việc `setNoti`).
+- **Bước lọc trùng phải nằm TRONG hàm cập nhật**, không được tính trước từ mảng cũ — nếu
+  không thì mất-ghi đổi thành thêm-trùng. 04 chỗ đã chuyển: đẩy món sang 🛒 Đi chợ (03 chỗ)
+  và nhập ngày quan trọng hàng loạt.
+- **CÒN NGUYÊN, cố ý không vá**: state của `useState` (nháp biểu mẫu, tab đang mở, tháng đang
+  xem…) — mất một lần bấm ở đó không mất dữ liệu; và 33 chỗ `useLocal` dạng object mà biểu
+  thức còn dùng biến phụ tính sẵn từ chính state đó (`setQa` ~1387, `setQuiz` ~1426,
+  `setData` ~2390, `setP` ~3425). Vá nửa vời ở nhóm này còn tệ hơn để nguyên: phần trải
+  (`...prev`) thì mới mà biến phụ vẫn cũ. Đụng tới thì đưa cả phép tính vào trong hàm.
+- **Phép rà lại: `python3 docs/va-setter.py --soi`** (thêm `--va` để ghi đè). Nó đọc balanced
+  paren nên bắt được cả dạng nhiều dòng, và tự phân loại `useLocal`/`useState`. Đã chứng minh
+  công cụ có răng: chạy trên bản 10/08 đã vá ra **"SẼ VÁ 0"**, chạy trên bản trước khi vá ra
+  **"SẼ VÁ 107"**. Cẩn thận với lookbehind: `...items` có dấu chấm đứng trước nên phép loại
+  "thuộc tính `.x`" ăn nhầm cả toán tử spread — bản đầu tiên bỏ sót trọn nhóm thêm mục.
 
 ## Dữ liệu tĩnh tách rời (`data/*.json`)
 Các mảng nội dung lớn KHÔNG còn nằm trong `index.html` — sửa nội dung thì sửa file JSON, đừng tìm trong `index.html`:

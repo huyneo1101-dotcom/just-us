@@ -1217,7 +1217,7 @@ function SegGrid({items, value, onChange, sub, menuId}){
 function SimpleList({skey, people, me, addLabel, doneLabel='Xong', fields=[], tagOptions, empty, flash, suggest, claimable, showTotal}){
   const [items,setItems]=useLocal(skey,[]);
   const other=me==='a'?'b':'a';
-  const claim=(id)=> setItems(items.map(x=>x.id===id?{...x,claimedBy:x.claimedBy?null:me}:x));
+  const claim=(id)=> setItems(prev=>prev.map(x=>x.id===id?{...x,claimedBy:x.claimedBy?null:me}:x));
   const totalPrice=showTotal? items.reduce((s,x)=>s+(Number(x.price)||0),0):0;
   const [filter,setFilter]=useState('all');
   const [q,setQ]=useState('');
@@ -1227,13 +1227,13 @@ function SimpleList({skey, people, me, addLabel, doneLabel='Xong', fields=[], ta
   const [view,setView]=useState(null);
 
   const save=(it)=>{
-    if(it.id){ setItems(items.map(x=>x.id===it.id?it:x)); }
-    else { setItems([{...it,id:uid(),by:me,fav:false,done:false,createdAt:Date.now()}, ...items]); }
+    if(it.id){ setItems(prev=>prev.map(x=>x.id===it.id?it:x)); }
+    else { setItems(prev=>[{...it,id:uid(),by:me,fav:false,done:false,createdAt:Date.now()}, ...prev]); }
     setOpen(false); setEdit(null);
   };
   const addQuick=(title)=> setItems(prev=>[{title,id:uid(),by:me,fav:false,done:false,createdAt:Date.now()},...prev]);
-  const del=(id)=>{ if(confirm('Bạn có chắc muốn xoá? Thao tác này không hoàn tác được.')){ setItems(items.filter(x=>x.id!==id)); } };
-  const toggle=(id,f)=> setItems(items.map(x=>{ if(x.id!==id) return x; const nv={...x,[f]:!x[f]}; if(f==='done'&&nv.done) celebrate(); return nv; }));
+  const del=(id)=>{ if(confirm('Bạn có chắc muốn xoá? Thao tác này không hoàn tác được.')){ setItems(prev=>prev.filter(x=>x.id!==id)); } };
+  const toggle=(id,f)=> setItems(prev=>prev.map(x=>{ if(x.id!==id) return x; const nv={...x,[f]:!x[f]}; if(f==='done'&&nv.done) celebrate(); return nv; }));
 
   const shown=useMemo(()=>{
     let a=items.slice();
@@ -1720,9 +1720,9 @@ function HabitTracker(){
   const [habits,setHabits]=useLocal('ju.habits',[]);
   const [t,setT]=useState('');
   const key=todayISO();
-  const add=()=>{ if(!t.trim())return; setHabits([...habits,{id:uid(),name:t.trim(),log:{}}]); setT(''); };
-  const toggle=(id)=>setHabits(habits.map(h=>h.id===id?{...h,log:{...(h.log||{}),[key]:!(h.log||{})[key]}}:h));
-  const del=(id)=>{ if(confirm('Bạn có chắc muốn xoá? Thao tác này không hoàn tác được.')){ setHabits(habits.filter(h=>h.id!==id)); } };
+  const add=()=>{ if(!t.trim())return; setHabits(prev=>[...prev,{id:uid(),name:t.trim(),log:{}}]); setT(''); };
+  const toggle=(id)=>setHabits(prev=>prev.map(h=>h.id===id?{...h,log:{...(h.log||{}),[key]:!(h.log||{})[key]}}:h));
+  const del=(id)=>{ if(confirm('Bạn có chắc muốn xoá? Thao tác này không hoàn tác được.')){ setHabits(prev=>prev.filter(h=>h.id!==id)); } };
   const streak=(h)=>streakOf(d=>!!(h.log||{})[d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())]);
   return (
     <div className="card">
@@ -1977,8 +1977,8 @@ function Coupons({people,me,flash}){
   const [sugOpen,setSugOpen]=useState(false);
   const other=me==='a'?'b':'a';
   const add=(title)=>{ const x=((title!=null?title:t)||'').trim(); if(!x)return; setCoupons(prev=>[{id:uid(),title:x,by:me,redeemed:false,createdAt:Date.now()},...prev]); setT(''); };
-  const redeem=(id)=>{ setCoupons(coupons.map(c=>c.id===id?{...c,redeemed:true,redeemedAt:Date.now()}:c)); celebrate(['🎟️','🎉','💝','✨','💞']); };
-  const del=(id)=>{ if(confirm('Bạn có chắc muốn xoá? Thao tác này không hoàn tác được.')){ setCoupons(coupons.filter(c=>c.id!==id)); } };
+  const redeem=(id)=>{ setCoupons(prev=>prev.map(c=>c.id===id?{...c,redeemed:true,redeemedAt:Date.now()}:c)); celebrate(['🎟️','🎉','💝','✨','💞']); };
+  const del=(id)=>{ if(confirm('Bạn có chắc muốn xoá? Thao tác này không hoàn tác được.')){ setCoupons(prev=>prev.filter(c=>c.id!==id)); } };
 
   const received=coupons.filter(c=>c.by===other);
   const given=coupons.filter(c=>c.by===me);
@@ -2137,7 +2137,7 @@ function HanoiCatalog({me,flash}){
   const [vibe,setVibe]=useState('');
   const [sort,setSort]=useState('near');
   const pickCat=(k)=>{ setCat(k); setVibe(''); };
-  const hide=(s)=>{ setHidden([...hidden,s.n]); flash('Đã ẩn gợi ý: '+s.n); };
+  const hide=(s)=>{ setHidden(prev=>[...prev,s.n]); flash('Đã ẩn gợi ý: '+s.n); };
   let list=HANOI_SPOTS.filter(s=>(!cat||s.cat===cat)&&(!bud||s.budget===bud)&&(!vibe||vibeTags(s).indexOf(vibe)>=0)&&hidden.indexOf(s.n)<0&&(sort!=='kid'||isKidSpot(s)));
   if(sort==='near') list=list.slice().sort((a,b)=>((distOf(a)??1e9)-(distOf(b)??1e9)));
   else if(sort==='price') list=list.slice().sort((a,b)=>(priceMid(a.p)-priceMid(b.p)));
@@ -2467,8 +2467,8 @@ function CheckIns({people,me}){
   const [filter,setFilter]=useState('all');
   const [view,setView]=useState(null);
   useEffect(()=>{ const latest=items.reduce((m,c)=>Math.max(m,c.createdAt||0),0); const cs={...(store.get('ju.checkinSeen',{})||{})}; if((cs[me]||0)<latest){ cs[me]=latest; store.set('ju.checkinSeen',cs); try{ Cloud.schedulePush&&Cloud.schedulePush(); }catch(_){} } },[items.length]);
-  const save=(c)=>{ if(c.id) setItems(items.map(x=>x.id===c.id?c:x)); else { setItems([{...c,id:uid(),by:me,createdAt:Date.now()},...items]); celebrate(['📸','💞','✨']); } setOpen(false);setEdit(null); };
-  const del=(id)=>{ if(confirm('Xoá check-in này?')) setItems(items.filter(x=>x.id!==id)); };
+  const save=(c)=>{ if(c.id) setItems(prev=>prev.map(x=>x.id===c.id?c:x)); else { setItems(prev=>[{...c,id:uid(),by:me,createdAt:Date.now()},...prev]); celebrate(['📸','💞','✨']); } setOpen(false);setEdit(null); };
+  const del=(id)=>{ if(confirm('Xoá check-in này?')) setItems(prev=>prev.filter(x=>x.id!==id)); };
   const mapsUrl=(c)=>{ const q=[c.name,c.address].filter(Boolean).join(' '); return 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(/hà nội|hanoi/i.test(q)?q:q+' Hà Nội'); };
   let shown=items.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||'')|| b.createdAt-a.createdAt);
   if(filter!=='all') shown=shown.filter(x=>x.type===filter);
@@ -2571,16 +2571,16 @@ function DateIdeas({people,me}){
   const [sugOpen,setSugOpen]=useState(false);
   const [planning,setPlanning]=useState(null);
   const [planDate,setPlanDate]=useState('');
-  const schedule=()=>{ if(!planDate)return; setEvents([{id:uid(),title:'Hẹn hò: '+planning.title,date:planDate,note:planning.note||'',remind:1,by:me,todos:[]},...events]); celebrate(['📅','💞','✨']); setPlanning(null); setPlanDate(''); };
+  const schedule=()=>{ if(!planDate)return; setEvents(prev=>[{id:uid(),title:'Hẹn hò: '+planning.title,date:planDate,note:planning.note||'',remind:1,by:me,todos:[]},...prev]); celebrate(['📅','💞','✨']); setPlanning(null); setPlanDate(''); };
 
   const save=(it)=>{
-    if(it.id) setItems(items.map(x=>x.id===it.id?it:x));
-    else setItems([{...it,id:uid(),by:me,fav:false,done:false,createdAt:Date.now()},...items]);
+    if(it.id) setItems(prev=>prev.map(x=>x.id===it.id?it:x));
+    else setItems(prev=>[{...it,id:uid(),by:me,fav:false,done:false,createdAt:Date.now()},...prev]);
     setOpen(false);setEdit(null);
   };
   const addIdea=(title,budget,note)=> setItems(prev=>[{title,budget,note:note||'',id:uid(),by:me,fav:false,done:false,createdAt:Date.now()},...prev]);
-  const del=(id)=>{ if(confirm('Bạn có chắc muốn xoá? Thao tác này không hoàn tác được.')){ setItems(items.filter(x=>x.id!==id)); } };
-  const toggle=(id,f)=>setItems(items.map(x=>x.id===id?{...x,[f]:!x[f]}:x));
+  const del=(id)=>{ if(confirm('Bạn có chắc muốn xoá? Thao tác này không hoàn tác được.')){ setItems(prev=>prev.filter(x=>x.id!==id)); } };
+  const toggle=(id,f)=>setItems(prev=>prev.map(x=>x.id===id?{...x,[f]:!x[f]}:x));
 
   const pool=bFilter?items.filter(x=>x.budget===bFilter):items;
   const shown=pool.slice().sort((a,b)=>(b.fav?1:0)-(a.fav?1:0)||b.createdAt-a.createdAt);
@@ -2694,8 +2694,8 @@ function Timeline({people,me}){
   const [items,setItems]=useLocal('ju.timeline',[]);
   const [open,setOpen]=useState(false);
   const [edit,setEdit]=useState(null);
-  const save=(it)=>{ if(it.id) setItems(items.map(x=>x.id===it.id?it:x)); else setItems([...items,{...it,id:uid(),by:me,createdAt:Date.now()}]); setOpen(false); setEdit(null); };
-  const del=(id)=>{ if(confirm('Bạn có chắc muốn xoá? Thao tác này không hoàn tác được.')){ setItems(items.filter(x=>x.id!==id)); } };
+  const save=(it)=>{ if(it.id) setItems(prev=>prev.map(x=>x.id===it.id?it:x)); else setItems(prev=>[...prev,{...it,id:uid(),by:me,createdAt:Date.now()}]); setOpen(false); setEdit(null); };
+  const del=(id)=>{ if(confirm('Bạn có chắc muốn xoá? Thao tác này không hoàn tác được.')){ setItems(prev=>prev.filter(x=>x.id!==id)); } };
   const shown=items.slice().sort((a,b)=>(a.date||'').localeCompare(b.date||''));
   return (
     <div>
@@ -2774,10 +2774,10 @@ function Chores({people,me}){
   const [sugOpen,setSugOpen]=useState(()=>((store.get('ju.chores',[])||[]).length===0));
   const has=(title)=>items.some(x=>x.title===title);
   const addSug=(title)=>{ if(has(title))return; setItems(prev=>[{id:uid(),title,who:'both',done:false,by:me,createdAt:Date.now()},...prev]); };
-  const add=()=>{ if(!t.trim())return; setItems([{id:uid(),title:t.trim(),who,done:false,by:me,createdAt:Date.now()},...items]); setT(''); };
-  const toggle=(id)=>setItems(items.map(x=>x.id===id?{...x,done:!x.done}:x));
-  const del=(id)=>{ if(confirm('Bạn có chắc muốn xoá? Thao tác này không hoàn tác được.')){ setItems(items.filter(x=>x.id!==id)); } };
-  const resetAll=()=>setItems(items.map(x=>({...x,done:false})));
+  const add=()=>{ if(!t.trim())return; setItems(prev=>[{id:uid(),title:t.trim(),who,done:false,by:me,createdAt:Date.now()},...prev]); setT(''); };
+  const toggle=(id)=>setItems(prev=>prev.map(x=>x.id===id?{...x,done:!x.done}:x));
+  const del=(id)=>{ if(confirm('Bạn có chắc muốn xoá? Thao tác này không hoàn tác được.')){ setItems(prev=>prev.filter(x=>x.id!==id)); } };
+  const resetAll=()=>setItems(prev=>prev.map(x=>({...x,done:false})));
   const whoLabel=(w)=> w==='a'?people.a.name : w==='b'?people.b.name : 'Cả hai';
   const whoAv=(w)=> w==='a'?people.a.avatar : w==='b'?people.b.avatar : '👫';
   return (
@@ -2826,11 +2826,11 @@ function Chores({people,me}){
 function Goals({people,me}){
   const [goals,setGoals]=useLocal('ju.goals',[]);
   const [open,setOpen]=useState(false);
-  const save=(g)=>{ setGoals([{...g,id:uid(),by:me,steps:[],createdAt:Date.now()},...goals]); setOpen(false); };
-  const del=(id)=>{ if(confirm('Bạn có chắc muốn xoá? Thao tác này không hoàn tác được.')){ setGoals(goals.filter(x=>x.id!==id)); } };
-  const addStep=(gid,text)=>setGoals(goals.map(g=>g.id===gid?{...g,steps:[...(g.steps||[]),{id:uid(),text,done:false}]}:g));
-  const toggleStep=(gid,sid)=>setGoals(goals.map(g=>{ if(g.id!==gid) return g; const cur=g.steps||[]; const steps=cur.map(s=>s.id===sid?{...s,done:!s.done}:s); if(steps.length&&steps.every(s=>s.done)&&!cur.every(s=>s.done)) celebrate(['🏆','🎉','💞','✨']); return {...g,steps}; }));
-  const delStep=(gid,sid)=>{ if(confirm('Bạn có chắc muốn xoá? Thao tác này không hoàn tác được.')){ setGoals(goals.map(g=>g.id===gid?{...g,steps:(g.steps||[]).filter(s=>s.id!==sid)}:g)); } };
+  const save=(g)=>{ setGoals(prev=>[{...g,id:uid(),by:me,steps:[],createdAt:Date.now()},...prev]); setOpen(false); };
+  const del=(id)=>{ if(confirm('Bạn có chắc muốn xoá? Thao tác này không hoàn tác được.')){ setGoals(prev=>prev.filter(x=>x.id!==id)); } };
+  const addStep=(gid,text)=>setGoals(prev=>prev.map(g=>g.id===gid?{...g,steps:[...(g.steps||[]),{id:uid(),text,done:false}]}:g));
+  const toggleStep=(gid,sid)=>setGoals(prev=>prev.map(g=>{ if(g.id!==gid) return g; const cur=g.steps||[]; const steps=cur.map(s=>s.id===sid?{...s,done:!s.done}:s); if(steps.length&&steps.every(s=>s.done)&&!cur.every(s=>s.done)) celebrate(['🏆','🎉','💞','✨']); return {...g,steps}; }));
+  const delStep=(gid,sid)=>{ if(confirm('Bạn có chắc muốn xoá? Thao tác này không hoàn tác được.')){ setGoals(prev=>prev.map(g=>g.id===gid?{...g,steps:(g.steps||[]).filter(s=>s.id!==sid)}:g)); } };
   return (
     <div>
       <div className="row" style={{margin:'10px 14px'}}><span className="grow muted" style={{fontSize:12.5}}>Mục tiêu hai đứa cùng theo đuổi 🎯</span>
@@ -2904,9 +2904,9 @@ function PartnerWishes({people,me}){
   const [items,setItems]=useLocal('ju.partnerWishes',[]);
   const [t,setT]=useState('');
   const partner=me==='a'?'b':'a';
-  const add=()=>{ if(!t.trim())return; setItems([{id:uid(),by:me,text:t.trim(),done:false,createdAt:Date.now()},...items]); setT(''); celebrate(['💛']); };
-  const toggle=(id)=>setItems(items.map(x=>x.id===id?{...x,done:!x.done}:x));
-  const del=(id)=>{ if(confirm('Bạn có chắc muốn xoá? Thao tác này không hoàn tác được.')){ setItems(items.filter(x=>x.id!==id)); } };
+  const add=()=>{ if(!t.trim())return; setItems(prev=>[{id:uid(),by:me,text:t.trim(),done:false,createdAt:Date.now()},...prev]); setT(''); celebrate(['💛']); };
+  const toggle=(id)=>setItems(prev=>prev.map(x=>x.id===id?{...x,done:!x.done}:x));
+  const del=(id)=>{ if(confirm('Bạn có chắc muốn xoá? Thao tác này không hoàn tác được.')){ setItems(prev=>prev.filter(x=>x.id!==id)); } };
   const mine=items.filter(x=>x.by===me);
   const forMe=items.filter(x=>x.by===partner);
   return (
@@ -3092,9 +3092,9 @@ function FamilyTodos({people,me}){
   const [t,setT]=useState(''); const [who,setWho]=useState('both'); const [prio,setPrio]=useState('vua'); const [due,setDue]=useState('');
   const [showDone,setShowDone]=useState(false);
   const [openId,setOpenId]=useState(null);
-  const add=()=>{ if(!t.trim())return; setItems([{id:uid(),title:t.trim(),who,priority:prio,due:due||'',done:false,subs:[],comments:[],by:me,createdAt:Date.now()},...items]); setT('');setDue(''); celebrate(['📝']); };
-  const toggle=(id)=>setItems(items.map(x=>x.id===id?{...x,done:!x.done}:x));
-  const del=(id)=>{ if(confirm('Bạn có chắc muốn xoá? Thao tác này không hoàn tác được.')){ setItems(items.filter(x=>x.id!==id)); } };
+  const add=()=>{ if(!t.trim())return; setItems(prev=>[{id:uid(),title:t.trim(),who,priority:prio,due:due||'',done:false,subs:[],comments:[],by:me,createdAt:Date.now()},...prev]); setT('');setDue(''); celebrate(['📝']); };
+  const toggle=(id)=>setItems(prev=>prev.map(x=>x.id===id?{...x,done:!x.done}:x));
+  const del=(id)=>{ if(confirm('Bạn có chắc muốn xoá? Thao tác này không hoàn tác được.')){ setItems(prev=>prev.filter(x=>x.id!==id)); } };
   const patch=(id,fn)=>setItems(prev=>prev.map(x=>x.id===id?fn(x):x));
   const addSub=(id,text)=>patch(id,x=>({...x,subs:[...(x.subs||[]),{id:uid(),text,done:false}]}));
   const toggleSub=(id,sid)=>patch(id,x=>({...x,subs:(x.subs||[]).map(s=>s.id===sid?{...s,done:!s.done}:s)}));
@@ -3178,8 +3178,8 @@ function spotifyEmbed(url){ const m=(url||'').match(/open\.spotify\.com\/(?:intl
 function MusicPlaylists({people,me}){
   const [items,setItems]=useLocal('ju.spotify',[]);
   const [url,setUrl]=useState(''); const [title,setTitle]=useState('');
-  const add=()=>{ const emb=spotifyEmbed(url); if(!emb){ alert('Dán link Spotify hợp lệ (playlist, bài hát hoặc album).'); return; } setItems([{id:uid(),title:title.trim()||'Playlist của tụi mình',url:url.trim(),by:me,createdAt:Date.now()},...items]); setUrl('');setTitle(''); celebrate(['🎵','💞']); };
-  const del=(id)=>{ if(confirm('Xoá playlist này?')) setItems(items.filter(x=>x.id!==id)); };
+  const add=()=>{ const emb=spotifyEmbed(url); if(!emb){ alert('Dán link Spotify hợp lệ (playlist, bài hát hoặc album).'); return; } setItems(prev=>[{id:uid(),title:title.trim()||'Playlist của tụi mình',url:url.trim(),by:me,createdAt:Date.now()},...prev]); setUrl('');setTitle(''); celebrate(['🎵','💞']); };
+  const del=(id)=>{ if(confirm('Xoá playlist này?')) setItems(prev=>prev.filter(x=>x.id!==id)); };
   return (
     <div>
       <div className="muted center" style={{fontSize:12.5,margin:'10px 14px'}}>🎵 Playlist Spotify của hai vợ chồng — dán link để nghe ngay tại đây.</div>
@@ -3224,8 +3224,8 @@ function FamilyRules({people,me}){
   const has=(text)=>rules.some(x=>x.text===text);
   const add=(text)=>{ const x=(text||'').trim(); if(!x||has(x))return; setRules(prev=>[{id:uid(),text:x,by:me,agreed:false,createdAt:Date.now()},...prev]); };
   const addManual=()=>{ if(!t.trim())return; add(t.trim()); setT(''); celebrate(['📜']); };
-  const toggle=(id)=>setRules(rules.map(x=>x.id===id?{...x,agreed:!x.agreed}:x));
-  const del=(id)=>{ if(confirm('Xoá quy tắc này?')) setRules(rules.filter(x=>x.id!==id)); };
+  const toggle=(id)=>setRules(prev=>prev.map(x=>x.id===id?{...x,agreed:!x.agreed}:x));
+  const del=(id)=>{ if(confirm('Xoá quy tắc này?')) setRules(prev=>prev.filter(x=>x.id!==id)); };
   const agreed=rules.filter(x=>x.agreed).length; const pct=rules.length?Math.round(agreed/rules.length*100):0;
   const exportRulesWord=()=>{ if(!rules.length){ alert('Chưa có quy tắc nào để in.'); return; }
     const body=ooP('📜 Quy tắc gia đình',{bold:true,size:18,color:'C2185B'})+ooP(agreed+'/'+rules.length+' quy tắc đã cam kết',{size:10,color:'777777',spacing:200})
@@ -3315,12 +3315,12 @@ function FamilyProjects({people,me}){
   const [open,setOpen]=useState(false);
   const [edit,setEdit]=useState(null);
   const [linkOpen,setLinkOpen]=useState(false);
-  const save=(p)=>{ if(p.id) setProjects(projects.map(x=>x.id===p.id?p:x)); else setProjects([{...p,id:uid(),by:me,tasks:[],createdAt:Date.now()},...projects]); setOpen(false);setEdit(null); };
-  const del=(id)=>{ if(confirm('Xoá dự án này?')) setProjects(projects.filter(x=>x.id!==id)); };
-  const addTask=(id,text)=>setProjects(projects.map(p=>p.id===id?{...p,tasks:[...(p.tasks||[]),{id:uid(),text,done:false}]}:p));
-  const addTasks=(id,arr)=>setProjects(projects.map(p=>p.id===id?{...p,tasks:[...(p.tasks||[]),...arr.filter(tx=>!(p.tasks||[]).some(t=>t.text===tx)).map(tx=>({id:uid(),text:tx,done:false}))]}:p));
-  const toggleTask=(id,tid)=>setProjects(projects.map(p=>p.id===id?{...p,tasks:(p.tasks||[]).map(t=>t.id===tid?{...t,done:!t.done}:t)}:p));
-  const delTask=(id,tid)=>{ if(confirm('Bạn có chắc muốn xoá? Thao tác này không hoàn tác được.')){ setProjects(projects.map(p=>p.id===id?{...p,tasks:(p.tasks||[]).filter(t=>t.id!==tid)}:p)); } };
+  const save=(p)=>{ if(p.id) setProjects(prev=>prev.map(x=>x.id===p.id?p:x)); else setProjects(prev=>[{...p,id:uid(),by:me,tasks:[],createdAt:Date.now()},...prev]); setOpen(false);setEdit(null); };
+  const del=(id)=>{ if(confirm('Xoá dự án này?')) setProjects(prev=>prev.filter(x=>x.id!==id)); };
+  const addTask=(id,text)=>setProjects(prev=>prev.map(p=>p.id===id?{...p,tasks:[...(p.tasks||[]),{id:uid(),text,done:false}]}:p));
+  const addTasks=(id,arr)=>setProjects(prev=>prev.map(p=>p.id===id?{...p,tasks:[...(p.tasks||[]),...arr.filter(tx=>!(p.tasks||[]).some(t=>t.text===tx)).map(tx=>({id:uid(),text:tx,done:false}))]}:p));
+  const toggleTask=(id,tid)=>setProjects(prev=>prev.map(p=>p.id===id?{...p,tasks:(p.tasks||[]).map(t=>t.id===tid?{...t,done:!t.done}:t)}:p));
+  const delTask=(id,tid)=>{ if(confirm('Bạn có chắc muốn xoá? Thao tác này không hoàn tác được.')){ setProjects(prev=>prev.map(p=>p.id===id?{...p,tasks:(p.tasks||[]).filter(t=>t.id!==tid)}:p)); } };
   const openVinha=()=>{ if(vinha){ window.open(vinha,'_blank','noreferrer'); } else setLinkOpen(true); };
   const shown=projects.slice().sort((a,b)=>(a.date||'9').localeCompare(b.date||'9'));
   return (
@@ -4132,18 +4132,18 @@ function KitchenPact({people,me,flash}){
     const cook=f.cook||me;
     const wash=f.wash||(cook==='both'?'both':(cook==='a'?'b':'a'));
     const bonus=doneWeek>=COOK_BASE; // bữa vượt mốc nền đang giữ
-    setLogs([{id:uid(),date:todayISO(),cook,wash,dish:(f.dish||'').trim(),note:(f.note||'').trim(),bonus,thanks:[],by:me,createdAt:Date.now()},...logs]);
+    setLogs(prev=>[{id:uid(),date:todayISO(),cook,wash,dish:(f.dish||'').trim(),note:(f.note||'').trim(),bonus,thanks:[],by:me,createdAt:Date.now()},...prev]);
     setOpen(false); setF({cook:me,dish:'',wash:'',note:''});
     celebrate(bonus?['⭐','🔥','👏','🍚']:['🍚','👏','💛']);
     flash&&flash(bonus?'Bữa vượt mốc nền — ghi nhận ⭐':'Đã ghi lại bữa cơm nhà mình ✓');
   };
-  const del=(id)=>{ if(confirm('Xoá bữa này khỏi nhật ký bếp?')) setLogs(logs.filter(x=>x.id!==id)); };
+  const del=(id)=>{ if(confirm('Xoá bữa này khỏi nhật ký bếp?')) setLogs(prev=>prev.filter(x=>x.id!==id)); };
   const addThanks=(id,text)=>{ const t=(text||'').trim(); if(!t) return;
-    setLogs(logs.map(l=>l.id===id?{...l,thanks:[...(l.thanks||[]),{by:me,text:t,at:Date.now()}]}:l));
+    setLogs(prev=>prev.map(l=>l.id===id?{...l,thanks:[...(l.thanks||[]),{by:me,text:t,at:Date.now()}]}:l));
     setThx(null); celebrate(['💛','👏']); flash&&flash('Đã gửi lời khen 💛'); };
   const giveReward=(title)=>{
-    setCoupons([{id:uid(),title:title,by:me,redeemed:false,createdAt:Date.now()},...coupons]);
-    setRewards([{week:wk,at:Date.now(),by:me,title:title},...rewards]);
+    setCoupons(prev=>[{id:uid(),title:title,by:me,redeemed:false,createdAt:Date.now()},...prev]);
+    setRewards(prev=>[{week:wk,at:Date.now(),by:me,title:title},...prev]);
     celebrate(['🎟️','🎉','💝','✨']); flash&&flash('Đã trao thưởng — xem ở 🎟️ Phiếu yêu thương');
   };
   const toShop=()=>{
@@ -4151,7 +4151,7 @@ function KitchenPact({people,me,flash}){
     const have=new Set(shop.map(s=>s&&s.text));
     const add=missing.filter(p=>!have.has(p.t)).map(p=>({id:uid(),text:p.t,by:me||'a',done:false}));
     if(!add.length){ flash&&flash('Mấy món này đã có trong danh sách Đi chợ rồi'); return; }
-    setShop([...add,...shop]); celebrate(['🛒']); flash&&flash('Đã đẩy '+add.length+' món sang 🛒 Đi chợ');
+    setShop(prev=>{ const co=new Set((prev||[]).map(s=>s&&s.text)); return [...add.filter(x=>!co.has(x.text)),...(prev||[])]; }); celebrate(['🛒']); flash&&flash('Đã đẩy '+add.length+' món sang 🛒 Đi chợ');
   };
   const toggleDay=(d)=>{ const s=new Set(days); if(s.has(d)) s.delete(d); else s.add(d); setCfg({...cfg,days:[...s]}); };
   const quickDishes=favs.slice(0,4).map(x=>x.n).concat(EASY_DISHES.filter(d=>d.t==='man').slice(0,8).map(d=>d.n));
@@ -4169,7 +4169,7 @@ function KitchenPact({people,me,flash}){
     const have=new Set(shop.map(s=>s&&s.text));
     const add=miss.map(k=>(COOK_ING_MAP[k]||{}).t).filter(t=>t&&!have.has(t)).map(t=>({id:uid(),text:t,by:me||'a',done:false}));
     if(!add.length){ flash&&flash('Đã có trong danh sách Đi chợ rồi'); return; }
-    setShop([...add,...shop]); celebrate(['🛒']); flash&&flash('Đã thêm '+add.length+' món vào 🛒 Đi chợ'); };
+    setShop(prev=>{ const co=new Set((prev||[]).map(s=>s&&s.text)); return [...add.filter(x=>!co.has(x.text)),...(prev||[])]; }); celebrate(['🛒']); flash&&flash('Đã thêm '+add.length+' món vào 🛒 Đi chợ'); };
   const DishRow=({m})=>(
     <div className="item" onClick={()=>setFdish(m.d)} style={{cursor:'pointer'}}>
       <div className="it-top"><h4>{m.d.t==='canh'?'🥣':'🍖'} {m.d.n}{m.ez?' ⚡':''}</h4></div>
@@ -4268,7 +4268,7 @@ function KitchenPact({people,me,flash}){
         <div className="card">
           <div className="muted" style={{fontSize:12.5,marginBottom:8}}>Tủ trống là lý do phổ biến nhất để "thôi đặt đồ ăn". Tick món nhà đang có; món còn thiếu đẩy thẳng sang 🛒 Đi chợ.</div>
           {COOK_PANTRY.map(p=>(
-            <div key={p.k} className="row" style={{gap:8,alignItems:'flex-start',padding:'5px 0',cursor:'pointer'}} onClick={()=>setPantry({...pantry,[p.k]:!pantry[p.k]})}>
+            <div key={p.k} className="row" style={{gap:8,alignItems:'flex-start',padding:'5px 0',cursor:'pointer'}} onClick={()=>setPantry(prev=>({...prev,[p.k]:!prev[p.k]}))}>
               <span style={{fontSize:16}}>{pantry[p.k]?'✅':'⬜'}</span>
               <span className="grow" style={{fontSize:13.5,lineHeight:1.5,opacity:pantry[p.k]?.6:1}}>{p.t}</span>
             </div>
@@ -4285,7 +4285,7 @@ function KitchenPact({people,me,flash}){
             <div key={g.g} style={{marginTop:10}}>
               <div style={{fontSize:12.5,fontWeight:700}}>{g.icon} {g.label}</div>
               {COOK_BLOCKERS.filter(b=>b.g===g.g).map(b=>(
-                <div key={b.k} className="row" style={{gap:8,alignItems:'flex-start',padding:'5px 0',cursor:'pointer'}} onClick={()=>setHelp({...help,[b.k]:!help[b.k]})}>
+                <div key={b.k} className="row" style={{gap:8,alignItems:'flex-start',padding:'5px 0',cursor:'pointer'}} onClick={()=>setHelp(prev=>({...prev,[b.k]:!prev[b.k]}))}>
                   <span style={{fontSize:16}}>{help[b.k]?'✅':'⬜'}</span>
                   <span className="grow" style={{fontSize:13.5,lineHeight:1.5,opacity:help[b.k]?.6:1,textDecoration:help[b.k]?'line-through':'none'}}>{b.t}</span>
                 </div>
@@ -4385,7 +4385,7 @@ function KitchenPact({people,me,flash}){
             <div style={{display:'flex',flexWrap:'wrap',gap:6}}>
               {COOK_INGS.filter(x=>x.g===c.g).map(x=>(
                 <button key={x.k} className="pill" style={fridge[x.k]?{background:'var(--good)',color:'#fff'}:{}}
-                  onClick={()=>setFridge({...fridge,[x.k]:!fridge[x.k]})}>{fridge[x.k]?'✓ ':''}{x.t}</button>
+                  onClick={()=>setFridge(prev=>({...prev,[x.k]:!prev[x.k]}))}>{fridge[x.k]?'✓ ':''}{x.t}</button>
               ))}
             </div>
           </div>
@@ -4471,7 +4471,7 @@ function WeeklyMenu({me,people}){
   const dishByName=(n)=>allDishes().find(d=>d.n===n);
   const matchG=(d)=> goal==='cb'? true : (d.g||[]).indexOf(goal)>=0;
   const rate=(name,v)=>{ const n={...prefs}; n[name]= n[name]===v?0:v; if(!n[name]) delete n[name]; setPrefs(n); };
-  const addFav=()=>{ const nm=favN.trim(); if(!nm) return; if(!favs.find(f=>f.n===nm)) setFavs([{n:nm,t:favT},...favs]); setFavN(''); celebrate(['❤️']); };
+  const addFav=()=>{ const nm=favN.trim(); if(!nm) return; if(!favs.find(f=>f.n===nm)) setFavs(prev=>[{n:nm,t:favT},...prev]); setFavN(''); celebrate(['❤️']); };
   const shuffle=(a)=>a.slice().sort(()=>Math.random()-0.5);
   const mkPool=(t)=>{ const base=allDishes();
     let a=base.filter(d=>d.t===t&&matchG(d)&&prefs[d.n]!==-1);
@@ -4491,7 +4491,7 @@ function WeeklyMenu({me,people}){
   const toShop=()=>{ if(!plan) return; const ings=new Set();
     plan.days.forEach(d=>{ (d.man||[]).concat([d.canh]).forEach(n=>{ const dish=dishByName(n); if(dish) (dish.ing||[]).forEach(x=>ings.add(x)); }); });
     const have=new Set(shop.map(s=>s.text)); const add=[...ings].filter(x=>!have.has(x)).map(x=>({id:uid(),text:x,by:me||'a',done:false}));
-    setShop([...add,...shop]); celebrate(['🛒']); alert('Đã thêm '+add.length+' nguyên liệu vào mục Đi chợ.'); };
+    setShop(prev=>{ const co=new Set((prev||[]).map(s=>s&&s.text)); return [...add.filter(x=>!co.has(x.text)),...(prev||[])]; }); celebrate(['🛒']); alert('Đã thêm '+add.length+' nguyên liệu vào mục Đi chợ.'); };
   const goalLabel=(k)=>(MENU_GOALS.find(x=>x.k===k)||{}).label||'';
   const setCook=(i,who)=>{ if(!plan) return; const days=plan.days.map((d,j)=>j===i?{...d,cook:d.cook===who?null:who}:d); setPlan({...plan,days}); };
   const setAllCook=(who)=>{ if(!plan) return; const days=plan.days.map((d,j)=> who==='alt'?{...d,cook:j%2===0?'a':'b'}:{...d,cook:who}); setPlan({...plan,days}); };
@@ -4595,7 +4595,7 @@ function WeeklyMenu({me,people}){
           <button className="btn sm" onClick={addFav}>＋</button>
         </div>
         {favs.length>0 && <div style={{margin:'10px 0'}}>{favs.map((f,i)=>(
-          <span key={i} className="pill" style={{margin:'3px 6px 3px 0',padding:'7px 11px',fontSize:12.5}}>{f.t==='canh'?'🥣':'🍖'} {f.n} <span onClick={()=>{ if(confirm('Bỏ món ưa thích này?')) setFavs(favs.filter(x=>x.n!==f.n)); }} style={{cursor:'pointer',marginLeft:4}}>✕</span></span>
+          <span key={i} className="pill" style={{margin:'3px 6px 3px 0',padding:'7px 11px',fontSize:12.5}}>{f.t==='canh'?'🥣':'🍖'} {f.n} <span onClick={()=>{ if(confirm('Bỏ món ưa thích này?')) setFavs(prev=>prev.filter(x=>x.n!==f.n)); }} style={{cursor:'pointer',marginLeft:4}}>✕</span></span>
         ))}</div>}
         {dislikedNames.length>0 && <><div className="sec-title" style={{marginLeft:0}}>👎 Món đang ẩn (không gợi ý)</div>
           <div>{dislikedNames.map(n=>(<span key={n} className="pill" style={{margin:'3px 6px 3px 0',padding:'7px 11px',fontSize:12.5,background:'var(--chip)'}}>{n} <span onClick={()=>rate(n,-1)} style={{cursor:'pointer',marginLeft:4}}>↩︎</span></span>))}</div></>}
@@ -4748,10 +4748,10 @@ function RoutineTab({people,me}){
     if(m==='both'){ const v=(edit.both||'').trim(); if(!v)return; blk={id:edit.id,t:edit.t,both:v}; }
     else { const a=(edit.a||'').trim(), b=(edit.b||'').trim(); if(!a&&!b)return; blk={id:edit.id,t:edit.t,a,b}; }
     if(edit.remind) blk.remind=true;
-    if(blk.id){ setRoutine((routine||[]).map(x=>x.id===blk.id?blk:x)); } else { blk.id=uid(); setRoutine([...(routine||[]),blk]); }
+    if(blk.id){ setRoutine(prev=>(prev||[]).map(x=>x.id===blk.id?blk:x)); } else { blk.id=uid(); setRoutine(prev=>[...(prev||[]),blk]); }
     setEdit(null); };
-  const delBlock=(id)=>{ if(confirm('Xoá mốc này khỏi lịch?')) setRoutine((routine||[]).filter(x=>x.id!==id)); };
-  const toggleRemind=(id)=>setRoutine((routine||[]).map(x=>x.id===id?{...normBlock(x),remind:!x.remind}:x));
+  const delBlock=(id)=>{ if(confirm('Xoá mốc này khỏi lịch?')) setRoutine(prev=>(prev||[]).filter(x=>x.id!==id)); };
+  const toggleRemind=(id)=>setRoutine(prev=>(prev||[]).map(x=>x.id===id?{...normBlock(x),remind:!x.remind}:x));
   const exportRoutineWord=()=>{ const shade='FFE0EA';
     const head='<w:tr>'+ooCell('Giờ',{bold:true,shade,w:1100})+ooCell(people.a.name||'Người 1',{bold:true,shade})+ooCell(people.b.name||'Người 2',{bold:true,shade})+'</w:tr>';
     const rows=list.map(b=> (b.both!=null&&b.both!=='')
@@ -4759,11 +4759,11 @@ function RoutineTab({people,me}){
       : '<w:tr>'+ooCell(b.t,{bold:true,w:1100})+ooCell(b.a||'',{})+ooCell(b.b||'',{})+'</w:tr>').join('');
     exportDocx('Lich-sinh-hoat.docx', ooP('🗓️ Lịch sinh hoạt một ngày',{bold:true,size:18,color:'C2185B'})+ooP('Gia đình '+((people.a.name||'')+' & '+(people.b.name||'')),{size:10,color:'777777',spacing:200})+ooTable(head+rows)); };
   const resetR=()=>{ if(confirm('Khôi phục lịch sinh hoạt mặc định?')) setRoutine(DEFAULT_ROUTINE); };
-  const addIssueText=(text,fix)=>{ const x=(text||'').trim(); if(!x)return; setIssues([{id:uid(),text:x,fix:fix||null,by:me,done:false,createdAt:Date.now()},...(issues||[])]); };
+  const addIssueText=(text,fix)=>{ const x=(text||'').trim(); if(!x)return; setIssues(prev=>[{id:uid(),text:x,fix:fix||null,by:me,done:false,createdAt:Date.now()},...(prev||[])]); };
   const addIssue=()=>{ addIssueText(prob); setProb(''); };
   const saveFix=(f)=>{ if(!(issues||[]).some(it=>!it.done&&(it.fix===f.title||it.text===f.title))){ addIssueText(f.title,f.title); celebrate(['📌']); } setBrowse(null); setView('vande'); };
-  const delIssue=(id)=>{ if(confirm('Xoá vấn đề này?')) setIssues((issues||[]).filter(x=>x.id!==id)); };
-  const toggleIssue=(id)=>setIssues((issues||[]).map(x=>x.id===id?{...x,done:!x.done}:x));
+  const delIssue=(id)=>{ if(confirm('Xoá vấn đề này?')) setIssues(prev=>(prev||[]).filter(x=>x.id!==id)); };
+  const toggleIssue=(id)=>setIssues(prev=>(prev||[]).map(x=>x.id===id?{...x,done:!x.done}:x));
   const active=(issues||[]).filter(x=>!x.done);
   const doneCount=(issues||[]).filter(x=>x.done).length;
   return (
@@ -4843,7 +4843,7 @@ function RoutineTab({people,me}){
                 {open && <ul style={{margin:'8px 0 0',paddingLeft:18,fontSize:12.5,lineHeight:1.65}}>{top.tips.map((t,i)=><li key={i} style={{marginBottom:4}}>{t}</li>)}</ul>}
               </React.Fragment> : <div className="muted" style={{fontSize:12.5,marginTop:6}}>Chưa có gợi ý tự động — thử xem "Chủ đề thường gặp".</div>}
             </div>; })}
-          {doneCount>0 && <div className="muted" style={{fontSize:11,margin:'6px 14px'}}>✓ Đã xử lý: {doneCount} · <span style={{cursor:'pointer',textDecoration:'underline'}} onClick={()=>{ if(confirm('Xoá các vấn đề đã xử lý?')) setIssues((issues||[]).filter(x=>!x.done)); }}>xoá</span></div>}
+          {doneCount>0 && <div className="muted" style={{fontSize:11,margin:'6px 14px'}}>✓ Đã xử lý: {doneCount} · <span style={{cursor:'pointer',textDecoration:'underline'}} onClick={()=>{ if(confirm('Xoá các vấn đề đã xử lý?')) setIssues(prev=>(prev||[]).filter(x=>!x.done)); }}>xoá</span></div>}
           <div className="sec-title">📚 Chủ đề thường gặp</div>
           <div className="card">
             <div style={{display:'flex',flexWrap:'wrap',gap:6}}>
@@ -4988,7 +4988,7 @@ function NotiSettings({flash}){
     } else { setPerm(p); flash&&flash('Thông báo đang bị chặn — mở lại trong cài đặt trình duyệt'); }
   };
   const test=async()=>{ if(!supported){ flash&&flash('Máy không hỗ trợ thông báo'); return; } try{ const reg=await navigator.serviceWorker.ready; reg.showNotification('Thử thông báo 🔔',{body:'Đây là thông báo thử từ Just Us 💗',icon:'icon.svg',badge:'icon.svg'}); }catch(e){ flash&&flash('Không gửi được — kiểm tra quyền thông báo'); } };
-  const tog=(k)=>setNoti({...noti,cats:{...(noti.cats||{}),[k]:!((noti.cats||{})[k]!==false)}});
+  const tog=(k)=>setNoti(prev=>({...prev,cats:{...((prev&&prev.cats)||{}),[k]:!(((prev&&prev.cats)||{})[k]!==false)}}));
   const setCatTime=(k,v)=>setNoti({...noti,times:{...(noti.times||{}),[k]:v}});
   const cats=noti.cats||{};
   const CATS=[['kyNiem','💞 Ngày yêu nhau · cột mốc'],['sukien','📅 Sự kiện gia đình'],['lich','🗓️ Lịch sinh hoạt (mốc có 🔔)'],['hanDung','⏳ Đồ ăn / thuốc sắp hết hạn'],['giayTo','🗂️ Giấy tờ sắp hết hạn'],['viec','✅ Việc tới hạn · ưu tiên cao'],['thucDon','🍱 Món nấu hôm nay · đi chợ'],['nganSach','💰 Cảnh báo ngân sách tháng'],['yeuThuong','💌 Nhắc gửi lời yêu thương'],['nhanNhau','💌 Nhắn nhau (có lời nhắn mới)'],['trabai','💗 Trả bài (tín hiệu · ngày vợ hứng khởi · đêm hẹn)'],['tamLinh','🪷 Mùng 1 · rằm · lễ'],['ngayNho','🎂 Sinh nhật · giỗ · lễ cần quà'],['chuky','🌸 Chu kỳ sắp đến'],['checkin','📸 Check-in quán mới của nửa kia']];
@@ -5104,8 +5104,8 @@ function FamilyTree({people,me,flash}){
   const [fromTag,setFromTag]=useState(false);
   const [taggedN,setTaggedN]=useState(0);
   const [quiz,setQuiz]=useState(null); const [ans,setAns]=useState(null); const [score,setScore]=useState({ok:0,total:0});
-  const save=()=>{ if(!edit||!(edit.name||'').trim())return; if(edit.id) setFam(fam.map(x=>x.id===edit.id?edit:x)); else setFam([{...edit,id:uid()},...fam]); const wasTag=fromTag; setEdit(null); if(wasTag){ setFromTag(false); setBox(null); setTaggedN(n=>n+1); } };
-  const del=(id)=>{ if(confirm('Xoá người này khỏi sơ đồ?')){ setFam(fam.filter(x=>x.id!==id)); setEdit(null); } };
+  const save=()=>{ if(!edit||!(edit.name||'').trim())return; if(edit.id) setFam(prev=>prev.map(x=>x.id===edit.id?edit:x)); else setFam(prev=>[{...edit,id:uid()},...prev]); const wasTag=fromTag; setEdit(null); if(wasTag){ setFromTag(false); setBox(null); setTaggedN(n=>n+1); } };
+  const del=(id)=>{ if(confirm('Xoá người này khỏi sơ đồ?')){ setFam(prev=>prev.filter(x=>x.id!==id)); setEdit(null); } };
   const onFile=async(e)=>{ const f=e.target.files[0]; if(!f||!edit)return; e.target.value='';
     if(Cloud.connected&&Cloud.connected()){ try{ flash&&flash('Đang tải ảnh…'); const path=await Cloud.uploadPhoto(f); setEdit(ed=>({...ed,photo:{path}})); flash&&flash('Đã thêm ảnh 📷'); }catch(err){ flash&&flash('Tải ảnh lỗi'); } }
     else { const r=new FileReader(); r.onload=()=>setEdit(ed=>({...ed,photo:{src:r.result}})); r.readAsDataURL(f); } };
@@ -5367,8 +5367,8 @@ function ExpiryItems({people,me}){
   const [items,setItems]=useLocal('ju.expiry',[]);
   const [f,setF]=useState({name:'',kind:'food',date:'',place:''});
   const [filter,setFilter]=useState('all');
-  const add=()=>{ if(!f.name.trim()||!f.date) return; setItems([{id:uid(),name:f.name.trim(),kind:f.kind,date:f.date,place:f.place.trim(),by:me,createdAt:Date.now()},...items]); setF({name:'',kind:f.kind,date:'',place:''}); celebrate(['🗓️']); };
-  const del=(id)=>{ if(confirm('Xoá món này?')) setItems(items.filter(x=>x.id!==id)); };
+  const add=()=>{ if(!f.name.trim()||!f.date) return; setItems(prev=>[{id:uid(),name:f.name.trim(),kind:f.kind,date:f.date,place:f.place.trim(),by:me,createdAt:Date.now()},...prev]); setF({name:'',kind:f.kind,date:'',place:''}); celebrate(['🗓️']); };
+  const del=(id)=>{ if(confirm('Xoá món này?')) setItems(prev=>prev.filter(x=>x.id!==id)); };
   const kindOf=(k)=>EXP_KINDS.find(x=>x.k===k)||EXP_KINDS[EXP_KINDS.length-1];
   const shown=items.filter(x=>filter==='all'||x.kind===filter).slice().sort((a,b)=>(a.date||'9').localeCompare(b.date||'9'));
   const soon=items.filter(x=>{ const d=daysFromToday(x.date); return d!=null&&d<=7; }).length;
@@ -5405,8 +5405,8 @@ function StashItems({people,me}){
   const [items,setItems]=useLocal('ju.stash',[]);
   const [f,setF]=useState({name:'',cat:'seasonal',place:'',note:'',link:'',photo:null});
   const [q,setQ]=useState(''); const [cat,setCat]=useState('all'); const [view,setView]=useState(null);
-  const add=()=>{ if(!f.name.trim()||!f.place.trim()) return; setItems([{id:uid(),name:f.name.trim(),cat:f.cat,place:f.place.trim(),note:f.note.trim(),link:(f.link||'').trim(),photo:f.photo||null,by:me,createdAt:Date.now()},...items]); setF({name:'',cat:f.cat,place:'',note:'',link:'',photo:null}); celebrate(['📦']); };
-  const del=(id)=>{ if(confirm('Xoá món này?')) setItems(items.filter(x=>x.id!==id)); };
+  const add=()=>{ if(!f.name.trim()||!f.place.trim()) return; setItems(prev=>[{id:uid(),name:f.name.trim(),cat:f.cat,place:f.place.trim(),note:f.note.trim(),link:(f.link||'').trim(),photo:f.photo||null,by:me,createdAt:Date.now()},...prev]); setF({name:'',cat:f.cat,place:'',note:'',link:'',photo:null}); celebrate(['📦']); };
+  const del=(id)=>{ if(confirm('Xoá món này?')) setItems(prev=>prev.filter(x=>x.id!==id)); };
   const catOf=(k)=>STASH_CATS.find(x=>x.k===k)||STASH_CATS[STASH_CATS.length-1];
   const ql=q.trim().toLowerCase();
   const shown=items.filter(x=>(cat==='all'||x.cat===cat)&&(!ql||(x.name+' '+x.place+' '+(x.note||'')).toLowerCase().includes(ql)));
@@ -5606,14 +5606,14 @@ function DocsVault({people,me}){
     if(!d.name||!d.name.trim())return;
     const base=d.id?d:{...d,id:uid(),by:me,createdAt:Date.now()};
     const rec=await encRec({...base,name:d.name.trim()});
-    setItems(d.id?items.map(x=>x.id===rec.id?rec:x):[rec,...items]);
+    setItems(prev=>d.id?prev.map(x=>x.id===rec.id?rec:x):[rec,...prev]);
     setOpen(false);setEdit(null); celebrate(['🗂️']);
   };
   const del=(id)=>{
     if(!confirm('Xoá giấy tờ này? (ảnh cũng bị xoá)')) return;
     const rec=(plain||[]).find(x=>x.id===id);
     ((rec&&rec.photos)||[]).forEach(p=>{ const path=p&&(p.epath||p.path); if(path) Cloud.deletePhoto(path); });
-    setItems(items.filter(x=>x.id!==id));
+    setItems(prev=>prev.filter(x=>x.id!==id));
   };
   const catOf=(k)=>DOC_CATS.find(x=>x.k===k)||DOC_CATS[DOC_CATS.length-1];
   const ql=q.trim().toLowerCase();
@@ -5848,20 +5848,20 @@ function Events({people,me}){
   const [showCal,setShowCal]=useState(false);
 
   const save=(e)=>{
-    if(e.id) setEvents(events.map(x=>x.id===e.id?e:x));
-    else setEvents([{...e,id:uid(),by:me,todos:[],createdAt:Date.now()},...events]);
+    if(e.id) setEvents(prev=>prev.map(x=>x.id===e.id?e:x));
+    else setEvents(prev=>[{...e,id:uid(),by:me,todos:[],createdAt:Date.now()},...prev]);
     setOpen(false);setEdit(null);
   };
-  const del=(id)=>{ if(confirm('Bạn có chắc muốn xoá? Thao tác này không hoàn tác được.')){ setEvents(events.filter(x=>x.id!==id)); } };
-  const addTodo=(id,text)=> setEvents(events.map(e=>e.id===id?{...e,todos:[...(e.todos||[]),{id:uid(),text,done:false}]}:e));
-  const toggleTodo=(id,tid)=> setEvents(events.map(e=>e.id===id?{...e,todos:e.todos.map(t=>t.id===tid?{...t,done:!t.done}:t)}:e));
-  const delTodo=(id,tid)=>{ if(confirm('Bạn có chắc muốn xoá? Thao tác này không hoàn tác được.')){ setEvents(events.map(e=>e.id===id?{...e,todos:e.todos.filter(t=>t.id!==tid)}:e)); } };
+  const del=(id)=>{ if(confirm('Bạn có chắc muốn xoá? Thao tác này không hoàn tác được.')){ setEvents(prev=>prev.filter(x=>x.id!==id)); } };
+  const addTodo=(id,text)=> setEvents(prev=>prev.map(e=>e.id===id?{...e,todos:[...(e.todos||[]),{id:uid(),text,done:false}]}:e));
+  const toggleTodo=(id,tid)=> setEvents(prev=>prev.map(e=>e.id===id?{...e,todos:e.todos.map(t=>t.id===tid?{...t,done:!t.done}:t)}:e));
+  const delTodo=(id,tid)=>{ if(confirm('Bạn có chắc muốn xoá? Thao tác này không hoàn tác được.')){ setEvents(prev=>prev.map(e=>e.id===id?{...e,todos:e.todos.filter(t=>t.id!==tid)}:e)); } };
 
   // Tết: tự gợi ý tạo kế hoạch khi còn ≤30 ngày (ẩn lúc khác)
   const tetISO=nextTetISO(); const tetD=tetISO?daysFromToday(tetISO):null; const tetYr=tetISO?tetISO.slice(0,4):'';
   const hasTet=events.some(e=>e.tet&&e.tetYear===tetYr);
-  const makeTet=()=>{ setEvents([{id:uid(),title:'🧧 Chuẩn bị Tết '+tetYr,date:tetISO,note:'Tết Nguyên Đán — việc cần làm trước Tết',by:me,tet:true,tetYear:tetYr,
-    todos:(PROJ_TASK_SUGGEST.tet||[]).map(t=>({id:uid(),text:t,done:false})),createdAt:Date.now()},...events]); celebrate(['🧧','🎉','✨']); };
+  const makeTet=()=>{ setEvents(prev=>[{id:uid(),title:'🧧 Chuẩn bị Tết '+tetYr,date:tetISO,note:'Tết Nguyên Đán — việc cần làm trước Tết',by:me,tet:true,tetYear:tetYr,
+    todos:(PROJ_TASK_SUGGEST.tet||[]).map(t=>({id:uid(),text:t,done:false})),createdAt:Date.now()},...prev]); celebrate(['🧧','🎉','✨']); };
 
   // #6 Tự động nhắc: SN gia đình nhỏ (≤7 ngày) + Mùng 1/Rằm (≤2 ngày)
   const [dates]=useLocal('ju.dates',[]);
@@ -6069,11 +6069,11 @@ function ImportantDates({people,me}){
   const [fKind,setFKind]=useState('all');
   const [fSide,setFSide]=useState('all');
   const save=(d)=>{
-    if(d.id) setDates(dates.map(x=>x.id===d.id?d:x));
-    else setDates([{...d,id:uid(),by:me,createdAt:Date.now()},...dates]);
+    if(d.id) setDates(prev=>prev.map(x=>x.id===d.id?d:x));
+    else setDates(prev=>[{...d,id:uid(),by:me,createdAt:Date.now()},...prev]);
     setOpen(false);setEdit(null);
   };
-  const del=(id)=>{ if(confirm('Bạn có chắc muốn xoá? Thao tác này không hoàn tác được.')){ setDates(dates.filter(x=>x.id!==id)); } };
+  const del=(id)=>{ if(confirm('Bạn có chắc muốn xoá? Thao tác này không hoàn tác được.')){ setDates(prev=>prev.filter(x=>x.id!==id)); } };
   const addBulk=()=>{
     const lines=(bulkText||'').split(/\n+/).map(s=>s.trim()).filter(Boolean);
     const parsed=[];
@@ -6097,7 +6097,7 @@ function ImportantDates({people,me}){
     const key=(t,d)=>(t||'').toLowerCase()+'|'+(d.lunar?('L'+d.lunarDay+'/'+d.lunarMonth):((d.date||'').slice(5)));
     const seen=new Set(dates.map(x=>key(x.title,x)));
     const fresh=parsed.filter(a=>{ const k=key(a.title,a); if(seen.has(k)) return false; seen.add(k); return true; });
-    setDates([...fresh.map(a=>({...a,id:uid(),by:me,createdAt:Date.now()})),...dates]);
+    setDates(prev=>{ const co=new Set((prev||[]).map(x=>key(x.title,x))); return [...fresh.filter(a=>!co.has(key(a.title,a))).map(a=>({...a,id:uid(),by:me,createdAt:Date.now()})),...(prev||[])]; });
     setBulkMsg('Đã thêm '+fresh.length+'/'+parsed.length+' ngày'+(parsed.length-fresh.length>0?' ('+(parsed.length-fresh.length)+' đã có sẵn)':'')+'.');
     setBulkText('');
   };
@@ -6292,8 +6292,8 @@ function ExpenseTracker({people,me}){
   const [ym,setYm]=useState(thisYM());
   const [open,setOpen]=useState(false);
   const [bOpen,setBOpen]=useState(false);
-  const add=(e)=>{ setExpenses([{id:uid(),...e},...expenses]); celebrate(['🧾']); setOpen(false); };
-  const del=(id)=>{ if(confirm('Xoá khoản chi này?')) setExpenses(expenses.filter(x=>x.id!==id)); };
+  const add=(e)=>{ setExpenses(prev=>[{id:uid(),...e},...prev]); celebrate(['🧾']); setOpen(false); };
+  const del=(id)=>{ if(confirm('Xoá khoản chi này?')) setExpenses(prev=>prev.filter(x=>x.id!==id)); };
   const monthExp=expenses.filter(x=>ymOf(x.date)===ym);
   const total=monthExp.reduce((s,x)=>s+(Number(x.amount)||0),0);
   const byCat={}; monthExp.forEach(x=>{ byCat[x.cat]=(byCat[x.cat]||0)+(Number(x.amount)||0); });
@@ -6544,20 +6544,20 @@ function Fund({people,me}){
   const [txOpen,setTxOpen]=useState(false);
   const allTips=SAVE_TIPS.concat(custom);
   const tgTip=(t)=>{ const n={...tips}; if(n[t]) delete n[t]; else n[t]=true; setTips(n); };
-  const addTip=()=>{ const t=tipIn.trim(); if(!t) return; if(!allTips.includes(t)) setCustom([t,...custom]); setTips({...tips,[t]:true}); setTipIn(''); celebrate(['🐷']); };
+  const addTip=()=>{ const t=tipIn.trim(); if(!t) return; if(!allTips.includes(t)) setCustom(prev=>[t,...prev]); setTips({...tips,[t]:true}); setTipIn(''); celebrate(['🐷']); };
   const doneTips=allTips.filter(t=>tips[t]).length;
-  const addTransfer=(from,amount,date,note)=>{ setTransfers([{id:uid(),from,to:from==='a'?'b':'a',amount,date:date||todayISO(),note:note||''},...transfers]); celebrate(['💸']); };
-  const delTransfer=(id)=>{ if(confirm('Xoá ghi chép chuyển khoản này?')) setTransfers(transfers.filter(x=>x.id!==id)); };
+  const addTransfer=(from,amount,date,note)=>{ setTransfers(prev=>[{id:uid(),from,to:from==='a'?'b':'a',amount,date:date||todayISO(),note:note||''},...prev]); celebrate(['💸']); };
+  const delTransfer=(id)=>{ if(confirm('Xoá ghi chép chuyển khoản này?')) setTransfers(prev=>prev.filter(x=>x.id!==id)); };
   const sumAB=transfers.filter(t=>t.from==='a').reduce((s,t)=>s+(Number(t.amount)||0),0);
   const sumBA=transfers.filter(t=>t.from==='b').reduce((s,t)=>s+(Number(t.amount)||0),0);
 
   const save=(g)=>{
-    if(g.id) setGoals(goals.map(x=>x.id===g.id?g:x));
-    else setGoals([{...g,id:uid(),by:me,contribs:[],createdAt:Date.now()},...goals]);
+    if(g.id) setGoals(prev=>prev.map(x=>x.id===g.id?g:x));
+    else setGoals(prev=>[{...g,id:uid(),by:me,contribs:[],createdAt:Date.now()},...prev]);
     setOpen(false);setEdit(null);
   };
-  const del=(id)=>{ if(confirm('Bạn có chắc muốn xoá? Thao tác này không hoàn tác được.')){ setGoals(goals.filter(x=>x.id!==id)); } };
-  const addContrib=(gid,amount,who)=> setGoals(goals.map(g=>g.id===gid?{...g,contribs:[...(g.contribs||[]),{id:uid(),amount,by:who,date:todayISO()}]}:g));
+  const del=(id)=>{ if(confirm('Bạn có chắc muốn xoá? Thao tác này không hoàn tác được.')){ setGoals(prev=>prev.filter(x=>x.id!==id)); } };
+  const addContrib=(gid,amount,who)=> setGoals(prev=>prev.map(g=>g.id===gid?{...g,contribs:[...(g.contribs||[]),{id:uid(),amount,by:who,date:todayISO()}]}:g));
 
   return (
     <div>
@@ -6614,7 +6614,7 @@ function Fund({people,me}){
           <div key={t} className="row" style={{padding:'7px 0',borderBottom:'1px solid var(--line)'}}>
             <button onClick={()=>tgTip(t)} style={{fontSize:18}}>{tips[t]?'✅':'⬜'}</button>
             <span className="grow" style={{fontSize:14,textDecoration:tips[t]?'line-through':'none',opacity:tips[t]?.65:1}}>{t}</span>
-            {custom.includes(t) && <button className="muted" onClick={()=>{ if(confirm('Xoá mẹo này?')){ setCustom(custom.filter(x=>x!==t)); const n={...tips}; delete n[t]; setTips(n); } }}>✕</button>}
+            {custom.includes(t) && <button className="muted" onClick={()=>{ if(confirm('Xoá mẹo này?')){ setCustom(prev=>prev.filter(x=>x!==t)); const n={...tips}; delete n[t]; setTips(n); } }}>✕</button>}
           </div>
         ))}
         <div className="row" style={{gap:6,padding:'8px 0'}}>
@@ -6682,10 +6682,10 @@ function TransferForm({people,me,onSave}){
 function Shopping({people,me}){
   const [items,setItems]=useLocal('ju.shop',[]);
   const [t,setT]=useState('');
-  const add=()=>{ if(!t.trim())return; setItems([{id:uid(),text:t.trim(),by:me,done:false},...items]); setT(''); };
-  const toggle=(id)=>setItems(items.map(x=>x.id===id?{...x,done:!x.done}:x));
-  const del=(id)=>{ setItems(items.filter(x=>x.id!==id)); };
-  const clearDone=()=>{ if(confirm('Xoá các việc đã hoàn thành?')){ setItems(items.filter(x=>!x.done)); } };
+  const add=()=>{ if(!t.trim())return; setItems(prev=>[{id:uid(),text:t.trim(),by:me,done:false},...prev]); setT(''); };
+  const toggle=(id)=>setItems(prev=>prev.map(x=>x.id===id?{...x,done:!x.done}:x));
+  const del=(id)=>{ setItems(prev=>prev.filter(x=>x.id!==id)); };
+  const clearDone=()=>{ if(confirm('Xoá các việc đã hoàn thành?')){ setItems(prev=>prev.filter(x=>!x.done)); } };
   const clearAll=()=>{ if(confirm('Xoá toàn bộ danh sách đi chợ? Thao tác này không hoàn tác được.')){ setItems([]); } };
   const left=items.filter(x=>!x.done);
   const done=items.filter(x=>x.done);
@@ -6733,11 +6733,11 @@ function Notes({people,me}){
   const [notes,setNotes]=useLocal('ju.notes',[]);
   const [t,setT]=useState('');
   const endRef=useRef(null);
-  const add=()=>{ if(!t.trim())return; setNotes([...notes,{id:uid(),by:me,text:t.trim(),createdAt:Date.now()}]); setT(''); };
+  const add=()=>{ if(!t.trim())return; setNotes(prev=>[...prev,{id:uid(),by:me,text:t.trim(),createdAt:Date.now()}]); setT(''); };
   useEffect(()=>{ endRef.current?.scrollIntoView({behavior:'smooth'}); },[notes.length]);
   useEffect(()=>{ const latest=notes.reduce((m,n)=>Math.max(m,n.createdAt||0),0); const ns={...(store.get('ju.notesSeen',{})||{})}; if((ns[me]||0)<latest){ ns[me]=latest; store.set('ju.notesSeen',ns); try{ Cloud.schedulePush&&Cloud.schedulePush(); }catch(_){} } },[notes.length]);
-  const del=(id)=>{ if(confirm('Bạn có chắc muốn xoá? Thao tác này không hoàn tác được.')){ setNotes(notes.filter(x=>x.id!==id)); } };
-  const heart=(id)=>setNotes(notes.map(n=>{ if(n.id!==id) return n; const r={...(n.reacts||{})}; r[me]=r[me]?null:'❤️'; return {...n,reacts:r}; }));
+  const del=(id)=>{ if(confirm('Bạn có chắc muốn xoá? Thao tác này không hoàn tác được.')){ setNotes(prev=>prev.filter(x=>x.id!==id)); } };
+  const heart=(id)=>setNotes(prev=>prev.map(n=>{ if(n.id!==id) return n; const r={...(n.reacts||{})}; r[me]=r[me]?null:'❤️'; return {...n,reacts:r}; }));
   return (
     <div>
       <div className="muted center" style={{fontSize:12.5,margin:'10px 14px'}}>💌 Lời nhắn yêu thương — chạm 🤍 để thả tim</div>
@@ -7292,18 +7292,18 @@ function Profile({setup,setSetup,people,me,setMe,flash}){
       flash('Đang tải ảnh lên…');
       try{
         const path=await Cloud.uploadPhoto(f);
-        setPhotos([{id:uid(),path,caption:'',by:me,date:todayISO()},...photos]);
+        setPhotos(prev=>[{id:uid(),path,caption:'',by:me,date:todayISO()},...prev]);
         flash('Đã thêm ảnh 📷');
       }catch(err){ flash('Tải ảnh lỗi: '+(err.message||err)); }
     }else{
       if(f.size>2.5*1024*1024){ flash('Ảnh nặng (>2.5MB) — đăng nhập để lưu lên đám mây thay vì máy.'); }
       const r=new FileReader();
-      r.onload=()=>{ setPhotos([{id:uid(),src:r.result,caption:'',by:me,date:todayISO()},...photos]); flash('Đã thêm ảnh (cục bộ) 📷'); };
+      r.onload=()=>{ setPhotos(prev=>[{id:uid(),src:r.result,caption:'',by:me,date:todayISO()},...prev]); flash('Đã thêm ảnh (cục bộ) 📷'); };
       r.readAsDataURL(f);
     }
   };
-  const addUrl=(url,cap)=>{ if(!url.trim())return; setPhotos([{id:uid(),src:url,caption:cap,by:me,date:todayISO()},...photos]); setAddPhoto(false); };
-  const delPhoto=(p)=>{ if(confirm('Xoá ảnh này?')){ if(p.path) Cloud.deletePhoto(p.path); setPhotos(photos.filter(x=>x.id!==p.id)); } };
+  const addUrl=(url,cap)=>{ if(!url.trim())return; setPhotos(prev=>[{id:uid(),src:url,caption:cap,by:me,date:todayISO()},...prev]); setAddPhoto(false); };
+  const delPhoto=(p)=>{ if(confirm('Xoá ảnh này?')){ if(p.path) Cloud.deletePhoto(p.path); setPhotos(prev=>prev.filter(x=>x.id!==p.id)); } };
 
   const exportData=()=>{
     const dump={};
