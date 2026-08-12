@@ -37,6 +37,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))   # để nạp �
 UA = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
       "(KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36")
 CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+# Trình thu thập của công cụ tìm kiếm — dùng ở bậc `_curl_bot`, xem chú thích ở đó.
+UA_BOT = "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
 
 # Giá ngoài khoảng này gần như chắc chắn là bóc nhầm (mã sản phẩm, số lượt bán, năm…).
 GIA_MIN = 1000
@@ -133,6 +135,32 @@ def _curl(url: str, timeout: int = 25) -> str:
     req = urllib.request.Request(url, headers={
         "User-Agent": UA,
         "Accept": "text/html,application/xhtml+xml,application/json;q=0.9,*/*;q=0.8",
+        "Accept-Language": "vi-VN,vi;q=0.9,en;q=0.8",
+    })
+    with urllib.request.urlopen(req, timeout=timeout) as r:
+        return r.read(6_000_000).decode("utf-8", "replace")
+
+
+def _curl_bot(url: str, timeout: int = 25) -> str:
+    """Lấy bản trang mà trang bán hàng dựng sẵn cho trình thu thập của công cụ tìm kiếm.
+
+    Shopee dựng giá phía máy chủ cho Googlebot/Bingbot để còn được lập chỉ mục, trong khi
+    bản dành cho trình duyệt thường giấu giá sau một lời gọi API có chữ ký chống tự động
+    hoá. Đo 12/08/2026 trên `shopee.vn/product/991867112/28356625535`: bản thường trả 1.010
+    KB không có ký tự ₫ nào và API `get_pc` trả 403 (mã 90309999) kể cả khi hồ sơ Chrome đã
+    đăng nhập; bản cho bot trả 90 KB kèm JSON-LD `AggregateOffer` đủ `lowPrice` 139.000 và
+    `highPrice` 195.000, khớp khoảng giá "139.000₫ - 195.000₫" hiện trên trang.
+
+    Bậc này rẻ hơn Chrome vài chục lần nên đứng TRƯỚC mọi bậc mở trình duyệt, và nhờ vậy ba
+    mốc ban ngày (không được mở Chrome, xem `theo-doi-gia.cho_chrome_that`) vẫn lấy được giá
+    Shopee. Không phải món nào cũng ăn: đo cùng ngày trên 05 món đang theo dõi thì 04 món trả
+    trang "It looks like something is missing" với MỌI loại bot, dù chính món đó mở bằng
+    Chrome đã đăng nhập vẫn ra đúng tên sản phẩm — tức Shopee chặn theo từng sản phẩm, không
+    phải sản phẩm đã bị gỡ. Lấy hụt thì phía gọi vẫn đi tiếp thang.
+    """
+    req = urllib.request.Request(url, headers={
+        "User-Agent": UA_BOT,
+        "Accept": "text/html,application/xhtml+xml,*/*;q=0.8",
         "Accept-Language": "vi-VN,vi;q=0.9,en;q=0.8",
     })
     with urllib.request.urlopen(req, timeout=timeout) as r:
@@ -374,6 +402,10 @@ def lay_gia(url: str, *, cho_chrome: bool = True, cho_cdp: bool = True,
         return lay_dom(u, ghe_truoc=(f"https://{mien}/" if mien in MIEN_CAN_GHE else None))
 
     bac = [("curl", _curl), ("curl_cffi", _curl_cffi)]
+    if mien in MIEN_CAN_GHE:
+        # Chỉ các trang giấu giá sau JavaScript mới cần bậc này; trang thường đã ra giá ở
+        # bậc `curl` nên thêm một lời gọi nữa là tốn công vô ích.
+        bac.append(("bot-tìm-kiếm", _curl_bot))
     if cho_chrome and mien not in MIEN_CAN_GHE:
         bac.append(("chrome", _chrome))     # miền cần ghé thì Chrome không giao diện chắc chắn trượt, bỏ cho nhanh
     if cho_cdp:

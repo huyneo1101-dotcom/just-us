@@ -228,21 +228,38 @@ ngắm; giá hạ thì có tin Telegram + thông báo đẩy trên điện tho�
 | Quét + báo | `scripts/theo-doi-gia.py` (LaunchAgent `com.huy.justus-san-gia`, 08:10 · 13:10 · 20:10) |
 | Mốc ĐÊM mở Chrome | LaunchAgent `com.huy.justus-san-gia-chrome`, 03:00 — mốc DUY NHẤT được mở Chrome có giao diện |
 | Khoá Supabase | `scripts/sb_admin.py` — service_role key tự lấy qua Supabase CLI, ghi `~/.config/api-keys.env` |
-| Bộ ca kiểm | `scripts/thu_san_gia.py --tu-kiem` — 44 ca (25 PHẢI CHẶN) · 16 bản hỏng, đã nạp `khoe.py::BO_TEST` |
+| Bộ ca kiểm | `scripts/thu_san_gia.py --tu-kiem` — 48 ca (28 PHẢI CHẶN) · 20 bản hỏng, đã nạp `khoe.py::BO_TEST` |
 
 **App KHÔNG tự đo giá** — trình duyệt bị CORS chặn đọc trang của trang bán hàng khác. Máy ở
 nhà đo rồi ghi giá ngược vào `justus_data`; app chỉ nhập link và xem.
 
 **Thang lấy trang** (dừng khi BÓC RA GIÁ, không dừng khi có mã 200 — trang dựng bằng
 JavaScript trả 200 kèm thân rỗng): API riêng của trang (Tiki) → `curl` → `curl_cffi` →
-Chrome không giao diện → **Chrome thật qua CDP**.
+**bản dành cho bot tìm kiếm** (chỉ với miền trong `MIEN_CAN_GHE`) → Chrome không giao diện →
+**Chrome thật qua CDP**.
 
-⚠ **Shopee: chỉ Chrome THẬT mới lấy được, và phải ghé trang chủ trước.** Đo 10/08/2026 trên
-cùng một link: API `get_pc` trả **403** (mã lỗi 90309999); bản dành cho bot mạng xã hội
-(`facebookexternalhit`) có tên sản phẩm nhưng **cố tình không có giá**; `--headless=new` bị
-đá về trang chủ (thân 199 KB, **0 ký tự ₫**). Ghé `https://shopee.vn/` 10 giây lấy cookie rồi
-`Page.navigate` sang trang sản phẩm thì ra đủ giá kèm JSON-LD. Miền cần cách này khai ở
-`bocgia.MIEN_CAN_GHE`. Link rút gọn `vn.shp.ee` được giải trước (`giai_link`).
+⚠ **Shopee dựng sẵn giá cho trình thu thập của công cụ tìm kiếm** (vá 12/08/2026,
+`bocgia._curl_bot` + `UA_BOT`). Cùng một link, đo trong một buổi: bản dành cho trình duyệt
+thường trả 1.010 KB **không có ký tự ₫ nào**, API `get_pc` trả **403** (mã 90309999) kể cả
+khi hồ sơ Chrome **đã đăng nhập** (`is_login: true`), mọi trường giá trong khối trạng thái
+nhúng đều `null`; còn bản trả cho `Googlebot`/`Bingbot`/`Twitterbot` là 90 KB kèm JSON-LD
+`AggregateOffer` đủ `lowPrice` 139.000 và `highPrice` 195.000, khớp khoảng giá hiện trên
+trang. Bậc này chỉ tốn một lời gọi `curl` nên **ba mốc ban ngày cũng lấy được giá Shopee**,
+không phải chờ mốc đêm mở Chrome.
+
+⚠ **Không phải món nào Shopee cũng cho.** Đo cùng ngày trên 05 món đang theo dõi: 01 món ra
+giá, **04 món trả trang "It looks like something is missing" với MỌI loại bot** — mà chính
+04 món đó mở bằng Chrome đã đăng nhập vẫn ra đúng tên sản phẩm, tức Shopee chặn theo từng
+sản phẩm chứ **không phải hàng đã bị gỡ**. Với những món này hiện chưa có đường tự động nào
+lấy được giá: bản cho trình duyệt giấu giá, API chặn, Chrome thật cũng chỉ ra khung trang
+(thân 3,9 KB, không giá). ⛔ Đừng dựng lại các đường đã đo và đã trượt: `facebookexternalhit`
+và `WhatsApp` (trả trang không giá) · dạng link cũ `-i.<shop>.<item>` (trả rỗng) · giao diện
+điện thoại (590 KB, không giá) · gọi API từ trong trang đã tải (403).
+
+Ghé trang chủ trước vẫn giữ cho bậc Chrome thật: vào thẳng thì bị đá về trang chủ (thân 199
+KB, 0 ký tự ₫), ghé `https://shopee.vn/` 10 giây lấy cookie rồi `Page.navigate` thì ra giá.
+Miền cần cách này khai ở `bocgia.MIEN_CAN_GHE`. Link rút gọn `vn.shp.ee` được giải trước
+(`giai_link`).
 
 ⚠ **Chrome có giao diện CHỈ chạy ở mốc 03:00, và phải giấu cửa sổ bằng giao thức** (vá
 12/08/2026 sau khi Huy chê *"đừng có hiện chrome lên trên claude tao đang làm việc nữa"*).

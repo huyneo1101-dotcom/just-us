@@ -88,6 +88,98 @@ def ca_bocgia(bg) -> dict:
         ra["15 PHẢI CHẶN link sai dạng"] = False
     except bg.KhongBocDuoc as e:
         ra["15 PHẢI CHẶN link sai dạng"] = "http://" in str(e)
+
+    # ── bậc lấy bản trang dành cho trình thu thập của công cụ tìm kiếm ──────────
+    # Đo bằng User-Agent của từng lời gọi, không chạm mạng: ca phải tất định.
+    LD = ('<html><script type="application/ld+json">{"@type":"Product","name":"Ly giữ nhiệt",'
+          '"offers":{"@type":"AggregateOffer","lowPrice":"139000","highPrice":"195000",'
+          '"priceCurrency":"VND"}}</script></html>')
+    TRONG = "<html><body>Shopee Việt Nam | Hot Deals</body></html>"
+    U_SHOPEE = "https://shopee.vn/product/991867112/28356625535"
+    U_THUONG = "https://tiki.vn/a-p1.html"
+
+    class _TraLoi:
+        def __init__(self, than):
+            self.than = than.encode()
+
+        def read(self, n=None):
+            return self.than
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *a):
+            return False
+
+    that_mo = bg.urllib.request.urlopen
+    that_cffi = bg._curl_cffi
+    goi_ua: list = []
+
+    def _mo_gia(req, timeout=None):
+        ua = req.get_header("User-agent") or ""
+        goi_ua.append(ua)
+        return _TraLoi(LD if "Googlebot" in ua else TRONG)
+
+    try:
+        bg.urllib.request.urlopen = _mo_gia
+        bg._curl_cffi = lambda u, timeout=25: TRONG    # bậc này cũng phải im, kẻo chạm mạng thật
+
+        # Bọc lỗi ngay tại chỗ: bản hỏng gỡ bậc này thì `lay_gia` ném, mà ngoại lệ lọt ra
+        # ngoài sẽ giết cả bộ ca — bản hỏng đọc thành "không nạp được" thay vì "bị bắt".
+        try:
+            r = bg.lay_gia(U_SHOPEE, cho_chrome=False, cho_cdp=False)
+            ra["51 trang giấu giá được thử bằng bản dành cho bot tìm kiếm"] = (
+                r["gia"] == 139000.0 and "bot-tìm-kiếm" in r["cach"]
+                and any("Googlebot" in u for u in goi_ua))
+        except bg.KhongBocDuoc:
+            ra["51 trang giấu giá được thử bằng bản dành cho bot tìm kiếm"] = False
+
+        # PHẢI CHẶN — trang thường đã ra giá ngay ở bậc đầu, thêm một lời gọi giả danh bot
+        # nữa là tốn công vô ích và tăng nguy cơ bị trang chặn.
+        goi_ua.clear()
+        try:
+            bg.lay_gia(U_THUONG, cho_chrome=False, cho_cdp=False)
+        except bg.KhongBocDuoc:
+            pass
+        ra["52 PHẢI CHẶN gọi bậc bot cho trang không giấu giá"] = not any(
+            "Googlebot" in u for u in goi_ua)
+
+        # PHẢI CHẶN — bản cho bot cũng bị chặn (đo thật: 04/05 món trả "something is
+        # missing") thì không được nhận bừa, và lỗi phải nêu đúng bậc đã trượt.
+        def _mo_cam(req, timeout=None):
+            goi_ua.append(req.get_header("User-agent") or "")
+            return _TraLoi(TRONG)
+
+        bg.urllib.request.urlopen = _mo_cam
+        try:
+            bg.lay_gia(U_SHOPEE, cho_chrome=False, cho_cdp=False)
+            ra["53 PHẢI CHẶN nhận bừa bản cho bot không có giá"] = False
+        except bg.KhongBocDuoc as e:
+            ra["53 PHẢI CHẶN nhận bừa bản cho bot không có giá"] = "bot-tìm-kiếm" in str(e)
+
+        # PHẢI CHẶN — bậc bot rẻ hơn Chrome thật vài chục lần nên phải đứng TRƯỚC; đảo thứ
+        # tự thì ba mốc ban ngày lại phụ thuộc Chrome, đúng thứ vừa gỡ bỏ.
+        bg.urllib.request.urlopen = _mo_gia
+        mo_chrome = {"n": 0}
+
+        def _cdp_dem(u, **k):
+            mo_chrome["n"] += 1
+            return LD
+
+        import chrome_cdp as _cdp_m
+        that_dom = _cdp_m.lay_dom
+        try:
+            _cdp_m.lay_dom = _cdp_dem
+            r2 = bg.lay_gia(U_SHOPEE, cho_chrome=False, cho_cdp=True)
+            ra["54 PHẢI CHẶN mở Chrome khi bản cho bot đã đủ giá"] = (
+                mo_chrome["n"] == 0 and "bot-tìm-kiếm" in r2["cach"])
+        except bg.KhongBocDuoc:
+            ra["54 PHẢI CHẶN mở Chrome khi bản cho bot đã đủ giá"] = False
+        finally:
+            _cdp_m.lay_dom = that_dom
+    finally:
+        bg.urllib.request.urlopen = that_mo
+        bg._curl_cffi = that_cffi
     return ra
 
 
@@ -395,6 +487,22 @@ BAN_HONG = [
      '    return (os.environ.get("JU_CHROME_THAT") or "").strip() == "1"',
      "    return False",
      ["43", "44", "48"]),
+    ("bỏ bậc lấy bản trang dành cho bot tìm kiếm", F_BOCGIA,
+     '        bac.append(("bot-tìm-kiếm", _curl_bot))',
+     "        pass",
+     ["51", "53", "54"]),
+    ("gọi bậc bot cho mọi trang, kể cả trang không giấu giá", F_BOCGIA,
+     "    if mien in MIEN_CAN_GHE:",
+     "    if True:",
+     ["52"]),
+    ("bậc bot dùng User-Agent thường nên vẫn nhận bản giấu giá", F_BOCGIA,
+     '        "User-Agent": UA_BOT,',
+     '        "User-Agent": UA,',
+     ["51", "54"]),
+    ("đảo thứ tự: mở Chrome trước rồi mới thử bản cho bot", F_BOCGIA,
+     '    if cho_cdp:\n        bac.append(("chrome-that", _cdp))',
+     '    if cho_cdp:\n        bac.insert(0, ("chrome-that", _cdp))',
+     ["54"]),
 ]
 
 if __name__ == "__main__":
