@@ -190,6 +190,7 @@ chi tiêu ví `m_soc` lấy từ VíNhà, và nhóm câu đố "👶 Nuôi con" 
 | `ju.notes` | Lời nhắn giữa hai người (love notes) | array |
 | `ju.events` / `ju.dates` / `ju.timeline` | Sự kiện · ngày nhớ · dòng thời gian kỷ niệm | array |
 | `ju.wish` / `ju.bucket` / `ju.watch` / `ju.coupons` | Quà · muốn làm cùng · xem·đọc·nghe · phiếu yêu thương | array |
+| `ju.movies` | Phim muốn xem — xem mục riêng bên dưới. Điểm sao để ở `rate:{a,b}`, **mỗi người một ô**, KHÔNG dùng chung một số như `rating` của `ju.watch` | array |
 | `ju.ideas` / `ju.food` / `ju.checkins` | Ý tưởng hẹn hò · quán & món · check-in ảnh | array |
 | ↳ mục của `ju.food` / `ju.checkins` | nhiều ảnh ở `photos[]` + ảnh menu ở `menuPhotos[]` (khoá cũ 1 ảnh `photo` vẫn đọc được qua helper `photoList()`, tự gộp khi sửa) | array |
 | `ju.child*` (diary, growth, milestones, vaccines…) | Nhóm dữ liệu "Nuôi con / Sóc" — nay do **app `soc/`** ghi (Just Us chỉ đọc `ju.child`) | array/object |
@@ -207,6 +208,37 @@ chi tiêu ví `m_soc` lấy từ VíNhà, và nhóm câu đố "👶 Nuôi con" 
 - **Mục Giấy tờ mã hoá đầu-cuối** (`DocsCrypto` ~6300, `DocsLock` + `DocsVault` ~6371): PBKDF2-SHA256 210k vòng → AES-256-GCM. Ảnh nén rồi mã hoá **trước khi** upload, lưu dạng `{epath}` và tải về bằng `Cloud.downloadBytes` (không sinh link). Mất mật khẩu là mất dữ liệu — không có cửa sau. Đổi `DOCS_ITER`/`DOCS_MAGIC` = làm hỏng dữ liệu cũ.
 
 - Đồng bộ Supabase: **có** — **ghép cặp bằng mã mời** (RLS giới hạn dữ liệu cho đúng 2 tài khoản trong pair). Object `Cloud` (dòng ~318) dùng RPC `ju_create_couple` / `ju_join_couple(p_code)` / `ju_my_couple` / `ju_leave_couple`; toàn bộ state ghi 1 hàng vào bảng `justus_data` theo `couple_id`, realtime qua `postgres_changes`, ảnh lưu ở storage bucket `justus-photos`. Xem skill `supabase-sync` (pattern B). Migration: skill `local-store`.
+
+## 🍿 Phim muốn xem (dựng 12/08/2026)
+
+Vào từ **Hẹn hò → Ước mơ chung → 🍿 Phim muốn xem** (`MovieList` + `MovieForm` trong
+`nguon/app.jsx`, ngay trước khối Săn giá). Dữ liệu ở `ju.movies`, đã trong `SYNC_KEYS`.
+Gợi ý phim ở `data/suggest.json` khoá `MOVIE_SUGGEST` (98 phim) — thêm khoá mới thì
+phải khai placeholder rỗng trong `window.JUD` ở `nguon/khung.html`, nếu không thì
+`const MOVIE_SUGGEST=JUD.MOVIE_SUGGEST` nhận `undefined` và màn hình trắng.
+
+**Vì sao tách khỏi mục 🎬 Xem·Đọc·Nghe** thay vì thêm tag: `ju.watch` gộp chung sách,
+nhạc, podcast nên chỉ có ô `rating` DÙNG CHUNG cho cả hai người, không có chỗ ghi nơi
+xem. Phim là thứ hai vợ chồng chấm khác nhau, nên phải là `rate:{a,b}` tách ô.
+
+- **Điểm sao:** `rate` là object theo vai (`a`/`b`), chấm bằng `Stars` chỉ ở dòng của
+  chính mình; dòng của người kia hiện đọc-thôi. Sửa chỗ này thì giữ nguyên tách ô.
+- **Chuyển phim cũ:** dải nhắc đầu mục đưa mục tag `Phim`/`Phim bộ` từ `ju.watch` sang.
+  Chuyển HẲN (gỡ khỏi `ju.watch`), không chép — hai bản của cùng một phim thì đánh dấu
+  đã xem ở bản này mà bản kia vẫn nằm đó, và không dấu hiệu nào cho thấy điều đó.
+  `rating` cũ được quy về `rate[by]` chứ không vứt đi.
+- **Chia sẻ** dùng helper `shareText()`: khay chia sẻ của máy, máy nào không có thì
+  copy. ⛔ Người dùng bấm huỷ khay ném `AbortError` — phải trả `'huy'` và DỪNG, đừng
+  rơi xuống nhánh copy rồi báo "đã copy" trong khi họ vừa cố ý thoát ra.
+- ⚠ Hai chỗ dùng `navigator.share` bên **Sóc** (dặn cô, hồ sơ y tế) còn viết khuôn cũ
+  `if(navigator.share)…else` nên dính đúng lỗi AbortError này. Đụng tới thì gọi
+  `shareText()` — nhưng phải gộp về `HeThong/dungapp/chung/` trước, đừng chép sang.
+
+⚠️ **`SEARCH_SRC` khai tab theo NƠI RENDER, không theo cảm giác** (vá 12/08/2026): 06
+khoá của `WishTab` từng khai `tab:'us'` trong khi `WishTab` render bên trong `DateTab`,
+nên bấm kết quả tìm kiếm nhảy sang Nhà mình — nơi `US_SEGS` không khai mục nào chứa
+chúng. Không lỗi nào phát ra vì tab đích vẫn tồn tại, chỉ là không có mục cần tìm.
+Thêm khoá mới vào `SEARCH_SRC` thì dò xem component đọc khoá đó nằm trong tab nào.
 
 ## Bản đồ component chính
 - `App` — 5 tab dưới (`MAIN_TABS`): 🏠 Tổ ấm (`home`) · 🏡 Nhà mình (`us`) · 💞 Chúng mình (`talk`) · 🗺️ Hẹn hò (`date`) · 🙋 Cá nhân (`me`). Tab 🐿️ Sóc đã gỡ.
