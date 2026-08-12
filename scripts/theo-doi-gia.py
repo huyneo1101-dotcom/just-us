@@ -107,12 +107,13 @@ def bao(tieu_de: str, than: str, couple_id: str | None = None, gui: bool = True)
         ok, vi_sao = day_push(couple_id, tieu_de, than)
         if not ok:
             them = f"\n\n⚠️ Thông báo trên máy chưa tới ({vi_sao}). Mở app Just Us một lần là nó tự bật lại."
-    # Cả hai kênh Telegram + Zalo (Huy chốt 12/08/2026). Kênh chưa cắm khoá thì im, kênh
-    # có khoá mà trượt thì bao_hai_kenh in stderr — rơi vào log của LaunchAgent.
+    # Telegram + bot Zalo hộ `vochong`. ⛔ KHÔNG dùng hộ `huongdien` — bot đó chỉ chở việc
+    # cửa hàng (Huy chốt 12/08/2026), món hai vợ chồng ngắm không thuộc luồng ấy. Kênh chưa
+    # cắm khoá thì im, kênh có khoá mà trượt thì bao_hai_kenh in stderr vào log LaunchAgent.
     try:
         sys.path.insert(0, "/Users/Huy/Claude/congcu")
         from bao_hai_kenh import bao as bao_hai_kenh
-        bao_hai_kenh(f"{tieu_de}\n{than}{them}")
+        bao_hai_kenh(f"{tieu_de}\n{than}{them}", ho="vochong")
     except Exception as e:
         print(f"  ⚠ không gửi được tin: {type(e).__name__}: {e}")
 
