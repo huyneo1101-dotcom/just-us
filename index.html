@@ -2622,6 +2622,25 @@ const SWEET_NOTES = ['Cảm ơn em/anh vì hôm nay nhé 💗', 'Nhớ em/anh qu
 const CALM_ANXIOUS = ['Thở ra dài hơn hít vào, lặp lại 1 phút', 'Kỹ thuật 5-4-3-2-1: gọi tên 5 thứ nhìn thấy, 4 nghe được, 3 chạm được…', 'Viết ra điều lo + tách “việc mình kiểm soát được” và “không”', 'Uống một tách trà ấm', 'Đi bộ chậm, chú ý từng bước chân', 'Nhắn cho người ấy điều đang khiến bạn lo', 'Tắm nước ấm thư giãn', 'Nghe nhạc thiền / lo-fi 10 phút', 'Ghi ra 3 điều bạn biết ơn hôm nay', 'Đặt điện thoại xuống 15 phút', 'Ôm người ấy 20 giây cho dịu lại', 'Tự nhủ: “Mình đã vượt qua những lúc khó hơn thế này.”', 'Đặt tay lên ngực, cảm nhận nhịp thở chậm lại', 'Chia việc đang lo thành 1 bước nhỏ làm ngay', 'Pha một ly nước ấm mật ong', 'Ra ngoài nhìn cây xanh / bầu trời 2 phút', 'Viết thư cho chính mình của tuần sau', 'Vươn vai, xoay cổ nhẹ nhàng', 'Gọi tên 5 thứ đang nhìn thấy quanh mình', 'Đặt tay lên ngực, cảm nhận hơi thở vào ra', 'Viết ra điều lo lắng và một việc nhỏ có thể làm ngay', 'Pha một ly trà ấm và uống thật chậm', 'Nhắn cho người mình tin một câu cho nhẹ lòng', 'Co duỗi vai gáy nhẹ nhàng vài phút', 'Nhắc mình: phần lớn điều lo chưa chắc xảy ra', 'Ra chỗ có nắng / cây xanh đứng vài phút'];
 
 /* ============ small components ============ */
+/* ▼▼ gộp từ HeThong/dungapp/chung/collapse-ju.jsx — CẤM sửa ở đây, sửa file gốc ▼▼ */
+/* ═══════════════════════════════════════════════════════════════════════════════
+   KHUNG GẤP MỞ DÙNG CHUNG — Just Us và Sóc
+
+   Hai app dùng đúng một component này, kể cả tiền tố khoá `ju.col.` và khoá mặc
+   định chung `ju.colDefault`, nên trạng thái gấp/mở đi theo cùng một bộ luật. Gộp
+   về một bản gốc ngày 12/08/2026 cùng đợt với `cloud-ju.jsx`.
+
+   Vì sao gộp một khối chỉ 14 dòng: đây là component HIỂN THỊ, tức thứ hay bị chỉnh
+   lặt vặt (đổi mũi tên, thêm hiệu ứng, sửa chỗ bấm). Chỉnh ở một app thì app kia
+   không theo, và lệch kiểu này không phát ra lỗi nào — hai màn hình chỉ đơn giản
+   là trông khác nhau, mà không ai mở hai app cạnh nhau để so.
+
+   ⛔ CẤM chép sang app. Đặt dòng chỉ thị «@@GOM collapse-ju.jsx» trong khối chú
+   thích ở `nguon/app.jsx` rồi dựng lại bằng `HeThong/dungapp/dung.py <thư mục app>`.
+
+   APP PHẢI CÓ SẴN: `store` (đủ get/set) và `useState` của React.
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
 function Collapse({
   id,
   title,
@@ -2655,6 +2674,8 @@ function Collapse({
     className: "col-body"
   }, children));
 }
+
+/* ▲▲ hết phần gộp collapse-ju.jsx ▲▲ */
 function Stars({
   value = 0,
   onChange

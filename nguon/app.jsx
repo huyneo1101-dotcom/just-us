@@ -536,20 +536,7 @@ const SWEET_NOTES=['Cảm ơn em/anh vì hôm nay nhé 💗','Nhớ em/anh quá 
 const CALM_ANXIOUS=['Thở ra dài hơn hít vào, lặp lại 1 phút','Kỹ thuật 5-4-3-2-1: gọi tên 5 thứ nhìn thấy, 4 nghe được, 3 chạm được…','Viết ra điều lo + tách “việc mình kiểm soát được” và “không”','Uống một tách trà ấm','Đi bộ chậm, chú ý từng bước chân','Nhắn cho người ấy điều đang khiến bạn lo','Tắm nước ấm thư giãn','Nghe nhạc thiền / lo-fi 10 phút','Ghi ra 3 điều bạn biết ơn hôm nay','Đặt điện thoại xuống 15 phút','Ôm người ấy 20 giây cho dịu lại','Tự nhủ: “Mình đã vượt qua những lúc khó hơn thế này.”','Đặt tay lên ngực, cảm nhận nhịp thở chậm lại','Chia việc đang lo thành 1 bước nhỏ làm ngay','Pha một ly nước ấm mật ong','Ra ngoài nhìn cây xanh / bầu trời 2 phút','Viết thư cho chính mình của tuần sau','Vươn vai, xoay cổ nhẹ nhàng','Gọi tên 5 thứ đang nhìn thấy quanh mình','Đặt tay lên ngực, cảm nhận hơi thở vào ra','Viết ra điều lo lắng và một việc nhỏ có thể làm ngay','Pha một ly trà ấm và uống thật chậm','Nhắn cho người mình tin một câu cho nhẹ lòng','Co duỗi vai gáy nhẹ nhàng vài phút','Nhắc mình: phần lớn điều lo chưa chắc xảy ra','Ra chỗ có nắng / cây xanh đứng vài phút'];
 
 /* ============ small components ============ */
-function Collapse({id,title,defaultOpen=true,right,children}){
-  const k='ju.col.'+id;
-  const [open,setOpen]=useState(()=>{ const v=store.get(k,null); if(v!=null) return !!v; const gd=store.get('ju.colDefault',null); return gd!=null?!!gd:defaultOpen; });
-  const toggle=()=>setOpen(o=>{ store.set(k,!o); return !o; });
-  return (
-    <div className="collapse">
-      <div className="sec-title">
-        <span className="col-h" onClick={toggle}><span className="col-chev">{open?'▾':'▸'}</span> {title}</span>
-        <span className="grow"></span>{right}
-      </div>
-      {open && <div className="col-body">{children}</div>}
-    </div>
-  );
-}
+/* @@GOM collapse-ju.jsx */
 function Stars({value=0,onChange}){
   return <span className="stars">{[1,2,3,4,5].map(i=>(
     <span key={i} onClick={onChange?()=>onChange(i===value?0:i):undefined} style={{cursor:onChange?'pointer':'default'}}>
