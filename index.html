@@ -2611,11 +2611,12 @@ const CALM_ANXIOUS = ['Thở ra dài hơn hít vào, lặp lại 1 phút', 'Kỹ
 /* ============ small components ============ */
 /* ▼▼ gộp từ HeThong/dungapp/chung/ui-ju.jsx — CẤM sửa ở đây, sửa file gốc ▼▼ */
 /* ═══════════════════════════════════════════════════════════════════════════════
-   BA MẢNH GIAO DIỆN DÙNG CHUNG — Just Us và Sóc
+   BỐN MẢNH GIAO DIỆN DÙNG CHUNG — Just Us và Sóc
 
-   `Collapse` (khung gấp mở) · `Sheet` (hộp thoại trượt) · `celebrate` (mưa emoji).
-   Ba khối này y hệt nhau ở hai app, kể cả tiền tố khoá `ju.col.` và khoá mặc định
-   `ju.colDefault`. Gộp về một bản gốc ngày 12/08/2026 cùng đợt với `cloud-ju.jsx`.
+   `Collapse` (khung gấp mở) · `Sheet` (hộp thoại trượt) · `celebrate` (mưa emoji) ·
+   `shareText` (chia sẻ một đoạn chữ). Ba khối đầu y hệt nhau ở hai app, kể cả tiền
+   tố khoá `ju.col.` và khoá mặc định `ju.colDefault`. Gộp về một bản gốc ngày
+   12/08/2026 cùng đợt với `cloud-ju.jsx`; `shareText` nhập về cùng ngày.
 
    Vì sao gộp cả những khối chỉ hơn mười dòng: đây là mảnh HIỂN THỊ, tức thứ hay bị
    chỉnh lặt vặt (đổi mũi tên, thêm hiệu ứng, sửa chỗ bấm). Chỉnh ở một app thì app
@@ -2709,6 +2710,46 @@ function celebrate(emojis) {
       } catch (e) {}
     }, 1800);
   }
+}
+
+/* Chia sẻ một đoạn chữ: ưu tiên khay chia sẻ của máy, máy nào không có thì copy vào
+   bộ nhớ tạm. Trả về một trong bốn chuỗi để nơi gọi tự chọn lời báo:
+     'share' đã mở khay và gửi xong · 'huy' người dùng bấm huỷ khay ·
+     'copy'  đã copy vào bộ nhớ tạm   · 'loi' không làm được gì.
+
+   ⛔ Bấm HUỶ khay chia sẻ ném `AbortError`. Đó KHÔNG phải lỗi, nên phải dừng hẳn ở
+   đó. Khuôn cũ `if(navigator.share) …; else { copy; báo "đã copy" }` rơi xuống nhánh
+   copy rồi báo "đã copy" đúng lúc người dùng vừa cố ý thoát ra — người ta tưởng đã
+   gửi rồi, hoặc tưởng bộ nhớ tạm đang giữ thứ mình không muốn. Không lỗi nào phát ra.
+
+   Ngược lại, lỗi KHÁC AbortError (khay không mở được, dữ liệu máy không nhận) thì
+   PHẢI rơi xuống copy — đó mới là lúc cần đường lui. Khuôn cũ nuốt sạch bằng
+   `.catch(()=>{})` nên gặp lỗi thật là không gửi, không copy, không báo gì. */
+async function shareText({
+  title,
+  text,
+  url
+}) {
+  try {
+    if (navigator.share) {
+      await navigator.share(url ? {
+        title,
+        text,
+        url
+      } : {
+        title,
+        text
+      });
+      return 'share';
+    }
+  } catch (e) {
+    if (e && e.name === 'AbortError') return 'huy';
+  }
+  try {
+    await navigator.clipboard.writeText(url ? text + '\n' + url : text);
+    return 'copy';
+  } catch (e) {}
+  return 'loi';
 }
 
 /* ▲▲ hết phần gộp ui-ju.jsx ▲▲ */
@@ -4626,18 +4667,12 @@ function InstallShare() {
   };
   const share = async () => {
     const url = location.href.split('#')[0];
-    try {
-      if (navigator.share) {
-        await navigator.share({
-          title: 'Just Us — Của riêng hai đứa',
-          text: 'Không gian riêng của hai đứa mình 💗',
-          url
-        });
-      } else {
-        await navigator.clipboard.writeText(url);
-        alert('Đã copy link — gửi cho nửa kia nhé!');
-      }
-    } catch (e) {}
+    const r = await shareText({
+      title: 'Just Us — Của riêng hai đứa',
+      text: 'Không gian riêng của hai đứa mình 💗',
+      url
+    });
+    if (r === 'copy') alert('Đã copy link — gửi cho nửa kia nhé!');else if (r === 'loi') alert('Không chia sẻ được — copy tay đường dẫn trên thanh địa chỉ nhé.');
   };
   return /*#__PURE__*/React.createElement("div", {
     className: "card",
@@ -5618,36 +5653,9 @@ function WishTab({
 const MOVIE_WHERE = ['Netflix', 'Disney+', 'Prime Video', 'HBO Max', 'Apple TV+', 'FPT Play', 'Galaxy Play', 'K+', 'YouTube', 'Rạp', 'Khác'];
 const MOVIE_TAGS = ['Phim lẻ', 'Phim bộ', 'Hoạt hình', 'Anime', 'Tài liệu'];
 
-/* Chia sẻ qua khay chia sẻ của máy; máy nào không có thì copy vào bộ nhớ tạm.
-   Người dùng bấm huỷ khay chia sẻ ném AbortError — đó KHÔNG phải lỗi, nên trả về
-   'huy' và dừng hẳn, đừng rơi xuống nhánh copy rồi báo "đã copy" trong khi họ vừa
-   cố ý thoát ra. */
-async function shareText({
-  title,
-  text,
-  url
-}) {
-  try {
-    if (navigator.share) {
-      await navigator.share(url ? {
-        title,
-        text,
-        url
-      } : {
-        title,
-        text
-      });
-      return 'share';
-    }
-  } catch (e) {
-    if (e && e.name === 'AbortError') return 'huy';
-  }
-  try {
-    await navigator.clipboard.writeText(url ? text + '\n' + url : text);
-    return 'copy';
-  } catch (e) {}
-  return 'loi';
-}
+/* `shareText` nay là mảnh dùng chung, gộp vào ở đầu file qua «@@GOM ui-ju.jsx».
+   Sửa nó thì sửa `HeThong/dungapp/chung/ui-ju.jsx` rồi dựng lại CẢ Just Us lẫn Sóc. */
+
 function MovieList({
   people,
   me,
@@ -20221,17 +20229,11 @@ function ImportantDates({
   };
   const shareBirthdays = async () => {
     const txt = buildBirthdayText();
-    try {
-      if (navigator.share) {
-        await navigator.share({
-          title: 'Danh sách sinh nhật',
-          text: txt
-        });
-      } else {
-        await navigator.clipboard.writeText(txt);
-        alert('Đã copy danh sách — dán vào tin nhắn/ghi chú nhé!');
-      }
-    } catch (e) {}
+    const r = await shareText({
+      title: 'Danh sách sinh nhật',
+      text: txt
+    });
+    if (r === 'copy') alert('Đã copy danh sách — dán vào tin nhắn/ghi chú nhé!');else if (r === 'loi') alert('Không chia sẻ được — thử lại hoặc copy tay nhé.');
   };
   const icsBirthdays = () => {
     const esc = s => String(s || '').replace(/([,;\\])/g, '\\$1').replace(/\n/g, '\\n');

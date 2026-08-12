@@ -1135,7 +1135,10 @@ function InstallShare(){
   const standalone = window.matchMedia && window.matchMedia('(display-mode: standalone)').matches;
   if(standalone||done) return null;
   const install=async()=>{ if(pe){ pe.prompt(); try{ await pe.userChoice; }catch(e){} setPe(null); } else alert('Trên điện thoại: mở menu trình duyệt → “Thêm vào màn hình chính” để cài Just Us như một app 💗'); };
-  const share=async()=>{ const url=location.href.split('#')[0]; try{ if(navigator.share){ await navigator.share({title:'Just Us — Của riêng hai đứa',text:'Không gian riêng của hai đứa mình 💗',url}); } else { await navigator.clipboard.writeText(url); alert('Đã copy link — gửi cho nửa kia nhé!'); } }catch(e){} };
+  const share=async()=>{ const url=location.href.split('#')[0];
+    const r=await shareText({title:'Just Us — Của riêng hai đứa',text:'Không gian riêng của hai đứa mình 💗',url});
+    if(r==='copy') alert('Đã copy link — gửi cho nửa kia nhé!');
+    else if(r==='loi') alert('Không chia sẻ được — copy tay đường dẫn trên thanh địa chỉ nhé.'); };
   return (
     <div className="card" style={{display:'flex',gap:8,alignItems:'center'}}>
       <span style={{fontSize:20}}>📲</span>
@@ -1452,17 +1455,8 @@ function WishTab({people,me,flash}){
 const MOVIE_WHERE=['Netflix','Disney+','Prime Video','HBO Max','Apple TV+','FPT Play','Galaxy Play','K+','YouTube','Rạp','Khác'];
 const MOVIE_TAGS=['Phim lẻ','Phim bộ','Hoạt hình','Anime','Tài liệu'];
 
-/* Chia sẻ qua khay chia sẻ của máy; máy nào không có thì copy vào bộ nhớ tạm.
-   Người dùng bấm huỷ khay chia sẻ ném AbortError — đó KHÔNG phải lỗi, nên trả về
-   'huy' và dừng hẳn, đừng rơi xuống nhánh copy rồi báo "đã copy" trong khi họ vừa
-   cố ý thoát ra. */
-async function shareText({title,text,url}){
-  try{
-    if(navigator.share){ await navigator.share(url?{title,text,url}:{title,text}); return 'share'; }
-  }catch(e){ if(e&&e.name==='AbortError') return 'huy'; }
-  try{ await navigator.clipboard.writeText(url?(text+'\n'+url):text); return 'copy'; }catch(e){}
-  return 'loi';
-}
+/* `shareText` nay là mảnh dùng chung, gộp vào ở đầu file qua «@@GOM ui-ju.jsx».
+   Sửa nó thì sửa `HeThong/dungapp/chung/ui-ju.jsx` rồi dựng lại CẢ Just Us lẫn Sóc. */
 
 function MovieList({people,me,flash}){
   const [items,setItems]=useLocal('ju.movies',[]);
@@ -5836,7 +5830,9 @@ function ImportantDates({people,me}){
     return '🎂 DANH SÁCH SINH NHẬT\n'+list.map(d=>{ const date=d.lunar?`${d.lunarDay}/${d.lunarMonth} âm lịch`:fmtDateVN(d.date);
       const sd=sideOf(d)!=='khac'?` (${sideLabel(sideOf(d))})`:''; return `• ${d.title}: ${date}${sd}`; }).join('\n'); };
   const shareBirthdays=async()=>{ const txt=buildBirthdayText();
-    try{ if(navigator.share){ await navigator.share({title:'Danh sách sinh nhật',text:txt}); } else { await navigator.clipboard.writeText(txt); alert('Đã copy danh sách — dán vào tin nhắn/ghi chú nhé!'); } }catch(e){} };
+    const r=await shareText({title:'Danh sách sinh nhật',text:txt});
+    if(r==='copy') alert('Đã copy danh sách — dán vào tin nhắn/ghi chú nhé!');
+    else if(r==='loi') alert('Không chia sẻ được — thử lại hoặc copy tay nhé.'); };
   const icsBirthdays=()=>{ const esc=(s)=>String(s||'').replace(/([,;\\])/g,'\\$1').replace(/\n/g,'\\n'); const ev=[];
     birthdays.forEach(d=>{ const dd=d.lunar?dnextDate(d):d.date; if(!dd) return; const dt=dd.replace(/-/g,'');
       ev.push('BEGIN:VEVENT','UID:'+dt+Math.random().toString(36).slice(2)+'@justus','DTSTART;VALUE=DATE:'+dt,
