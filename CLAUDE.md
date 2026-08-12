@@ -27,7 +27,7 @@ duy nhất ở `HeThong/dungapp/chung/`, được gộp vào lúc dựng bản q
 
 | File chung | Chứa gì | Dòng |
 |---|---|---|
-| `cloud-ju.jsx` | toàn bộ `Cloud` — đăng nhập, ghép đôi, đẩy/kéo dữ liệu, kho ảnh | 142 |
+| `cloud-ju.jsx` | toàn bộ `Cloud` — đăng nhập, ghép đôi, đẩy/kéo dữ liệu, kho ảnh — và `useLocal` | 153 |
 | `ui-ju.jsx` | `Collapse` · `Sheet` · `celebrate` | 37 |
 | `noti-runner-ju.jsx` | `NotiRunner` — máy nhắc chạy nền trong app | 38 |
 
