@@ -143,6 +143,95 @@ def ca_theodoi(td) -> dict:
         td.bocgia.lay_gia = that
 
     ra["40 định dạng tiền"] = td.tien(1290000) == "1.290.000₫" and td.tien(None) == "?"
+
+    # ── phiên Chrome dùng chung cho các món cùng một trang bán hàng ─────────────
+    # Đo ARGV/đếm lời gọi, không mở trang thật: ca phải tất định.
+    HTML_CO_GIA = ('<html><script type="application/ld+json">{"@type":"Product",'
+                   '"name":"Váy ren","offers":{"price":"385000","priceCurrency":"VND"}}'
+                   "</script></html>")
+    U1 = "https://shopee.vn/product/1492977224/29785993166"
+    U2 = "https://shopee.vn/product/991867112/28356625535"
+
+    # Miền `.invalid` không phân giải được: thân trang lấy sẵn mà được dùng thì ra giá ngay,
+    # còn nếu lớp đó bị gỡ thì mọi bậc mạng trượt tức khắc — ca tất định, không chạm mạng.
+    try:
+        ra["41 thân trang lấy sẵn được bóc trước mọi bậc mạng"] = (
+            td.bocgia.lay_gia("https://khong-co-that.invalid/mon", cho_chrome=False,
+                              cho_cdp=False, html_san=HTML_CO_GIA)["gia"] == 385000.0)
+    except Exception:
+        ra["41 thân trang lấy sẵn được bóc trước mọi bậc mạng"] = False
+
+    # PHẢI CHẶN — thân trang lấy sẵn mà KHÔNG có giá (bị đá về trang chủ) thì không được
+    # nhận bừa; phải đi tiếp thang và cuối cùng ném lỗi có nêu rõ bậc phiên-chung.
+    try:
+        td.bocgia.lay_gia(U1, cho_chrome=False, cho_cdp=False,
+                          html_san="<html><body>Shopee Việt Nam | Hot Deals</body></html>")
+        ra["42 PHẢI CHẶN nhận bừa thân trang không có giá"] = False
+    except td.bocgia.KhongBocDuoc as e:
+        ra["42 PHẢI CHẶN nhận bừa thân trang không có giá"] = "phiên-chung" in str(e)
+
+    goc_nhieu = getattr(td, "_thu_lay_nhieu", None)
+    import chrome_cdp as _cdp_mod
+    that_nhieu = _cdp_mod.lay_nhieu
+    moi_truong_goc = os.environ.get("JU_CHROME_THAT")
+    try:
+        goi = {"n": 0, "urls": None, "ghe": None}
+
+        def _gia_lay_nhieu(urls, **k):
+            goi["n"] += 1
+            goi["urls"] = list(urls)
+            goi["ghe"] = k.get("ghe_truoc")
+            return {u: HTML_CO_GIA for u in urls}
+
+        _cdp_mod.lay_nhieu = _gia_lay_nhieu
+        os.environ["JU_CHROME_THAT"] = "1"      # mốc đêm mới được mở Chrome có giao diện
+        kho = td.gom_phien_chung([_muc(url=U1), _muc(url=U2)], True)
+        ra["43 nhiều món cùng trang đi CHUNG một phiên Chrome"] = (
+            goi["n"] == 1 and len(goi["urls"]) == 2 and len(kho) == 2)
+        ra["44 phiên chung có ghé trang chủ lấy cookie trước"] = goi["ghe"] == "https://shopee.vn/"
+
+        # PHẢI CHẶN — một món lẻ thì đừng dựng phiên chung (mở Chrome mất 8-10 giây cho
+        # đúng một trang, trong khi thang từng món đã lo được).
+        goi["n"] = 0
+        td.gom_phien_chung([_muc(url=U1)], True)
+        ra["45 PHẢI CHẶN dựng phiên chung cho đúng một món"] = goi["n"] == 0
+
+        # PHẢI CHẶN — phiên chung hỏng thì cả lượt quét vẫn phải chạy tiếp bằng thang cũ.
+        def _no(urls, **k):
+            raise RuntimeError("Chrome chết giữa chừng")
+        _cdp_mod.lay_nhieu = _no
+        ra["46 PHẢI CHẶN phiên chung hỏng kéo cả lượt quét xuống"] = (
+            td.gom_phien_chung([_muc(url=U1), _muc(url=U2)], True) == {})
+
+        # PHẢI CHẶN — ba mốc ban ngày KHÔNG được mở Chrome có giao diện: cửa sổ nhảy lên
+        # giành tiêu điểm giữa lúc đang làm việc (Huy chê 12/08/2026). Chỉ mốc 03:00 đặt
+        # `JU_CHROME_THAT=1` mới được. Đo bằng số lần bậc Chrome bị gọi, không đo lời khai.
+        _cdp_mod.lay_nhieu = _gia_lay_nhieu
+        goi["n"] = 0
+        os.environ.pop("JU_CHROME_THAT", None)
+        kho_ngay = td.gom_phien_chung([_muc(url=U1), _muc(url=U2)], True)
+        ra["47 PHẢI CHẶN mở Chrome giao diện khi chưa bật cờ mốc đêm"] = (
+            goi["n"] == 0 and kho_ngay == {})
+
+        # ĐỐI CHỨNG — cờ bật lại thì bậc đó phải sống lại, kẻo bản vá thành "tắt vĩnh viễn".
+        goi["n"] = 0
+        os.environ["JU_CHROME_THAT"] = "1"
+        td.gom_phien_chung([_muc(url=U1), _muc(url=U2)], True)
+        ra["48 cờ mốc đêm bật thì bậc Chrome sống lại"] = goi["n"] == 1
+
+        # PHẢI CHẶN — cờ chỉ nhận đúng chuỗi "1"; giá trị lạ phải hiểu là TẮT, không mở bừa.
+        goi["n"] = 0
+        os.environ["JU_CHROME_THAT"] = "true"
+        td.gom_phien_chung([_muc(url=U1), _muc(url=U2)], True)
+        ra["49 PHẢI CHẶN coi giá trị lạ của cờ là đã bật"] = goi["n"] == 0
+    finally:
+        _cdp_mod.lay_nhieu = that_nhieu
+        if goc_nhieu is not None:
+            td._thu_lay_nhieu = goc_nhieu
+        if moi_truong_goc is None:
+            os.environ.pop("JU_CHROME_THAT", None)
+        else:
+            os.environ["JU_CHROME_THAT"] = moi_truong_goc
     return ra
 
 
@@ -241,6 +330,23 @@ def tu_kiem() -> int:
 # Bảng khai bản hỏng — đặt CUỐI file, sau mã (quy ước mục 17).
 # Mỗi dòng: (tên, file gốc, chuỗi cần thay, chuỗi thay bằng, các ca PHẢI chuyển sang đỏ).
 BAN_HONG = [
+    ("bỏ lớp bóc thân trang lấy sẵn, món nào cũng tự mở phiên riêng", F_BOCGIA,
+     "    if html_san:\n        ra = boc_tu_html(html_san)",
+     "    if False:\n        ra = boc_tu_html(html_san)",
+     ["41"]),
+    ("nhận bừa thân trang lấy sẵn dù bóc không ra giá", F_BOCGIA,
+     '        daq.append("phiên-chung: lấy được trang (%d KB) nhưng không thấy mốc giá"',
+     '        return {"gia": 1.0, "tien": "VND", "ten": "", "cach": "bừa", "url": url}\n'
+     '        daq.append("phiên-chung: lấy được trang (%d KB) nhưng không thấy mốc giá"',
+     ["42"]),
+    ("mở phiên Chrome riêng cho từng món thay vì gom chung", F_THEODOI,
+     "        if len(urls) < 2:            # một món lẻ thì thang cũ đã đủ, không cần dựng phiên chung",
+     "        if True:",
+     ["43", "44"]),
+    ("gỡ bước ghé trang chủ lấy cookie của phiên chung", F_THEODOI,
+     '            ra.update(lay_nhieu(urls, ghe_truoc=f"https://{mien}/") or {})',
+     "            ra.update(lay_nhieu(urls) or {})",
+     ["44"]),
     ("gỡ chốt khoảng giá hợp lý", F_BOCGIA,
      "    return isinstance(x, (int, float)) and GIA_MIN <= x <= GIA_MAX",
      "    return isinstance(x, (int, float))",
@@ -281,6 +387,14 @@ BAN_HONG = [
      '    m["hist"] = hist[-MOC_LICH_SU:]',
      '    m["hist"] = hist',
      ["38"]),
+    ("mở Chrome giao diện ở mọi mốc, kể cả giờ làm việc", F_THEODOI,
+     '    return (os.environ.get("JU_CHROME_THAT") or "").strip() == "1"',
+     "    return True",
+     ["47", "49"]),
+    ("tắt vĩnh viễn bậc Chrome, cờ mốc đêm cũng không bật lại", F_THEODOI,
+     '    return (os.environ.get("JU_CHROME_THAT") or "").strip() == "1"',
+     "    return False",
+     ["43", "44", "48"]),
 ]
 
 if __name__ == "__main__":

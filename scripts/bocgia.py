@@ -330,17 +330,34 @@ BO_CHUYEN = {"tiki.vn": bo_tiki, "shopee.vn": bo_shopee}
 
 
 # ------------------------------------------------------------------ đường chính
-def lay_gia(url: str, *, cho_chrome: bool = True, cho_cdp: bool = True) -> dict:
+def lay_gia(url: str, *, cho_chrome: bool = True, cho_cdp: bool = True,
+            html_san: str | None = None) -> dict:
     """Trả `{gia, tien, ten, cach, url}`. Không lấy được thì ném KhongBocDuoc kèm lý do.
 
     Thang đi từ rẻ tới đắt và DỪNG KHI BÓC RA GIÁ, không dừng khi có mã 200 — trang dựng
     bằng JavaScript trả 200 kèm thân rỗng, nên mã trả về không phải bằng chứng lấy được gì.
+
+    `html_san`: thân trang phía gọi đã lấy sẵn trong một phiên Chrome dùng chung. Bóc thử
+    nó TRƯỚC mọi bậc mạng — Shopee siết theo tần suất, mở lại một phiên riêng cho món này
+    là tự chuốc lấy trang đăng nhập (đo 12/08/2026: món Shopee đầu tiên trong lượt ra giá,
+    04 món sau bị đá về trang chủ). Bóc không ra thì vẫn đi tiếp thang, không nuốt lỗi.
     """
     url = giai_link((url or "").strip())
     if not re.match(r"^https?://", url, re.I):
         raise KhongBocDuoc("link phải bắt đầu bằng http:// hoặc https://")
     mien = ten_mien(url)
     daq = []
+
+    if html_san:
+        ra = boc_tu_html(html_san)
+        if ra:
+            ra["cach"] = f"{ra['cach']}/phiên-chung"
+            if not ra.get("ten"):
+                ra["ten"] = boc_ten(html_san)
+            ra["url"] = url
+            return ra
+        daq.append("phiên-chung: lấy được trang (%d KB) nhưng không thấy mốc giá"
+                   % (len(html_san) // 1024))
 
     bo = BO_CHUYEN.get(mien)
     if bo:

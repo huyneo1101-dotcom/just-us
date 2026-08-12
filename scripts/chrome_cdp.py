@@ -135,6 +135,84 @@ def _cong_ranh(dau: int = CONG_DAU) -> int:
     raise LoiCDP("không tìm được cổng rảnh cho Chrome")
 
 
+def _ho_so() -> tuple[str, bool]:
+    """Thư mục hồ sơ Chrome cho một lượt chạy — trả (đường dẫn, có xoá sau khi xong).
+
+    Mặc định là hồ sơ TẠM, mỗi lượt một thư mục rồi xoá: sạch tuyệt đối, nhưng cũng
+    mất luôn cookie, nên trang đòi đăng nhập thì lượt nào cũng ra màn hình đăng nhập.
+    Đặt `JU_CHROME_HO_SO=<thư mục>` thì dùng hồ sơ CỐ ĐỊNH và GIỮ lại sau khi chạy —
+    đường duy nhất để phiên đăng nhập Shopee sống qua các lượt.
+
+    Đọc biến môi trường ngay tại đây (không đọc lúc nạp module) để phía gọi đặt biến
+    lúc nào cũng ăn, và để ca tự kiểm đặt được biến mà không phải nạp lại module.
+
+    ⚠ Hồ sơ cố định chứa cookie đăng nhập của tài khoản thật, nên đặt quyền 700 ngay
+    khi tạo (quy tắc mục 25).
+    """
+    giu = (os.environ.get("JU_CHROME_HO_SO") or "").strip()
+    if giu:
+        os.makedirs(giu, exist_ok=True)
+        try:
+            os.chmod(giu, 0o700)
+        except OSError:
+            pass
+        return giu, False
+    return tempfile.mkdtemp(prefix="ju-cdp-"), True
+
+
+def _giau_cua_so(ws) -> None:
+    """Thu cửa sổ Chrome xuống Dock ngay khi nối được CDP.
+
+    `--window-position=-3200,-3200` KHÔNG đủ trên macOS: hệ điều hành kéo cửa sổ trở
+    lại màn hình và Chrome giành luôn tiêu điểm, nên cứ tới mốc quét là cửa sổ nhảy đè
+    lên việc đang làm. Thu nhỏ qua giao thức là đường duy nhất chắc chắn ăn.
+
+    Không dùng `--headless` thay thế được: Shopee đá bản không giao diện về trang chủ.
+    Cửa sổ thu nhỏ vẫn dựng trang bình thường — hai ca "JavaScript đã chạy thật" và
+    "ghé trang trước rồi điều hướng" trong `--tu-kiem` là chỗ canh điều đó.
+    """
+    try:
+        ws.gui({"id": 88_888, "method": "Browser.getWindowForTarget"})
+        het = time.time() + 5
+        while time.time() < het:
+            g = ws.nhan()
+            if isinstance(g, dict) and g.get("id") == 88_888:
+                wid = (g.get("result") or {}).get("windowId")
+                if wid:
+                    ws.gui({"id": 88_889, "method": "Browser.setWindowBounds",
+                            "params": {"windowId": wid, "bounds": {"windowState": "minimized"}}})
+                return
+    except (LoiCDP, OSError):
+        pass            # giấu cửa sổ hỏng thì chỉ phiền mắt, không được kéo đổ lượt quét
+
+
+def _dong_chrome(p, ws, giu_ho_so: bool) -> None:
+    """Đóng Chrome. Hồ sơ cố định thì phải đóng ÊM, không cắt ngang bằng tín hiệu.
+
+    Cookie nằm trong SQLite và chỉ được ghi xuống đĩa khi Chrome tự kết thúc; bắn
+    SIGTERM (`p.terminate()`) thì lượt sau vào lại vẫn là khách chưa đăng nhập, mà
+    không có lỗi nào phát ra — đúng thứ làm hỏng cả mục đích giữ hồ sơ. `Browser.close`
+    bảo Chrome tự thoát, xong mới tới các bước cắt cứng làm lưới hứng.
+    """
+    if giu_ho_so and ws is not None:
+        try:
+            ws.gui({"id": 99_999, "method": "Browser.close"})
+        except (LoiCDP, OSError):
+            pass
+        try:
+            p.wait(timeout=15)
+        except subprocess.TimeoutExpired:
+            pass
+    if ws is not None:
+        ws.dong()
+    if p.poll() is None:
+        p.terminate()
+    try:
+        p.wait(timeout=8)
+    except subprocess.TimeoutExpired:
+        p.kill()
+
+
 def _tab(cong: int, han: float):
     """Chờ Chrome mở cổng gỡ lỗi rồi trả về tab trang (bỏ qua tab nội bộ)."""
     het = time.time() + han
@@ -165,7 +243,7 @@ def lay_dom(url: str, *, cho: int = CHO_MAC_DINH, hien: bool = False, timeout: i
     if not os.path.exists(CHROME):
         raise LoiCDP(f"không thấy Chrome ở {CHROME}")
     cong = _cong_ranh()
-    tmp = tempfile.mkdtemp(prefix="ju-cdp-")
+    tmp, xoa_tmp = _ho_so()
     lenh = [CHROME, f"--remote-debugging-port={cong}", f"--user-data-dir={tmp}",
             "--no-first-run", "--no-default-browser-check", "--disable-extensions",
             "--mute-audio", "--disable-background-networking", "--window-size=1280,900",
@@ -179,6 +257,8 @@ def lay_dom(url: str, *, cho: int = CHO_MAC_DINH, hien: bool = False, timeout: i
     try:
         tab = _tab(cong, min(25, timeout))
         ws = WS(tab["webSocketDebuggerUrl"], timeout=timeout)
+        if not hien:
+            _giau_cua_so(ws)
         if ghe_truoc:
             time.sleep(cho_ghe)
             ws.gui({"id": 0, "method": "Page.navigate", "params": {"url": url}})
@@ -196,14 +276,9 @@ def lay_dom(url: str, *, cho: int = CHO_MAC_DINH, hien: bool = False, timeout: i
                 raise LoiCDP("Chrome trả về không phải HTML: " + json.dumps(g)[:200])
         raise LoiCDP("chờ 30s không thấy Chrome trả HTML")
     finally:
-        if ws:
-            ws.dong()
-        p.terminate()
-        try:
-            p.wait(timeout=8)
-        except subprocess.TimeoutExpired:
-            p.kill()
-        shutil.rmtree(tmp, ignore_errors=True)
+        _dong_chrome(p, ws, not xoa_tmp)
+        if xoa_tmp:
+            shutil.rmtree(tmp, ignore_errors=True)
 
 
 def lay_nhieu(urls, *, cho: int = CHO_MAC_DINH, ghe_truoc: str | None = None,
@@ -220,7 +295,7 @@ def lay_nhieu(urls, *, cho: int = CHO_MAC_DINH, ghe_truoc: str | None = None,
     if not os.path.exists(CHROME):
         raise LoiCDP(f"không thấy Chrome ở {CHROME}")
     cong = _cong_ranh()
-    tmp = tempfile.mkdtemp(prefix="ju-cdp-")
+    tmp, xoa_tmp = _ho_so()
     lenh = [CHROME, f"--remote-debugging-port={cong}", f"--user-data-dir={tmp}",
             "--no-first-run", "--no-default-browser-check", "--disable-extensions",
             "--mute-audio", "--disable-background-networking", "--window-size=1280,900",
@@ -234,6 +309,8 @@ def lay_nhieu(urls, *, cho: int = CHO_MAC_DINH, ghe_truoc: str | None = None,
     try:
         tab = _tab(cong, min(25, timeout))
         ws = WS(tab["webSocketDebuggerUrl"], timeout=timeout)
+        if not hien:
+            _giau_cua_so(ws)
         if ghe_truoc:
             time.sleep(cho_ghe)
         for i, u in enumerate(urls):
@@ -258,14 +335,9 @@ def lay_nhieu(urls, *, cho: int = CHO_MAC_DINH, ghe_truoc: str | None = None,
                 ra[u] = ""      # một link hỏng không được kéo đổ cả lượt
         return ra
     finally:
-        if ws:
-            ws.dong()
-        p.terminate()
-        try:
-            p.wait(timeout=8)
-        except subprocess.TimeoutExpired:
-            p.kill()
-        shutil.rmtree(tmp, ignore_errors=True)
+        _dong_chrome(p, ws, not xoa_tmp)
+        if xoa_tmp:
+            shutil.rmtree(tmp, ignore_errors=True)
 
 
 # ------------------------------------------------------------------ tự kiểm
@@ -341,8 +413,84 @@ def tu_kiem() -> int:
     except (LoiCDP, OSError):
         print("  ✓ cổng chết: bắt tay thất bại có tiếng")
 
+    hong += _kiem_ho_so()
+
     print("✅ ĐẠT" if hong == 0 else f"❌ {hong} ca không đạt")
     return 1 if hong else 0
+
+
+def _kiem_ho_so() -> int:
+    """Bộ ca cho hồ sơ cố định — thứ giữ phiên đăng nhập Shopee sống qua các lượt.
+
+    Đo đúng công dụng chứ không đo lời khai: lượt 01 nhận cookie, lượt 02 vào trang
+    khác rồi đọc lại. Hồ sơ tạm thì lượt 02 phải KHÔNG thấy cookie (ca đối chứng);
+    hồ sơ cố định thì PHẢI thấy (ca phải chặn). Thiếu ca đối chứng thì một bản hỏng
+    kiểu "luôn dùng hồ sơ cố định" vẫn xanh.
+    """
+    import http.server
+    import threading
+
+    class H2(http.server.BaseHTTPRequestHandler):
+        def do_GET(self):
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html; charset=utf-8")
+            if self.path.startswith("/cam"):
+                # PHẢI có Max-Age: cookie không hạn là cookie phiên, Chrome giữ trong RAM và
+                # không bao giờ ghi xuống hồ sơ — ca sẽ đỏ vì lý do sai. Cookie đăng nhập
+                # thật của Shopee cũng là loại có hạn, nên đây mới là ca đo đúng thứ cần đo.
+                self.send_header("Set-Cookie", "juck=daluu; Path=/; Max-Age=3600")
+            self.end_headers()
+            self.wfile.write(b"<html><head><title>Ca ho so</title></head><body><div id=c>trong</div>"
+                             b"<script>document.getElementById('c').textContent="
+                             b"'CK:'+(document.cookie||'rong');</script></body></html>")
+
+        def log_message(self, *a):
+            pass
+
+    srv = http.server.HTTPServer(("127.0.0.1", 0), H2)
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+    cong = srv.server_address[1]
+    goc = os.environ.get("JU_CHROME_HO_SO")
+    kho = tempfile.mkdtemp(prefix="ju-kiem-hoso-")
+    ho_so = os.path.join(kho, "ho-so")
+    hong = 0
+    try:
+        # Ca ĐỐI CHỨNG — hồ sơ tạm: cookie KHÔNG được sống sang lượt sau.
+        os.environ.pop("JU_CHROME_HO_SO", None)
+        lay_dom(f"http://127.0.0.1:{cong}/cam", cho=2)
+        h = lay_dom(f"http://127.0.0.1:{cong}/doc", cho=2)
+        ok = "juck" not in h
+        print(f"  {'✓' if ok else '✗'} hồ sơ tạm: cookie KHÔNG sống sang lượt sau (đối chứng)")
+        hong += 0 if ok else 1
+
+        # Ca PHẢI CHẶN — hồ sơ cố định: cookie phải sống sang lượt sau.
+        os.environ["JU_CHROME_HO_SO"] = ho_so
+        lay_dom(f"http://127.0.0.1:{cong}/cam", cho=2)
+        h2 = lay_dom(f"http://127.0.0.1:{cong}/doc", cho=2)
+        ok2 = "juck=daluu" in h2
+        print(f"  {'✓' if ok2 else '✗'} hồ sơ cố định: cookie sống sang lượt sau")
+        hong += 0 if ok2 else 1
+
+        # Ca PHẢI CHẶN — hồ sơ cố định không được bị xoá cùng rác tạm.
+        ok3 = os.path.isdir(ho_so)
+        print(f"  {'✓' if ok3 else '✗'} hồ sơ cố định còn nguyên sau khi chạy xong")
+        hong += 0 if ok3 else 1
+
+        # Ca PHẢI CHẶN — hồ sơ chứa cookie đăng nhập thật nên quyền phải là 700.
+        ok4 = ok3 and (os.stat(ho_so).st_mode & 0o077) == 0
+        print(f"  {'✓' if ok4 else '✗'} hồ sơ cố định để quyền 700, tài khoản khác không đọc được")
+        hong += 0 if ok4 else 1
+    except LoiCDP as e:
+        print(f"  ✗ bộ ca hồ sơ không chạy được: {e}")
+        hong += 4
+    finally:
+        srv.shutdown()
+        if goc is None:
+            os.environ.pop("JU_CHROME_HO_SO", None)
+        else:
+            os.environ["JU_CHROME_HO_SO"] = goc
+        shutil.rmtree(kho, ignore_errors=True)
+    return hong
 
 
 if __name__ == "__main__":

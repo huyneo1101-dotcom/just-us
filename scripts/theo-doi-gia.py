@@ -41,6 +41,21 @@ CACH_LAN_DO_PHUT = 60       # đo lại sớm hơn ngần này thì bỏ qua, tr
 LAN_LOI_MOI_BAO = 3         # lỗi liên tiếp tới lần này mới báo, tránh kêu vì mạng chập chờn
 
 
+def cho_chrome_that() -> bool:
+    """Có được phép mở Chrome CÓ GIAO DIỆN ở lượt này không.
+
+    Chrome thật là bậc duy nhất lấy được giá Shopee, nhưng nó mở cửa sổ trên màn hình
+    và giành tiêu điểm, nên chạy ở giờ làm việc là chen ngang việc đang làm. Vì thế bậc
+    này TẮT mặc định và chỉ bật ở mốc đêm — mốc 03:00 của LaunchAgent
+    `com.huy.justus-san-gia-chrome` đặt `JU_CHROME_THAT=1`.
+
+    Ba mốc ban ngày (08:10 · 13:10 · 20:10) vẫn chạy, chỉ là dừng ở bậc `curl`, đủ cho
+    các trang không chặn (Tiki, Vivaia, Dyson). Đọc biến ngay tại đây, không đọc lúc nạp
+    module, để bộ ca đặt biến lúc nào cũng ăn.
+    """
+    return (os.environ.get("JU_CHROME_THAT") or "").strip() == "1"
+
+
 def gio_vn() -> str:
     return datetime.now().strftime("%H:%M %d/%m")
 
@@ -92,12 +107,14 @@ def bao(tieu_de: str, than: str, couple_id: str | None = None, gui: bool = True)
         ok, vi_sao = day_push(couple_id, tieu_de, than)
         if not ok:
             them = f"\n\n⚠️ Thông báo trên máy chưa tới ({vi_sao}). Mở app Just Us một lần là nó tự bật lại."
+    # Cả hai kênh Telegram + Zalo (Huy chốt 12/08/2026). Kênh chưa cắm khoá thì im, kênh
+    # có khoá mà trượt thì bao_hai_kenh in stderr — rơi vào log của LaunchAgent.
     try:
         sys.path.insert(0, "/Users/Huy/Claude/congcu")
-        from gui_tele import gui_text
-        gui_text(f"{tieu_de}\n{than}{them}")
+        from bao_hai_kenh import bao as bao_hai_kenh
+        bao_hai_kenh(f"{tieu_de}\n{than}{them}")
     except Exception as e:
-        print(f"  ⚠ không gửi được Telegram: {type(e).__name__}: {e}")
+        print(f"  ⚠ không gửi được tin: {type(e).__name__}: {e}")
 
 
 def day_push(couple_id: str, tieu_de: str, than: str) -> tuple[bool, str]:
@@ -172,11 +189,57 @@ def xet_bao(m: dict, gia_moi: float) -> tuple[str, str] | None:
     return ("giam", f"giảm {tien(chenh)} ({chenh / cu * 100:.0f}%) so với {tien(cu)}")
 
 
-def cap_nhat_mot(m: dict, *, gui: bool, couple_id: str | None) -> dict:
+def gom_phien_chung(ds: list, khan: bool) -> dict:
+    """Lấy trước thân trang của các món cùng một trang bán hàng, trong CÙNG một phiên Chrome.
+
+    Hai lý do, lý do thứ hai mới là lý do chính:
+      · mở Chrome mất 8-10 giây và bước ghé trang chủ lấy cookie mất chừng ấy nữa, nên mở
+        lại cho từng món là trả cái giá đó lặp lại;
+      · Shopee SIẾT THEO TẦN SUẤT. Đo 12/08/2026: món Shopee đầu tiên trong lượt ra giá
+        bình thường, 04 món sau mỗi món một hồ sơ Chrome trắng nên bị đá về trang chủ
+        ("Shopee Việt Nam | Hot Deals") hoặc bị đòi đăng nhập ("Login now to start
+        shopping!"). Đi chung một phiên thì cookie của lần ghé đầu còn nguyên.
+
+    Lấy hụt KHÔNG phải lỗi: phía gọi vẫn đi thang cũ cho món đó.
+    """
+    if not cho_chrome_that():
+        return {}
+    theo_mien = {}
+    for m in ds:
+        if not isinstance(m, dict) or not m.get("url") or not can_do(m, khan):
+            continue
+        try:
+            that = bocgia.giai_link(str(m.get("url")).strip())
+        except Exception:
+            continue
+        mien = bocgia.ten_mien(that)
+        if mien in bocgia.MIEN_CAN_GHE:
+            theo_mien.setdefault(mien, []).append(that)
+
+    ra = {}
+    for mien, urls in theo_mien.items():
+        if len(urls) < 2:            # một món lẻ thì thang cũ đã đủ, không cần dựng phiên chung
+            continue
+        try:
+            from chrome_cdp import lay_nhieu
+            ra.update(lay_nhieu(urls, ghe_truoc=f"https://{mien}/") or {})
+            print(f"  ⟐ {mien}: lấy {len(urls)} trang trong một phiên Chrome")
+        except Exception as e:
+            print(f"  ⚠ {mien}: phiên chung trượt ({type(e).__name__}) — quay về thang từng món")
+    return ra
+
+
+def cap_nhat_mot(m: dict, *, gui: bool, couple_id: str | None, kho_html: dict | None = None) -> dict:
     """Đo một món, cập nhật tại chỗ. Trả về mô tả việc đã xảy ra."""
     ten = chuan(m.get("name")) or chuan(m.get("url"))[:60]
+    san = None
+    if kho_html:
+        try:
+            san = kho_html.get(bocgia.giai_link(str(m.get("url") or "").strip())) or None
+        except Exception:
+            san = None
     try:
-        kq = bocgia.lay_gia(m.get("url", ""))
+        kq = bocgia.lay_gia(m.get("url", ""), html_san=san, cho_cdp=cho_chrome_that())
     except bocgia.KhongBocDuoc as e:
         m["last"] = int(time.time() * 1000)
         m["errN"] = int(m.get("errN") or 0) + 1
@@ -237,13 +300,15 @@ def chay(*, gui: bool = True, ghi: bool = True, khan: bool = False) -> int:
         if not isinstance(ds, list) or not ds:
             continue
         print(f"▸ cặp {str(couple_id)[:8]}… — {len(ds)} món đang theo dõi")
+        kho_html = gom_phien_chung(ds, khan)
         doi = False
         for m in ds:
             if not isinstance(m, dict) or not m.get("url"):
                 continue
             if not can_do(m, khan):
                 continue
-            kq = cap_nhat_mot(m, gui=gui, couple_id=couple_id if gui else None)
+            kq = cap_nhat_mot(m, gui=gui, couple_id=couple_id if gui else None,
+                              kho_html=kho_html)
             doi = True
             tong["do"] += 1
             if kq["trang_thai"] == "loi":

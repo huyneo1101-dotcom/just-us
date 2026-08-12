@@ -193,8 +193,9 @@ ngắm; giá hạ thì có tin Telegram + thông báo đẩy trên điện tho�
 | Bóc giá | `scripts/bocgia.py` |
 | Chrome thật qua CDP | `scripts/chrome_cdp.py` |
 | Quét + báo | `scripts/theo-doi-gia.py` (LaunchAgent `com.huy.justus-san-gia`, 08:10 · 13:10 · 20:10) |
+| Mốc ĐÊM mở Chrome | LaunchAgent `com.huy.justus-san-gia-chrome`, 03:00 — mốc DUY NHẤT được mở Chrome có giao diện |
 | Khoá Supabase | `scripts/sb_admin.py` — service_role key tự lấy qua Supabase CLI, ghi `~/.config/api-keys.env` |
-| Bộ ca kiểm | `scripts/thu_san_gia.py --tu-kiem` — 40 ca (18 PHẢI CHẶN) · 10 bản hỏng, đã nạp `khoe.py::BO_TEST` |
+| Bộ ca kiểm | `scripts/thu_san_gia.py --tu-kiem` — 44 ca (25 PHẢI CHẶN) · 16 bản hỏng, đã nạp `khoe.py::BO_TEST` |
 
 **App KHÔNG tự đo giá** — trình duyệt bị CORS chặn đọc trang của trang bán hàng khác. Máy ở
 nhà đo rồi ghi giá ngược vào `justus_data`; app chỉ nhập link và xem.
@@ -209,6 +210,27 @@ cùng một link: API `get_pc` trả **403** (mã lỗi 90309999); bản dành c
 đá về trang chủ (thân 199 KB, **0 ký tự ₫**). Ghé `https://shopee.vn/` 10 giây lấy cookie rồi
 `Page.navigate` sang trang sản phẩm thì ra đủ giá kèm JSON-LD. Miền cần cách này khai ở
 `bocgia.MIEN_CAN_GHE`. Link rút gọn `vn.shp.ee` được giải trước (`giai_link`).
+
+⚠ **Chrome có giao diện CHỈ chạy ở mốc 03:00, và phải giấu cửa sổ bằng giao thức** (vá
+12/08/2026 sau khi Huy chê *"đừng có hiện chrome lên trên claude tao đang làm việc nữa"*).
+Ba điều đã trả giá, mỗi điều đều hỏng câm:
+
+- `--window-position=-3200,-3200` **KHÔNG đủ trên macOS** — hệ điều hành kéo cửa sổ về màn
+  hình và Chrome giành luôn tiêu điểm. Vá bằng `Browser.setWindowBounds` với
+  `windowState:"minimized"` ngay sau khi nối CDP (`chrome_cdp._giau_cua_so`).
+- **Hồ sơ tạm mất sạch cookie mỗi lượt**, nên Shopee đòi đăng nhập lần nào cũng như lần đầu.
+  Đặt `JU_CHROME_HO_SO=<thư mục>` để dùng hồ sơ CỐ ĐỊNH; đang dùng
+  `~/Library/Application Support/JustUsSanGia/chrome-ho-so` (ngoài repo, quyền 700 vì chứa
+  cookie tài khoản thật). Đăng nhập lại khi hết phiên: mở Chrome với đúng `--user-data-dir`
+  đó rồi đăng nhập tay — **cấm** hỏi mật khẩu qua chat.
+- **Cookie chỉ xuống đĩa khi Chrome tự thoát.** Cắt bằng `p.terminate()` thì lượt sau vẫn là
+  khách chưa đăng nhập mà không lỗi nào phát ra — phải gửi `Browser.close` trước
+  (`chrome_cdp._dong_chrome`). Ca canh dùng cookie có `Max-Age`; cookie không hạn là cookie
+  phiên, Chrome không bao giờ ghi nó xuống hồ sơ nên ca sẽ đỏ vì lý do sai.
+
+Cờ `JU_CHROME_THAT=1` bật bậc Chrome; ba mốc ban ngày không có cờ nên dừng ở bậc `curl`, đủ
+cho Tiki/Vivaia/Dyson. Bộ ca canh cả hai chiều: ca 47 chặn mở Chrome khi chưa bật cờ, ca 48
+là đối chứng bắt bậc đó sống lại khi bật, ca 49 chặn việc coi giá trị lạ (`true`) là đã bật.
 
 ⚠ **Bóc giá KHÔNG có lớp "dò số kèm chữ ₫"** — trang bán hàng nào cũng đầy giá của sản phẩm
 gợi ý bên cạnh, lớp đó đọc trúng giá hàng khác mà không dấu hiệu nào phát ra. Chỉ 04 mốc tất
