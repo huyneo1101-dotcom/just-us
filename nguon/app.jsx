@@ -16,17 +16,6 @@ const SB_KEY='sb_publishable_DMMPv5L2kGhrHTxeQ72iKw_dIh13iT1';
 const SYNC_KEYS=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood','ju.qa','ju.timeline','ju.coupons','ju.chores','ju.lovejar','ju.quiz','ju.city','ju.goals','ju.checkin','ju.challengeDone','ju.homecfg','ju.diary','ju.projects','ju.vinhaUrl','ju.checkins','ju.menu','ju.period','ju.menuPlan','ju.accuKey','ju.habits','ju.hiddenSpots','ju.usOrder','ju.eventPrefs','ju.child','ju.childGrowth','ju.childVaccines','ju.childMilestones','ju.childDiary','ju.partnerWishes','ju.todos','ju.spotify','ju.dishPrefs','ju.favDishes','ju.childPack','ju.childSkills','ju.childMed','ju.childIllness','ju.childWords','ju.childTantrum','ju.childParenting','ju.saveTips','ju.saveCustom','ju.funPrefs','ju.routine','ju.routineIssues','ju.noti','ju.family','ju.health','ju.transfers','ju.skillGuidesDone','ju.expenses','ju.budget','ju.vinhaSync','ju.menuOrder','ju.notesSeen','ju.intimacy','ju.intimacySeen','ju.quizKnow','ju.familyRules','ju.expiry','ju.stash','ju.docs','ju.tuvi','ju.thanso','ju.checkinSeen','ju.menuHidden','ju.gameBets','ju.cook','ju.cookLogs','ju.cookRewards','ju.cookHelp','ju.cookPantry','ju.cookFridge','ju.docsLock','ju.childContacts','ju.childSafety','ju.childDocs','ju.childPotty','ju.childNoti','ju.childSchools','ju.childTeacherNote','ju.childTripPack','ju.childDuty','ju.childOneLine','ju.childQuotes','ju.childLetters','ju.childPhotos','ju.pricewatch'];
 /* @@GOM cloud-ju.jsx */
 
-function useLocal(key,initial){
-  const [v,setV]=useState(()=>store.get(key,initial));
-  useEffect(()=>{ store.set(key,v); Cloud.schedulePush(); },[key,v]);
-  // nhận thay đổi từ máy kia
-  useEffect(()=>{
-    const h=()=>{ const nv=store.get(key,initial); setV(prev=> JSON.stringify(prev)===JSON.stringify(nv)?prev:nv); };
-    window.addEventListener('ju:remote',h);
-    return ()=>window.removeEventListener('ju:remote',h);
-  },[key]);
-  return [v,setV];
-}
 
 /* ============ helpers ============ */
 const uid=()=> Date.now().toString(36)+Math.random().toString(36).slice(2,7);

@@ -498,8 +498,9 @@ const SYNC_KEYS = ['ju.setup', 'ju.wish', 'ju.bucket', 'ju.watch', 'ju.links', '
                         đây chính là chỗ hai app khác nhau, đừng đưa vào đây
      const store      — lớp lưu trữ, cần đủ get/set/del
 
-   Khối này KHÔNG đụng tới React, nên đặt ở đâu trong file cũng chạy, miễn là sau
-   bốn thứ trên.
+   Phần `Cloud` không đụng tới React nên đặt ở đâu cũng chạy, miễn là sau bốn thứ
+   trên. Riêng `useLocal` ở cuối file cần `useState` và `useEffect` đã lấy ra khỏi
+   React từ trước.
    ═══════════════════════════════════════════════════════════════════════════════ */
 
 let _sb = null;
@@ -866,8 +867,12 @@ const Cloud = {
 };
 window.__JU_Cloud = Cloud;
 
-/* ▲▲ hết phần gộp cloud-ju.jsx ▲▲ */
-
+/* Cầu nối giữa state React và lớp đồng bộ: ghi xuống máy, hẹn đẩy lên, và nghe
+   `ju:remote` để nhận thay đổi máy kia gửi về. Đặt cùng file với `Cloud` vì nó gọi
+   `Cloud.schedulePush()` — tách ra là hai bản có thể lệch nhau đúng ở đường ghi dữ
+   liệu, chỗ lệch đắt nhất.
+   ⚠ Phép so `JSON.stringify` trước khi `setV` là để không vẽ lại khi nội dung y hệt;
+   bỏ nó thì mỗi lần máy kia đẩy về là cả cây vẽ lại, kể cả khi không có gì đổi. */
 function useLocal(key, initial) {
   const [v, setV] = useState(() => store.get(key, initial));
   useEffect(() => {
@@ -885,6 +890,8 @@ function useLocal(key, initial) {
   }, [key]);
   return [v, setV];
 }
+
+/* ▲▲ hết phần gộp cloud-ju.jsx ▲▲ */
 
 /* ============ helpers ============ */
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
