@@ -472,6 +472,36 @@ const SB_URL = 'https://vvgkjgvzjeklaadusbne.supabase.co';
 const SB_KEY = 'sb_publishable_DMMPv5L2kGhrHTxeQ72iKw_dIh13iT1';
 // Các key được đồng bộ (KHÔNG gồm ju.me/ju.device/ju.sync — đó là riêng từng máy)
 const SYNC_KEYS = ['ju.setup', 'ju.wish', 'ju.bucket', 'ju.watch', 'ju.links', 'ju.ideas', 'ju.food', 'ju.spots', 'ju.events', 'ju.dates', 'ju.fund', 'ju.shop', 'ju.notes', 'ju.photos', 'ju.mood', 'ju.qa', 'ju.timeline', 'ju.coupons', 'ju.chores', 'ju.lovejar', 'ju.quiz', 'ju.city', 'ju.goals', 'ju.checkin', 'ju.challengeDone', 'ju.homecfg', 'ju.diary', 'ju.projects', 'ju.vinhaUrl', 'ju.checkins', 'ju.menu', 'ju.period', 'ju.menuPlan', 'ju.accuKey', 'ju.habits', 'ju.hiddenSpots', 'ju.usOrder', 'ju.eventPrefs', 'ju.child', 'ju.childGrowth', 'ju.childVaccines', 'ju.childMilestones', 'ju.childDiary', 'ju.partnerWishes', 'ju.todos', 'ju.spotify', 'ju.dishPrefs', 'ju.favDishes', 'ju.childPack', 'ju.childSkills', 'ju.childMed', 'ju.childIllness', 'ju.childWords', 'ju.childTantrum', 'ju.childParenting', 'ju.saveTips', 'ju.saveCustom', 'ju.funPrefs', 'ju.routine', 'ju.routineIssues', 'ju.noti', 'ju.family', 'ju.health', 'ju.transfers', 'ju.skillGuidesDone', 'ju.expenses', 'ju.budget', 'ju.vinhaSync', 'ju.menuOrder', 'ju.notesSeen', 'ju.intimacy', 'ju.intimacySeen', 'ju.quizKnow', 'ju.familyRules', 'ju.expiry', 'ju.stash', 'ju.docs', 'ju.tuvi', 'ju.thanso', 'ju.checkinSeen', 'ju.menuHidden', 'ju.gameBets', 'ju.cook', 'ju.cookLogs', 'ju.cookRewards', 'ju.cookHelp', 'ju.cookPantry', 'ju.cookFridge', 'ju.docsLock', 'ju.childContacts', 'ju.childSafety', 'ju.childDocs', 'ju.childPotty', 'ju.childNoti', 'ju.childSchools', 'ju.childTeacherNote', 'ju.childTripPack', 'ju.childDuty', 'ju.childOneLine', 'ju.childQuotes', 'ju.childLetters', 'ju.childPhotos', 'ju.pricewatch'];
+/* ▼▼ gộp từ HeThong/dungapp/chung/cloud-ju.jsx — CẤM sửa ở đây, sửa file gốc ▼▼ */
+/* ═══════════════════════════════════════════════════════════════════════════════
+   LỚP ĐỒNG BỘ ĐÁM MÂY DÙNG CHUNG — Just Us và Sóc
+
+   Hai app này chạy trên CÙNG một dự án Supabase, CÙNG bảng `justus_data`, CÙNG kho
+   ảnh `justus-photos`, và Sóc vốn là bản chép khối này từ Just Us. Gộp về một bản
+   gốc ngày 12/08/2026 sau khi đo thấy chúng đã lệch nhau trong im lặng: Just Us đã
+   hạ thời hạn link ảnh từ 07 ngày xuống 01 giờ vì lý do bảo mật, còn Sóc vẫn để 07
+   ngày — tức link ảnh của con lỡ rò ra ngoài thì xem được cả tuần. Không lỗi nào
+   phát ra, cả hai app vẫn mở được ảnh, chỉ khác thời hạn.
+
+   ⛔ CẤM chép nội dung file này sang app. Đặt dòng chỉ thị sau vào `nguon/app.jsx`:
+        /* @@GOM cloud-ju.jsx * /
+      rồi dựng lại bằng `HeThong/dungapp/dung.py <thư mục app>`. Sửa file này là
+      phải dựng lại CẢ HAI app; `khoe.py::app_dung_lech_nguon()` kêu ĐỎ đúng chiều
+      đó khi một app chưa dựng theo.
+
+   BỐN THỨ APP PHẢI KHAI TRƯỚC dòng chỉ thị gộp — cố ý để ngoài vì chúng là cấu
+   hình riêng của app, không phải luật chung:
+
+     const SB_URL     — địa chỉ dự án Supabase
+     const SB_KEY     — khoá publishable
+     const SYNC_KEYS  — danh sách khoá được đồng bộ (Just Us ~105 khoá, Sóc ~30);
+                        đây chính là chỗ hai app khác nhau, đừng đưa vào đây
+     const store      — lớp lưu trữ, cần đủ get/set/del
+
+   Khối này KHÔNG đụng tới React, nên đặt ở đâu trong file cũng chạy, miễn là sau
+   bốn thứ trên.
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
 let _sb = null;
 function sbClient() {
   if (_sb) return _sb;
@@ -771,7 +801,8 @@ const Cloud = {
     if (error) throw error;
     return path;
   },
-  /* Tải lên một khối bytes bất kỳ (dùng cho ảnh đã mã hoá của mục Giấy tờ) */
+  /* Tải lên một khối bytes bất kỳ (dùng cho ảnh đã mã hoá của mục Giấy tờ).
+     Sóc chưa gọi tới — giữ ở đây để hai app dùng đúng một bản, 08 dòng không hại gì. */
   async uploadBlob(blob, ext, contentType) {
     const c = this.client();
     if (!this.connected() || !c) throw new Error('not_connected');
@@ -796,8 +827,9 @@ const Cloud = {
     if (error || !data) return null;
     return new Uint8Array(await data.arrayBuffer());
   },
-  /* Link ảnh sống 1 giờ (trước là 7 ngày — link lỡ rò ra ngoài thì xem được cả tuần).
-     Tự xin link mới khi sắp hết hạn để ảnh không đứt giữa lúc đang dùng. */
+  /* Link ảnh sống 01 giờ, trước là 07 ngày — link lỡ rò ra ngoài thì xem được cả
+     tuần, mà kho này chứa cả ảnh của con. Tự xin link mới khi còn dưới 60 giây để
+     ảnh không đứt giữa lúc đang xem. */
   async signedUrl(path) {
     const c = this.client();
     if (!c || !path) return null;
@@ -833,6 +865,9 @@ const Cloud = {
   }
 };
 window.__JU_Cloud = Cloud;
+
+/* ▲▲ hết phần gộp cloud-ju.jsx ▲▲ */
+
 function useLocal(key, initial) {
   const [v, setV] = useState(() => store.get(key, initial));
   useEffect(() => {
