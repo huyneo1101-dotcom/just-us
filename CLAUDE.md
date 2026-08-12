@@ -226,7 +226,7 @@ ngắm; giá hạ thì có tin Telegram + thông báo đẩy trên điện tho�
 | Bóc giá | `scripts/bocgia.py` |
 | Chrome thật qua CDP | `scripts/chrome_cdp.py` |
 | Quét + báo | `scripts/theo-doi-gia.py` (LaunchAgent `com.huy.justus-san-gia`, 08:10 · 13:10 · 20:10) |
-| Mốc ĐÊM mở Chrome | LaunchAgent `com.huy.justus-san-gia-chrome`, 03:00 — mốc DUY NHẤT được mở Chrome có giao diện |
+| ~~Mốc ĐÊM mở Chrome~~ | **ĐÃ GỠ 12/08/2026** (Huy chốt *"bỏ Chrome 3h sáng"*) — plist dời sang `HeThong/task-da-go/com.huy.justus-san-gia-chrome.plist.go-12082026` |
 | Khoá Supabase | `scripts/sb_admin.py` — service_role key tự lấy qua Supabase CLI, ghi `~/.config/api-keys.env` |
 | Bộ ca kiểm | `scripts/thu_san_gia.py --tu-kiem` — 48 ca (28 PHẢI CHẶN) · 20 bản hỏng, đã nạp `khoe.py::BO_TEST` |
 
@@ -261,7 +261,22 @@ KB, 0 ký tự ₫), ghé `https://shopee.vn/` 10 giây lấy cookie rồi `Page
 Miền cần cách này khai ở `bocgia.MIEN_CAN_GHE`. Link rút gọn `vn.shp.ee` được giải trước
 (`giai_link`).
 
-⚠ **Chrome có giao diện CHỈ chạy ở mốc 03:00, và phải giấu cửa sổ bằng giao thức** (vá
+⛔ **KHÔNG CÒN MỐC TỰ ĐỘNG NÀO MỞ CHROME** (Huy chốt 12/08/2026: *"bỏ Chrome 3h sáng"*).
+Mốc 03:00 dựng buổi sáng cùng ngày và bị gỡ ngay chiều đó, vì bậc bot tìm kiếm ở trên đã
+lấy được đúng những món Chrome lấy được, còn 04 món Shopee bị chặn thì **Chrome thật cũng
+trượt** — mở bằng hồ sơ đã đăng nhập vẫn chỉ ra khung trang 3,9 KB không giá. Giữ lại một
+mốc mở trình duyệt mỗi đêm để đổi lấy 0 món là phần đánh đổi không có lợi.
+
+- Bậc `chrome-that` và toàn bộ phần phiên chung **vẫn còn trong mã**, chỉ là không mốc tự
+  động nào bật cờ nữa. Cần dùng tay thì chạy `JU_CHROME_THAT=1 JU_CHROME_HO_SO=… python3
+  scripts/theo-doi-gia.py --kho`.
+- Hồ sơ Chrome cố định **cố ý chưa xoá** (`~/Library/Application Support/JustUsSanGia/`),
+  vì xoá là phải đăng nhập Shopee lại bằng tay. Nó chứa cookie tài khoản thật, quyền 700 —
+  không cần nữa thì xoá cả thư mục, đừng để lẫn vào bản sao lưu nào.
+- ⚠ Dựng lại mốc đêm thì **đo trước bằng số**: món nào ra giá nhờ `chrome-that` mà bậc bot
+  không lấy được. Chuỗi `kq["cach"]` đã ghi sẵn tên bậc, đừng dựng theo suy đoán.
+
+⚠ **Nếu có ngày dùng lại Chrome có giao diện thì phải giấu cửa sổ bằng giao thức** (đo
 12/08/2026 sau khi Huy chê *"đừng có hiện chrome lên trên claude tao đang làm việc nữa"*).
 Ba điều đã trả giá, mỗi điều đều hỏng câm:
 
@@ -278,9 +293,11 @@ Ba điều đã trả giá, mỗi điều đều hỏng câm:
   (`chrome_cdp._dong_chrome`). Ca canh dùng cookie có `Max-Age`; cookie không hạn là cookie
   phiên, Chrome không bao giờ ghi nó xuống hồ sơ nên ca sẽ đỏ vì lý do sai.
 
-Cờ `JU_CHROME_THAT=1` bật bậc Chrome; ba mốc ban ngày không có cờ nên dừng ở bậc `curl`, đủ
-cho Tiki/Vivaia/Dyson. Bộ ca canh cả hai chiều: ca 47 chặn mở Chrome khi chưa bật cờ, ca 48
-là đối chứng bắt bậc đó sống lại khi bật, ca 49 chặn việc coi giá trị lạ (`true`) là đã bật.
+Cờ `JU_CHROME_THAT=1` bật bậc Chrome; **không mốc tự động nào đặt cờ này nữa**, nên cả ba
+mốc quét đều dừng ở bậc `curl` và bậc bot tìm kiếm — đủ cho Tiki/Vivaia/Dyson và cho món
+Shopee nào Shopee còn cho. Bộ ca canh cả hai chiều: ca 47 chặn mở Chrome khi chưa bật cờ,
+ca 48 là đối chứng bắt bậc đó sống lại khi bật tay, ca 49 chặn việc coi giá trị lạ (`true`)
+là đã bật.
 
 ⚠ **Bóc giá KHÔNG có lớp "dò số kèm chữ ₫"** — trang bán hàng nào cũng đầy giá của sản phẩm
 gợi ý bên cạnh, lớp đó đọc trúng giá hàng khác mà không dấu hiệu nào phát ra. Chỉ 04 mốc tất
