@@ -287,17 +287,24 @@ thường trả 1.010 KB **không có ký tự ₫ nào**, API `get_pc` trả **
 khi hồ sơ Chrome **đã đăng nhập** (`is_login: true`), mọi trường giá trong khối trạng thái
 nhúng đều `null`; còn bản trả cho `Googlebot`/`Bingbot`/`Twitterbot` là 90 KB kèm JSON-LD
 `AggregateOffer` đủ `lowPrice` 139.000 và `highPrice` 195.000, khớp khoảng giá hiện trên
-trang. Bậc này chỉ tốn một lời gọi `curl` nên **ba mốc ban ngày cũng lấy được giá Shopee**,
-không phải chờ mốc đêm mở Chrome.
+trang. Bậc này chỉ tốn một lời gọi `curl`.
 
-⚠ **Không phải món nào Shopee cũng cho.** Đo cùng ngày trên 05 món đang theo dõi: 01 món ra
-giá, **04 món trả trang "It looks like something is missing" với MỌI loại bot** — mà chính
-04 món đó mở bằng Chrome đã đăng nhập vẫn ra đúng tên sản phẩm, tức Shopee chặn theo từng
-sản phẩm chứ **không phải hàng đã bị gỡ**. Với những món này hiện chưa có đường tự động nào
-lấy được giá: bản cho trình duyệt giấu giá, API chặn, Chrome thật cũng chỉ ra khung trang
-(thân 3,9 KB, không giá). ⛔ Đừng dựng lại các đường đã đo và đã trượt: `facebookexternalhit`
-và `WhatsApp` (trả trang không giá) · dạng link cũ `-i.<shop>.<item>` (trả rỗng) · giao diện
-điện thoại (590 KB, không giá) · gọi API từ trong trang đã tải (403).
+⛔ **NHƯNG BẬC BOT CHẾT NGAY TRONG NGÀY DỰNG — đo lại chiều 12/08/2026: 05/05 món Shopee
+trả `HTTPError`, kể cả đúng món buổi sáng còn ra `lowPrice` 139.000.** Cửa sổ dùng được
+của một đường lách chỉ tính bằng giờ, nên **đừng chép con số "01 món ra giá" của buổi
+sáng làm hiện trạng** — phép đo hôm nay hết hạn trước khi tài liệu kịp cũ. Mã bậc bot
+giữ nguyên trong `bocgia`, vô hại, và có thể sống lại khi Shopee đổi luật; muốn biết
+còn ăn không thì ĐO, đừng đọc đoạn này.
+
+⚠ **Hệ quả đã chốt 12/08/2026 (Huy: *"bị chặn thì thôi không theo dõi nữa"*): 05 món
+Shopee đã đặt `active:false` trong `ju.pricewatch`.** Tắt chứ KHÔNG xoá — món vẫn nằm
+trong app kèm link, bật lại bằng một nút. `theo-doi-gia.py` bỏ qua mục `active is False`
+ngay đầu vòng nên không tốn lời gọi mạng nào và không đẻ lỗi mỗi lượt quét.
+
+⛔ Đừng dựng lại các đường đã đo và đã trượt: `facebookexternalhit` và `WhatsApp` (trả
+trang không giá) · dạng link cũ `-i.<shop>.<item>` (trả rỗng) · giao diện điện thoại
+(590 KB, không giá) · gọi API từ trong trang đã tải (403) · và **Chrome thật** — mở bằng
+hồ sơ đã đăng nhập cũng chỉ ra khung trang 3,9 KB không giá.
 
 Ghé trang chủ trước vẫn giữ cho bậc Chrome thật: vào thẳng thì bị đá về trang chủ (thân 199
 KB, 0 ký tự ₫), ghé `https://shopee.vn/` 10 giây lấy cookie rồi `Page.navigate` thì ra giá.
