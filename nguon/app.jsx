@@ -4453,44 +4453,9 @@ function computeDueNotis(noti){
   if(on('trabai')){ const it=store.get('ju.intimacy',null); if(it){ const me=store.get('ju.me',setup.me||'a'); const sg=it.signal; const sn=store.get('ju.intimacySeen',{})||{}; if(sg&&sg.by&&sg.by!==me&&!(sg.reply&&sg.reply.by===me)&&(sg.at||0)>(sn[me]||0)) out.push({id:'intsig'+(sg.at||''),cat:'trabai',title:'💗 Nửa kia vừa bật tín hiệu cho bạn 😏'}); const lg=it.log||{}; const ks=Object.keys(lg).sort(); const lastd=ks.length?ks[ks.length-1]:null; if(lastd){ const ds=Math.round((new Date(todayISO()+'T00:00:00')-new Date(lastd+'T00:00:00'))/86400000); if(ds>=14) out.push({id:'intlong',cat:'trabai',title:'💗 Đã '+ds+' ngày rồi — dành cho nhau chút thời gian nhé 😊'}); } const dnw=it.dateNight&&it.dateNight.weekday; if(dnw!=null && new Date(todayISO()+'T00:00:00').getDay()===dnw) out.push({id:'datenight',cat:'trabai',title:'📅 Tối nay là đêm hẹn hò của hai đứa 💞'+(it.dateNight.note?' — '+it.dateNight.note:'')}); if(me==='a'){ const pinfo=periodNext(); if(pinfo&&!pinfo.onPeriod&&pinfo.days!=null){ const dOv=pinfo.days-14; if(dOv>=-1&&dOv<=2) out.push({id:'lib'+dOv,cat:'trabai',title:dOv<=0?'💗 Hôm nay vợ có thể hứng khởi hơn (quanh rụng trứng) 😏':'💗 Còn '+dOv+' ngày tới ngày vợ dễ hứng khởi 😏'}); } } } }
   return out;
 }
-function NotiRunner(){
-  useEffect(()=>{
-    try{ const n0=store.get('ju.noti',null); if(n0&&n0.on) subscribePush().catch(()=>{}); }catch(_){}
-    const run=async()=>{
-      try{
-        const noti=store.get('ju.noti',null); if(!noti||!noti.on) return;
-        if(typeof Notification==='undefined'||Notification.permission!=='granted') return;
-        if(!('serviceWorker' in navigator)) return;
-        const today=todayISO();
-        const reg=await navigator.serviceWorker.ready;
-        const now=new Date(); const nowHM=pad(now.getHours())+':'+pad(now.getMinutes()); const nm=now.getHours()*60+now.getMinutes();
-        // Nhắc theo lịch sinh hoạt — mốc có 🔔 sẽ nhắc 1 lần/ngày quanh đúng giờ
-        try{ if((noti.cats||{}).lich!==false){ const rlog=store.get('ju.notiRoutineLog',{})||{}; if(rlog.date!==today){ rlog.date=today; rlog.fired={}; }
-          (store.get('ju.routine',DEFAULT_ROUTINE)||[]).forEach(b=>{ if(!b||!b.remind) return; const p=(b.t||'').split(':'); if(p.length<2) return; const bm=(+p[0])*60+(+p[1]); const diff=nm-bm; if(diff>=0&&diff<25&&!rlog.fired[b.id]){ const act=b.both||[b.a,b.b].filter(Boolean).join(' / ')||b.act||'Lịch sinh hoạt'; reg.showNotification('🗓️ '+b.t+' — '+act,{body:act,icon:'icon.svg',badge:'icon.svg',tag:'ju-rt-'+today+'-'+b.id,data:{url:'./'}}); rlog.fired[b.id]=1; } });
-          store.set('ju.notiRoutineLog',rlog); } }catch(_){}
-        const due=computeDueNotis(noti);
-        try{ const c=await caches.open('justus-noti'); await c.put('/__digest',new Response(JSON.stringify({date:today,items:due}),{headers:{'Content-Type':'application/json'}})); }catch(_){}
-        if(!due.length) return;
-        // Mỗi mục đã tick bật trong Hồ Sơ → 🔔 Thông báo có giờ nhắc riêng (mặc định dùng "Giờ nhắc mặc định" nếu chưa chỉnh)
-        const log=store.get('ju.notiLog',{})||{}; const fired=(log.date===today?(log.fired||{}):{}); let changed=false;
-        for(const d of due){
-          if(fired[d.id]) continue;
-          const t=catNotiTime(noti,d.cat);
-          if(t!=='now' && t>nowHM) continue; // chưa tới giờ nhắc của mục này
-          await reg.showNotification(d.title,{body:d.title,icon:'icon.svg',badge:'icon.svg',tag:'ju-item-'+today+'-'+d.id,data:{url:'./'}});
-          fired[d.id]=1; changed=true;
-        }
-        if(changed) store.set('ju.notiLog',{date:today,fired});
-      }catch(_){}
-    };
-    const t=setTimeout(run,3500);
-    const iv=setInterval(run,15*60*1000);
-    const onVis=()=>{ if(document.visibilityState==='visible') run(); };
-    document.addEventListener('visibilitychange',onVis);
-    return ()=>{ clearTimeout(t); clearInterval(iv); document.removeEventListener('visibilitychange',onVis); };
-  },[]);
-  return null;
-}
+const KHO_NHAC='justus-noti';
+const DANG_KY_DAY=subscribePush;   // Just Us CÓ đẩy nền: bảng justus_push_subs + Edge Function push-notify
+/* @@GOM noti-runner-ju.jsx */
 function NotiSettings({flash}){
   const [noti,setNoti]=useLocal('ju.noti',{on:false,cats:{kyNiem:true,sukien:true,viec:true,thucDon:true,nganSach:true,yeuThuong:true,nhanNhau:true,tamLinh:true,trabai:true,lich:true,hanDung:true,giayTo:true,ngayNho:false,chuky:false,checkin:true},time:'08:00'});
   const supported=(typeof Notification!=='undefined')&&('serviceWorker' in navigator);

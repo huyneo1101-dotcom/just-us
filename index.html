@@ -15304,11 +15304,47 @@ function computeDueNotis(noti) {
   }
   return out;
 }
+const KHO_NHAC = 'justus-noti';
+const DANG_KY_DAY = subscribePush; // Just Us CÓ đẩy nền: bảng justus_push_subs + Edge Function push-notify
+/* ▼▼ gộp từ HeThong/dungapp/chung/noti-runner-ju.jsx — CẤM sửa ở đây, sửa file gốc ▼▼ */
+/* ═══════════════════════════════════════════════════════════════════════════════
+   MÁY NHẮC DÙNG CHUNG — Just Us và Sóc
+
+   Chạy nền trong app: cứ 15 phút một lần, và mỗi lần người dùng quay lại tab, nó
+   hỏi `computeDueNotis()` xem hôm nay có gì đến hạn rồi hiện thông báo. Mỗi mục chỉ
+   nhắc MỘT lần một ngày, ghi vào `ju.notiLog`.
+
+   Gộp về một bản gốc ngày 12/08/2026. Trước đó hai app mỗi bên một bản, khác nhau
+   đúng 02 chỗ — và cả 02 chỗ ấy nay là hằng số app tự khai (xem dưới).
+
+   ⛔ CẤM chép sang app. Đặt dòng chỉ thị «@@GOM noti-runner-ju.jsx» trong khối chú
+   thích ở `nguon/app.jsx` rồi dựng lại bằng `HeThong/dungapp/dung.py <thư mục app>`.
+
+   BỐN THỨ APP PHẢI KHAI TRƯỚC dòng chỉ thị:
+
+     const KHO_NHAC     — tên kho đệm giữ bản tóm tắt trong ngày. PHẢI KHÁC NHAU giữa
+                          hai app ('justus-noti' · 'soc-noti'): dùng chung một tên là
+                          app mở sau ghi đè bản tóm tắt của app mở trước, và service
+                          worker của nó đọc ra danh sách nhắc của app kia.
+     const DANG_KY_DAY  — hàm đăng ký đẩy nền, hoặc **null** nếu app không có. Just Us
+                          truyền `subscribePush`; Sóc truyền `null` vì bảng
+                          `justus_push_subs` lọc theo `couple_id` mà không phân biệt
+                          app, nên Sóc đăng ký vào đó là nhận trọn thông báo riêng tư
+                          của Just Us (Huy chốt 12/08/2026).
+     computeDueNotis    — luật riêng từng app, khác nhau hoàn toàn, KHÔNG gộp
+     catNotiTime        — giờ nhắc của từng nhóm
+
+   ⚠ `DANG_KY_DAY` cố ý là **null tường minh**, không phải phép dò `typeof x ===
+   'function'`. Phép dò hỏng về phía IM: app nào lỡ mất hàm đăng ký thì nó lặng lẽ
+   chạy tiếp như thể cố ý không có, đúng kiểu lỗi mà đợt gộp này đi vá — Sóc gọi
+   `subscribePush()` suốt một thời gian mà hàm ấy chưa từng tồn tại.
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
 function NotiRunner() {
   useEffect(() => {
     try {
       const n0 = store.get('ju.noti', null);
-      if (n0 && n0.on) subscribePush().catch(() => {});
+      if (n0 && n0.on && DANG_KY_DAY) DANG_KY_DAY().catch(() => {});
     } catch (_) {}
     const run = async () => {
       try {
@@ -15354,7 +15390,7 @@ function NotiRunner() {
         } catch (_) {}
         const due = computeDueNotis(noti);
         try {
-          const c = await caches.open('justus-noti');
+          const c = await caches.open(KHO_NHAC);
           await c.put('/__digest', new Response(JSON.stringify({
             date: today,
             items: due
@@ -15405,6 +15441,8 @@ function NotiRunner() {
   }, []);
   return null;
 }
+
+/* ▲▲ hết phần gộp noti-runner-ju.jsx ▲▲ */
 function NotiSettings({
   flash
 }) {
