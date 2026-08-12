@@ -29,6 +29,7 @@ duy nhất ở `HeThong/dungapp/chung/`, được gộp vào lúc dựng bản q
 |---|---|---|
 | `cloud-ju.jsx` | toàn bộ `Cloud` — đăng nhập, ghép đôi, đẩy/kéo dữ liệu, kho ảnh | 142 |
 | `ui-ju.jsx` | `Collapse` · `Sheet` · `celebrate` | 37 |
+| `noti-runner-ju.jsx` | `NotiRunner` — máy nhắc chạy nền trong app | 38 |
 
 **Vì sao phải gộp:** Sóc chạy trên CÙNG dự án Supabase, CÙNG bảng `justus_data`,
 CÙNG kho ảnh `justus-photos`, và khối `Cloud` bên đó vốn là bản chép từ đây. Đo
@@ -43,15 +44,25 @@ nào phát ra: cả hai app vẫn mở được ảnh, chỉ khác thời hạn.
 - ⛔ Cần thêm một hàm vào `Cloud` thì thêm vào **file chung**, đừng thêm riêng vào
   đây — thêm riêng là dựng lại đúng cái đã đi gỡ.
 
-## ⚠ CÒN 03 KHỐI NỮA TRÙNG VỚI SÓC, CỐ Ý CHƯA GỘP
+### `NotiRunner`: hai chỗ khác nhau là HẰNG SỐ APP TỰ KHAI
 
-Đo 12/08/2026, mỗi khối kèm lý do chưa gộp — đừng gộp bừa mà chưa xử lý lý do:
+Khai ngay trên dòng chỉ thị gộp, đừng sửa vào file chung:
+
+| Hằng | Just Us | Sóc | Vì sao phải khác |
+|---|---|---|---|
+| `KHO_NHAC` | `'justus-noti'` | `'soc-noti'` | dùng chung một tên là app mở sau ghi đè bản tóm tắt của app mở trước |
+| `DANG_KY_DAY` | `subscribePush` | `null` | Sóc cố ý không đăng ký đẩy nền — xem `App/Soc/CLAUDE.md` |
+
+⛔ `DANG_KY_DAY` phải khai **null tường minh**, không dùng phép dò `typeof x ===
+'function'`. Phép dò hỏng về phía IM: app nào lỡ mất hàm đăng ký thì lặng lẽ chạy
+tiếp như thể cố ý không có — đúng lỗi mà đợt gộp này đi vá ở Sóc.
+
+## ⚠ CÒN 02 KHỐI TRÙNG VỚI SÓC, CỐ Ý CHƯA GỘP
 
 | Khối | Trùng tới mức | Vướng gì |
 |---|---|---|
-| `NotiRunner` (38 dòng) | khác đúng 01 dòng (tên kho đệm `justus-noti` / `soc-noti`) | nó gọi `subscribePush()`, mà Sóc **không có hàm đó** — gộp lúc này là khoá cứng lỗi |
-| `Onboarding` (54 dòng) | khác đúng 01 dòng (`theme`) | màn này ở Sóc đang chào **"Just Us — Không gian riêng của hai đứa mình"**; chờ Huy chốt chữ rồi mới gộp |
-| `computeDueNotis` | khác 155% | đây là luật riêng từng app, **không phải** ứng viên gộp |
+| `Onboarding` (54 dòng) | khung giống, **chữ đã khác** từ 12/08 | Sóc nay chào "Sóc — Nuôi con nhàn nhất"; gộp thì phải đưa cả cụm chữ thành tham số, chưa đáng |
+| `computeDueNotis` | khác 155% | luật riêng từng app, **không phải** ứng viên gộp |
 
 ---
 
