@@ -13,7 +13,7 @@ const store={
 const SB_URL='https://vvgkjgvzjeklaadusbne.supabase.co';
 const SB_KEY='sb_publishable_DMMPv5L2kGhrHTxeQ72iKw_dIh13iT1';
 // Các key được đồng bộ (KHÔNG gồm ju.me/ju.device/ju.sync — đó là riêng từng máy)
-const SYNC_KEYS=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood','ju.qa','ju.timeline','ju.coupons','ju.chores','ju.lovejar','ju.quiz','ju.city','ju.goals','ju.checkin','ju.challengeDone','ju.homecfg','ju.diary','ju.projects','ju.vinhaUrl','ju.checkins','ju.menu','ju.period','ju.menuPlan','ju.accuKey','ju.habits','ju.hiddenSpots','ju.usOrder','ju.eventPrefs','ju.child','ju.childGrowth','ju.childVaccines','ju.childMilestones','ju.childDiary','ju.partnerWishes','ju.todos','ju.spotify','ju.dishPrefs','ju.favDishes','ju.childPack','ju.childSkills','ju.childMed','ju.childIllness','ju.childWords','ju.childTantrum','ju.childParenting','ju.saveTips','ju.saveCustom','ju.funPrefs','ju.routine','ju.routineIssues','ju.noti','ju.family','ju.health','ju.transfers','ju.skillGuidesDone','ju.expenses','ju.budget','ju.vinhaSync','ju.menuOrder','ju.notesSeen','ju.intimacy','ju.intimacySeen','ju.quizKnow','ju.familyRules','ju.expiry','ju.stash','ju.docs','ju.tuvi','ju.thanso','ju.checkinSeen','ju.menuHidden','ju.gameBets','ju.cook','ju.cookLogs','ju.cookRewards','ju.cookHelp','ju.cookPantry','ju.cookFridge','ju.docsLock','ju.childContacts','ju.childSafety','ju.childDocs','ju.childPotty','ju.childNoti','ju.childSchools','ju.childTeacherNote','ju.childTripPack','ju.childDuty','ju.childOneLine','ju.childQuotes','ju.childLetters','ju.childPhotos','ju.pricewatch'];
+const SYNC_KEYS=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.ideas','ju.food','ju.spots','ju.events','ju.dates','ju.fund','ju.shop','ju.notes','ju.photos','ju.mood','ju.qa','ju.timeline','ju.coupons','ju.chores','ju.lovejar','ju.quiz','ju.city','ju.goals','ju.checkin','ju.challengeDone','ju.homecfg','ju.diary','ju.projects','ju.vinhaUrl','ju.checkins','ju.menu','ju.period','ju.menuPlan','ju.accuKey','ju.habits','ju.hiddenSpots','ju.usOrder','ju.eventPrefs','ju.child','ju.childGrowth','ju.childVaccines','ju.childMilestones','ju.childDiary','ju.partnerWishes','ju.todos','ju.spotify','ju.dishPrefs','ju.favDishes','ju.childPack','ju.childSkills','ju.childMed','ju.childIllness','ju.childWords','ju.childTantrum','ju.childParenting','ju.saveTips','ju.saveCustom','ju.funPrefs','ju.routine','ju.routineIssues','ju.noti','ju.family','ju.health','ju.transfers','ju.skillGuidesDone','ju.expenses','ju.budget','ju.vinhaSync','ju.menuOrder','ju.notesSeen','ju.intimacy','ju.intimacySeen','ju.quizKnow','ju.familyRules','ju.expiry','ju.stash','ju.docs','ju.tuvi','ju.thanso','ju.checkinSeen','ju.menuHidden','ju.gameBets','ju.cook','ju.cookLogs','ju.cookRewards','ju.cookHelp','ju.cookPantry','ju.cookFridge','ju.docsLock','ju.childContacts','ju.childSafety','ju.childDocs','ju.childPotty','ju.childNoti','ju.childSchools','ju.childTeacherNote','ju.childTripPack','ju.childDuty','ju.childOneLine','ju.childQuotes','ju.childLetters','ju.childPhotos','ju.pricewatch','ju.movies'];
 /* @@GOM cloud-ju.jsx */
 
 
@@ -197,6 +197,7 @@ const BUCKET_SUGGEST=JUD.BUCKET_SUGGEST;
 const FOOD_SUGGEST=JUD.FOOD_SUGGEST;
 const GIFT_SUGGEST=JUD.GIFT_SUGGEST;
 const WATCH_SUGGEST=JUD.WATCH_SUGGEST;
+const MOVIE_SUGGEST=JUD.MOVIE_SUGGEST;
 const COUPON_SUGGEST=JUD.COUPON_SUGGEST;
 const LOVEJAR_SUGGEST=JUD.LOVEJAR_SUGGEST;
 const MEAL_SUGGEST=JUD.MEAL_SUGGEST;
@@ -1418,23 +1419,272 @@ function WishTab({people,me,flash}){
     <div>
       <SegGrid value={seg} onChange={setSeg} items={[
         {k:'gift',icon:'🎁',label:'Quà tặng'},{k:'bucket',icon:'🎯',label:'Muốn làm cùng'},
-        {k:'watch',icon:'🎬',label:'Xem·Đọc·Nghe'},{k:'music',icon:'🎵',label:'Nhạc đôi'},
-        {k:'coupon',icon:'🎟️',label:'Phiếu yêu thương'},{k:'link',icon:'🔗',label:'Link hay'},
-        {k:'price',icon:'🏷️',label:'Săn giá'},
+        {k:'movie',icon:'🍿',label:'Phim muốn xem'},{k:'watch',icon:'🎬',label:'Xem·Đọc·Nghe'},
+        {k:'music',icon:'🎵',label:'Nhạc đôi'},{k:'coupon',icon:'🎟️',label:'Phiếu yêu thương'},
+        {k:'link',icon:'🔗',label:'Link hay'},{k:'price',icon:'🏷️',label:'Săn giá'},
       ]} menuId="wish"/>
       {seg==='gift' && <SimpleList skey="ju.wish" people={people} me={me} addLabel="món quà" doneLabel="Đã tặng"
         fields={['photo','price','link','note']} suggest={GIFT_SUGGEST} claimable showTotal empty={{icon:'🎁',text:'Ghi lại món quà bạn mơ ước — để nửa kia biết đường! Bấm 💡 để xem gợi ý.'}} flash={flash}/>}
       {seg==='bucket' && <SimpleList skey="ju.bucket" people={people} me={me} addLabel="điều muốn làm" doneLabel="Đã làm"
         fields={['note']} suggest={BUCKET_SUGGEST} empty={{icon:'🎯',text:'Những điều hai đứa muốn làm cùng nhau… Bấm 💡 để xem gợi ý!'}} flash={flash}/>}
-      {seg==='watch' && <SimpleList skey="ju.watch" people={people} me={me} addLabel="phim/sách/nhạc" doneLabel="Đã xong"
-        fields={['tag','link','rating','note']} tagOptions={['Phim','Phim bộ','Sách','Nhạc','Podcast','Khác']} suggest={WATCH_SUGGEST}
-        empty={{icon:'🎬',text:'Phim, sách, nhạc muốn thưởng thức cùng nhau. Bấm 💡 để xem gợi ý!'}} flash={flash}/>}
+      {seg==='movie' && <MovieList people={people} me={me} flash={flash}/>}
+      {seg==='watch' && <SimpleList skey="ju.watch" people={people} me={me} addLabel="sách/nhạc/podcast" doneLabel="Đã xong"
+        fields={['tag','link','rating','note']} tagOptions={['Sách','Nhạc','Podcast','Phim','Phim bộ','Khác']} suggest={WATCH_SUGGEST}
+        empty={{icon:'🎬',text:'Sách, nhạc, podcast muốn thưởng thức cùng nhau — phim thì để ở mục 🍿 Phim muốn xem. Bấm 💡 để xem gợi ý!'}} flash={flash}/>}
       {seg==='music' && <MusicPlaylists people={people} me={me}/>}
       {seg==='coupon' && <Coupons people={people} me={me} flash={flash}/>}
       {seg==='link' && <SimpleList skey="ju.links" people={people} me={me} addLabel="link/bài viết" doneLabel="Đã đọc"
         fields={['link','note']} empty={{icon:'🔗',text:'Gửi nhau bài viết, link hay ở đây.'}} flash={flash}/>}
       {seg==='price' && <PriceWatch people={people} me={me} flash={flash}/>}
     </div>
+  );
+}
+
+/* ============ 🍿 Phim muốn xem ============
+   Danh sách nằm ở ju.movies. Khác mục 🎬 Xem·Đọc·Nghe (ju.watch — gộp chung sách,
+   nhạc, podcast) ở bốn chỗ: ghi được NƠI XEM để tối bật lên là biết mở app nào ·
+   HAI NGƯỜI CHẤM SAO RIÊNG sau khi xem chứ không dùng chung một điểm · nút CHIA SẺ
+   gửi thẳng sang tin nhắn · nút quay ngẫu nhiên cho lúc không ai chọn được phim.
+
+   Phim cũ đã lỡ ghi trong ju.watch (tag Phim / Phim bộ) thì dải nhắc đầu mục mời
+   chuyển sang. Chuyển hẳn, không chép — để khỏi tồn tại hai bản của cùng một phim
+   rồi đánh dấu đã xem ở bản này mà bản kia vẫn nằm đó. */
+const MOVIE_WHERE=['Netflix','Disney+','Prime Video','HBO Max','Apple TV+','FPT Play','Galaxy Play','K+','YouTube','Rạp','Khác'];
+const MOVIE_TAGS=['Phim lẻ','Phim bộ','Hoạt hình','Anime','Tài liệu'];
+
+/* Chia sẻ qua khay chia sẻ của máy; máy nào không có thì copy vào bộ nhớ tạm.
+   Người dùng bấm huỷ khay chia sẻ ném AbortError — đó KHÔNG phải lỗi, nên trả về
+   'huy' và dừng hẳn, đừng rơi xuống nhánh copy rồi báo "đã copy" trong khi họ vừa
+   cố ý thoát ra. */
+async function shareText({title,text,url}){
+  try{
+    if(navigator.share){ await navigator.share(url?{title,text,url}:{title,text}); return 'share'; }
+  }catch(e){ if(e&&e.name==='AbortError') return 'huy'; }
+  try{ await navigator.clipboard.writeText(url?(text+'\n'+url):text); return 'copy'; }catch(e){}
+  return 'loi';
+}
+
+function MovieList({people,me,flash}){
+  const [items,setItems]=useLocal('ju.movies',[]);
+  const [watch,setWatch]=useLocal('ju.watch',[]);
+  const other=me==='a'?'b':'a';
+  const [q,setQ]=useState('');
+  const [filter,setFilter]=useState('todo');
+  const [open,setOpen]=useState(false);
+  const [edit,setEdit]=useState(null);
+  const [sugOpen,setSugOpen]=useState(false);
+  const [pick,setPick]=useState(null);
+
+  const chuaXem=items.filter(x=>!x.done).length;
+
+  /* Phim còn kẹt ở mục Xem·Đọc·Nghe */
+  const kep=useMemo(()=>watch.filter(x=>x.tag==='Phim'||x.tag==='Phim bộ'),[watch]);
+  const chuyenSang=()=>{
+    setItems(prev=>{
+      const daCo=new Set(prev.map(x=>(x.title||'').trim().toLowerCase()));   // lọc trùng NẰM TRONG hàm cập nhật
+      const them=kep.filter(x=>(x.title||'').trim() && !daCo.has((x.title||'').trim().toLowerCase()))
+        .map(x=>({id:uid(),title:x.title,year:'',tag:x.tag==='Phim bộ'?'Phim bộ':'Phim lẻ',where:'',
+                  link:x.link||'',note:x.note||'',by:x.by||me,fav:!!x.fav,done:!!x.done,
+                  rate:(typeof x.rating==='number'&&x.rating>0)?{[x.by||me]:x.rating}:{},
+                  createdAt:x.createdAt||Date.now()}));
+      return [...them,...prev];
+    });
+    setWatch(prev=>prev.filter(x=>x.tag!=='Phim'&&x.tag!=='Phim bộ'));
+    flash&&flash('Đã đưa '+kep.length+' phim sang đây ✓');
+  };
+
+  const save=(it)=>{
+    if(it.id) setItems(prev=>prev.map(x=>x.id===it.id?{...x,...it}:x));
+    else setItems(prev=>[{...it,id:uid(),by:me,fav:false,done:false,rate:{},createdAt:Date.now()},...prev]);
+    setOpen(false); setEdit(null);
+  };
+  const addQuick=(title)=> setItems(prev=>[{title,id:uid(),by:me,tag:'Phim lẻ',where:'',link:'',note:'',
+    fav:false,done:false,rate:{},createdAt:Date.now()},...prev]);
+  const del=(id)=>{ if(confirm('Xoá phim này khỏi danh sách? Thao tác này không hoàn tác được.')) setItems(prev=>prev.filter(x=>x.id!==id)); };
+  const toggle=(id,f)=> setItems(prev=>prev.map(x=>{
+    if(x.id!==id) return x;
+    const nv={...x,[f]:!x[f]};
+    if(f==='done'){ if(nv.done){ nv.watchedAt=Date.now(); celebrate(['🍿','🎬','⭐','💖']); } else delete nv.watchedAt; }
+    return nv;
+  }));
+  const chamSao=(id,v)=> setItems(prev=>prev.map(x=>x.id===id?{...x,rate:{...(x.rate||{}),[me]:v}}:x));
+
+  const dongPhim=(x)=> x.title+(x.year?' ('+x.year+')':'')+(x.where?' — '+x.where:'');
+  const chiaSeMot=async(it)=>{
+    const d=['🍿 '+it.title+(it.year?' ('+it.year+')':'')];
+    if(it.where) d.push('Xem trên: '+it.where);
+    if(it.note) d.push(it.note);
+    const r=await shareText({title:it.title,text:d.join('\n'),url:it.link||''});
+    if(r==='copy') flash&&flash('Đã copy — dán vào tin nhắn nhé!');
+    if(r==='loi') flash&&flash('Máy không cho chia sẻ — copy tay giúp nhé');
+  };
+  const chiaSeCaList=async()=>{
+    const ds=items.filter(x=>!x.done);
+    if(!ds.length){ flash&&flash('Chưa có phim nào đang muốn xem'); return; }
+    const txt='🍿 Phim hai đứa muốn xem:\n'+ds.map((x,i)=>(i+1)+'. '+dongPhim(x)+(x.link?'\n   '+x.link:'')).join('\n');
+    const r=await shareText({title:'Phim hai đứa muốn xem',text:txt});
+    if(r==='copy') flash&&flash('Đã copy danh sách '+ds.length+' phim ✓');
+    if(r==='loi') flash&&flash('Máy không cho chia sẻ — copy tay giúp nhé');
+  };
+  const quayNgauNhien=()=>{
+    const ds=items.filter(x=>!x.done);
+    if(!ds.length){ flash&&flash('Chưa có phim nào để quay — thêm vài phim đã!'); return; }
+    setPick(ds[Math.floor(Math.random()*ds.length)]);
+    celebrate(['🍿','🎬','✨']);
+  };
+
+  const shown=useMemo(()=>{
+    let a=items.slice();
+    if(filter==='todo') a=a.filter(x=>!x.done);
+    if(filter==='done') a=a.filter(x=>x.done);
+    if(filter==='mine') a=a.filter(x=>x.by===me);
+    if(filter==='partner') a=a.filter(x=>x.by===other);
+    if(filter==='fav') a=a.filter(x=>x.fav);
+    if(q.trim()){ const s=q.trim().toLowerCase();
+      a=a.filter(x=>(x.title||'').toLowerCase().includes(s)||(x.note||'').toLowerCase().includes(s)||(x.where||'').toLowerCase().includes(s)); }
+    a.sort((p,r)=> (r.fav?1:0)-(p.fav?1:0) || (p.done?1:0)-(r.done?1:0) || (r.createdAt||0)-(p.createdAt||0));
+    return a;
+  },[items,filter,q,me,other]);
+
+  const theSao=(it)=>{
+    const ra=(it.rate||{})[me], rb=(it.rate||{})[other];
+    return (
+      <div className="row" style={{gap:10,marginTop:8,flexWrap:'wrap',alignItems:'center'}}>
+        <span className="muted" style={{fontSize:12.5}}>{people[me]?.name||'Tôi'}:</span>
+        <Stars value={ra||0} onChange={v=>chamSao(it.id,v)}/>
+        <span className="muted" style={{fontSize:12.5}}>{people[other]?.name||'Nửa kia'}:</span>
+        {rb?<Stars value={rb}/>:<span className="muted" style={{fontSize:12.5}}>chưa chấm</span>}
+      </div>
+    );
+  };
+
+  return (
+    <div>
+      {kep.length>0 && <div className="item" style={{borderStyle:'dashed'}}>
+        <div className="row" style={{gap:10,alignItems:'center',flexWrap:'wrap'}}>
+          <span style={{fontSize:20}}>🎬</span>
+          <span style={{flex:1,minWidth:150,fontSize:13,lineHeight:1.5}}>
+            Có <b>{kep.length}</b> phim đang nằm ở mục Xem·Đọc·Nghe. Đưa sang đây để ghi được nơi xem và chấm sao riêng.
+          </span>
+          <button className="btn sm" onClick={chuyenSang}>Đưa sang đây</button>
+        </div>
+      </div>}
+
+      <div className="row" style={{margin:'4px 14px 0',gap:8}}>
+        <input className="inp grow" placeholder="🔎 Tìm phim…" value={q} onChange={e=>setQ(e.target.value)} />
+        <button className="btn sm soft" onClick={()=>setSugOpen(true)}>💡</button>
+        <button className="btn sm" onClick={()=>{setEdit(null);setOpen(true);}}>＋ Thêm</button>
+      </div>
+
+      <div className="row" style={{margin:'8px 14px 0',gap:8}}>
+        <button className="btn sm soft grow" onClick={quayNgauNhien}>🎲 Tối nay xem gì?</button>
+        <button className="btn sm soft grow" onClick={chiaSeCaList}>📤 Chia sẻ danh sách</button>
+      </div>
+
+      <div className="filters">
+        <button className={filter==='todo'?'on':''} onClick={()=>setFilter('todo')}>Muốn xem{chuaXem>0?' · '+chuaXem:''}</button>
+        <button className={filter==='done'?'on':''} onClick={()=>setFilter('done')}>Đã xem</button>
+        <button className={filter==='all'?'on':''} onClick={()=>setFilter('all')}>Tất cả</button>
+        <button className={filter==='mine'?'on':''} onClick={()=>setFilter('mine')}>{people[me]?.name||'Của tôi'}</button>
+        <button className={filter==='partner'?'on':''} onClick={()=>setFilter('partner')}>{people[other]?.name||'Của nửa kia'}</button>
+        <button className={filter==='fav'?'on':''} onClick={()=>setFilter('fav')}>❤️ Thích</button>
+      </div>
+
+      {shown.length===0 && <div className="empty"><span className="big">🍿</span>
+        {items.length===0
+          ? 'Phim hai đứa hẹn nhau xem cùng — thêm vào đây để tối bật lên là có sẵn. Bấm 💡 để lấy gợi ý!'
+          : 'Không có phim nào ở mục này.'}</div>}
+
+      {shown.map(it=>(
+        <div key={it.id} className={'item'+(it.done?' dn':'')}>
+          <div className="it-top">
+            <h4>{it.title}{it.year?<span className="muted" style={{fontWeight:500}}> ({it.year})</span>:null}</h4>
+            <button className={'heartbtn'+(it.fav?' on':'')} onClick={()=>toggle(it.id,'fav')}>{it.fav?'❤️':'🤍'}</button>
+          </div>
+          {it.note && <div className="it-note">{it.note}</div>}
+          {it.link && <div style={{marginTop:6}}><a className="linkout" href={it.link} target="_blank" rel="noreferrer">🔗 {it.link}</a></div>}
+          {!it.link && <div style={{marginTop:6}}>
+            <button className="pill" onClick={()=>openUrl('https://www.google.com/search?q='+encodeURIComponent(it.title+' '+(it.year||'')+' phim xem ở đâu'))}>🔎 Tìm chỗ xem</button>
+          </div>}
+          {it.done && theSao(it)}
+          <div className="it-meta">
+            <span className="av-sm">{people[it.by]?.avatar||'❤️'}</span>
+            <span className="muted" style={{fontSize:12.5}}>{people[it.by]?.name||''}</span>
+            {it.tag && <span className="pill">{it.tag}</span>}
+            {it.where && <span className="pill">📺 {it.where}</span>}
+            <span className="grow"></span>
+            <button className="pill" onClick={()=>toggle(it.id,'done')}>{it.done?'↩︎ Chưa xem':'✓ Đã xem'}</button>
+            <button className="iconbtn" title="Chia sẻ" onClick={()=>chiaSeMot(it)}>📤</button>
+            <button className="iconbtn" onClick={()=>{setEdit(it);setOpen(true);}}>✏️</button>
+            <button className="iconbtn" onClick={()=>del(it.id)}>🗑️</button>
+          </div>
+        </div>
+      ))}
+
+      {pick && <Sheet title="🎲 Tối nay xem phim này nhé!" onClose={()=>setPick(null)}>
+        <div className="center" style={{padding:'6px 0 4px'}}>
+          <div style={{fontSize:40}}>🍿</div>
+          <div style={{fontSize:19,fontWeight:700,margin:'8px 0 4px'}}>{pick.title}</div>
+          <div className="muted" style={{fontSize:13}}>
+            {[pick.year,pick.tag,pick.where].filter(Boolean).join(' · ')||'Chưa ghi thêm thông tin'}
+          </div>
+          {pick.note && <div className="it-note" style={{textAlign:'left',marginTop:10}}>{pick.note}</div>}
+        </div>
+        <div className="row" style={{gap:8,marginTop:14,flexWrap:'wrap'}}>
+          <button className="btn sm soft grow" onClick={quayNgauNhien}>🎲 Quay lại</button>
+          {pick.link && <button className="btn sm soft grow" onClick={()=>openUrl(pick.link)}>🔗 Mở link</button>}
+          <button className="btn sm grow" onClick={()=>{ toggle(pick.id,'done'); setPick(null); flash&&flash('Chúc hai đứa xem vui 🍿'); }}>✓ Xem cái này</button>
+        </div>
+      </Sheet>}
+
+      {open && <MovieForm init={edit} onClose={()=>{setOpen(false);setEdit(null);}} onSave={save}/>}
+
+      {sugOpen && <Sheet title="💡 Gợi ý phim — chạm để thêm" onClose={()=>setSugOpen(false)}>
+        <div>
+          {(()=>{ const con=MOVIE_SUGGEST.filter(s=>!items.some(it=>(it.title||'').trim().toLowerCase()===s.toLowerCase()));
+            return con.length? con.map(s=>(
+              <button key={s} className="pill" style={{margin:'4px 6px 4px 0',padding:'8px 12px',fontSize:12.5}}
+                onClick={()=>{ addQuick(s); flash&&flash('Đã thêm: '+s); }}>＋ {s}</button>
+            )) : <div className="muted center" style={{padding:'16px 0'}}>Bạn đã thêm hết gợi ý rồi 🎉</div>;
+          })()}
+        </div>
+      </Sheet>}
+    </div>
+  );
+}
+
+function MovieForm({init,onClose,onSave}){
+  const [f,setF]=useState(()=> init? {...init} : {title:'',year:'',tag:'Phim lẻ',where:'',link:'',note:''});
+  const set=(k,v)=>setF(p=>({...p,[k]:v}));
+  const luu=()=>{ if(!(f.title||'').trim()) return; onSave({...f,title:f.title.trim()}); };
+  return (
+    <Sheet title={(init?'Sửa ':'Thêm ')+'phim'} onClose={onClose}>
+      <div style={{display:'grid',gap:10}}>
+        <input className="inp" autoFocus placeholder="Tên phim *" value={f.title} onChange={e=>set('title',e.target.value)}
+          onKeyDown={e=>{ if(e.key==='Enter') luu(); }}/>
+        <div className="row" style={{gap:8}}>
+          <input className="inp grow" inputMode="numeric" maxLength={4} placeholder="Năm (không bắt buộc)"
+            value={f.year||''} onChange={e=>set('year',e.target.value.replace(/\D/g,''))}/>
+          <select className="inp grow" value={f.tag||'Phim lẻ'} onChange={e=>set('tag',e.target.value)}>
+            {MOVIE_TAGS.map(t=><option key={t} value={t}>{t}</option>)}
+          </select>
+        </div>
+        <div>
+          <div className="muted" style={{fontSize:12.5,marginBottom:6}}>📺 Xem ở đâu</div>
+          <div>
+            {MOVIE_WHERE.map(w=>(
+              <button key={w} className="pill" onClick={()=>set('where',f.where===w?'':w)}
+                style={{margin:'4px 6px 4px 0',padding:'8px 12px',fontSize:12.5,
+                        background:f.where===w?'var(--primary)':'var(--chip)',
+                        color:f.where===w?'var(--on-primary)':'var(--chip-tx)'}}>{w}</button>
+            ))}
+          </div>
+        </div>
+        <input className="inp" placeholder="Link tới phim (không bắt buộc)" value={f.link||''} onChange={e=>set('link',e.target.value)}/>
+        <textarea className="inp" placeholder="Ghi chú — ai giới thiệu, vì sao muốn xem…" value={f.note||''} onChange={e=>set('note',e.target.value)}/>
+        <button className="btn" onClick={luu} disabled={!(f.title||'').trim()}>Lưu</button>
+      </div>
+    </Sheet>
   );
 }
 
@@ -4791,7 +5041,7 @@ const MENU_REGISTRY=[
   {id:'us-groups',label:'Nhà mình · nhóm chính',items:US_GROUPS.map(g=>({k:g.k,icon:g.icon,label:g.label}))},
   ...US_GROUPS.map(g=>({id:'us-'+g.k,label:'Nhà mình · '+g.label,items:g.items.map(k=>US_SEG_MAP[k]).filter(Boolean)})),
   {id:'date',label:'Hẹn hò',items:[{k:'idea',icon:'💡',label:'Ý tưởng'},{k:'hanoi',icon:'📍',label:'Gợi ý HN'},{k:'events',icon:'🎪',label:'Sự kiện HN'},{k:'food',icon:'🍜',label:'Quán & Món'},{k:'checkin',icon:'📸',label:'Check-in ảnh'},{k:'wish',icon:'💝',label:'Ước mơ chung'}]},
-  {id:'wish',label:'Ước mơ chung',items:[{k:'gift',icon:'🎁',label:'Quà tặng'},{k:'bucket',icon:'🎯',label:'Muốn làm cùng'},{k:'watch',icon:'🎬',label:'Xem·Đọc·Nghe'},{k:'music',icon:'🎵',label:'Nhạc đôi'},{k:'coupon',icon:'🎟️',label:'Phiếu yêu thương'},{k:'link',icon:'🔗',label:'Link hay'},{k:'price',icon:'🏷️',label:'Săn giá'}]},
+  {id:'wish',label:'Ước mơ chung',items:[{k:'gift',icon:'🎁',label:'Quà tặng'},{k:'bucket',icon:'🎯',label:'Muốn làm cùng'},{k:'movie',icon:'🍿',label:'Phim muốn xem'},{k:'watch',icon:'🎬',label:'Xem·Đọc·Nghe'},{k:'music',icon:'🎵',label:'Nhạc đôi'},{k:'coupon',icon:'🎟️',label:'Phiếu yêu thương'},{k:'link',icon:'🔗',label:'Link hay'},{k:'price',icon:'🏷️',label:'Săn giá'}]},
   {id:'talk',label:'Chúng mình',items:[{k:'notes',icon:'💌',label:'Nhắn nhau'},{k:'question',icon:'❓',label:'Câu hỏi'},{k:'wishes',icon:'💛',label:'Mong nhau'},{k:'topics',icon:'🗣️',label:'Chủ đề'},{k:'quiz',icon:'💞',label:'Đố vui'},{k:'game',icon:'🎲',label:'Trò chơi'},{k:'checkin',icon:'📝',label:'Check-in tuần'},{k:'guide',icon:'🕊️',label:'Giao tiếp'},{k:'privacy',icon:'🔒',label:'Riêng tư'}]},
   {id:'intimacy',label:'Chúng mình · Riêng tư',items:[{k:'ibLog',icon:'📝',label:'Nhật ký'},{k:'ibSig',icon:'😏',label:'Tín hiệu'},{k:'ibWant',icon:'🌟',label:'Muốn thử'},{k:'ibHealth',icon:'💛',label:'Cảm xúc'},{k:'ibGame',icon:'🎲',label:'Chơi'},{k:'ibDate',icon:'📅',label:'Hẹn hò'},{k:'ibKnow',icon:'📖',label:'Kiến thức'},{k:'ibLock',icon:'🔒',label:'Riêng tư'}]},
   {id:'health',label:'Cá nhân · Sức khỏe',items:[{k:'health',icon:'🩺',label:'Bệnh nền'},{k:'period',icon:'🌸',label:'Chu kỳ'}]},
@@ -7136,9 +7386,14 @@ function PinLock({pin,onOk}){
 
 /* ============ APP ============ */
 const SEARCH_SRC=[
-  {key:'ju.wish',cat:'🎁 Quà',tab:'us'},{key:'ju.bucket',cat:'🎯 Muốn làm',tab:'us'},
-  {key:'ju.watch',cat:'🎬 Xem·Đọc·Nghe',tab:'us'},{key:'ju.links',cat:'🔗 Link',tab:'us'},
-  {key:'ju.coupons',cat:'🎟️ Phiếu',tab:'us'},{key:'ju.ideas',cat:'💡 Ý tưởng',tab:'date'},
+  /* 06 mục dưới đây nằm trong WishTab, mà WishTab render bên trong DateTab (Hẹn hò →
+     Ước mơ chung) chứ không phải tab Nhà mình. Khai 'us' thì bấm kết quả tìm kiếm nhảy
+     sang Nhà mình — nơi không có mục nào chứa chúng, vì US_SEGS không khai gift/bucket/
+     movie/watch/link/coupon. Sửa 12/08/2026. */
+  {key:'ju.wish',cat:'🎁 Quà',tab:'date'},{key:'ju.bucket',cat:'🎯 Muốn làm',tab:'date'},
+  {key:'ju.movies',cat:'🍿 Phim',tab:'date'},
+  {key:'ju.watch',cat:'🎬 Xem·Đọc·Nghe',tab:'date'},{key:'ju.links',cat:'🔗 Link',tab:'date'},
+  {key:'ju.coupons',cat:'🎟️ Phiếu',tab:'date'},{key:'ju.ideas',cat:'💡 Ý tưởng',tab:'date'},
   {key:'ju.food',cat:'🍜 Quán/Món',tab:'date'},
   {key:'ju.events',cat:'📅 Sự kiện',tab:'us'},{key:'ju.timeline',cat:'🕰️ Kỷ niệm',tab:'us'},
   {key:'ju.chores',cat:'🧹 Việc nhà',tab:'us'},{key:'ju.lovejar',cat:'🫙 Lọ yêu thương',tab:'home'},
