@@ -20,6 +20,39 @@ không lỗi nào phát ra — nên không có gì báo cho biết là đã sử
 tiếp mới nuốt mất bản sửa ấy. Công cụ có chốt: thấy `index.html` lệch với dấu vân tay
 của lần dựng trước thì DỪNG và bắt gộp tay, chứ không ghi đè.
 
+## ⛔ MỘT PHẦN MÃ APP NÀY DÙNG CHUNG VỚI SÓC — sửa là phải dựng lại CẢ HAI
+
+Từ 12/08/2026, hai khối dưới đây không còn nằm trong `nguon/app.jsx` nữa. Bản gốc
+duy nhất ở `HeThong/dungapp/chung/`, được gộp vào lúc dựng bản qua chỉ thị `@@GOM`:
+
+| File chung | Chứa gì | Dòng |
+|---|---|---|
+| `cloud-ju.jsx` | toàn bộ `Cloud` — đăng nhập, ghép đôi, đẩy/kéo dữ liệu, kho ảnh | 142 |
+| `ui-ju.jsx` | `Collapse` · `Sheet` · `celebrate` | 37 |
+
+**Vì sao phải gộp:** Sóc chạy trên CÙNG dự án Supabase, CÙNG bảng `justus_data`,
+CÙNG kho ảnh `justus-photos`, và khối `Cloud` bên đó vốn là bản chép từ đây. Đo
+12/08/2026 thấy hai bản đã lệch nhau trong im lặng — app này đã hạ thời hạn link
+ảnh từ 07 ngày xuống 01 giờ vì lý do bảo mật, Sóc thì chưa được vá theo. Không lỗi
+nào phát ra: cả hai app vẫn mở được ảnh, chỉ khác thời hạn.
+
+- Sửa file chung ⇒ **dựng lại cả `App/JustUs` lẫn `App/Soc`** ngay trong lượt đó.
+  `khoe.py::app_dung_lech_nguon()` kêu ĐỎ khi một app chưa dựng theo.
+- App phải tự khai TRƯỚC dòng chỉ thị: `SB_URL` · `SB_KEY` · `SYNC_KEYS` · `store`.
+  `SYNC_KEYS` chính là chỗ hai app khác nhau nên cố ý để ngoài.
+- ⛔ Cần thêm một hàm vào `Cloud` thì thêm vào **file chung**, đừng thêm riêng vào
+  đây — thêm riêng là dựng lại đúng cái đã đi gỡ.
+
+## ⚠ CÒN 03 KHỐI NỮA TRÙNG VỚI SÓC, CỐ Ý CHƯA GỘP
+
+Đo 12/08/2026, mỗi khối kèm lý do chưa gộp — đừng gộp bừa mà chưa xử lý lý do:
+
+| Khối | Trùng tới mức | Vướng gì |
+|---|---|---|
+| `NotiRunner` (38 dòng) | khác đúng 01 dòng (tên kho đệm `justus-noti` / `soc-noti`) | nó gọi `subscribePush()`, mà Sóc **không có hàm đó** — gộp lúc này là khoá cứng lỗi |
+| `Onboarding` (54 dòng) | khác đúng 01 dòng (`theme`) | màn này ở Sóc đang chào **"Just Us — Không gian riêng của hai đứa mình"**; chờ Huy chốt chữ rồi mới gộp |
+| `computeDueNotis` | khác 155% | đây là luật riêng từng app, **không phải** ứng viên gộp |
+
 ---
 
 # Just Us — Của riêng hai đứa (app riêng cho một cặp đôi/vợ chồng)
