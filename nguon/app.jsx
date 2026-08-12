@@ -108,18 +108,6 @@ function nextMilestone(days){
   return {mark:m, inDays:m-days, isYear:m%365===0, years:Math.round(m/365)};
 }
 // Hiệu ứng confetti + rung nhẹ khi có khoảnh khắc vui
-function celebrate(emojis){
-  try{ if(navigator.vibrate) navigator.vibrate([28,40,28]); }catch(e){}
-  const set=emojis||['❤️','💖','🎉','✨','💞','💕'];
-  for(let i=0;i<26;i++){
-    const el=document.createElement('div');
-    el.textContent=set[Math.floor(Math.random()*set.length)];
-    el.style.cssText='position:fixed;z-index:200;left:'+(Math.random()*100)+'vw;top:-30px;font-size:'+(16+Math.random()*18)+'px;pointer-events:none;will-change:transform,opacity;transition:transform 1.7s cubic-bezier(.3,.7,.4,1), opacity 1.7s;';
-    document.body.appendChild(el);
-    requestAnimationFrame(()=>{ el.style.transform='translateY('+(105+Math.random()*15)+'vh) rotate('+(Math.random()*540-270)+'deg)'; el.style.opacity='0'; });
-    setTimeout(()=>{ try{el.remove();}catch(e){} },1800);
-  }
-}
 // Chuỗi ngày liên tiếp có trả lời câu hỏi (giữ streak nếu hôm nay chưa trả lời nhưng hôm qua có)
 function answerStreak(qa){
   if(!qa) return 0;
@@ -536,7 +524,7 @@ const SWEET_NOTES=['Cảm ơn em/anh vì hôm nay nhé 💗','Nhớ em/anh quá 
 const CALM_ANXIOUS=['Thở ra dài hơn hít vào, lặp lại 1 phút','Kỹ thuật 5-4-3-2-1: gọi tên 5 thứ nhìn thấy, 4 nghe được, 3 chạm được…','Viết ra điều lo + tách “việc mình kiểm soát được” và “không”','Uống một tách trà ấm','Đi bộ chậm, chú ý từng bước chân','Nhắn cho người ấy điều đang khiến bạn lo','Tắm nước ấm thư giãn','Nghe nhạc thiền / lo-fi 10 phút','Ghi ra 3 điều bạn biết ơn hôm nay','Đặt điện thoại xuống 15 phút','Ôm người ấy 20 giây cho dịu lại','Tự nhủ: “Mình đã vượt qua những lúc khó hơn thế này.”','Đặt tay lên ngực, cảm nhận nhịp thở chậm lại','Chia việc đang lo thành 1 bước nhỏ làm ngay','Pha một ly nước ấm mật ong','Ra ngoài nhìn cây xanh / bầu trời 2 phút','Viết thư cho chính mình của tuần sau','Vươn vai, xoay cổ nhẹ nhàng','Gọi tên 5 thứ đang nhìn thấy quanh mình','Đặt tay lên ngực, cảm nhận hơi thở vào ra','Viết ra điều lo lắng và một việc nhỏ có thể làm ngay','Pha một ly trà ấm và uống thật chậm','Nhắn cho người mình tin một câu cho nhẹ lòng','Co duỗi vai gáy nhẹ nhàng vài phút','Nhắc mình: phần lớn điều lo chưa chắc xảy ra','Ra chỗ có nắng / cây xanh đứng vài phút'];
 
 /* ============ small components ============ */
-/* @@GOM collapse-ju.jsx */
+/* @@GOM ui-ju.jsx */
 function Stars({value=0,onChange}){
   return <span className="stars">{[1,2,3,4,5].map(i=>(
     <span key={i} onClick={onChange?()=>onChange(i===value?0:i):undefined} style={{cursor:onChange?'pointer':'default'}}>
@@ -545,17 +533,6 @@ function Stars({value=0,onChange}){
 }
 
 /* ============ Sheet (modal) ============ */
-function Sheet({title,onClose,children}){
-  return (
-    <div className="ov" onClick={onClose}>
-      <div className="sheet" onClick={e=>e.stopPropagation()}>
-        <div className="x" onClick={onClose}>✕</div>
-        {title && <h3>{title}</h3>}
-        {children}
-      </div>
-    </div>
-  );
-}
 
 /* ============ Menu lưới biểu tượng (thay seg cuộn ngang) ============ */
 function orderItems(items, menuId){

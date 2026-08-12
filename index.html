@@ -1080,27 +1080,6 @@ function nextMilestone(days) {
   };
 }
 // Hiệu ứng confetti + rung nhẹ khi có khoảnh khắc vui
-function celebrate(emojis) {
-  try {
-    if (navigator.vibrate) navigator.vibrate([28, 40, 28]);
-  } catch (e) {}
-  const set = emojis || ['❤️', '💖', '🎉', '✨', '💞', '💕'];
-  for (let i = 0; i < 26; i++) {
-    const el = document.createElement('div');
-    el.textContent = set[Math.floor(Math.random() * set.length)];
-    el.style.cssText = 'position:fixed;z-index:200;left:' + Math.random() * 100 + 'vw;top:-30px;font-size:' + (16 + Math.random() * 18) + 'px;pointer-events:none;will-change:transform,opacity;transition:transform 1.7s cubic-bezier(.3,.7,.4,1), opacity 1.7s;';
-    document.body.appendChild(el);
-    requestAnimationFrame(() => {
-      el.style.transform = 'translateY(' + (105 + Math.random() * 15) + 'vh) rotate(' + (Math.random() * 540 - 270) + 'deg)';
-      el.style.opacity = '0';
-    });
-    setTimeout(() => {
-      try {
-        el.remove();
-      } catch (e) {}
-    }, 1800);
-  }
-}
 // Chuỗi ngày liên tiếp có trả lời câu hỏi (giữ streak nếu hôm nay chưa trả lời nhưng hôm qua có)
 function answerStreak(qa) {
   if (!qa) return 0;
@@ -2622,23 +2601,28 @@ const SWEET_NOTES = ['Cảm ơn em/anh vì hôm nay nhé 💗', 'Nhớ em/anh qu
 const CALM_ANXIOUS = ['Thở ra dài hơn hít vào, lặp lại 1 phút', 'Kỹ thuật 5-4-3-2-1: gọi tên 5 thứ nhìn thấy, 4 nghe được, 3 chạm được…', 'Viết ra điều lo + tách “việc mình kiểm soát được” và “không”', 'Uống một tách trà ấm', 'Đi bộ chậm, chú ý từng bước chân', 'Nhắn cho người ấy điều đang khiến bạn lo', 'Tắm nước ấm thư giãn', 'Nghe nhạc thiền / lo-fi 10 phút', 'Ghi ra 3 điều bạn biết ơn hôm nay', 'Đặt điện thoại xuống 15 phút', 'Ôm người ấy 20 giây cho dịu lại', 'Tự nhủ: “Mình đã vượt qua những lúc khó hơn thế này.”', 'Đặt tay lên ngực, cảm nhận nhịp thở chậm lại', 'Chia việc đang lo thành 1 bước nhỏ làm ngay', 'Pha một ly nước ấm mật ong', 'Ra ngoài nhìn cây xanh / bầu trời 2 phút', 'Viết thư cho chính mình của tuần sau', 'Vươn vai, xoay cổ nhẹ nhàng', 'Gọi tên 5 thứ đang nhìn thấy quanh mình', 'Đặt tay lên ngực, cảm nhận hơi thở vào ra', 'Viết ra điều lo lắng và một việc nhỏ có thể làm ngay', 'Pha một ly trà ấm và uống thật chậm', 'Nhắn cho người mình tin một câu cho nhẹ lòng', 'Co duỗi vai gáy nhẹ nhàng vài phút', 'Nhắc mình: phần lớn điều lo chưa chắc xảy ra', 'Ra chỗ có nắng / cây xanh đứng vài phút'];
 
 /* ============ small components ============ */
-/* ▼▼ gộp từ HeThong/dungapp/chung/collapse-ju.jsx — CẤM sửa ở đây, sửa file gốc ▼▼ */
+/* ▼▼ gộp từ HeThong/dungapp/chung/ui-ju.jsx — CẤM sửa ở đây, sửa file gốc ▼▼ */
 /* ═══════════════════════════════════════════════════════════════════════════════
-   KHUNG GẤP MỞ DÙNG CHUNG — Just Us và Sóc
+   BA MẢNH GIAO DIỆN DÙNG CHUNG — Just Us và Sóc
 
-   Hai app dùng đúng một component này, kể cả tiền tố khoá `ju.col.` và khoá mặc
-   định chung `ju.colDefault`, nên trạng thái gấp/mở đi theo cùng một bộ luật. Gộp
-   về một bản gốc ngày 12/08/2026 cùng đợt với `cloud-ju.jsx`.
+   `Collapse` (khung gấp mở) · `Sheet` (hộp thoại trượt) · `celebrate` (mưa emoji).
+   Ba khối này y hệt nhau ở hai app, kể cả tiền tố khoá `ju.col.` và khoá mặc định
+   `ju.colDefault`. Gộp về một bản gốc ngày 12/08/2026 cùng đợt với `cloud-ju.jsx`.
 
-   Vì sao gộp một khối chỉ 14 dòng: đây là component HIỂN THỊ, tức thứ hay bị chỉnh
-   lặt vặt (đổi mũi tên, thêm hiệu ứng, sửa chỗ bấm). Chỉnh ở một app thì app kia
-   không theo, và lệch kiểu này không phát ra lỗi nào — hai màn hình chỉ đơn giản
-   là trông khác nhau, mà không ai mở hai app cạnh nhau để so.
+   Vì sao gộp cả những khối chỉ hơn mười dòng: đây là mảnh HIỂN THỊ, tức thứ hay bị
+   chỉnh lặt vặt (đổi mũi tên, thêm hiệu ứng, sửa chỗ bấm). Chỉnh ở một app thì app
+   kia không theo, và lệch kiểu này không phát ra lỗi nào — hai màn hình chỉ đơn
+   giản là trông khác nhau, mà không ai mở hai app cạnh nhau để so.
 
-   ⛔ CẤM chép sang app. Đặt dòng chỉ thị «@@GOM collapse-ju.jsx» trong khối chú
-   thích ở `nguon/app.jsx` rồi dựng lại bằng `HeThong/dungapp/dung.py <thư mục app>`.
+   ⛔ CẤM chép sang app. Đặt dòng chỉ thị «@@GOM ui-ju.jsx» trong khối chú thích ở
+   `nguon/app.jsx` rồi dựng lại bằng `HeThong/dungapp/dung.py <thư mục app>`.
 
-   APP PHẢI CÓ SẴN: `store` (đủ get/set) và `useState` của React.
+   APP PHẢI CÓ SẴN: `store` (đủ get/set) và `useState` của React. `celebrate` chỉ
+   dùng API sẵn của trình duyệt, không cần gì.
+
+   CẦN CSS ĐI KÈM, app phải tự có: `.collapse` `.sec-title` `.col-h` `.col-chev`
+   `.col-body` `.grow` cho Collapse, và `.ov` `.sheet` `.x` cho Sheet. Thiếu lớp
+   nào thì màn vẫn hiện, chỉ vỡ bố cục — không lỗi nào phát ra.
    ═══════════════════════════════════════════════════════════════════════════════ */
 
 function Collapse({
@@ -2675,23 +2659,8 @@ function Collapse({
   }, children));
 }
 
-/* ▲▲ hết phần gộp collapse-ju.jsx ▲▲ */
-function Stars({
-  value = 0,
-  onChange
-}) {
-  return /*#__PURE__*/React.createElement("span", {
-    className: "stars"
-  }, [1, 2, 3, 4, 5].map(i => /*#__PURE__*/React.createElement("span", {
-    key: i,
-    onClick: onChange ? () => onChange(i === value ? 0 : i) : undefined,
-    style: {
-      cursor: onChange ? 'pointer' : 'default'
-    }
-  }, i <= value ? '★' : '☆')));
-}
-
-/* ============ Sheet (modal) ============ */
+/* Hộp thoại trượt. Bấm ra nền là đóng; bấm trong thân thì chặn nổi bọt để khỏi
+   đóng oan. */
 function Sheet({
   title,
   onClose,
@@ -2708,6 +2677,49 @@ function Sheet({
     onClick: onClose
   }, "✕"), title && /*#__PURE__*/React.createElement("h3", null, title), children));
 }
+
+/* Mưa emoji + rung nhẹ khi có khoảnh khắc vui. Tự dọn thẻ sau 1,8 giây — không dọn
+   thì mỗi lần gọi để lại 26 thẻ trong cây, và trang càng dùng lâu càng nặng dần mà
+   không có dấu hiệu nào. */
+function celebrate(emojis) {
+  try {
+    if (navigator.vibrate) navigator.vibrate([28, 40, 28]);
+  } catch (e) {}
+  const set = emojis || ['❤️', '💖', '🎉', '✨', '💞', '💕'];
+  for (let i = 0; i < 26; i++) {
+    const el = document.createElement('div');
+    el.textContent = set[Math.floor(Math.random() * set.length)];
+    el.style.cssText = 'position:fixed;z-index:200;left:' + Math.random() * 100 + 'vw;top:-30px;font-size:' + (16 + Math.random() * 18) + 'px;pointer-events:none;will-change:transform,opacity;transition:transform 1.7s cubic-bezier(.3,.7,.4,1), opacity 1.7s;';
+    document.body.appendChild(el);
+    requestAnimationFrame(() => {
+      el.style.transform = 'translateY(' + (105 + Math.random() * 15) + 'vh) rotate(' + (Math.random() * 540 - 270) + 'deg)';
+      el.style.opacity = '0';
+    });
+    setTimeout(() => {
+      try {
+        el.remove();
+      } catch (e) {}
+    }, 1800);
+  }
+}
+
+/* ▲▲ hết phần gộp ui-ju.jsx ▲▲ */
+function Stars({
+  value = 0,
+  onChange
+}) {
+  return /*#__PURE__*/React.createElement("span", {
+    className: "stars"
+  }, [1, 2, 3, 4, 5].map(i => /*#__PURE__*/React.createElement("span", {
+    key: i,
+    onClick: onChange ? () => onChange(i === value ? 0 : i) : undefined,
+    style: {
+      cursor: onChange ? 'pointer' : 'default'
+    }
+  }, i <= value ? '★' : '☆')));
+}
+
+/* ============ Sheet (modal) ============ */
 
 /* ============ Menu lưới biểu tượng (thay seg cuộn ngang) ============ */
 function orderItems(items, menuId) {
