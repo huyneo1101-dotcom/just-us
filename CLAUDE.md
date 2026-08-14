@@ -81,6 +81,30 @@ Khai ngay trên dòng chỉ thị gộp, đừng sửa vào file chung:
 'function'`. Phép dò hỏng về phía IM: app nào lỡ mất hàm đăng ký thì lặng lẽ chạy
 tiếp như thể cố ý không có — đúng lỗi mà đợt gộp này đi vá ở Sóc.
 
+## 🍜 MẢNG BẾP & CHỢ ĐÃ SANG APP RIÊNG «BẾP NHÀ» (14/08/2026)
+
+App tĩnh riêng: `/Users/Huy/Claude/App/BepNha`, chạy ở <https://bep-nha.pages.dev>.
+Luật của nó ở `App/BepNha/CLAUDE.md`.
+
+Đã gỡ khỏi đây **763 dòng**: nhóm `kitchen` trong `US_GROUPS`, 04 mục
+`cook/menu/shop/expiry` trong `US_SEGS`, 05 khối màn (`KitchenPact` `WeeklyMenu`
+`Shopping` `ExpiryItems` `TodayMenuCard`) và 14 hằng chỉ phục vụ chúng.
+
+**Ở lại, cố ý:**
+
+| Thứ | Vì sao giữ |
+|---|---|
+| `KitchenCard` | thẻ trang chủ, nay chỉ tóm tắt `{đã nấu}/{đích}` bữa tuần này + nút mở Bếp Nhà |
+| `cookSummary()` + nhắc `cookday`/`cookreward` | **Bếp Nhà chưa có máy nhắc** — gỡ ở đây là mất hẳn lời nhắc |
+| `DISHES` `EASY_DISHES` `data/dishes.json` | mục «Phân vân ăn gì» (`FunPickers`) còn dùng |
+| `HEALTH_CONDITIONS` | của màn Sức khỏe gia đình, không dính mảng Bếp |
+| 12 khoá `ju.cook*` `ju.menuPlan` `ju.shop` `ju.expiry` trong `SYNC_KEYS` | hai app ghi chung **một hàng** `justus_data`; bỏ khỏi đây là thẻ tóm tắt hết số liệu |
+
+- ⛔ **Đừng bỏ các khoá bếp khỏi `SYNC_KEYS` của Just Us.** Just Us nay chỉ ĐỌC chúng,
+  nhưng vẫn phải kéo về được thì thẻ tóm tắt và máy nhắc mới có số.
+- Đổi địa chỉ Bếp Nhà thì sửa **cả ba chỗ**: hằng `BEP_NHA_URL`, `APP_BOARD` trong
+  `nguon/app.jsx`, và `App/BangApp/apps.json`.
+
 ## ⚠ CÒN 02 KHỐI TRÙNG VỚI SÓC, CỐ Ý CHƯA GỘP
 
 | Khối | Trùng tới mức | Vướng gì |
