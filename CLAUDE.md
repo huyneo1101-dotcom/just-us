@@ -44,6 +44,30 @@ nào phát ra: cả hai app vẫn mở được ảnh, chỉ khác thời hạn.
 - ⛔ Cần thêm một hàm vào `Cloud` thì thêm vào **file chung**, đừng thêm riêng vào
   đây — thêm riêng là dựng lại đúng cái đã đi gỡ.
 
+### ⛔ `Cloud.push()` TRỘN dữ liệu, KHÔNG ghi đè cả cột `data` (vá 14/08/2026)
+
+Ba app — Just Us · Sóc · **Bếp Nhà** — ghi chung MỘT hàng `justus_data` theo `couple_id`,
+mà mỗi app khai `SYNC_KEYS` riêng: **104 · 30 · 15 khoá**. Bản trước 14/08 đẩy thẳng
+`data: snap` nên **mở app nào thì hàng đó chỉ còn khoá của app ấy**. Đo 14/08/2026: mở Sóc
+một lần là **76 nhóm dữ liệu của Just Us biến khỏi bản đám mây**, và chiều ngược lại mất
+`ju.childFever` · `ju.childDay`.
+
+Hỏng câm hoàn hảo: máy đang dùng vẫn đủ dữ liệu vì bản trong `localStorage` còn nguyên,
+mọi lệnh vẫn trả về thành công, và máy nào mở sau sẽ push lại phần của nó. **Chỉ máy cài
+lại hoặc máy mới đăng nhập mới kéo về bản đã khuyết** — tức lúc phát hiện thì đã mất.
+
+Nay `push()` đọc hàng hiện có, giữ nguyên mọi khoá **không** thuộc `SYNC_KEYS` của app đang
+chạy, rồi mới ghi. **Đọc hụt thì DỪNG, không ghi** — ghi tiếp là đúng cái đang đi vá.
+
+- **Thêm app thứ tư vào cùng bảng thì không phải làm gì thêm**, nhưng phải khai `SYNC_KEYS`
+  **chỉ gồm khoá của chính nó**; khai thừa một khoá của app khác là app này thành chủ sở hữu
+  khoá đó và bản cũ của nó sẽ đè bản mới bên kia.
+- **Cổng canh:** `python3 /Users/Huy/Claude/HeThong/dungapp/thu-cloud-tron.py --tu-kiem`
+  — 05 ca chạy THẬT khối `Cloud` bằng Node với client giả, 03 bản hỏng. Đã nạp vào
+  `khoe.py::BO_TEST`. Hai chiều hỏng ngược nhau đều có bản hỏng: giữ **thiếu** (mất dữ liệu
+  app anh em) và giữ **thừa** (bản cũ trên đám mây đè bản mới của chính app này, người dùng
+  sửa xong thấy giá trị quay về như cũ).
+
 ### `NotiRunner`: hai chỗ khác nhau là HẰNG SỐ APP TỰ KHAI
 
 Khai ngay trên dòng chỉ thị gộp, đừng sửa vào file chung:
