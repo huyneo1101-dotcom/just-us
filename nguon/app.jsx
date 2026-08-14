@@ -1284,7 +1284,6 @@ function Home({setup,setSetup,people,me,go}){
   const keys=homeOrder(homecfg);
   const cardEls={
     partnerwish:<PartnerWishCard people={people} me={me}/>,
-    todaymenu:<TodayMenuCard people={people} me={me} go={go}/>,
     cook:<KitchenCard people={people} me={me} go={go}/>,
     fun:<FunPickers/>,
     anger:<AngerHelper/>,
@@ -3694,140 +3693,8 @@ function thanSo(dateStr,curYear){
    Ba rào cản được nhắm thẳng: bận con · tủ trống · mệt rã. */
 const COOK_GOAL_DEFAULT=5;
 const COOK_BASE=3; // mốc nền đang giữ được — mốc này coi như "không mất"
-const COOK_DOW=[[1,'T2'],[2,'T3'],[3,'T4'],[4,'T5'],[5,'T6'],[6,'T7'],[0,'CN']];
-const COOK_REWARDS=[
-  'Rửa bát cả tuần này, không kêu ca 🧽',
-  'Massage vai gáy 15 phút 💆',
-  'Sáng mai bữa sáng + cà phê bê tận giường ☕',
-  'Một tối nằm dài không phải làm gì cả 🛋️',
-  'Đổi vai: người kia nấu, mình chỉ ngồi chấm điểm 👨‍🍳',
-  'Đi ăn ngoài đúng món mình thích 🍜',
-  'Một bó hoa nhỏ mua trên đường về 💐',
-  'Được ngủ nướng, người kia lo hết buổi sáng 😴',
-  'Một buổi cà phê/đi chơi riêng, người kia trông Sóc 🐿️',
-  'Cả tuần sau người kia lo hết khoản đi chợ 🛒',
-];
-// Rào cản thật — nhóm đúng theo 3 chỗ vướng đã chốt.
-const COOK_BLOCK_GROUPS=[
-  {g:'child',icon:'🐿️',label:'Bận con, không rảnh tay'},
-  {g:'stock',icon:'🧊',label:'Không có sẵn đồ ăn'},
-  {g:'tired',icon:'😮‍💨',label:'Mệt, không còn sức'},
-];
-const COOK_BLOCKERS=[
-  {k:'childwatch',g:'child',t:'Người kia bế/chơi với Sóc trọn lúc nấu — không "vừa nấu vừa trông"'},
-  {k:'childtime',g:'child',t:'Vào bếp đúng lúc Sóc ngủ hoặc đang chơi ngoan'},
-  {k:'childpot',g:'child',t:'Ngày bận con thì nấu món một nồi, không phải đứng canh chảo'},
-  {k:'childeat',g:'child',t:'Nấu gộp phần của Sóc vào cùng bữa, không nấu hai lượt'},
-  {k:'market',g:'stock',t:'Đi chợ gộp 1 lần/tuần cho cả 5 bữa, không ngày nào cũng ghé'},
-  {k:'pantry',g:'stock',t:'Ngăn đá luôn có thịt băm chia sẵn túi nhỏ + trứng + đậu phụ'},
-  {k:'prep',g:'stock',t:'Cuối tuần sơ chế sẵn 2 phần cho giữa tuần (ướp thịt, thái rau)'},
-  {k:'order',g:'stock',t:'Đặt rau/thịt online giao tận nhà đúng ngày bếp'},
-  {k:'wash',g:'tired',t:'Luật vàng: ai nấu thì người kia rửa bát và dọn bàn'},
-  {k:'low',g:'tired',t:'Hạ chuẩn: 1 món mặn + rau luộc cũng tính là có nấu'},
-  {k:'fast',g:'tired',t:'Ngày thường chỉ nấu món ≤ 20 phút, món cầu kỳ để cuối tuần'},
-  {k:'rice',g:'tired',t:'Cắm cơm hẹn giờ từ sáng — về đến nhà là có cơm'},
-  {k:'praise',g:'tired',t:'Khen ngay tại bàn ăn, tuyệt đối không chê mặn nhạt'},
-];
-// Đồ trữ sẵn — hết cái nào đẩy thẳng sang mục 🛒 Đi chợ.
-const COOK_PANTRY=[
-  {k:'trung',t:'Trứng gà (chục quả)',map:['trung']},
-  {k:'thitbam',t:'Thịt băm chia sẵn túi nhỏ, ngăn đá',map:['thitbam']},
-  {k:'ga',t:'Ức gà / đùi gà cấp đông',map:['ga']},
-  {k:'dauphu',t:'Đậu phụ',map:['dauphu']},
-  {k:'rauben',t:'Rau củ để lâu: bí xanh, su su, cà rốt, bắp cải',map:['bixanh','carot','rauxanh']},
-  {k:'cachua',t:'Cà chua, hành khô, tỏi',map:['cachua']},
-  {k:'mien',t:'Mì / miến / bún khô',map:['minbun']},
-  {k:'tomkho',t:'Tôm khô (nấu canh nhanh)',map:['tomkho']},
-  {k:'cahop',t:'Cá hộp / ruốc / đồ kho sẵn ăn liền'},
-  {k:'giavi',t:'Nước mắm, dầu hào, hạt nêm còn dùng được'},
-];
-// Ba chế độ cứu, khớp đúng ba chỗ vướng.
-const COOK_RESCUE=[
-  {k:'fast',icon:'⚡',label:'Mệt rã — nấu 15 phút',hint:'Đứng bếp một loáng là xong, không cần khéo.',
-    names:['Trứng ốp la','Trứng chiên thịt bằm','Canh trứng cà chua','Mì tôm trứng rau','Cơm rang trứng','Giá đỗ xào','Canh đậu hũ hẹ','Trứng luộc dầm mắm','Bí xanh luộc','Rau muống/cải luộc','Đậu phụ rán chấm mắm hành','Tôm rang','Su su/bí xanh xào tỏi','Miến trộn trứng rau củ']},
-  {k:'child',icon:'🐿️',label:'Đang trông Sóc',hint:'Món một nồi, cho vào rồi để đó — không phải đứng canh chảo.',
-    names:['Thịt kho tàu đơn giản','Trứng cút kho','Canh khoai tây cà rốt nấu xương','Cà tím om (kho) chay','Thịt luộc chấm mắm tôm/mắm nêm','Thịt gà xé chấm muối tiêu chanh','Rau củ luộc chấm kho quẹt','Bắp cải luộc','Canh rau nấu thịt bằm','Canh rong biển đậu hũ','Bí xanh luộc']},
-  {k:'empty',icon:'🧊',label:'Tủ gần trống',hint:'Nấu được bằng đúng mấy thứ luôn có trong nhà.',
-    names:['Trứng ốp la','Trứng đúc thịt','Cơm rang trứng','Mì tôm trứng rau','Đậu phụ sốt cà chua','Trứng luộc dầm mắm','Canh trứng cà chua','Trứng cút kho','Trứng chiên thịt bằm','Canh đậu hũ hẹ']},
-];
-/* ---- "Có gì nấu nấy": khớp đồ đang có trong tủ với kho món sẵn trong app ----
-   Nguyên liệu trong kho món viết tự do ('3 quả trứng', '80g thịt băm'…) nên phải
-   quy về nhóm bằng từ khoá. Gia vị nền (mắm, muối, tiêu, dầu, tỏi, hành, gừng…)
-   coi như nhà nào cũng có, không tính vào phần "còn thiếu". */
-const COOK_ING_CATS=[{g:'dam',label:'🥩 Đạm'},{g:'tinhbot',label:'🍚 Tinh bột'},{g:'rau',label:'🥬 Rau củ'},{g:'khac',label:'🧺 Đồ khô'}];
-// Sửa vài cụm dễ gây nhận nhầm trước khi dò (vd "rau dền cơm" không phải là cơm).
-const COOK_ING_FIX=[['rau dền cơm','rau dền'],['các loại',''],['mì chính',''],['nước mắm',''],['mắm tôm',''],['mắm nêm',''],['rau ngổ',''],['rau răm',''],['rau mùi',''],['rau thơm',''],['rau sống','']];
-// Thứ tự có ý nghĩa: mục cụ thể phải đứng trước mục chung (mướp đắng trước mướp,
-// tôm khô trước tôm, bông cải trước rau xanh) vì khớp xong là cắt khỏi chuỗi.
-const COOK_INGS=[
-  {k:'tomkho',g:'khac',t:'Tôm khô · ruốc',kw:['tôm khô','ruốc']},
-  {k:'khoqua',g:'rau',t:'Mướp đắng',kw:['mướp đắng','khổ qua']},
-  {k:'bongcai',g:'rau',t:'Bông cải · súp lơ',kw:['bông cải','súp lơ']},
-  {k:'trung',g:'dam',t:'Trứng',kw:['trứng']},
-  {k:'thitbam',g:'dam',t:'Thịt băm',kw:['thịt băm','thịt bằm','thịt xay','nạc băm','nạc xay','vai xay']},
-  {k:'thitlon',g:'dam',t:'Thịt lợn (ba chỉ, nạc…)',kw:['ba chỉ','thịt lợn','thịt heo','chân giò','nạc vai','thăn lợn','thịt thăn','thịt luộc','nạc dăm']},
-  {k:'xuong',g:'dam',t:'Xương · sườn',kw:['sườn','xương','móng giò']},
-  {k:'ga',g:'dam',t:'Gà',kw:['gà']},
-  {k:'bo',g:'dam',t:'Thịt bò',kw:['bò']},
-  {k:'tom',g:'dam',t:'Tôm tươi',kw:['tôm']},
-  {k:'ca',g:'dam',t:'Cá',kw:['cá']},
-  {k:'haisan',g:'dam',t:'Mực · ngao · cua',kw:['mực','ngao','nghêu','cua','ghẹ','hàu','bạch tuộc']},
-  {k:'dauphu',g:'dam',t:'Đậu phụ',kw:['đậu phụ','đậu hũ']},
-  {k:'chagio',g:'dam',t:'Xúc xích · chả · giò',kw:['xúc xích','chả lụa','giò lụa','nem']},
-  {k:'com',g:'tinhbot',t:'Cơm · gạo',kw:['cơm','gạo']},
-  {k:'minbun',g:'tinhbot',t:'Mì · miến · bún · phở',kw:['miến','mì','bún','phở','nui','bánh đa','bánh phở']},
-  {k:'khoaitay',g:'tinhbot',t:'Khoai tây',kw:['khoai tây']},
-  {k:'cachua',g:'rau',t:'Cà chua',kw:['cà chua']},
-  {k:'rauxanh',g:'rau',t:'Rau xanh (muống, cải, ngót…)',kw:['rau muống','cải','mồng tơi','rau ngót','rau đay','bắp cải','xà lách','mớ rau','hẹ','lá lốt','rau lang','rau dền','ngải cứu']},
-  {k:'carot',g:'rau',t:'Cà rốt',kw:['cà rốt']},
-  {k:'hanhtay',g:'rau',t:'Hành tây',kw:['hành tây']},
-  {k:'bixanh',g:'rau',t:'Bí xanh · su su · mướp',kw:['bí xanh','su su','bí đao','mướp']},
-  {k:'bido',g:'rau',t:'Bí đỏ',kw:['bí đỏ']},
-  {k:'catim',g:'rau',t:'Cà tím',kw:['cà tím']},
-  {k:'nam',g:'rau',t:'Nấm',kw:['nấm']},
-  {k:'giado',g:'rau',t:'Giá đỗ',kw:['giá đỗ','giá']},
-  {k:'dauque',g:'rau',t:'Đậu que · đậu bắp',kw:['đậu que','đậu cove','đậu bắp','đậu đũa']},
-  {k:'duachuot',g:'rau',t:'Dưa chuột',kw:['dưa leo','dưa chuột']},
-  {k:'ngo',g:'rau',t:'Ngô · bắp non',kw:['bắp non','ngô']},
-  {k:'dua',g:'rau',t:'Dứa',kw:['dứa']},
-  {k:'rongbien',g:'khac',t:'Rong biển',kw:['rong biển']},
-  {k:'hatsen',g:'khac',t:'Hạt sen',kw:['hạt sen']},
-];
-const COOK_ING_MAP=Object.fromEntries(COOK_INGS.map(x=>[x.k,x]));
-const _ingCache={};
-function cookDishKeys(d){
-  if(_ingCache[d.n]) return _ingCache[d.n];
-  let txt=(d.ing||[]).join(' | ').toLowerCase();
-  COOK_ING_FIX.forEach(([a,b])=>{ txt=txt.split(a).join(b); });
-  const ks=[];
-  COOK_INGS.forEach(ing=>{
-    for(let i=0;i<ing.kw.length;i++){
-      const kw=ing.kw[i];
-      if(txt.indexOf(kw)>=0){ ks.push(ing.k); txt=txt.split(kw).join(' '); break; }
-    }
-  });
-  _ingCache[d.n]=ks; return ks;
-}
-// Trả về danh sách món xếp theo: thiếu ít nhất → món dễ nấu → khớp nhiều nguyên liệu nhất.
-function cookFridgeMatch(have){
-  const H=new Set(have||[]); if(!H.size) return [];
-  const seen={}, out=[];
-  EASY_DISHES.concat(DISHES).forEach(d=>{
-    if(seen[d.n]) return; seen[d.n]=1;
-    const ks=cookDishKeys(d); if(!ks.length) return;
-    const miss=ks.filter(k=>!H.has(k)); const hit=ks.length-miss.length;
-    if(!hit) return; if(miss.length>2) return;
-    out.push({d,miss,hit,ez:(d.g||[]).indexOf('ez')>=0?1:0});
-  });
-  out.sort((a,b)=> a.miss.length-b.miss.length || b.ez-a.ez || b.hit-a.hit);
-  return out;
-}
-const COOK_PRAISE=['Ngon lắm, cảm ơn nhé 😍','Hôm nay ăn no quá, mai nấu nữa nha 🤤','Vất vả rồi, để đó tôi rửa 🧽','Món này ngon hơn ngoài hàng thật 👏','Cảm ơn vì bữa cơm nhà 💛','Mệt vậy mà vẫn nấu, thương ghê 🥰'];
-const COOK_BADGES=[[10,'🥉','Bén tay bếp'],[30,'🥈','Đều đặn'],[60,'🥇','Đầu bếp của nhà'],[120,'🏆','Bếp trưởng'],[250,'👑','Huyền thoại gian bếp']];
 function mondayISO(iso){ const d=iso?new Date(iso+'T00:00:00'):new Date(); d.setHours(0,0,0,0); const w=(d.getDay()+6)%7; d.setDate(d.getDate()-w); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
 function shiftWeekISO(wk,n){ const d=new Date(wk+'T00:00:00'); d.setDate(d.getDate()+n*7); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
-function cookDishes(names){ const pool=EASY_DISHES.filter(d=>names.indexOf(d.n)>=0); return pool.length?pool:EASY_DISHES.filter(d=>(d.g||[]).indexOf('ez')>=0); }
-// Tóm tắt dùng chung cho thẻ Trang chủ + thông báo
 function cookSummary(){
   const cfg=store.get('ju.cook',{})||{}; const goal=cfg.goal||COOK_GOAL_DEFAULT;
   const logs=(store.get('ju.cookLogs',[])||[]).filter(x=>x&&x.date);
@@ -3841,344 +3708,6 @@ function cookSummary(){
   return {goal,weekCount,streak,total:logs.length,today,todayDone:today.length>0,
     left:Math.max(0,goal-weekCount),base:Math.min(weekCount,COOK_BASE),wk,
     isCookDay:days.indexOf(new Date().getDay())>=0,days};
-}
-function KitchenPact({people,me,flash}){
-  const [cfg,setCfg]=useLocal('ju.cook',{goal:COOK_GOAL_DEFAULT,days:[]});
-  const [logs,setLogs]=useLocal('ju.cookLogs',[]);
-  const [rewards,setRewards]=useLocal('ju.cookRewards',[]);
-  const [help,setHelp]=useLocal('ju.cookHelp',{});
-  const [pantry,setPantry]=useLocal('ju.cookPantry',{});
-  const [fridge,setFridge]=useLocal('ju.cookFridge',{});
-  const [fridgeOpen,setFridgeOpen]=useState(false);
-  const [fdish,setFdish]=useState(null);
-  const [coupons,setCoupons]=useLocal('ju.coupons',[]);
-  const [shop,setShop]=useLocal('ju.shop',[]);
-  const [favs]=useLocal('ju.favDishes',[]);
-  const [open,setOpen]=useState(false);
-  const [rescue,setRescue]=useState(null);
-  const [pick,setPick]=useState(null);
-  const [thx,setThx]=useState(null);
-  const [f,setF]=useState({cook:me,dish:'',wash:'',note:''});
-  const other=me==='a'?'b':'a';
-  const goal=cfg.goal||COOK_GOAL_DEFAULT;
-  const days=cfg.days||[];
-  const wk=mondayISO();
-  const nameOf=(w)=> w==='both'?'Cả hai':((people&&people[w]&&people[w].name)||(w==='a'?'A':'B'));
-  const avaOf=(w)=> w==='both'?'👫':((people&&people[w]&&people[w].avatar)||'🧑');
-  const clean=logs.filter(x=>x&&x.date);
-  const inWeek=(w)=>clean.filter(x=>mondayISO(x.date)===w);
-  const week=inWeek(wk); const doneWeek=week.length;
-  const today=clean.filter(x=>x.date===todayISO());
-  const streak=(()=>{ let s=(doneWeek>=goal)?1:0; let w=shiftWeekISO(wk,-1); while(inWeek(w).length>=goal){ s++; w=shiftWeekISO(w,-1); } return s; })();
-  const baseStreak=(()=>{ let s=(doneWeek>=COOK_BASE)?1:0; let w=shiftWeekISO(wk,-1); while(inWeek(w).length>=COOK_BASE){ s++; w=shiftWeekISO(w,-1); } return s; })();
-  const badge=COOK_BADGES.filter(b=>clean.length>=b[0]).pop();
-  const nextBadge=COOK_BADGES.find(b=>clean.length<b[0]);
-  const ym=todayISO().slice(0,7);
-  const monthLogs=clean.filter(x=>(x.date||'').slice(0,7)===ym);
-  const cntCook=(w)=>monthLogs.filter(x=>x.cook===w||x.cook==='both').length;
-  const cntWash=(w)=>monthLogs.filter(x=>x.wash===w||x.wash==='both').length;
-  const rewarded=rewards.some(r=>r&&r.week===wk);
-  const pct=Math.min(100,Math.round(doneWeek*100/Math.max(1,goal)));
-  const basePct=Math.min(100,Math.round(COOK_BASE*100/Math.max(1,goal)));
-  const isCookDay=days.indexOf(new Date().getDay())>=0;
-  const missing=COOK_PANTRY.filter(p=>!pantry[p.k]);
-
-  const save=()=>{
-    const cook=f.cook||me;
-    const wash=f.wash||(cook==='both'?'both':(cook==='a'?'b':'a'));
-    const bonus=doneWeek>=COOK_BASE; // bữa vượt mốc nền đang giữ
-    setLogs(prev=>[{id:uid(),date:todayISO(),cook,wash,dish:(f.dish||'').trim(),note:(f.note||'').trim(),bonus,thanks:[],by:me,createdAt:Date.now()},...prev]);
-    setOpen(false); setF({cook:me,dish:'',wash:'',note:''});
-    celebrate(bonus?['⭐','🔥','👏','🍚']:['🍚','👏','💛']);
-    flash&&flash(bonus?'Bữa vượt mốc nền — ghi nhận ⭐':'Đã ghi lại bữa cơm nhà mình ✓');
-  };
-  const del=(id)=>{ if(confirm('Xoá bữa này khỏi nhật ký bếp?')) setLogs(prev=>prev.filter(x=>x.id!==id)); };
-  const addThanks=(id,text)=>{ const t=(text||'').trim(); if(!t) return;
-    setLogs(prev=>prev.map(l=>l.id===id?{...l,thanks:[...(l.thanks||[]),{by:me,text:t,at:Date.now()}]}:l));
-    setThx(null); celebrate(['💛','👏']); flash&&flash('Đã gửi lời khen 💛'); };
-  const giveReward=(title)=>{
-    setCoupons(prev=>[{id:uid(),title:title,by:me,redeemed:false,createdAt:Date.now()},...prev]);
-    setRewards(prev=>[{week:wk,at:Date.now(),by:me,title:title},...prev]);
-    celebrate(['🎟️','🎉','💝','✨']); flash&&flash('Đã trao thưởng — xem ở 🎟️ Phiếu yêu thương');
-  };
-  const toShop=()=>{
-    if(!missing.length){ flash&&flash('Tủ đang đủ đồ 👍'); return; }
-    const have=new Set(shop.map(s=>s&&s.text));
-    const add=missing.filter(p=>!have.has(p.t)).map(p=>({id:uid(),text:p.t,by:me||'a',done:false}));
-    if(!add.length){ flash&&flash('Mấy món này đã có trong danh sách Đi chợ rồi'); return; }
-    setShop(prev=>{ const co=new Set((prev||[]).map(s=>s&&s.text)); return [...add.filter(x=>!co.has(x.text)),...(prev||[])]; }); celebrate(['🛒']); flash&&flash('Đã đẩy '+add.length+' món sang 🛒 Đi chợ');
-  };
-  const toggleDay=(d)=>{ const s=new Set(days); if(s.has(d)) s.delete(d); else s.add(d); setCfg({...cfg,days:[...s]}); };
-  const quickDishes=favs.slice(0,4).map(x=>x.n).concat(EASY_DISHES.filter(d=>d.t==='man').slice(0,8).map(d=>d.n));
-  const helpDone=COOK_BLOCKERS.filter(b=>help[b.k]).length;
-  // "Có gì nấu nấy"
-  const fridgeHave=COOK_INGS.filter(x=>fridge[x.k]).map(x=>x.k);
-  const matches=cookFridgeMatch(fridgeHave);
-  const ready=matches.filter(m=>m.miss.length===0);
-  const near=matches.filter(m=>m.miss.length>0);
-  const fromPantry=()=>{ const n={...fridge}; let c=0;
-    COOK_PANTRY.forEach(p=>{ if(pantry[p.k]) (p.map||[]).forEach(k=>{ if(!n[k]){ n[k]=true; c++; } }); });
-    if(!c){ flash&&flash('Chưa có gì mới để chép từ Tủ dự phòng'); return; }
-    setFridge(n); flash&&flash('Đã chép '+c+' nhóm từ 🧺 Tủ dự phòng'); };
-  const missToShop=(miss)=>{
-    const have=new Set(shop.map(s=>s&&s.text));
-    const add=miss.map(k=>(COOK_ING_MAP[k]||{}).t).filter(t=>t&&!have.has(t)).map(t=>({id:uid(),text:t,by:me||'a',done:false}));
-    if(!add.length){ flash&&flash('Đã có trong danh sách Đi chợ rồi'); return; }
-    setShop(prev=>{ const co=new Set((prev||[]).map(s=>s&&s.text)); return [...add.filter(x=>!co.has(x.text)),...(prev||[])]; }); celebrate(['🛒']); flash&&flash('Đã thêm '+add.length+' món vào 🛒 Đi chợ'); };
-  const DishRow=({m})=>(
-    <div className="item" onClick={()=>setFdish(m.d)} style={{cursor:'pointer'}}>
-      <div className="it-top"><h4>{m.d.t==='canh'?'🥣':'🍖'} {m.d.n}{m.ez?' ⚡':''}</h4></div>
-      <div className="it-meta" style={{flexWrap:'wrap',gap:6}}>
-        {m.miss.length===0
-          ? <span className="pill" style={{background:'var(--good)',color:'#fff'}}>✓ Đủ đồ, nấu được luôn</span>
-          : <span className="pill" style={{background:'var(--warn)',color:'#fff'}}>Thiếu {m.miss.map(k=>(COOK_ING_MAP[k]||{}).t).join(' · ')}</span>}
-        <span className="grow"></span>
-        {m.miss.length>0 && <button className="btn sm soft" onClick={e=>{ e.stopPropagation(); missToShop(m.miss); }}>🛒</button>}
-      </div>
-    </div>
-  );
-
-  return (
-    <div>
-      <div className="muted center" style={{fontSize:12.5,margin:'10px 14px'}}>🍳 Đích <b>{goal} bữa/tuần</b>. Mốc nền {COOK_BASE} bữa nhà mình đang giữ được vẫn hiện trên thanh — mỗi tuần nhìn thấy phần đã làm được trước, phần còn thiếu sau.</div>
-
-      {/* Tiến độ tuần */}
-      <div className="card" style={{borderLeft:'4px solid var(--good)'}}>
-        <div className="row"><span className="hc-title">🔥 Tuần này</span><span className="grow"></span>
-          <span className="pill" style={doneWeek>=goal?{background:'var(--good)',color:'#fff'}:{}}>{doneWeek}/{goal} bữa</span></div>
-        <div style={{position:'relative',height:12,borderRadius:99,background:'var(--chip)',overflow:'hidden',margin:'8px 0 4px'}}>
-          <div style={{height:'100%',width:pct+'%',borderRadius:99,background:doneWeek>=goal?'var(--good)':'var(--primary)',transition:'width .4s'}}></div>
-          <div style={{position:'absolute',left:basePct+'%',top:0,bottom:0,width:2,background:'var(--card)',opacity:.9}}></div>
-        </div>
-        <div className="muted" style={{fontSize:11,marginBottom:6}}>▏vạch là mốc nền {COOK_BASE} bữa</div>
-        <div style={{fontSize:12.5,lineHeight:1.6}}>
-          {doneWeek>=goal ? '🎉 Chạm đích '+goal+' bữa rồi! Tuần đẹp đấy.'
-            : doneWeek>=COOK_BASE ? '✅ Đã giữ được mốc nền '+COOK_BASE+' bữa. Còn '+(goal-doneWeek)+' bữa nữa tới đích — nấu thêm được bữa nào hay bữa đó, không thêm cũng đã là tuần ổn.'
-            : 'Còn '+(COOK_BASE-doneWeek)+' bữa nữa là chạm mốc nền. Nấu 1 món mặn + rau luộc cũng tính nhé.'}
-        </div>
-        <div className="row" style={{gap:6,flexWrap:'wrap',marginTop:8}}>
-          {streak>0 && <span className="pill" style={{background:'var(--good)',color:'#fff'}}>🔥 {streak} tuần chạm đích</span>}
-          {baseStreak>0 && <span className="pill">✅ {baseStreak} tuần giữ nền</span>}
-          <span className="pill">🍚 Tổng {clean.length} bữa</span>
-          {badge && <span className="pill" style={{background:'var(--good)',color:'#fff'}}>{badge[1]} {badge[2]}</span>}
-        </div>
-        {nextBadge && <div className="muted" style={{fontSize:11,marginTop:6}}>Còn {nextBadge[0]-clean.length} bữa nữa để mở huy hiệu {nextBadge[1]} {nextBadge[2]}.</div>}
-      </div>
-
-      {isCookDay && today.length===0 && <div className="card" style={{border:'2px solid var(--primary)'}}>
-        <div className="hc-title">📌 Hôm nay là ngày bếp</div>
-        <div className="muted" style={{fontSize:12.5,marginTop:4}}>Đã chốt từ đầu tuần rồi — không phải nghĩ lại "hôm nay có nấu không".</div>
-      </div>}
-
-      <div className="row" style={{margin:'10px 14px 6px',gap:8}}>
-        <button className="btn grow" onClick={()=>{ setF({cook:me,dish:'',wash:'',note:''}); setOpen(true); }}>🍚 Hôm nay nhà mình có nấu</button>
-      </div>
-      <div className="row" style={{margin:'0 14px 10px',gap:8}}>
-        <button className="btn soft grow" onClick={()=>setFridgeOpen(true)}>🧊 Có gì nấu nấy{fridgeHave.length>0?' ('+ready.length+' món)':''}</button>
-        <button className="btn sm soft" onClick={()=>setRescue(true)}>🆘 Cứu</button>
-      </div>
-
-      {/* Trao thưởng khi chạm đích */}
-      {doneWeek>=goal && !rewarded && <div className="card" style={{border:'2px solid var(--good)'}}>
-        <div className="hc-title">🎁 Tuần này chạm đích {goal} bữa — trao thưởng cho {nameOf(other)} đi!</div>
-        <div className="muted" style={{fontSize:12,margin:'4px 0 8px'}}>Chọn một phần thưởng, app tạo thành 🎟️ phiếu yêu thương để {nameOf(other)} đổi lúc nào cũng được. Thưởng thật thì lần sau mới có động lực.</div>
-        <div style={{display:'flex',flexWrap:'wrap',gap:6}}>
-          {COOK_REWARDS.map((r,i)=><button key={i} className="pill" onClick={()=>giveReward(r)}>{r}</button>)}
-        </div>
-      </div>}
-      {rewarded && <div className="card"><div className="muted" style={{fontSize:12.5}}>🎟️ Tuần này đã trao thưởng: <b>{(rewards.find(r=>r.week===wk)||{}).title}</b></div></div>}
-
-      {/* Bữa hôm nay */}
-      <Collapse id="cook-today" title={'🍽️ Hôm nay ('+today.length+' bữa)'} defaultOpen={true}>
-        {today.length===0 && <div className="empty" style={{padding:'14px'}}>Hôm nay chưa ghi bữa nào. Nấu xong nhớ bấm nút trên để ghi nhận.</div>}
-        {today.map(l=>(
-          <div key={l.id} className="item">
-            <div className="it-top"><h4>{l.bonus?'⭐':'🍚'} {l.dish||'Cơm nhà'}</h4><button className="iconbtn" onClick={()=>del(l.id)}>🗑️</button></div>
-            <div className="it-meta" style={{flexWrap:'wrap',gap:6}}>
-              <span className="pill">{avaOf(l.cook)} {nameOf(l.cook)} nấu</span>
-              {l.wash && <span className="pill">🧽 {nameOf(l.wash)} rửa</span>}
-              <span className="grow"></span>
-              {l.cook!==me && <button className="btn sm soft" onClick={()=>setThx(l)}>💛 Khen một câu</button>}
-            </div>
-            {l.note && <div className="muted" style={{fontSize:12.5,marginTop:5}}>{l.note}</div>}
-            {(l.thanks||[]).map((t,i)=><div key={i} style={{fontSize:12.5,marginTop:5}}>💛 <b>{nameOf(t.by)}:</b> {t.text}</div>)}
-          </div>
-        ))}
-      </Collapse>
-
-      {/* Ngày bếp cố định */}
-      <Collapse id="cook-days" title={'📌 Ngày bếp cố định'+(days.length?' ('+days.length+' ngày)':'')} defaultOpen={true}>
-        <div className="card">
-          <div className="muted" style={{fontSize:12.5,marginBottom:8}}>Chốt hẳn thứ nào nấu, thay vì "5 bữa bất kỳ". Neo vào ngày cụ thể bền hơn neo vào con số, và tối đó khỏi phải cân nhắc lại từ đầu.</div>
-          <div style={{display:'flex',flexWrap:'wrap',gap:6}}>
-            {COOK_DOW.map(([d,l])=><button key={d} className="pill" style={days.indexOf(d)>=0?{background:'var(--good)',color:'#fff'}:{}} onClick={()=>toggleDay(d)}>{l}</button>)}
-          </div>
-          {days.length>0 && days.length<goal && <div className="muted" style={{fontSize:11,marginTop:8}}>Đang chốt {days.length} ngày mà đích là {goal} bữa — chọn thêm {goal-days.length} ngày nữa cho khớp.</div>}
-          {days.length===0 && <div className="muted" style={{fontSize:11,marginTop:8}}>Gợi ý: giữ cuối tuần rồi thêm 2 ngày giữa tuần ít bận nhất.</div>}
-        </div>
-      </Collapse>
-
-      {/* Tủ dự phòng */}
-      <Collapse id="cook-pantry" title={'🧺 Tủ dự phòng ('+(COOK_PANTRY.length-missing.length)+'/'+COOK_PANTRY.length+')'} defaultOpen={true}>
-        <div className="card">
-          <div className="muted" style={{fontSize:12.5,marginBottom:8}}>Tủ trống là lý do phổ biến nhất để "thôi đặt đồ ăn". Tick món nhà đang có; món còn thiếu đẩy thẳng sang 🛒 Đi chợ.</div>
-          {COOK_PANTRY.map(p=>(
-            <div key={p.k} className="row" style={{gap:8,alignItems:'flex-start',padding:'5px 0',cursor:'pointer'}} onClick={()=>setPantry(prev=>({...prev,[p.k]:!prev[p.k]}))}>
-              <span style={{fontSize:16}}>{pantry[p.k]?'✅':'⬜'}</span>
-              <span className="grow" style={{fontSize:13.5,lineHeight:1.5,opacity:pantry[p.k]?.6:1}}>{p.t}</span>
-            </div>
-          ))}
-          <button className="btn soft" style={{marginTop:8}} onClick={toShop}>🛒 Đẩy {missing.length} món còn thiếu sang Đi chợ</button>
-        </div>
-      </Collapse>
-
-      {/* Gỡ rào cản */}
-      <Collapse id="cook-blockers" title={'🧊 Gỡ rào cản ('+helpDone+'/'+COOK_BLOCKERS.length+')'} defaultOpen={true}>
-        <div className="card">
-          <div className="muted" style={{fontSize:12.5,marginBottom:6}}>Hai bữa thêm vào rơi vào ngày thường — khó không phải ở việc nấu mà ở đống việc quanh nó. Tick những cái nhà mình đã gỡ được.</div>
-          {COOK_BLOCK_GROUPS.map(g=>(
-            <div key={g.g} style={{marginTop:10}}>
-              <div style={{fontSize:12.5,fontWeight:700}}>{g.icon} {g.label}</div>
-              {COOK_BLOCKERS.filter(b=>b.g===g.g).map(b=>(
-                <div key={b.k} className="row" style={{gap:8,alignItems:'flex-start',padding:'5px 0',cursor:'pointer'}} onClick={()=>setHelp(prev=>({...prev,[b.k]:!prev[b.k]}))}>
-                  <span style={{fontSize:16}}>{help[b.k]?'✅':'⬜'}</span>
-                  <span className="grow" style={{fontSize:13.5,lineHeight:1.5,opacity:help[b.k]?.6:1,textDecoration:help[b.k]?'line-through':'none'}}>{b.t}</span>
-                </div>
-              ))}
-            </div>
-          ))}
-          {helpDone<COOK_BLOCKERS.length && <div className="muted" style={{fontSize:11,marginTop:8}}>Mỗi ô tick là một lý do "thôi hôm nay ăn ngoài" biến mất.</div>}
-        </div>
-      </Collapse>
-
-      {/* Chia việc */}
-      <Collapse id="cook-share" title="⚖️ Chia việc tháng này" defaultOpen={false}>
-        <div className="card">
-          <div className="row" style={{gap:6,flexWrap:'wrap'}}>
-            <span className="pill">{avaOf('a')} {nameOf('a')}: 🍳 {cntCook('a')} · 🧽 {cntWash('a')}</span>
-            <span className="pill">{avaOf('b')} {nameOf('b')}: 🍳 {cntCook('b')} · 🧽 {cntWash('b')}</span>
-          </div>
-          <div className="muted" style={{fontSize:12.5,marginTop:8,lineHeight:1.6}}>
-            📜 <b>Luật vàng của bếp:</b> ai nấu thì người kia rửa bát và dọn bàn. Nếu một người vừa nấu vừa dọn, tuần sau kiểu gì cũng "thôi đặt đồ ăn".
-          </div>
-          {cntCook('a')+cntCook('b')>0 && Math.abs(cntCook('a')-cntCook('b'))>=4 &&
-            <div style={{marginTop:6,fontSize:12.5,color:'var(--warn)'}}>⚠️ Tháng này lệch khá nhiều — {nameOf(cntCook('a')>cntCook('b')?'b':'a')} nhận thêm vài bữa cho cân nhé.</div>}
-        </div>
-      </Collapse>
-
-      {/* Nhật ký bếp */}
-      <Collapse id="cook-log" title={'📜 Nhật ký bếp ('+clean.length+')'} defaultOpen={false}>
-        {clean.length===0 && <div className="empty" style={{padding:'14px'}}>Chưa có bữa nào được ghi.</div>}
-        {clean.slice(0,30).map(l=>(
-          <div key={l.id} className="item">
-            <div className="it-top"><h4>{l.bonus?'⭐':'🍚'} {l.dish||'Cơm nhà'}</h4><span className="pill">{fmtDateVN(l.date)}</span></div>
-            <div className="it-meta" style={{flexWrap:'wrap',gap:6}}>
-              <span className="muted" style={{fontSize:12.5}}>{avaOf(l.cook)} {nameOf(l.cook)} nấu{l.wash?' · 🧽 '+nameOf(l.wash)+' rửa':''}</span>
-              <span className="grow"></span>
-              {l.cook!==me && <button className="btn sm soft" onClick={()=>setThx(l)}>💛</button>}
-              <button className="iconbtn" onClick={()=>del(l.id)}>🗑️</button>
-            </div>
-            {(l.thanks||[]).map((t,i)=><div key={i} style={{fontSize:12.5,marginTop:5}}>💛 <b>{nameOf(t.by)}:</b> {t.text}</div>)}
-          </div>
-        ))}
-      </Collapse>
-
-      {/* Sheet ghi bữa */}
-      {open && <Sheet title="🍚 Ghi lại bữa cơm nhà" onClose={()=>setOpen(false)}>
-        <div className="muted" style={{fontSize:12.5,marginBottom:8}}>Ai nấu hôm nay?</div>
-        <div style={{display:'flex',flexWrap:'wrap',gap:6}}>
-          {['a','b','both'].map(w=><button key={w} className="pill" style={f.cook===w?{background:'var(--good)',color:'#fff'}:{}} onClick={()=>setF({...f,cook:w})}>{avaOf(w)} {nameOf(w)}</button>)}
-        </div>
-        <div className="muted" style={{fontSize:12.5,margin:'12px 0 6px'}}>Ai rửa bát? <span style={{opacity:.7}}>(để trống = tự giao cho người không nấu)</span></div>
-        <div style={{display:'flex',flexWrap:'wrap',gap:6}}>
-          {['a','b','both'].map(w=><button key={w} className="pill" style={f.wash===w?{background:'var(--good)',color:'#fff'}:{}} onClick={()=>setF({...f,wash:f.wash===w?'':w})}>{avaOf(w)} {nameOf(w)}</button>)}
-        </div>
-        <input className="inp" style={{marginTop:12}} placeholder="Nấu món gì? (không bắt buộc)" value={f.dish} onChange={e=>setF({...f,dish:e.target.value})}/>
-        <div style={{display:'flex',flexWrap:'wrap',gap:6,marginTop:8}}>
-          {quickDishes.slice(0,10).map((n,i)=><button key={i} className="pill" onClick={()=>setF({...f,dish:n})}>{n}</button>)}
-        </div>
-        <input className="inp" style={{marginTop:10}} placeholder="Ghi chú (vd: hơi mặn nhưng ăn hết sạch 😄)" value={f.note} onChange={e=>setF({...f,note:e.target.value})}/>
-        <button className="btn" style={{marginTop:12}} onClick={save}>✓ Ghi nhận bữa này</button>
-      </Sheet>}
-
-      {/* Sheet cứu ngày bếp */}
-      {rescue && !pick && <Sheet title="🆘 Cứu ngày bếp" onClose={()=>setRescue(null)}>
-        <div className="muted" style={{fontSize:12.5,marginBottom:10}}>Hôm nay vướng cái gì? Chọn đúng chỗ vướng, đừng bỏ luôn cả bữa.</div>
-        {COOK_RESCUE.map(r=>(
-          <button key={r.k} className="btn soft" style={{display:'block',width:'100%',textAlign:'left',marginBottom:8}}
-            onClick={()=>{ const p=cookDishes(r.names); setPick({mode:r,dish:p[Math.floor(Math.random()*p.length)]}); }}>
-            <div style={{fontWeight:700}}>{r.icon} {r.label}</div>
-            <div className="muted" style={{fontSize:11.5,marginTop:2}}>{r.hint}</div>
-          </button>
-        ))}
-        <button className="btn soft" style={{display:'block',width:'100%',textAlign:'left',marginBottom:8}}
-          onClick={()=>{ setRescue(null); setFridgeOpen(true); }}>
-          <div style={{fontWeight:700}}>🧊 Có gì nấu nấy</div>
-          <div className="muted" style={{fontSize:11.5,marginTop:2}}>Tick đồ đang có trong tủ, app dò xem nấu được món gì.</div>
-        </button>
-        <div className="muted" style={{fontSize:12,marginTop:10,lineHeight:1.6}}>Không chọn được cái nào thì nhớ: <b>1 món mặn + rau luộc vẫn tính là có nấu</b>. Ăn ngoài 1–2 bữa/tuần cũng nằm trong kế hoạch, không phải thất bại.</div>
-      </Sheet>}
-
-      {rescue && pick && <Sheet title={pick.mode.icon+' '+pick.mode.label} onClose={()=>{ setPick(null); setRescue(null); }}>
-        <div style={{fontSize:16,fontWeight:700,marginBottom:6}}>{pick.dish.n}</div>
-        <div className="muted" style={{fontSize:12.5,marginBottom:8}}>Nguyên liệu: {(pick.dish.ing||[]).join(' · ')}</div>
-        <div style={{whiteSpace:'pre-wrap',fontSize:14,lineHeight:1.7}}>{pick.dish.r}</div>
-        <div className="row" style={{gap:8,marginTop:14}}>
-          <button className="btn soft grow" onClick={()=>{ const p=cookDishes(pick.mode.names); setPick({...pick,dish:p[Math.floor(Math.random()*p.length)]}); }}>🎲 Món khác</button>
-          <button className="btn grow" onClick={()=>{ setF({cook:me,dish:pick.dish.n,wash:'',note:''}); setPick(null); setRescue(null); setOpen(true); }}>Nấu món này 🍳</button>
-        </div>
-        <button className="btn soft" style={{marginTop:8,width:'100%'}} onClick={()=>setPick(null)}>← Chọn chỗ vướng khác</button>
-      </Sheet>}
-
-      {/* Sheet "Có gì nấu nấy" */}
-      {fridgeOpen && !fdish && <Sheet title="🧊 Có gì nấu nấy" onClose={()=>setFridgeOpen(false)}>
-        <div className="muted" style={{fontSize:12.5,marginBottom:8}}>Tick những thứ đang có trong tủ, app dò trong kho {EASY_DISHES.length+DISHES.length} món xem nấu được gì. Mắm muối, dầu, tỏi, hành, gừng coi như nhà nào cũng có nên không tính.</div>
-        <button className="btn soft" style={{marginBottom:10}} onClick={fromPantry}>⤵️ Chép từ 🧺 Tủ dự phòng</button>
-        {COOK_ING_CATS.map(c=>(
-          <div key={c.g} style={{marginBottom:10}}>
-            <div style={{fontSize:12.5,fontWeight:700,marginBottom:5}}>{c.label}</div>
-            <div style={{display:'flex',flexWrap:'wrap',gap:6}}>
-              {COOK_INGS.filter(x=>x.g===c.g).map(x=>(
-                <button key={x.k} className="pill" style={fridge[x.k]?{background:'var(--good)',color:'#fff'}:{}}
-                  onClick={()=>setFridge(prev=>({...prev,[x.k]:!prev[x.k]}))}>{fridge[x.k]?'✓ ':''}{x.t}</button>
-              ))}
-            </div>
-          </div>
-        ))}
-        {fridgeHave.length>0 && <button className="btn soft" style={{margin:'2px 0 12px'}} onClick={()=>setFridge({})}>✕ Bỏ chọn hết</button>}
-
-        {fridgeHave.length===0 && <div className="empty" style={{padding:'14px'}}>Tick vài thứ ở trên để xem nấu được món gì.</div>}
-        {fridgeHave.length>0 && <div>
-          <div className="sec-title">✅ Nấu được luôn ({ready.length})</div>
-          {ready.length===0 && <div className="empty" style={{padding:'12px'}}>Chưa đủ đồ cho món nào trọn vẹn — xem mục dưới, thiếu 1–2 thứ thôi.</div>}
-          {ready.slice(0,14).map((m,i)=><DishRow key={'r'+i} m={m}/>)}
-          {ready.length>14 && <div className="muted center" style={{fontSize:11,margin:'4px 0 8px'}}>… và {ready.length-14} món nữa</div>}
-          <div className="sec-title">🛒 Thiếu 1–2 thứ ({near.length})</div>
-          {near.slice(0,10).map((m,i)=><DishRow key={'n'+i} m={m}/>)}
-          {near.length>10 && <div className="muted center" style={{fontSize:11,margin:'4px 0'}}>… và {near.length-10} món nữa</div>}
-          <div className="muted" style={{fontSize:11,marginTop:10,lineHeight:1.6}}>⚡ = món dễ nấu. Gợi ý dựa trên nguyên liệu chính, có thể sót vài món — cứ coi là gợi ý chứ không phải danh sách đầy đủ.</div>
-        </div>}
-      </Sheet>}
-
-      {fdish && <Sheet title={(fdish.t==='canh'?'🥣 ':'🍖 ')+fdish.n} onClose={()=>setFdish(null)}>
-        <div className="muted" style={{fontSize:12.5,marginBottom:8}}>Nguyên liệu: {(fdish.ing||[]).join(' · ')}</div>
-        <div style={{whiteSpace:'pre-wrap',fontSize:14,lineHeight:1.7}}>{fdish.r}</div>
-        <div className="row" style={{gap:8,marginTop:14}}>
-          <button className="btn soft grow" onClick={()=>setFdish(null)}>← Danh sách</button>
-          <button className="btn grow" onClick={()=>{ setF({cook:me,dish:fdish.n,wash:'',note:''}); setFdish(null); setFridgeOpen(false); setOpen(true); }}>Nấu món này 🍳</button>
-        </div>
-      </Sheet>}
-
-      {/* Sheet khen */}
-      {thx && <Sheet title="💛 Khen một câu" onClose={()=>setThx(null)}>
-        <div className="muted" style={{fontSize:12.5,marginBottom:8}}>Lời khen ngay sau bữa ăn là thứ rẻ nhất mà hiệu quả nhất. Chọn nhanh hoặc tự viết.</div>
-        <div style={{display:'flex',flexWrap:'wrap',gap:6}}>
-          {COOK_PRAISE.map((p,i)=><button key={i} className="pill" onClick={()=>addThanks(thx.id,p)}>{p}</button>)}
-        </div>
-        <input className="inp" style={{marginTop:12}} placeholder="Hoặc tự viết rồi Enter…" onKeyDown={e=>{ if(e.key==='Enter') addThanks(thx.id,e.target.value); }}/>
-      </Sheet>}
-    </div>
-  );
 }
 function KitchenCard({people,me,go}){
   const [logs]=useLocal('ju.cookLogs',[]);
@@ -4198,10 +3727,15 @@ function KitchenCard({people,me,go}){
     if(doneWeek>=goal) return '🎉 Tuần này chạm đích rồi — hôm nay nghỉ cũng được.';
     if(isCookDay) return '📌 Hôm nay là ngày bếp đã chốt. Vướng gì thì bấm 🆘 Cứu.';
     if(doneWeek>=COOK_BASE) return '✅ Đã giữ mốc nền '+COOK_BASE+' bữa. Thêm '+(goal-doneWeek)+' bữa nữa là chạm đích '+goal+'.';
-    return '🍚 Còn '+(COOK_BASE-doneWeek)+' bữa nữa là chạm mốc nền. Chạm để ghi bữa hôm nay.';
+    return '🍚 Còn '+(COOK_BASE-doneWeek)+' bữa nữa là chạm mốc nền. Ghi bữa ở app Bếp Nhà.';
   };
+  /* Từ 14/08/2026 mảng Bếp & Chợ đã sang app riêng BẾP NHÀ. Thẻ này ở lại vì tiến
+     độ bếp vẫn là việc chung của hai vợ chồng, nhưng nay chỉ TÓM TẮT và dẫn sang
+     app kia — dữ liệu là cùng một hàng Supabase nên số liệu luôn khớp.
+     ⛔ Đừng đổi thành `go('us')`: nhóm 'Bếp & Chợ' không còn trong US_GROUPS, bấm
+     vào sẽ rơi về nhóm đầu tiên mà không báo gì. */
   return (
-    <div className="card" onClick={()=>go('us')} style={{cursor:'pointer'}}>
+    <div className="card">
       <div className="row"><span className="hc-title">🍳 Bếp nhà mình</span><span className="grow"></span>
         <span className="hc-act">{doneWeek}/{goal} bữa tuần này</span></div>
       <div style={{position:'relative',height:8,borderRadius:99,background:'var(--chip)',overflow:'hidden',margin:'8px 0 6px'}}>
@@ -4209,164 +3743,15 @@ function KitchenCard({people,me,go}){
         <div style={{position:'absolute',left:basePct+'%',top:0,bottom:0,width:2,background:'var(--card)',opacity:.9}}></div>
       </div>
       <div className="hc-body" style={{fontSize:13}}>{line()}</div>
+      <a className="btn soft" style={{marginTop:10,textDecoration:'none'}} href={BEP_NHA_URL}
+        target="_blank" rel="noreferrer">🍜 Mở app Bếp Nhà →</a>
+      <div className="muted" style={{fontSize:11,marginTop:6}}>Thực đơn tuần, đi chợ và hạn dùng nay nằm ở app riêng — dữ liệu vẫn chung với Just Us.</div>
     </div>
   );
 }
-function WeeklyMenu({me,people}){
-  const [plan,setPlan]=useLocal('ju.menuPlan',null);
-  const [shop,setShop]=useLocal('ju.shop',[]);
-  const [prefs,setPrefs]=useLocal('ju.dishPrefs',{});
-  const [favs,setFavs]=useLocal('ju.favDishes',[]);
-  const [health]=useLocal('ju.health',{});
-  const [goal,setGoal]=useState((plan&&plan.goal)||'cb');
-  const [recipe,setRecipe]=useState(null);
-  const [favOpen,setFavOpen]=useState(false);
-  const [favN,setFavN]=useState(''); const [favT,setFavT]=useState('man');
-  const allDishes=()=>DISHES.concat(EASY_DISHES).concat(favs.map(f=>({n:f.n,t:f.t,g:['cb'],ing:[],r:'(Món bạn tự thêm — chưa có công thức sẵn. Bấm “Xem video” để tham khảo cách làm.)',custom:true})));
-  const dishByName=(n)=>allDishes().find(d=>d.n===n);
-  const matchG=(d)=> goal==='cb'? true : (d.g||[]).indexOf(goal)>=0;
-  const rate=(name,v)=>{ const n={...prefs}; n[name]= n[name]===v?0:v; if(!n[name]) delete n[name]; setPrefs(n); };
-  const addFav=()=>{ const nm=favN.trim(); if(!nm) return; if(!favs.find(f=>f.n===nm)) setFavs(prev=>[{n:nm,t:favT},...prev]); setFavN(''); celebrate(['❤️']); };
-  const shuffle=(a)=>a.slice().sort(()=>Math.random()-0.5);
-  const mkPool=(t)=>{ const base=allDishes();
-    let a=base.filter(d=>d.t===t&&matchG(d)&&prefs[d.n]!==-1);
-    if(a.length<(t==='man'?2:1)) a=base.filter(d=>d.t===t&&prefs[d.n]!==-1); // nới mục tiêu nếu thiếu món
-    if(!a.length) a=base.filter(d=>d.t===t); // cùng lắm bỏ qua cả "không thích"
-    const liked=a.filter(d=>prefs[d.n]===1); return liked.concat(liked).concat(a); }; // ưu tiên món thích
-  const gen=()=>{
-    const mRef={a:shuffle(mkPool('man'))}, cRef={a:shuffle(mkPool('canh'))};
-    const bpool=shuffle(BREAKFAST_IDEAS.slice());
-    const popNot=(ref,ex)=>{ for(let k=ref.a.length-1;k>=0;k--){ if(!ex.has(ref.a[k].n)) return ref.a.splice(k,1)[0]; } return ref.a.pop(); };
-    const days=[];
-    for(let i=0;i<7;i++){ if(mRef.a.length<2) mRef.a=shuffle(mkPool('man')); if(cRef.a.length<1) cRef.a=shuffle(mkPool('canh'));
-      const ex=new Set(); const m1=popNot(mRef,ex); if(m1)ex.add(m1.n); const m2=popNot(mRef,ex); const c=cRef.a.pop();
-      days.push({sang:(bpool[i%bpool.length]||{}).n||'',man:[m1&&m1.n,m2&&m2.n].filter(Boolean),canh:c?c.n:''}); }
-    setPlan({goal,days}); celebrate(['🍱','😋','✨']);
-  };
-  const toShop=()=>{ if(!plan) return; const ings=new Set();
-    plan.days.forEach(d=>{ (d.man||[]).concat([d.canh]).forEach(n=>{ const dish=dishByName(n); if(dish) (dish.ing||[]).forEach(x=>ings.add(x)); }); });
-    const have=new Set(shop.map(s=>s.text)); const add=[...ings].filter(x=>!have.has(x)).map(x=>({id:uid(),text:x,by:me||'a',done:false}));
-    setShop(prev=>{ const co=new Set((prev||[]).map(s=>s&&s.text)); return [...add.filter(x=>!co.has(x.text)),...(prev||[])]; }); celebrate(['🛒']); alert('Đã thêm '+add.length+' nguyên liệu vào mục Đi chợ.'); };
-  const goalLabel=(k)=>(MENU_GOALS.find(x=>x.k===k)||{}).label||'';
-  const setCook=(i,who)=>{ if(!plan) return; const days=plan.days.map((d,j)=>j===i?{...d,cook:d.cook===who?null:who}:d); setPlan({...plan,days}); };
-  const setAllCook=(who)=>{ if(!plan) return; const days=plan.days.map((d,j)=> who==='alt'?{...d,cook:j%2===0?'a':'b'}:{...d,cook:who}); setPlan({...plan,days}); };
-  const cookName=(who)=> who==='a'?((people&&people.a&&people.a.name)||'A') : who==='b'?((people&&people.b&&people.b.name)||'B') : who==='both'?'Cùng nấu':'';
-  const cookAva=(who)=> who==='a'?((people&&people.a&&people.a.avatar)||'🧑') : who==='b'?((people&&people.b&&people.b.avatar)||'🧑') : who==='both'?'👫':'';
-  const dislikedNames=Object.keys(prefs).filter(k=>prefs[k]===-1);
-  const healthConds=(()=>{ const ks={}; ['a','b','child'].forEach(m=>(((health||{})[m]||{}).conds||[]).forEach(k=>{ks[k]=1;})); return HEALTH_CONDITIONS.filter(c=>ks[c.k]); })();
-  const hAgg=(f)=>{ const s=[]; healthConds.forEach(c=>(c[f]||[]).forEach(x=>{ if(s.indexOf(x)<0)s.push(x); })); return s; };
-  return (
-    <div>
-      <div className="muted center" style={{fontSize:12.5,margin:'10px 14px 4px'}}>🍱 Thực đơn cả tuần — mỗi ngày bữa <b>sáng</b> + bữa tối (2 mặn + 1 canh). Đánh dấu 👍/👎 để lần sau hợp khẩu vị hơn.</div>
-      {healthConds.length>0 && <div className="card" style={{margin:'6px 14px'}}>
-        <div className="hc-title">🩺 Hợp sức khỏe cả nhà</div>
-        <div className="muted" style={{fontSize:11,margin:'3px 0 6px'}}>Theo vấn đề đã chọn ở mục 🩺 Sức khỏe — cân nhắc khi lên món.</div>
-        {hAgg('eat').length>0 && <div style={{fontSize:12.5,lineHeight:1.5}}><b style={{color:'var(--good)'}}>🟢 Nên tăng:</b> {hAgg('eat').join(' · ')}</div>}
-        {hAgg('avoid').length>0 && <div style={{fontSize:12.5,marginTop:4,lineHeight:1.5}}><b style={{color:'#d9534f'}}>🔴 Nên hạn chế:</b> {hAgg('avoid').join(' · ')}</div>}
-      </div>}
-      <div className="filters">{MENU_GOALS.map(g=><button key={g.k} className={goal===g.k?'on':''} onClick={()=>setGoal(g.k)}>{g.icon} {g.label}</button>)}</div>
-      <div className="row" style={{margin:'10px 14px',gap:8}}>
-        <button className="btn grow" onClick={gen}>🎲 Tạo thực đơn tuần</button>
-        <button className="btn sm soft" onClick={()=>setFavOpen(true)}>❤️ Món</button>
-        {plan && <button className="btn sm soft" onClick={toShop}>🛒 Ra chợ</button>}
-      </div>
-      {!plan && <div className="empty"><span className="big">🍱</span>Bấm “Tạo thực đơn tuần” để có 7 ngày đủ chất, kèm công thức & danh sách mua.</div>}
-      {plan && <div className="muted center" style={{fontSize:11,marginBottom:4}}>Mục tiêu: {goalLabel(plan.goal)} · chạm món để xem công thức 📖</div>}
-      {plan && <div className="card" style={{margin:'0 14px 6px'}}>
-        <div className="row" style={{gap:6,flexWrap:'wrap',alignItems:'center'}}>
-          <span className="muted" style={{fontSize:12,flex:'0 0 auto'}}>👩‍🍳 Người nấu cả tuần:</span>
-          <button className="pill" onClick={()=>setAllCook('a')}>{cookAva('a')} {cookName('a')}</button>
-          <button className="pill" onClick={()=>setAllCook('b')}>{cookAva('b')} {cookName('b')}</button>
-          <button className="pill" onClick={()=>setAllCook('alt')}>🔁 Luân phiên</button>
-          <button className="pill" onClick={()=>setAllCook('both')}>👫 Cùng nấu</button>
-        </div>
-      </div>}
-      {plan && plan.days.map((d,i)=>(
-        <div key={i} className="item">
-          <div className="it-top"><h4>{DOW[i]}</h4>
-            {d.cook && <span className="pill" style={{background:'var(--chip)'}}>{cookAva(d.cook)} {cookName(d.cook)} nấu</span>}</div>
-          <div className="row" style={{gap:6,margin:'2px 0 4px',flexWrap:'wrap'}}>
-            <span className="muted" style={{fontSize:11,flex:'0 0 auto'}}>Ai nấu:</span>
-            {['a','b','both'].map(w=>(
-              <button key={w} className="pill" style={{padding:'3px 9px',fontSize:11.5,background:d.cook===w?'var(--primary)':'var(--chip)',color:d.cook===w?'#fff':'var(--chip-tx)'}} onClick={()=>setCook(i,w)}>{cookAva(w)} {cookName(w)}</button>
-            ))}
-          </div>
-          {d.sang && <div className="row" style={{padding:'3px 0'}}>
-            <span className="muted" style={{width:42,fontSize:11,flex:'0 0 auto'}}>Sáng</span>
-            <span className="grow" style={{fontSize:14}}>🥣 {d.sang}</span></div>}
-          {(d.man||[]).map((n,j)=>(
-            <div key={j} className="row" style={{padding:'3px 0'}}>
-              <span className="muted" style={{width:42,fontSize:11,flex:'0 0 auto'}}>Mặn {j+1}</span>
-              <span className="grow" style={{fontSize:14,cursor:'pointer'}} onClick={()=>setRecipe(dishByName(n))}>🍖 {n} 📖</span>
-              <button onClick={()=>rate(n,1)} style={{fontSize:14,opacity:prefs[n]===1?1:.4}}>👍</button>
-              <button onClick={()=>rate(n,-1)} style={{fontSize:14,opacity:prefs[n]===-1?1:.4}}>👎</button></div>
-          ))}
-          <div className="row" style={{padding:'3px 0'}}>
-            <span className="muted" style={{width:42,fontSize:11,flex:'0 0 auto'}}>Canh</span>
-            <span className="grow" style={{fontSize:14,cursor:'pointer'}} onClick={()=>setRecipe(dishByName(d.canh))}>🥣 {d.canh} 📖</span>
-            <button onClick={()=>rate(d.canh,1)} style={{fontSize:14,opacity:prefs[d.canh]===1?1:.4}}>👍</button>
-            <button onClick={()=>rate(d.canh,-1)} style={{fontSize:14,opacity:prefs[d.canh]===-1?1:.4}}>👎</button></div>
-        </div>
-      ))}
-      <div className="sec-title">👨‍🍳 Món dễ nấu (cho chồng)</div>
-      <div className="muted" style={{fontSize:11,margin:'0 14px 4px'}}>Đơn giản, nhanh, ít bước — chạm để xem công thức. Chọn mục tiêu 👨‍🍳 ở trên để tạo cả tuần toàn món này.</div>
-      <div className="card">
-        {EASY_DISHES.map((b,i)=>(
-          <div key={i} className="row" style={{padding:'7px 0',borderBottom:i<EASY_DISHES.length-1?'1px solid var(--line)':'none',cursor:'pointer'}} onClick={()=>setRecipe(b)}>
-            <span className="grow" style={{fontSize:13.5}}>{b.t==='canh'?'🥣':'🍳'} {b.n}</span>
-            <span className="muted" style={{fontSize:11.5}}>công thức 📖</span>
-          </div>
-        ))}
-      </div>
-      <div className="sec-title">🥣 Gợi ý bữa sáng đủ chất</div>
-      <div className="card">
-        {BREAKFAST_IDEAS.map((b,i)=>(
-          <div key={i} style={{padding:'5px 0',borderBottom:i<BREAKFAST_IDEAS.length-1?'1px solid var(--line)':'none'}}>
-            <div style={{fontSize:12.5,fontWeight:600}}>{b.n}</div>
-            <div className="muted" style={{fontSize:11,lineHeight:1.4}}>{b.d}</div>
-          </div>
-        ))}
-      </div>
-      {recipe && <Sheet title={recipe.n} onClose={()=>setRecipe(null)}>
-        <div className="row" style={{marginBottom:8}}>
-          <span className="muted grow" style={{fontSize:12.5}}>{recipe.t==='canh'?'🥣 Món canh':'🍖 Món mặn'} · {(recipe.g||[]).map(g=>goalLabel(g)).filter(Boolean).join(', ')}</span>
-          <button className="pill" style={{background:prefs[recipe.n]===1?'var(--good)':'var(--chip)',color:prefs[recipe.n]===1?'#fff':'var(--chip-tx)'}} onClick={()=>rate(recipe.n,1)}>👍 Thích</button>
-          <button className="pill" style={{background:prefs[recipe.n]===-1?'#b06b6b':'var(--chip)',color:prefs[recipe.n]===-1?'#fff':'var(--chip-tx)'}} onClick={()=>rate(recipe.n,-1)}>👎</button>
-        </div>
-        {(recipe.ing||[]).length>0 && <><b style={{fontSize:14}}>Nguyên liệu (2 người):</b>
-          <ul style={{margin:'6px 0 12px',paddingLeft:18,fontSize:14,lineHeight:1.6}}>{recipe.ing.map((x,i)=><li key={i}>{x}</li>)}</ul></>}
-        <b style={{fontSize:14}}>Cách làm:</b>
-        <div style={{fontSize:14,marginTop:6,lineHeight:1.7,whiteSpace:'pre-wrap'}}>{recipe.r}</div>
-        <a className="btn" style={{display:'block',textAlign:'center',marginTop:14,textDecoration:'none'}}
-          href={'https://www.youtube.com/results?search_query='+encodeURIComponent('cách làm '+recipe.n)} target="_blank" rel="noreferrer">🎬 Xem video hướng dẫn</a>
-        <div className="muted center" style={{fontSize:11,marginTop:6}}>Mở YouTube với nhiều video hướng dẫn món này.</div>
-      </Sheet>}
-      {favOpen && <Sheet title="❤️ Sở thích món ăn" onClose={()=>setFavOpen(false)}>
-        <b style={{fontSize:14}}>Thêm món ưa thích của nhà mình</b>
-        <div className="muted" style={{fontSize:12.5,margin:'4px 0 8px'}}>Món bạn thêm sẽ được ưu tiên đưa vào thực đơn tuần.</div>
-        <div className="row" style={{gap:6}}>
-          <input className="inp grow" placeholder="Tên món (vd: Gà nướng mật ong)" value={favN} onChange={e=>setFavN(e.target.value)} onKeyDown={e=>{ if(e.key==='Enter') addFav(); }}/>
-          <select className="inp" value={favT} onChange={e=>setFavT(e.target.value)} style={{width:84}}><option value="man">Mặn</option><option value="canh">Canh</option></select>
-          <button className="btn sm" onClick={addFav}>＋</button>
-        </div>
-        {favs.length>0 && <div style={{margin:'10px 0'}}>{favs.map((f,i)=>(
-          <span key={i} className="pill" style={{margin:'3px 6px 3px 0',padding:'7px 11px',fontSize:12.5}}>{f.t==='canh'?'🥣':'🍖'} {f.n} <span onClick={()=>{ if(confirm('Bỏ món ưa thích này?')) setFavs(prev=>prev.filter(x=>x.n!==f.n)); }} style={{cursor:'pointer',marginLeft:4}}>✕</span></span>
-        ))}</div>}
-        {dislikedNames.length>0 && <><div className="sec-title" style={{marginLeft:0}}>👎 Món đang ẩn (không gợi ý)</div>
-          <div>{dislikedNames.map(n=>(<span key={n} className="pill" style={{margin:'3px 6px 3px 0',padding:'7px 11px',fontSize:12.5,background:'var(--chip)'}}>{n} <span onClick={()=>rate(n,-1)} style={{cursor:'pointer',marginLeft:4}}>↩︎</span></span>))}</div></>}
-      </Sheet>}
-    </div>
-  );
-}
-/* ============ Nuôi con (🐿️ Sóc) — KHÔNG CÒN Ở ĐÂY ============
-   Toàn bộ phần Nuôi con đã sang app riêng soc/index.html + data/child.json: mốc phát
-   triển, tiêm chủng, ăn dặm, chơi với con, đi lớp, dạy con, kỷ niệm.
-   Just Us không còn tab 🐿️, không còn thẻ trang chủ "Chơi với con hôm nay", không còn
-   phần của bé trong "Thực đơn hôm nay", và không nạp data/child.json nữa.
-   Đường vào app Sóc nằm ở tab Cá nhân → 📱 App của nhà mình (APP_BOARD ngay dưới). */
-/* Bảng app của nhà mình — mọi app riêng gom về một chỗ ở tab Cá nhân.
-   Cùng origin nên chung localStorage: mở app nào cũng là dữ liệu cũ. */
+const BEP_NHA_URL='https://bep-nha.pages.dev/';
 const APP_BOARD=[
+  {k:'bepnha',icon:'🍜',name:'Bếp Nhà',desc:'Bếp nhà mình, thực đơn tuần, đi chợ, hạn dùng — tách khỏi đây ngày 14/08/2026',href:BEP_NHA_URL,ngoai:true},
   {k:'soc',icon:'🐿️',name:'Sóc',desc:'Nuôi con: mốc phát triển, tiêm chủng, ăn dặm, đi lớp, an toàn & cấp cứu',href:'https://soc-eiv.pages.dev/',ngoai:true},
   {k:'tamlinh',icon:'🪷',name:'Tâm linh',desc:'Ngày lễ âm lịch, kinh Phật, văn khấn, tử vi, thần số, quán chay, mâm cỗ',href:'tam-linh/'},
 ];
@@ -4787,31 +4172,6 @@ const ALCOHOL_TIPS=[
   'Đặt sẵn “chỉ tiêu” số ly cho mình trước khi vào tiệc và giữ đúng.',
   'Nhờ chủ tiệc hoặc người thân biết ý đỡ lời giúp khi bị mời quá nhiệt tình.',
 ];
-const BREAKFAST_IDEAS=[
-  {n:'🍞 Bánh mì nguyên cám + trứng ốp + bơ',d:'Bánh mì nguyên cám kèm trứng ốp la và vài lát bơ — tinh bột chậm, đạm và chất béo tốt, no tới trưa.'},
-  {n:'🥛 Sữa chua Hy Lạp + granola + trái cây',d:'Sữa chua Hy Lạp trộn granola và chuối/dâu — nhiều đạm, lợi khuẩn, làm nhanh cho buổi sáng vội.'},
-  {n:'🍠 Khoai lang luộc + trứng + sữa',d:'Một củ khoai lang, một quả trứng luộc và ly sữa — bữa sáng rẻ, gọn, đủ năng lượng và chất xơ.'},
-  {n:'🥣 Cháo yến mạch + trứng + rau',d:'Yến mạch nấu mềm, thêm trứng và ít rau — tinh bột chậm, đạm, chất xơ, no lâu.'},
-  {n:'🥖 Bánh mì trứng ốp + dưa leo + sữa',d:'Bánh mì (ưu tiên nguyên cám), trứng, rau sống, ly sữa — nhanh gọn, cân bằng.'},
-  {n:'🍜 Phở / bún gà + nhiều rau',d:'Bữa nóng đủ đạm + tinh bột; thêm rau, chan ít nước béo.'},
-  {n:'🍚 Xôi + ruốc/trứng + 1 quả chuối',d:'Xôi cho năng lượng, thêm đạm và chuối (kali) cho cân bằng.'},
-  {n:'🥛 Sữa chua + granola + trái cây',d:'Lợi khuẩn + yến mạch + trái cây tươi — mát, đủ chất, hợp mùa hè.'},
-  {n:'🍳 Trứng + khoai lang luộc + sữa',d:'Khoai lang tinh bột tốt, trứng đạm, sữa canxi — no lâu, lành.'},
-  {n:'🥪 Sandwich bơ + trứng + cà chua',d:'Bơ (chất béo tốt), trứng, cà chua — bữa sáng gọn kiểu tây.'},
-  {n:'🍲 Cháo thịt bằm + rau củ (cho bé)',d:'Cháo mềm với thịt/cá và rau củ nghiền — hợp bé, đủ 4 nhóm.'},
-  {n:'🥤 Sinh tố chuối + yến mạch + sữa',d:'Xay chuối, yến mạch, sữa (thêm bơ đậu phộng) — uống nhanh khi vội.'},
-  {n:'🌽 Ngô / khoai luộc + trứng + sữa',d:'Tinh bột nguyên hạt + đạm + canxi — rẻ, no, ít dầu mỡ.'},
-  {n:'🥚 Bánh cuốn + trứng chần + rau thơm',d:'Nhẹ bụng, có đạm và rau — đổi vị buổi sáng.'},
-  {n:'🍠 Yến mạch ngâm sữa qua đêm + hạt',d:'Tối ngâm yến mạch với sữa + hạt/trái cây, sáng ăn ngay — tiện ngày bận.'},
-  {n:'🫓 Bánh mì nguyên cám + bơ đậu phộng + chuối',d:'Bơ đậu phộng cho đạm và chất béo tốt, chuối bổ sung kali — no lâu, làm nhanh.'},
-  {n:'🍚 Cơm rang trứng + rau củ (tận dụng cơm nguội)',d:'Cơm nguội thêm trứng và rau củ — ấm bụng, đỡ lãng phí, làm trong 10 phút.'},
-  {n:'🥑 Trứng chần + bánh mì đen + bơ (quả)',d:'Đạm, tinh bột chậm và chất béo tốt — bữa sáng gọn, giữ no tới trưa.'},
-  {n:'🍵 Sữa đậu nành + bánh bao/bánh giò',d:'Ấm bụng buổi sáng mát trời, đủ đạm thực vật và tinh bột — rẻ và tiện.'},
-  {n:'🥗 Sữa chua Hy Lạp + granola + trái cây',d:'Đạm cao, ít đường, thêm hạt và trái cây tươi — mát, nhẹ bụng, làm trong 3 phút.'},
-  {n:'🍠 Khoai lang luộc + trứng + sữa hạt',d:'Tinh bột chậm, đạm và chất béo tốt — no lâu, hợp buổi sáng cần tỉnh táo.'},
-  {n:'🥞 Bánh chuối yến mạch áp chảo + mật ong',d:'Chuối nghiền trộn yến mạch trứng, áp chảo ít dầu — ngọt tự nhiên, đủ năng lượng.'},
-  {n:'🍲 Xôi đỗ xanh + ruốc + dưa góp',d:'Bữa sáng no chắc kiểu Việt; thêm ít rau dưa cho đỡ ngán, hợp ngày bận rộn.'},
-];
 function FamilyTree({people,me,flash}){
   const [fam,setFam]=useLocal('ju.family',[]);
   const [view,setView]=useState('tree');
@@ -5005,18 +4365,14 @@ const US_SEGS=[
   {k:'ibDate',icon:'📅',label:'Hẹn hò'},
   {k:'ibKnow',icon:'📖',label:'Kiến thức'},
   {k:'ibLock',icon:'🔒',label:'Riêng tư'},
-  {k:'menu',icon:'🍱',label:'Thực đơn'},
-  {k:'cook',icon:'🍳',label:'Bếp nhà mình'},
   {k:'events',icon:'📅',label:'Sự kiện'},
   {k:'dates',icon:'🎂',label:'Ngày nhớ'},
   {k:'timeline',icon:'🕰️',label:'Kỷ niệm'},
   {k:'fund',icon:'💸',label:'Chi tiêu'},
   {k:'todos',icon:'✅',label:'Việc cần làm'},
   {k:'goals',icon:'🎯',label:'Mục tiêu'},
-  {k:'shop',icon:'🛒',label:'Đi chợ'},
   {k:'chores',icon:'🧹',label:'Việc nhà'},
   {k:'rules',icon:'📜',label:'Quy tắc'},
-  {k:'expiry',icon:'⏳',label:'Hạn dùng'},
   {k:'stash',icon:'📦',label:'Cất giữ'},
   {k:'docs',icon:'🗂️',label:'Giấy tờ'},
   {k:'budget',icon:'🎚️',label:'Ngân sách'},
@@ -5024,7 +4380,6 @@ const US_SEGS=[
 ];
 const US_GROUPS=[
   {k:'daily',icon:'☀️',label:'Hôm nay',items:['todos','routine','chores']},
-  {k:'kitchen',icon:'🍜',label:'Bếp & Chợ',items:['cook','menu','shop','expiry']},
   {k:'money',icon:'💰',label:'Tiền nong',items:['fund','budget','moneylover']},
   {k:'plan',icon:'🛣️',label:'Chặng đường',items:['events','dates','timeline','goals']},
   {k:'kho',icon:'🗄️',label:'Hồ sơ nhà',items:['docs','stash','rules']},
@@ -5082,44 +4437,6 @@ function MenuReorderSettings(){
   );
 }
 /* ============ Hạn dùng (đồ ăn, thuốc…) ============ */
-const EXP_KINDS=[{k:'food',icon:'🍎',label:'Đồ ăn'},{k:'med',icon:'💊',label:'Thuốc'},{k:'cosm',icon:'🧴',label:'Mỹ phẩm'},{k:'other',icon:'📦',label:'Khác'}];
-function ExpiryItems({people,me}){
-  const [items,setItems]=useLocal('ju.expiry',[]);
-  const [f,setF]=useState({name:'',kind:'food',date:'',place:''});
-  const [filter,setFilter]=useState('all');
-  const add=()=>{ if(!f.name.trim()||!f.date) return; setItems(prev=>[{id:uid(),name:f.name.trim(),kind:f.kind,date:f.date,place:f.place.trim(),by:me,createdAt:Date.now()},...prev]); setF({name:'',kind:f.kind,date:'',place:''}); celebrate(['🗓️']); };
-  const del=(id)=>{ if(confirm('Xoá món này?')) setItems(prev=>prev.filter(x=>x.id!==id)); };
-  const kindOf=(k)=>EXP_KINDS.find(x=>x.k===k)||EXP_KINDS[EXP_KINDS.length-1];
-  const shown=items.filter(x=>filter==='all'||x.kind===filter).slice().sort((a,b)=>(a.date||'9').localeCompare(b.date||'9'));
-  const soon=items.filter(x=>{ const d=daysFromToday(x.date); return d!=null&&d<=7; }).length;
-  const badge=(d)=> d==null?{t:'',c:'var(--chip)',tx:'var(--chip-tx)'} : d<0?{t:'đã hết hạn '+(-d)+' ngày',c:'#e25b5b',tx:'#fff'} : d===0?{t:'hết hạn hôm nay',c:'#e25b5b',tx:'#fff'} : d<=7?{t:'còn '+d+' ngày',c:'var(--warn)',tx:'#fff'} : {t:'còn '+d+' ngày',c:'var(--chip)',tx:'var(--chip-tx)'};
-  return (
-    <div>
-      <div className="muted center" style={{fontSize:12.5,margin:'10px 14px'}}>🗓️ Theo dõi hạn dùng đồ ăn, thuốc… {soon>0 && <b style={{color:'var(--warn)'}}>· {soon} món sắp/đã hết hạn</b>}</div>
-      <div className="card">
-        <input className="inp" placeholder="Tên món (vd: Sữa Avenir, Hạ sốt của Sóc)" value={f.name} onChange={e=>setF({...f,name:e.target.value})}/>
-        <div className="row" style={{gap:6,marginTop:8}}>
-          <select className="inp grow" value={f.kind} onChange={e=>setF({...f,kind:e.target.value})} style={{fontSize:12.5}}>{EXP_KINDS.map(k=><option key={k.k} value={k.k}>{k.icon} {k.label}</option>)}</select>
-          <input className="inp" type="date" value={f.date} onChange={e=>setF({...f,date:e.target.value})} style={{width:150,fontSize:12.5}}/>
-        </div>
-        <input className="inp" style={{marginTop:8}} placeholder="Nơi cất (vd: Tủ lạnh, tủ thuốc)" value={f.place} onChange={e=>setF({...f,place:e.target.value})}/>
-        <button className="btn" style={{marginTop:8}} onClick={add}>＋ Thêm món</button>
-      </div>
-      <div className="filters">{[{k:'all',icon:'📋',label:'Tất cả'},...EXP_KINDS].map(k=><button key={k.k} className={filter===k.k?'on':''} onClick={()=>setFilter(k.k)}>{k.icon} {k.label}</button>)}</div>
-      {shown.length===0 && <div className="empty"><span className="big">🗓️</span>Chưa có món nào. Thêm để được nhắc trước khi hết hạn.</div>}
-      {shown.map(x=>{ const d=daysFromToday(x.date); const bd=badge(d); const kd=kindOf(x.kind);
-        return <div key={x.id} className="item" style={{borderLeft:'4px solid '+bd.c}}>
-          <div className="row"><span className="grow" style={{fontSize:14,fontWeight:600}}>{kd.icon} {x.name}</span>
-            <button className="muted" onClick={()=>del(x.id)}>✕</button></div>
-          <div className="row" style={{marginTop:5,gap:6,flexWrap:'wrap'}}>
-            <span className="pill" style={{background:bd.c,color:bd.tx}}>📅 {fmtDateVN(x.date)}{bd.t?' · '+bd.t:''}</span>
-            {x.place && <span className="pill">📍 {x.place}</span>}
-          </div>
-        </div>; })}
-    </div>
-  );
-}
-/* ============ Cất giữ (đồ trái mùa, đồ kho, đồ khác) — tránh quên vị trí ============ */
 const STASH_CATS=[{k:'seasonal',icon:'🧥',label:'Đồ trái mùa'},{k:'store',icon:'📦',label:'Đồ cất kho'},{k:'kitchen',icon:'🍳',label:'Đồ bếp'},{k:'other',icon:'🔖',label:'Đồ khác'}];
 function StashItems({people,me}){
   const [items,setItems]=useLocal('ju.stash',[]);
@@ -5487,8 +4804,6 @@ function UsTab({people,me,flash}){
       {seg==='routine' && <RoutineTab people={people} me={me}/>}
       {seg==='family' && <FamilyTree people={people} me={me} flash={flash}/>}
       {seg==='projects' && <FamilyProjects people={people} me={me}/>}
-      {seg==='menu' && <WeeklyMenu me={me} people={people}/>}
-      {seg==='cook' && <KitchenPact people={people} me={me} flash={flash}/>}
       {seg==='events' && <Events people={people} me={me}/>}
       {seg==='dates' && <ImportantDates people={people} me={me}/>}
       {seg==='timeline' && <Timeline people={people} me={me}/>}
@@ -5497,10 +4812,8 @@ function UsTab({people,me,flash}){
       {seg==='goals' && <Goals people={people} me={me}/>}
       {seg==='budget' && <VinhaBudgets/>}
       {seg==='moneylover' && <MoneyLover/>}
-      {seg==='shop' && <Shopping people={people} me={me}/>}
       {seg==='chores' && <Chores people={people} me={me}/>}
       {seg==='rules' && <FamilyRules people={people} me={me}/>}
-      {seg==='expiry' && <ExpiryItems people={people} me={me}/>}
       {seg==='stash' && <StashItems people={people} me={me}/>}
       {seg==='docs' && <DocsVault people={people} me={me}/>}
     </div>
@@ -6401,56 +5714,6 @@ function TransferForm({people,me,onSave}){
   </div>);
 }
 
-function Shopping({people,me}){
-  const [items,setItems]=useLocal('ju.shop',[]);
-  const [t,setT]=useState('');
-  const add=()=>{ if(!t.trim())return; setItems(prev=>[{id:uid(),text:t.trim(),by:me,done:false},...prev]); setT(''); };
-  const toggle=(id)=>setItems(prev=>prev.map(x=>x.id===id?{...x,done:!x.done}:x));
-  const del=(id)=>{ setItems(prev=>prev.filter(x=>x.id!==id)); };
-  const clearDone=()=>{ if(confirm('Xoá các việc đã hoàn thành?')){ setItems(prev=>prev.filter(x=>!x.done)); } };
-  const clearAll=()=>{ if(confirm('Xoá toàn bộ danh sách đi chợ? Thao tác này không hoàn tác được.')){ setItems([]); } };
-  const left=items.filter(x=>!x.done);
-  const done=items.filter(x=>x.done);
-  return (
-    <div>
-      <div className="row" style={{margin:'10px 14px',gap:8}}>
-        <input className="inp grow" placeholder="Thêm món cần mua…" value={t}
-          onChange={e=>setT(e.target.value)} onKeyDown={e=>{ if(e.key==='Enter') add(); }}/>
-        <button className="btn sm" onClick={add}>＋</button>
-      </div>
-      {items.length===0 && <div className="empty"><span className="big">🛒</span>Danh sách đi chợ chung — cả hai cùng thêm.</div>}
-      {items.length>0 && <div className="row" style={{margin:'0 14px 8px',justifyContent:'flex-end'}}>
-        <button className="pill" onClick={clearAll}>🗑️ Xoá hết</button></div>}
-      <div className="card" style={{padding:'6px 13px'}}>
-        {left.map(x=>(
-          <div key={x.id} className="row" style={{padding:'8px 0',borderBottom:'1px solid var(--line)'}}>
-            <button onClick={()=>toggle(x.id)} style={{fontSize:19}}>⬜</button>
-            <span className="grow">{x.text}</span>
-            <span className="av-sm">{people[x.by]?.avatar}</span>
-            <button className="muted" onClick={()=>del(x.id)}>✕</button>
-          </div>
-        ))}
-        {left.length===0 && items.length>0 && <div className="muted center" style={{padding:'10px 0'}}>Đã mua hết! 🎉</div>}
-      </div>
-      {done.length>0 && (
-        <div>
-          <div className="row" style={{margin:'14px 14px 4px'}}><b className="grow muted" style={{fontSize:12.5}}>Đã mua ({done.length})</b>
-            <button className="pill" onClick={clearDone}>🧹 Xoá đã mua</button></div>
-          <div className="card" style={{padding:'6px 13px'}}>
-            {done.map(x=>(
-              <div key={x.id} className="row" style={{padding:'8px 0',borderBottom:'1px solid var(--line)'}}>
-                <button onClick={()=>toggle(x.id)} style={{fontSize:19}}>✅</button>
-                <span className="grow dim" style={{textDecoration:'line-through'}}>{x.text}</span>
-                <button className="muted" onClick={()=>del(x.id)}>✕</button>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
 function Notes({people,me}){
   const [notes,setNotes]=useLocal('ju.notes',[]);
   const [t,setT]=useState('');
@@ -6847,21 +6110,6 @@ function PhotoLightbox({photo,photos,index,title,onClose}){
 }
 
 /* Thẻ "🧸 Chơi với con hôm nay" đã gỡ — nội dung nuôi con nay chỉ nằm ở app Sóc (soc/). */
-function TodayMenuCard({people,me,go}){
-  const [plan]=useLocal('ju.menuPlan',null);
-  const idx=(new Date().getDay()+6)%7; // Thứ 2 = 0
-  const day=plan&&plan.days&&plan.days[idx];
-  return (
-    <div className="card">
-      <div className="row"><span className="hc-title">🍱 Thực đơn hôm nay</span><span className="grow"></span><span className="hc-act">{DOW[idx]}</span></div>
-      <div style={{marginTop:6}}>
-        {day
-          ? <div style={{fontSize:14,lineHeight:1.6,marginTop:1}}>{day.sang && <div>🌅 Sáng: {day.sang}</div>}{(day.man||[]).map((m,i)=><div key={i}>🍖 {m}</div>)}<div>🥣 {day.canh}</div></div>
-          : <div className="muted" style={{fontSize:12.5,marginTop:2}}>Chưa có thực đơn tuần — <span style={{color:'var(--primary)',cursor:'pointer'}} onClick={()=>go('us')}>tạo ngay ›</span></div>}
-      </div>
-    </div>
-  );
-}
 function NowCard({people,go}){
   const [routine]=useLocal('ju.routine',DEFAULT_ROUTINE);
   const [,setTick]=useState(0);
@@ -6923,7 +6171,6 @@ function SavingsMini({go}){
 const HOME_CARDS=[
   ['now','🗓️ Bây giờ nên làm'],
   ['partnerwish','💛 Điều nửa kia mong'],
-  ['todaymenu','🍱 Thực đơn hôm nay'],
   ['cook','🍳 Bếp nhà mình'],
   ['fun','🎲 Phân vân (ăn gì/làm gì)'],
   ['anger','😤 Đang cáu / lo lắng'],
@@ -7394,7 +6641,7 @@ const SEARCH_SRC=[
   {key:'ju.events',cat:'📅 Sự kiện',tab:'us'},{key:'ju.timeline',cat:'🕰️ Kỷ niệm',tab:'us'},
   {key:'ju.chores',cat:'🧹 Việc nhà',tab:'us'},{key:'ju.lovejar',cat:'🫙 Lọ yêu thương',tab:'home'},
   {key:'ju.todos',cat:'✅ Việc cần làm',tab:'us'},{key:'ju.dates',cat:'🎂 Ngày nhớ',tab:'us'},
-  {key:'ju.shop',cat:'🛒 Đi chợ',tab:'us'},{key:'ju.goals',cat:'🎯 Mục tiêu',tab:'us'},
+  {key:'ju.goals',cat:'🎯 Mục tiêu',tab:'us'},
   {key:'ju.projects',cat:'📋 Dự án',tab:'us'},
 ];
 function GlobalSearch({onClose,go}){
