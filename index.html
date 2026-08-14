@@ -705,17 +705,40 @@ const Cloud = {
     clearTimeout(this.pushTimer);
     this.pushTimer = setTimeout(() => this.push(), 700);
   },
+  /* ⛔ PHẢI TRỘN, KHÔNG ĐƯỢC GHI ĐÈ CẢ CỘT `data` (vá 14/08/2026).
+     Ba app dùng chung một hàng `justus_data` theo `couple_id`, mỗi app khai
+     `SYNC_KEYS` riêng: Just Us 104 khoá, Sóc 30, Bếp Nhà 15. Bản cũ đẩy thẳng
+     `data:snap` nên mở app nào là bản đám mây chỉ còn khoá của app đó — đo
+     14/08/2026: mở Sóc một lần là 76 nhóm dữ liệu của Just Us biến khỏi hàng.
+     Không lỗi nào phát ra, và máy đang dùng vẫn đủ dữ liệu vì bản local còn
+     nguyên; chỉ máy cài lại hoặc máy mới đăng nhập mới kéo về bản đã khuyết.
+     Vì thế phải đọc hàng hiện có, giữ nguyên mọi khoá KHÔNG thuộc `SYNC_KEYS`
+     của app này, rồi mới ghi.
+     ⚠ Đọc hụt thì DỪNG, không ghi: ghi tiếp là đúng cái đang đi vá. */
   async push() {
     const c = this.client();
     if (!this.connected() || !c) return;
     const snap = this.snapshot(),
       h = JSON.stringify(snap);
     if (h === this.lastHash) return;
+    let giu = {};
+    try {
+      const {
+        data,
+        error
+      } = await c.from('justus_data').select('data').eq('couple_id', this.coupleId).maybeSingle();
+      if (error) return;
+      if (data && data.data) Object.keys(data.data).forEach(k => {
+        if (SYNC_KEYS.indexOf(k) < 0) giu[k] = data.data[k];
+      });
+    } catch (e) {
+      return;
+    }
     this.lastHash = h;
     try {
       await c.from('justus_data').upsert({
         couple_id: this.coupleId,
-        data: snap,
+        data: Object.assign(giu, snap),
         last_writer: this.device(),
         updated_at: new Date().toISOString()
       });
