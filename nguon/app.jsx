@@ -1027,27 +1027,175 @@ function Reminders({setup,go}){
   );
 }
 
-/* ============ Ngày này năm xưa ============ */
-function OnThisDay(){
-  const timeline=store.get('ju.timeline',[])||[];
-  const notes=store.get('ju.notes',[])||[];
-  const photos=store.get('ju.photos',[])||[];
-  const now=new Date(), mm=pad(now.getMonth()+1), dd=pad(now.getDate()), yy=now.getFullYear();
-  const items=[];
-  const sameMD=(iso)=>{ if(!iso||iso.length<10) return false; const [y,m,d]=iso.split('-'); return m===mm&&d===dd&&Number(y)<yy; };
-  timeline.forEach(t=>{ if(sameMD(t.date)) items.push({icon:t.icon||'🕰️',text:t.title,yrs:yy-Number(t.date.slice(0,4))}); });
-  photos.forEach(p=>{ if(sameMD(p.date)) items.push({icon:'📷',text:p.caption||'Ảnh kỷ niệm',yrs:yy-Number(p.date.slice(0,4))}); });
-  notes.forEach(n=>{ const d=new Date(n.createdAt); if(pad(d.getMonth()+1)===mm&&pad(d.getDate())===dd&&d.getFullYear()<yy) items.push({icon:'💌',text:n.text,yrs:yy-d.getFullYear()}); });
-  if(items.length===0) return null;
+/* ============ Ngày này năm ngoái ============ */
+/* MỘT phép gom duy nhất cho cả thẻ trang chủ lẫn màn đầy đủ. Trước 15/08/2026 thẻ
+   trang chủ có phép gom riêng chỉ đọc 03 khoá (kỷ niệm, ảnh, lời nhắn); giữ hai bản
+   thì thêm nguồn ở bản này mà bản kia không theo, và lệch kiểu đó KHÔNG phát ra lỗi
+   nào — thẻ và màn chỉ đơn giản là kể hai câu chuyện khác nhau về cùng một ngày.
+
+   ⛔ CỐ Ý BỎ QUA `ju.intimacy` và `ju.docs`: một cái là chuyện riêng tư có lớp khoá
+      riêng, một cái là giấy tờ mã hoá đầu-cuối (phần chữ nằm trong `enc`, đằng nào
+      cũng không đọc ra được). Màn này mở ra là hiện hết ngay, không có bước xác nhận
+      nào, nên thêm nguồn mới phải cân nhắc đúng hai khoá đó trước.
+   ⚠ CHỈ ĐỌC bằng `store.get`, cố ý KHÔNG dùng `useLocal`: `useLocal` ghi ngược lại
+      localStorage rồi gọi `Cloud.schedulePush()` ngay khi gắn, tức mở màn xem lại kỷ
+      niệm là đẩy 12 lượt lên đám mây. Thay đổi từ máy kia bắt bằng `ju:remote`. */
+function otdNgayTu(ms){ if(!ms) return ''; const d=new Date(ms); if(isNaN(d.getTime())) return ''; return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+function otdTatCa(people){
+  const out=[];
+  const ten=(w)=> w==='both'?'Cả hai':((people&&people[w]&&people[w].name)||'');
+  const mang=(k)=>{ const v=store.get(k,[]); return Array.isArray(v)?v:[]; };
+  const doiTuong=(k)=>{ const v=store.get(k,{}); return (v&&typeof v==='object'&&!Array.isArray(v))?v:{}; };
+  /* Bỏ mục không có ngày HOẶC không có chữ để hiện — dòng trống lẫn vào đây thì
+     người xem tưởng dữ liệu hỏng, mà đếm số kỷ niệm vẫn cộng thêm một. */
+  const them=(d,it)=>{ const s=String(d||''); if(s.length<10) return; if(!String((it&&it.title)||'').trim()) return; out.push({...it,d:s.slice(0,10)}); };
+  const themMs=(ms,it)=>them(otdNgayTu(ms),it);
+
+  mang('ju.timeline').forEach(x=>them(x.date,{icon:x.icon||'🕰️',kind:'Cột mốc',title:x.title,note:x.note,photos:x.photo?[x.photo]:[]}));
+  mang('ju.photos').forEach(x=>them(x.date,{icon:'📷',kind:'Ảnh chung',title:x.caption||'Ảnh của hai đứa',photos:[x]}));
+  mang('ju.notes').forEach(x=>themMs(x.createdAt,{icon:'💌',kind:'Lời nhắn'+(ten(x.by)?' · '+ten(x.by):''),title:x.text}));
+  mang('ju.checkins').forEach(x=>them(x.date,{icon:x.type==='food'?'🍜':'☕',kind:'Check-in quán',title:x.name,note:x.review,photos:photoList(x)}));
+  mang('ju.events').forEach(x=>them(x.date,{icon:'📅',kind:'Sự kiện',title:x.title,note:x.note}));
+  mang('ju.cookLogs').forEach(x=>them(x.date,{icon:'🍳',kind:'Bữa nhà nấu',title:(ten(x.cook)?ten(x.cook)+' nấu':'Đã nấu')+(x.dish?' — '+x.dish:'')}));
+  mang('ju.movies').forEach(x=>themMs(x.watchedAt,{icon:'🍿',kind:'Phim đã xem',title:x.title,note:x.where}));
+  mang('ju.childDiary').forEach(x=>them(x.date,{icon:'📔',kind:'Điều đầu tiên của con',title:x.text}));
+  mang('ju.childWords').forEach(x=>them(x.date,{icon:'🗣️',kind:'Con nói được từ mới',title:x.word}));
+  mang('ju.expenses').forEach(x=>{ const dm=EXPENSE_CATS.find(z=>z.k===x.cat);
+    them(x.date,{icon:dm?dm.icon:'🧾',kind:'Chi tiêu'+(dm?' · '+dm.label:''),title:VND(x.amount),note:x.note}); });
+  const mood=doiTuong('ju.mood');
+  Object.keys(mood).forEach(k=>{ const m=mood[k]||{};
+    const cau=['a','b'].filter(w=>m[w]||m[w+'n']).map(w=>[(m[w]||''),ten(w),(m[w+'n']?'· '+m[w+'n']:'')].filter(Boolean).join(' ')).join('   ');
+    them(k,{icon:'🙂',kind:'Tâm trạng',title:cau.trim()});
+  });
+  const qa=doiTuong('ju.qa');
+  Object.keys(qa).forEach(k=>{ const q=qa[k]||{};
+    const tl=['a','b'].filter(w=>q[w]).map(w=>ten(w)+': '+q[w]).join('\n');
+    if(tl) them(k,{icon:'❓',kind:'Câu hỏi mỗi ngày',title:q.q||'Câu hỏi hôm đó',note:tl});
+  });
+  return out;
+}
+/* Lọc những mục rơi đúng ngày-tháng của `iso` nhưng ở NĂM TRƯỚC đó, gom theo năm, mới → cũ. */
+function otdNhom(tatCa,iso){
+  const s=String(iso||''); if(s.length<10) return [];
+  const md=s.slice(5,10), yy=Number(s.slice(0,4)); if(!yy) return [];
+  const theoNam={};
+  tatCa.forEach(x=>{ if(x.d.slice(5,10)!==md) return; const y=Number(x.d.slice(0,4)); if(!y||y>=yy) return; (theoNam[y]=theoNam[y]||[]).push(x); });
+  return Object.keys(theoNam).map(Number).sort((a,b)=>b-a).map(y=>({y,cach:yy-y,items:theoNam[y]}));
+}
+/* Ngày gần nhất còn có kỷ niệm, dò vòng quanh năm — dùng khi ngày đang xem trống trơn,
+   để màn rỗng vẫn có một đường đi tiếp thay vì bắt bấm mò từng ngày. */
+function otdGanNhat(tatCa,iso){
+  const s=String(iso||''); if(s.length<10) return null;
+  const yy=Number(s.slice(0,4)); if(!yy) return null;
+  const co=new Set(); tatCa.forEach(x=>{ if(Number(x.d.slice(0,4))<yy) co.add(x.d.slice(5,10)); });
+  if(!co.size) return null;
+  const goc=new Date(yy+'-'+s.slice(5,10)+'T00:00:00'); if(isNaN(goc.getTime())) return null;
+  for(let i=1;i<=366;i++) for(const b of [1,-1]){
+    const d=new Date(goc.getTime()); d.setDate(d.getDate()+i*b);
+    const md=pad(d.getMonth()+1)+'-'+pad(d.getDate());
+    if(!co.has(md)) continue;
+    const ra=yy+'-'+md;                             /* giữ NĂM ĐANG XEM, chỉ đổi ngày-tháng */
+    /* 29/02 của năm không nhuận: ⛔ ĐỪNG kiểm bằng `isNaN` — đo 15/08/2026, V8 KHÔNG trả
+       ngày hỏng mà LĂN `2027-02-29` sang `2027-03-01`, nên chốt kiểu đó chết câm và nút
+       vẫn mời "xem ngày 29/02" để rồi mở ra một ngày trống. Phải so quay vòng. */
+    const kt=new Date(ra+'T00:00:00');
+    if(isNaN(kt.getTime())||pad(kt.getMonth()+1)+'-'+pad(kt.getDate())!==md) continue;
+    return {iso:ra,cach:i*b};
+  }
+  return null;
+}
+const otdNhanNam=(cach)=> cach===1?'Năm ngoái':(cach+' năm trước');
+const otdNgayThang=(iso)=> fmtDateVN(iso).slice(0,5);
+
+/* Thẻ trang chủ — tóm tắt 04 dòng, chạm là mở màn đầy đủ. */
+function OnThisDay({people,go}){
+  const nhom=useMemo(()=>otdNhom(otdTatCa(people),todayISO()),[people]);
+  if(!nhom.length) return null;
+  const tong=nhom.reduce((s,g)=>s+g.items.length,0);
+  const hien=[]; nhom.forEach(g=>g.items.forEach(it=>{ if(hien.length<4) hien.push({...it,cach:g.cach}); }));
+  /* Ghi `ju.usNav` TRƯỚC rồi mới chuyển tab: UsTab đọc khoá này ở lượt gắn đầu tiên,
+     mà tab 🏡 Nhà mình chỉ được vẽ khi đang mở nên nó gắn lại mỗi lần chuyển sang. */
+  const moMuc=()=>{ store.set('ju.usNav',{g:'plan',s:'onthisday'}); go&&go('us'); };
   return (
-    <div className="card" style={{background:'linear-gradient(135deg,var(--chip),var(--card))'}}>
-      <div className="hc-title">📆 Ngày này năm xưa</div>
-      {items.slice(0,4).map((it,i)=>(
+    <div className="card" onClick={moMuc} style={{cursor:'pointer',background:'linear-gradient(135deg,var(--chip),var(--card))'}}>
+      <div className="row"><span className="hc-title">📆 Ngày này năm ngoái</span><span className="grow"></span>
+        <span className="hc-act">{tong} kỷ niệm ›</span></div>
+      {hien.map((it,i)=>(
         <div key={i} className="row" style={{marginTop:8,gap:8,alignItems:'flex-start'}}>
           <span style={{fontSize:18}}>{it.icon}</span>
-          <div className="grow" style={{fontSize:14}}>{it.text} <span className="muted">· {it.yrs} năm trước</span></div>
+          <div className="grow" style={{fontSize:14}}>{it.title} <span className="muted">· {otdNhanNam(it.cach).toLowerCase()}</span></div>
         </div>
       ))}
+      {tong>hien.length && <div className="muted" style={{fontSize:12,marginTop:8}}>còn {tong-hien.length} kỷ niệm nữa — chạm để xem hết ›</div>}
+    </div>
+  );
+}
+
+/* Màn đầy đủ: xem được MỌI ngày, không chỉ hôm nay. */
+function OnThisDayTab({people}){
+  const [iso,setIso]=useState(todayISO());
+  const [nhip,setNhip]=useState(0);
+  const [xem,setXem]=useState(null);
+  useEffect(()=>{ const h=()=>setNhip(t=>t+1); window.addEventListener('ju:remote',h); return ()=>window.removeEventListener('ju:remote',h); },[]);
+  const tatCa=useMemo(()=>otdTatCa(people),[people,nhip]);
+  const nhom=useMemo(()=>otdNhom(tatCa,iso),[tatCa,iso]);
+  const tong=nhom.reduce((s,g)=>s+g.items.length,0);
+  const gan=tong?null:otdGanNhat(tatCa,iso);
+  const hnay=iso===todayISO();
+  const doiNgay=(b)=>{ const d=new Date(iso+'T00:00:00'); if(isNaN(d.getTime())) return;
+    d.setDate(d.getDate()+b); setIso(d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())); };
+  const chiaSe=async()=>{
+    const dong=[];
+    nhom.forEach(g=>{ dong.push('— '+otdNhanNam(g.cach)+' ('+fmtDateVN(g.y+'-'+iso.slice(5))+')');
+      g.items.forEach(it=>dong.push('   '+it.icon+' '+it.title)); });
+    await shareText({title:'Ngày này năm ngoái',text:'📆 Ngày '+otdNgayThang(iso)+' của hai đứa\n'+dong.join('\n')});
+  };
+  return (
+    <div>
+      <div className="card">
+        <div className="row" style={{gap:6}}>
+          <button className="btn sm soft" onClick={()=>doiNgay(-1)} aria-label="Ngày trước">‹</button>
+          <input className="inp grow" type="date" value={iso} style={{textAlign:'center'}}
+            onChange={e=>{ if(e.target.value) setIso(e.target.value); }}/>
+          <button className="btn sm soft" onClick={()=>doiNgay(1)} aria-label="Ngày sau">›</button>
+        </div>
+        <div className="row" style={{marginTop:8,gap:8}}>
+          <span className="grow muted" style={{fontSize:12.5}}>
+            {hnay?'Hôm nay · ':''}ngày {otdNgayThang(iso)} · {tong? (tong+' kỷ niệm ở '+nhom.length+' năm trước') : 'những năm trước chưa ghi gì'}
+          </span>
+          {!hnay && <button className="btn sm soft" onClick={()=>setIso(todayISO())}>Hôm nay</button>}
+          {tong>0 && <button className="btn sm soft" onClick={chiaSe}>↗ Chia sẻ</button>}
+        </div>
+      </div>
+
+      {tong===0 && (
+        <div className="empty"><span className="big">📆</span>
+          Ngày {otdNgayThang(iso)} những năm trước chưa có gì được ghi lại. Ghi một cột mốc, thả một tấm ảnh hay một lời nhắn hôm nay — sang năm mở lại mục này là thấy.
+          {gan && <div style={{marginTop:12}}>
+            <button className="btn sm" onClick={()=>setIso(gan.iso)}>📆 Xem ngày {otdNgayThang(gan.iso)} — ngày gần nhất có kỷ niệm</button>
+          </div>}
+        </div>
+      )}
+
+      {nhom.map(g=>(
+        <div key={g.y}>
+          <div className="hc-title" style={{margin:'16px 16px 8px'}}>{otdNhanNam(g.cach)}
+            <span className="hc-act" style={{marginLeft:6}}>{fmtDateVN(g.y+'-'+iso.slice(5))} · {g.items.length} mục</span></div>
+          {g.items.map((it,i)=>(
+            <div key={i} className="item">
+              <PhotoShow photos={it.photos} big onView={j=>setXem({photos:it.photos,i:j,title:it.icon+' '+it.title})}/>
+              <div className="it-top"><h4>{it.icon} {it.title}</h4></div>
+              {it.note && <div className="it-note">{it.note}</div>}
+              <div className="it-meta"><span className="muted" style={{fontSize:12.5}}>{it.kind}</span></div>
+            </div>
+          ))}
+        </div>
+      ))}
+      <PhotoLightbox photos={xem&&xem.photos} index={xem&&xem.i} title={xem&&xem.title} onClose={()=>setXem(null)}/>
+      <div className="muted center" style={{fontSize:11,margin:'14px 16px 8px',lineHeight:1.6}}>
+        Gom từ cột mốc, ảnh chung, lời nhắn, check-in quán, sự kiện, tâm trạng, câu hỏi mỗi ngày,
+        bữa nhà nấu, chi tiêu, phim đã xem và nhật ký của con. Mục Riêng tư và Giấy tờ cố ý không đưa vào đây.
+      </div>
     </div>
   );
 }
@@ -1300,7 +1448,7 @@ function Home({setup,setSetup,people,me,go}){
     </div>),
     todos:<TodosCard go={go}/>,
     now:<NowCard people={people} go={go}/>,
-    onthisday:<OnThisDay/>,
+    onthisday:<OnThisDay people={people} go={go}/>,
     mood:<MoodCard people={people} me={me}/>,
     challenge:<DailyChallenge/>,
     habits:<HabitTracker/>,
@@ -4368,6 +4516,7 @@ const US_SEGS=[
   {k:'events',icon:'📅',label:'Sự kiện'},
   {k:'dates',icon:'🎂',label:'Ngày nhớ'},
   {k:'timeline',icon:'🕰️',label:'Kỷ niệm'},
+  {k:'onthisday',icon:'📆',label:'Ngày này năm ngoái'},
   {k:'fund',icon:'💸',label:'Chi tiêu'},
   {k:'todos',icon:'✅',label:'Việc cần làm'},
   {k:'goals',icon:'🎯',label:'Mục tiêu'},
@@ -4381,7 +4530,7 @@ const US_SEGS=[
 const US_GROUPS=[
   {k:'daily',icon:'☀️',label:'Hôm nay',items:['todos','routine','chores']},
   {k:'money',icon:'💰',label:'Tiền nong',items:['fund','budget','moneylover']},
-  {k:'plan',icon:'🛣️',label:'Chặng đường',items:['events','dates','timeline','goals']},
+  {k:'plan',icon:'🛣️',label:'Chặng đường',items:['events','dates','timeline','onthisday','goals']},
   {k:'kho',icon:'🗄️',label:'Hồ sơ nhà',items:['docs','stash','rules']},
   {k:'bigfam',icon:'🏡',label:'Gia đình lớn',items:['family','projects']},
 ];
@@ -4807,6 +4956,7 @@ function UsTab({people,me,flash}){
       {seg==='events' && <Events people={people} me={me}/>}
       {seg==='dates' && <ImportantDates people={people} me={me}/>}
       {seg==='timeline' && <Timeline people={people} me={me}/>}
+      {seg==='onthisday' && <OnThisDayTab people={people}/>}
       {seg==='fund' && <Fund people={people} me={me}/>}
       {seg==='todos' && <FamilyTodos people={people} me={me}/>}
       {seg==='goals' && <Goals people={people} me={me}/>}
@@ -6177,7 +6327,7 @@ const HOME_CARDS=[
   ['reminders','🔔 Nhắc nhở hôm nay'],
   ['upcoming','⏳ Sắp tới (2 tuần)'],
   ['todos','✅ Việc cần làm'],
-  ['onthisday','📆 Ngày này năm xưa'],
+  ['onthisday','📆 Ngày này năm ngoái'],
   ['mood','🙂 Tâm trạng'],
   ['challenge','🎯 Thử thách đôi'],
   ['habits','✅ Thói quen chung'],

@@ -288,6 +288,38 @@ nên bấm kết quả tìm kiếm nhảy sang Nhà mình — nơi `US_SEGS` kh�
 chúng. Không lỗi nào phát ra vì tab đích vẫn tồn tại, chỉ là không có mục cần tìm.
 Thêm khoá mới vào `SEARCH_SRC` thì dò xem component đọc khoá đó nằm trong tab nào.
 
+## 📆 Ngày này năm ngoái (dựng 15/08/2026)
+
+Vào từ **Nhà mình → 🛣️ Chặng đường → 📆 Ngày này năm ngoái** (`OnThisDayTab`), và từ thẻ
+`onthisday` trên trang chủ (`OnThisDay`) — chạm thẻ là ghi `ju.usNav` rồi chuyển tab.
+Xem được **mọi ngày**, không riêng hôm nay: có nút ‹ › lùi/tiến một ngày, ô chọn ngày, nút
+«Hôm nay», và khi ngày đang xem trống thì chỉ thẳng **ngày gần nhất còn có kỷ niệm**.
+
+**Không có khoá dữ liệu riêng** — màn chỉ ĐỌC lại 11 nguồn đã có: `ju.timeline` ·
+`ju.photos` · `ju.notes` · `ju.checkins` · `ju.events` · `ju.cookLogs` · `ju.movies` ·
+`ju.childDiary` · `ju.childWords` · `ju.expenses` · `ju.mood` · `ju.qa`.
+
+- ⛔ **`ju.intimacy` và `ju.docs` CỐ Ý nằm ngoài.** Màn mở ra là hiện hết ngay, không có
+  bước xác nhận nào — thêm nguồn mới phải cân nhắc đúng hai khoá đó trước. Bộ ca đếm cả
+  **khoá đã đọc tới**, không chỉ đếm chữ hiện ra, nên thêm lén một `store.get` là đỏ.
+- ⚠ **Đọc bằng `store.get`, cố ý KHÔNG dùng `useLocal`**: `useLocal` ghi ngược localStorage
+  rồi gọi `Cloud.schedulePush()` ngay khi gắn, tức mở màn xem kỷ niệm là đẩy 12 lượt lên
+  đám mây. Thay đổi từ máy kia bắt bằng sự kiện `ju:remote`.
+- ⛔ **Ngày 29/02 của năm không nhuận: đừng kiểm bằng `isNaN`.** Đo 15/08/2026: V8 KHÔNG
+  trả ngày hỏng mà **lăn `2027-02-29` sang `2027-03-01`**, nên chốt kiểu đó chết câm và nút
+  vẫn mời xem một ngày trống. Phải so quay vòng (`getMonth`/`getDate` phải khớp lại). Bản
+  hỏng dựng lại đúng phép `isNaN` đó đã nạp bộ ca, để lỗi không sống lại.
+- ⚠ **Mục thiếu ngày bị chặn tới BA lớp** (chốt độ dài lúc gom · so ngày-tháng · chốt năm,
+  vì `Number('')` ra 0 nên `!y` bắt luôn). Gỡ một hay hai lớp thì lớp còn lại vẫn đỡ và ca
+  vẫn báo đạt — bản hỏng phải gỡ đủ ba mới chứng minh được ca có răng.
+- **Thẻ trang chủ và màn đầy đủ dùng CHUNG một phép gom** (`otdTatCa`). Trước đó thẻ có
+  phép gom riêng chỉ đọc 03 khoá; giữ hai bản thì thêm nguồn ở bản này mà bản kia không
+  theo, và lệch kiểu đó không phát ra lỗi nào.
+- **Bộ ca kiểm:** `python3 scripts/thu_onthisday.py --tu-kiem` — 12 ca (08 PHẢI CHẶN) ·
+  08 bản hỏng, đã nạp `khoe.py::BO_TEST`. Bộ ca **bóc thẳng khối logic từ `nguon/app.jsx`**
+  rồi chạy bằng Node, tức đo đúng mã sắp giao đi; đổi tên `otdNgayTu`/`otdNgayThang` thì
+  sửa hằng `DAU`/`CUOI` trong đó, bóc hụt là báo lỗi rõ chứ không lặng lẽ chạy tiếp.
+
 ## Bản đồ component chính
 - `App` — 5 tab dưới (`MAIN_TABS`): 🏠 Tổ ấm (`home`) · 🏡 Nhà mình (`us`) · 💞 Chúng mình (`talk`) · 🗺️ Hẹn hò (`date`) · 🙋 Cá nhân (`me`). Tab 🐿️ Sóc đã gỡ.
 - `Cloud` (~452) — lớp Supabase. `MENU_REGISTRY` (~5145) — cấu hình sub-tab/segment của từng màn. Nhiều component con: `Home`, `DateTab`, `UsTab`, `TalkTab`, `Profile`, `AppBoard`, `LoveJar`, `DailyQuestion`, `WeeklyCheckin`, `CheckIns`, `Timeline`, `Coupons`, `WishTab`, `HanoiCatalog`, `Reminders`…
