@@ -131,6 +131,11 @@ def _goi(url: str, *, method="GET", body=None, headers=None, timeout=60):
     data = json.dumps(body).encode() if body is not None else None
     req = urllib.request.Request(url, data=data, method=method)
     req.add_header("Content-Type", "application/json")
+    # ⚠ Management API của Supabase đứng sau Cloudflare, và Cloudflare CHẶN
+    # User-Agent mặc định của urllib bằng mã 403 «error code: 1010» — đọc ra
+    # giống hệt token hỏng hay hết quyền, nên rất dễ đi sửa nhầm chỗ (đo
+    # 19/08/2026: cùng token, chỉ thêm dòng dưới là câu SQL chạy được).
+    req.add_header("User-Agent", "justus-sb-admin/1.0")
     for k, v in (headers or {}).items():
         req.add_header(k, v)
     try:

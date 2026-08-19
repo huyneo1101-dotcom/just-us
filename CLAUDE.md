@@ -337,6 +337,54 @@ Xem được **mọi ngày**, không riêng hôm nay: có nút ‹ › lùi/ti�
   - Đổi `VAPID_PUBLIC` = mọi subscription cũ chết; `subscribePush()` đã tự huỷ và đăng ký lại.
   - `justus_push_subs` khoá chính là `endpoint`; function tự xoá dòng khi push trả 404/410.
 
+## 🔔 ĐẨY THÔNG BÁO — vá lại toàn bộ 19/08/2026
+
+⛔ **Từ ngày dựng (08/08) tới 19/08/2026, đường đẩy qua trigger CHƯA TỪNG GỬI GÌ.** Đo bằng
+SQL: bảng `pg_trigger` không có `ju_notify_push`, và `current_setting('app.push_fn_url')`
+trả null. Nguyên nhân gốc: bản migration đầu đặt địa chỉ và khoá bằng `alter database
+postgres set`, mà vai chạy SQL qua Management API **không có quyền đó** (`42501:
+permission denied to set parameter`). Hỏng hoàn toàn câm — hàm đọc null thì thoát ngay ở
+dòng đầu, trigger vẫn trả `new`, app vẫn lưu bình thường. Thứ duy nhất còn tới điện thoại
+là `price`, vì script gọi thẳng Edge Function.
+
+| Mảnh | Nay nằm ở đâu |
+|---|---|
+| Địa chỉ + khoá gọi hàm | bảng `public.ju_push_cfg` (RLS bật, **không policy nào** ⇒ chỉ `service_role` và hàm `security definer` đọc được; đã nghiệm thu bằng lời gọi thật với khoá công khai: mã 401) |
+| Hàm + trigger | `supabase/migrations/20260819190000_push_notify_moi_muc.sql` |
+| Edge Function | `supabase/functions/push-notify/index.ts` — **11 loại**, trước chỉ 02 |
+| Nhắc theo lịch khi app ĐÓNG | `scripts/nhac-toi-han.py` + LaunchAgent `com.huy.justus-nhac-toi-han` (07:30) |
+
+**Ba điều đã đổi trong Edge Function, đừng dựng lại kiểu cũ:**
+
+1. **Một mục một thông báo.** Trước đó mọi mục cùng loại dùng chung `tag:
+   ju-<kind>-<couple>`, mà web-push lấy tag làm khoá THAY THẾ: thông báo sau đè thông báo
+   trước nên khay chỉ còn một dòng, trong khi hàm vẫn trả `sent:3`. Nay tag mang id của
+   mục; vượt `NGUONG_GOP = 3` mới gộp một dòng tóm tắt.
+2. **Mục không mang `by` thì gửi CẢ HAI máy**, không im lặng bỏ qua. `ju.todos` và
+   `ju.shop` không ghi người tạo, bản cũ trả `{sent:0}` ở đúng chỗ này.
+3. **Dòng đăng ký thiếu `role` vẫn được nhận thông báo** — đó là bản đăng ký đời cũ, lọc
+   nó ra là người dùng im lặng không nhận được gì.
+
+⛔ **Tên giấy tờ CẤM đi vào thân thông báo** — mục Giấy tờ mã hoá đầu-cuối, mà push đi qua
+máy chủ của Google/Apple. Trigger chỉ gửi `id` + ngày hết hạn cho `kind: docs`; cả Edge
+Function lẫn `nhac-toi-han.py` đều chỉ nhắc chung. Có ca canh ở cả hai nơi.
+
+**Nhóm nhắc theo lịch còn hở, cố ý:** `tamLinh` và ngày nhớ **âm lịch** (thuật toán âm
+dương lịch còn nằm trong `nguon/app.jsx`, port sang script là dựng bản thứ hai của cùng
+một luật) và `chuky`. Ba nhóm này vẫn chỉ nhắc khi app đang mở.
+
+⚠ **Bảng `justus_push_subs` nay RỖNG** — dòng duy nhất còn lại là bản đăng ký từ 02/07 với
+khoá VAPID cũ, gửi thử trả 403, đã sao lưu ra `scripts/logs/push-subs-sao-luu-19-08.json`
+rồi xoá. **Phải mở app trên điện thoại, vào 🔔 Thông báo bật lại một lần** thì mới có máy
+nào nhận; không có đường nào làm hộ từ máy.
+
+⚠ **Management API của Supabase đứng sau Cloudflare và chặn User-Agent mặc định của
+urllib** bằng mã 403 «error code: 1010» — đọc ra giống hệt token hỏng. `sb_admin._goi` đã
+gắn sẵn User-Agent riêng; đừng gỡ.
+
+**Bộ ca:** `python3 scripts/nhac-toi-han.py --tu-kiem` (15 ca, 08 PHẢI CHẶN) và
+`--thu-hong` (06 bản hỏng). Đã nạp `khoe.py::BO_TEST`.
+
 ## Săn giá — theo dõi giá sản phẩm qua link (dựng 10/08/2026)
 
 Vào từ **Hẹn hò → Ước mơ chung → 🏷️ Săn giá** (component `PriceWatch`). Dán link món đang
