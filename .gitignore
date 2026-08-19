@@ -28,4 +28,10 @@ scripts/logs/
 scripts/_thu-hong-*
 scripts/__pycache__/
 supabase/.temp/
+
+# Bản sao lưu tay trước một lượt vá (`index.ts.truoc-19-08.bak` của đợt vá đường đẩy thông
+# báo 19/08). Nội dung cũ đã nằm trong lịch sử git nên commit thêm bản chép là thừa, mà để
+# nguyên ngoài git thì phép quét việc dở kêu mỗi ngày. Mẫu ngày tháng chứ không phải `*.bak`
+# trần: hai dòng trên đã khai đích danh hai file `.bak` khác, nới rộng là nuốt luôn chúng.
+supabase/**/*.truoc-*.bak
 tam-linh/__pycache__/
