@@ -3898,10 +3898,23 @@ function KitchenCard({people,me,go}){
   );
 }
 const BEP_NHA_URL='https://bep-nha.pages.dev/';
+const TAM_LINH_URL='https://tam-linh.pages.dev/';
+/* Tâm linh tách thành app riêng 19/08/2026 nên KHÁC origin — localStorage thôi dùng chung.
+   Ba khoá dưới được gói vào hash lúc bấm mở để app kia nhận một lần rồi tự lưu; không gửi
+   thì bên đó bắt nhập lại ngày sinh và hiện sai tông màu, mà không lỗi nào phát ra. */
+function hanhTrangTamLinh(){
+  try{
+    const goi={};
+    ['ju.tuvi','ju.thanso','ju.setup'].forEach(k=>{ const v=localStorage.getItem(k); if(v!=null) goi[k]=v; });
+    if(!Object.keys(goi).length) return TAM_LINH_URL;
+    const b=new TextEncoder().encode(JSON.stringify(goi));
+    return TAM_LINH_URL+'#ju='+encodeURIComponent(btoa(String.fromCharCode.apply(null,b)));
+  }catch(e){ return TAM_LINH_URL; }
+}
 const APP_BOARD=[
   {k:'bepnha',icon:'🍜',name:'Bếp Nhà',desc:'Bếp nhà mình, thực đơn tuần, đi chợ, hạn dùng — tách khỏi đây ngày 14/08/2026',href:BEP_NHA_URL,ngoai:true},
   {k:'soc',icon:'🐿️',name:'Sóc',desc:'Nuôi con: mốc phát triển, tiêm chủng, ăn dặm, đi lớp, an toàn & cấp cứu',href:'https://soc-eiv.pages.dev/',ngoai:true},
-  {k:'tamlinh',icon:'🪷',name:'Tâm linh',desc:'Ngày lễ âm lịch, kinh Phật, văn khấn, tử vi, thần số, quán chay, mâm cỗ',href:'tam-linh/'},
+  {k:'tamlinh',icon:'🪷',name:'Tâm linh',desc:'Ngày lễ âm lịch, kinh Phật, văn khấn, tử vi, thần số, quán chay, mâm cỗ — tách khỏi đây ngày 19/08/2026',href:TAM_LINH_URL,ngoai:true},
 ];
 function AppBoard(){
   const [vinha]=useLocal('ju.vinhaUrl','');
@@ -3910,7 +3923,7 @@ function AppBoard(){
       <div className="sec-title">📱 App của nhà mình</div>
       <div className="muted center" style={{fontSize:11,margin:'0 14px 4px'}}>Các phần đã tách ra thành app riêng cho nhẹ — cài được lên màn hình chính như app độc lập, dữ liệu vẫn dùng chung với Just Us.</div>
       {APP_BOARD.map(a=>(
-        <a key={a.k} className="item" href={a.href} {...(a.ngoai?{target:'_blank',rel:'noreferrer'}:{})} style={{display:'block',textDecoration:'none',color:'inherit'}}>
+        <a key={a.k} className="item" href={a.k==='tamlinh'?hanhTrangTamLinh():a.href} {...(a.ngoai?{target:'_blank',rel:'noreferrer'}:{})} style={{display:'block',textDecoration:'none',color:'inherit'}}>
           <div className="row"><span style={{fontSize:26,flex:'0 0 auto'}}>{a.icon}</span>
             <div className="grow"><b style={{fontSize:14.5}}>{a.name}</b>
               <div className="muted" style={{fontSize:12,marginTop:2,lineHeight:1.5}}>{a.desc}</div></div>
