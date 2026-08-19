@@ -179,32 +179,28 @@ Cách hoạt động: một `<script>` ngay trước khối `text/babel` tạo `
 - `sw.js` cache `data/*.json` + `fonts.css` theo kiểu **cache-first** → đổi nội dung JSON PHẢI bump `CACHE`.
 - Font viết tay Patrick Hand (base64, ~47KB) nằm ở `fonts.css`, không còn trong `index.html`.
 
-## App con: Tâm linh (`tam-linh/`)
-Phần Tâm linh **đã tách khỏi `index.html`** thành app tĩnh độc lập trong thư mục `tam-linh/`
-(`index.html` + `manifest.json` + `sw.js` + `icon.svg` + `data/spirit.json` riêng, cài được như PWA riêng):
-ngày lễ âm lịch · kinh Phật · văn khấn · tử vi · thần số · quán chay · mâm cỗ giỗ/Tết.
+## App Tâm linh — ĐÃ TÁCH HẲN 19/08/2026, chỉ còn trang chuyển hướng
 
-- Vào từ Just Us: tab **Cá nhân → 🪷 Tâm linh → "Mở app Tâm linh →"** (`href="tam-linh/"`).
-- **Cùng origin** với Just Us → dùng chung `localStorage`, nên `ju.tuvi` / `ju.thanso` đã lưu vẫn còn.
-  Hai khoá này vẫn nằm trong `SYNC_KEYS` của Just Us nên vẫn đồng bộ 2 máy qua Supabase như cũ.
-- Cache riêng `tamlinh-v1`. **Hai service worker dùng chung origin**: mỗi `sw.js` chỉ được xoá cache có
-  tiền tố của chính nó (`justus-*` / `tamlinh-*`), nếu không sẽ xoá cache của app kia.
-- Deploy: Pages và Netlify đều publish cả thư mục nên `tam-linh/` tự lên, không cần sửa CI.
-- ⛔ **Từ 10/08/2026 `tam-linh/index.html` là BẢN DỰNG — sửa `tam-linh/nguon/app.jsx` rồi chạy
-  `python3 /Users/Huy/Claude/HeThong/dungapp/dung.py /Users/Huy/Claude/App/JustUs/tam-linh`.**
-  App thôi nạp `@babel/standalone` (601 KB mỗi lần mở). `khoe.py::app_dung_lech_nguon()` nay
-  duyệt thêm một cấp thư mục con nên có canh app này; sửa thẳng bản dựng là ĐỎ.
-- ⚠️ **06 thứ dùng chung với Just Us từng bị bỏ quên lúc tách app (vá 10/08/2026):**
-  `uid` · `celebrate` · `openUrl` · `reduceNum` · `thanSo` · `NUM_MEAN`/`PY_MEAN`. Thiếu chúng
-  thì Tử vi và Thần số ném `ReferenceError` ngay lần bấm nút đầu — nút vẫn vẽ ra, không màn
-  hình nào trắng, nên nhìn không ra là hỏng. **Chép thêm hàm nào từ `nguon/app.jsx` của Just
-  Us sang thì kiểm cả hàm mà nó gọi**, và chạy `python3 tam-linh/thu-tam-linh.py` để đo lại.
-- Giao diện (theme + nền tối) đọc từ khoá `ju.setup` của Just Us qua `apDungGiaoDien()`.
+Mã nay ở **`/Users/Huy/Claude/App/TamLinh`** (git local, không remote), chạy ở
+<https://tam-linh.pages.dev> qua Cloudflare Pages. Luật của nó ở `App/TamLinh/CLAUDE.md`.
 
-**Vẫn nằm trong `index.html` (KHÔNG tách):** thuật toán âm lịch (`lunar2Solar`, `lunarISO`, `solar2Lunar`,
-`nextTetISO`, `holidaysForYear`, `SPIRIT_FESTIVALS`, `upcomingSpiritual`) vì còn dùng cho ngày giỗ/Tết ở
-`ImportantDates`, dấu ngày lễ ở `MiniCalendar`, nhắc việc ở `Reminders` và thông báo nhóm `tamLinh`.
-App `tam-linh/` giữ **bản sao** các hàm này.
+⛔ **`tam-linh/index.html` trong repo này KHÔNG phải app nữa — là trang chuyển hướng, ĐỪNG XOÁ.**
+Ai đã cài app Tâm linh lên màn hình chính thì lối vào của họ vẫn trỏ vào đúng đường dẫn đó, và
+ngày sinh họ nhập nằm trong `localStorage` của origin NÀY. Xoá thư mục là app đã cài mở ra trang
+không tồn tại và dữ liệu kẹt lại vĩnh viễn, mà không lỗi nào phát ra. Service worker cũ lấy trang
+theo lối mạng-trước nên trang chuyển hướng tới được máy họ; nó gói `ju.tuvi` · `ju.thanso` ·
+`ju.setup` vào hash, gỡ service worker cùng cache `tamlinh-*` rồi mới chuyển đi.
+
+- Vào từ Just Us: tab **Cá nhân → 📱 App của nhà mình → 🪷 Tâm linh**, dùng `hanhTrangTamLinh()`
+  để đính 03 khoá trên vào link. **Gỡ hàm đó là app kia bắt nhập lại ngày sinh và hiện sai tông
+  màu** — bên đó không có cách nào tự biết.
+- Đổi địa chỉ Tâm linh thì sửa **cả ba chỗ**: hằng `TAM_LINH_URL` trong `nguon/app.jsx`, biến
+  `DICH` trong `tam-linh/index.html`, và `App/BangApp/apps.json`.
+- Thuật toán âm lịch (`lunar2Solar`, `lunarISO`, `solar2Lunar`, `nextTetISO`, `holidaysForYear`,
+  `SPIRIT_FESTIVALS`, `upcomingSpiritual`) **ở lại đây** vì còn dùng cho ngày giỗ ở
+  `ImportantDates`, dấu ngày lễ ở `MiniCalendar`, nhắc việc ở `Reminders` và nhóm thông báo
+  `tamLinh`. App Tâm linh giữ **bản sao** — sửa luật lịch thì sửa CẢ HAI, lệch nhau là hai app
+  hiện hai ngày âm khác nhau cho cùng một hôm.
 
 ## App Sóc — ĐÃ TÁCH HẲN, không còn trong repo này
 
