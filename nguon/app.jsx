@@ -3905,7 +3905,10 @@ const TAM_LINH_URL='https://tam-linh.pages.dev/';
 function hanhTrangTamLinh(){
   try{
     const goi={};
-    ['ju.tuvi','ju.thanso','ju.setup'].forEach(k=>{ const v=localStorage.getItem(k); if(v!=null) goi[k]=v; });
+    /* 'ju.dates' đi cùng ba khoá kia vì Tâm linh dựng thẻ dịp cúng từ ngày giỗ trong sổ
+       này. Bỏ nó ra thì thẻ bên đó chỉ còn lễ trong lịch âm, giỗ của nhà biến mất mà
+       không lỗi nào phát ra. */
+    ['ju.tuvi','ju.thanso','ju.setup','ju.dates'].forEach(k=>{ const v=localStorage.getItem(k); if(v!=null) goi[k]=v; });
     if(!Object.keys(goi).length) return TAM_LINH_URL;
     const b=new TextEncoder().encode(JSON.stringify(goi));
     return TAM_LINH_URL+'#ju='+encodeURIComponent(btoa(String.fromCharCode.apply(null,b)));
