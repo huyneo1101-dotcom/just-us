@@ -37,6 +37,7 @@
 <style>
 /* Font viết tay 'Patrick Hand' (có dấu tiếng Việt) tách sang fonts.css — xem <link> ở trên */
 :root{
+  --chu-serif:ui-serif,"New York",Cambria,"Noto Serif","Times New Roman",Times,serif;
   --bg:#fbf7f6; --bg2:#f6eef0; --card:#ffffff; --text:#2a2228; --muted:#8a7c82;
   --line:#efe6ea; --primary:#d6446e; --primary2:#f2789d; --on-primary:#fff;
   --accent:#b65cff; --chip:#fbedf2; --chip-tx:#a83458; --good:#2bb673; --warn:#e8a13a;
@@ -212,14 +213,14 @@ textarea.inp{resize:vertical;min-height:64px}
 .homev3 .hero:not(.hascover) > button{display:none}
 .homev3 .hero:not(.hascover) .inner{order:1}
 .homev3 .hero:not(.hascover) .names{text-shadow:none;justify-content:center;color:var(--muted);font-weight:600;font-size:11px;letter-spacing:2.5px;text-transform:uppercase}
-.homev3 .hero:not(.hascover) .count{text-shadow:none;font-family:Georgia,"Times New Roman",serif;font-weight:500;font-size:44px;letter-spacing:-1px;color:var(--text);margin-top:6px;line-height:1.05}
+.homev3 .hero:not(.hascover) .count{text-shadow:none;font-family:var(--chu-serif);font-weight:500;font-size:44px;letter-spacing:-1px;color:var(--text);margin-top:6px;line-height:1.05}
 .homev3 .hero:not(.hascover) .sub{text-shadow:none;color:var(--muted)}
 .homev3 .hero:not(.hascover) .badges{order:3;position:static;max-width:none;justify-content:center;margin:12px 0 0}
 .homev3 .hero:not(.hascover) .badges .b{background:transparent;border:1px solid var(--line);color:var(--primary);box-shadow:none;font-weight:600}
 .homev3 .card{box-shadow:none;border:none;border-top:1px solid var(--line);border-radius:0;background:transparent;margin:0 20px;padding:15px 0}
 .homev3 .item{box-shadow:none;border:none;border-top:1px solid var(--line);border-radius:0;background:transparent;margin:0 20px;padding:11px 0}
 .homev3 .stat{box-shadow:none}
-.homev3 .stat .n{font-family:Georgia,"Times New Roman",serif;font-weight:500}
+.homev3 .stat .n{font-family:var(--chu-serif);font-weight:500}
 .homev3 .hc-title{font-size:11px;font-weight:600;letter-spacing:1.3px;text-transform:uppercase;color:var(--primary)}
 .homev3 .item h4{font-weight:600;font-size:14px}
 .homev3 .sec-title{font-size:11px;font-weight:600;letter-spacing:1.3px;text-transform:uppercase;color:var(--primary)}
@@ -1266,7 +1267,7 @@ const HOME_FONTS = [{
 }, {
   k: 'lora',
   name: 'Lora · serif thanh lịch',
-  css: "'Lora',Georgia,serif"
+  css: "'Lora',ui-serif,'New York',Cambria,'Noto Serif','Times New Roman',Times,serif"
 }, {
   k: 'system',
   name: 'Hệ thống (nhẹ nhất)',
@@ -21996,7 +21997,7 @@ function Profile({
       bucket = g('ju.bucket', []),
       food = g('ju.food', []);
     const stat = (n, l) => '<div class="stat"><b>' + n + '</b><span>' + l + '</span></div>';
-    const html = '<!doctype html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' + '<title>Kỷ yếu ' + esc(setup.a.name) + ' &amp; ' + esc(setup.b.name) + '</title><style>' + 'body{font-family:Georgia,"Times New Roman",serif;max-width:720px;margin:0 auto;padding:42px 28px;color:#3a2b31;background:#fff}' + 'h1{text-align:center;color:#e85d8a;margin:0 0 4px;font-size:30px}.sub{text-align:center;color:#a07f88;margin:0 0 26px}' + 'h2{color:#e85d8a;border-bottom:2px solid #ffd0de;padding-bottom:4px;margin-top:30px}' + '.grid{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}' + '.stat{background:#fff0f4;border:1px solid #ffd0de;border-radius:12px;padding:10px 16px;text-align:center;min-width:90px}' + '.stat b{display:block;font-size:22px;color:#e85d8a}.stat span{font-size:12px;color:#8a6c74}' + '.mile{margin:10px 0;padding:8px 14px;border-left:3px solid #e85d8a;background:#fff6f9;border-radius:0 8px 8px 0}' + '.mile .d{font-size:12px;color:#a07f88}.q{font-style:italic;color:#6a4f57;margin:6px 0}' + '@media print{body{padding:10px}}</style></head><body>' + '<h1>💞 ' + esc(setup.a.name) + ' &amp; ' + esc(setup.b.name) + '</h1>' + '<p class="sub">' + (setup.loveDate ? 'Bên nhau từ ' + fmtDateVN(setup.loveDate) + ' · ' + loveDays.toLocaleString('vi-VN') + ' ngày' : 'Kỷ yếu tình yêu') + '</p>' + '<div class="grid">' + stat(loveDays.toLocaleString('vi-VN'), 'ngày bên nhau') + stat(timeline.length, 'cột mốc') + stat(notes.length, 'lời nhắn') + stat(photos.length, 'ảnh chung') + stat(spots.filter(s => s.done).length, 'chỗ đã đi') + stat(food.filter(f => f.done).length, 'món đã thử') + stat(bucket.filter(b => b.done).length, 'điều đã làm') + '</div>' + (timeline.length ? '<h2>🕰️ Dòng thời gian</h2>' + timeline.map(t => '<div class="mile"><div class="d">' + fmtDateVN(t.date) + '</div><b>' + (t.icon || '💗') + ' ' + esc(t.title) + '</b>' + (t.note ? '<div class="q">' + esc(t.note) + '</div>' : '') + '</div>').join('') : '') + (jar.length ? '<h2>🫙 Lọ yêu thương</h2>' + jar.slice(0, 20).map(j => '<div class="q">“' + esc(j.text) + '”</div>').join('') : '') + '<p class="sub" style="margin-top:36px">Tạo từ Just Us 💞 · ' + fmtDateVN(todayISO()) + '</p>' + '</body></html>';
+    const html = '<!doctype html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' + '<title>Kỷ yếu ' + esc(setup.a.name) + ' &amp; ' + esc(setup.b.name) + '</title><style>' + 'body{font-family:ui-serif,"New York",Cambria,"Noto Serif","Times New Roman",Times,serif;max-width:720px;margin:0 auto;padding:42px 28px;color:#3a2b31;background:#fff}' + 'h1{text-align:center;color:#e85d8a;margin:0 0 4px;font-size:30px}.sub{text-align:center;color:#a07f88;margin:0 0 26px}' + 'h2{color:#e85d8a;border-bottom:2px solid #ffd0de;padding-bottom:4px;margin-top:30px}' + '.grid{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}' + '.stat{background:#fff0f4;border:1px solid #ffd0de;border-radius:12px;padding:10px 16px;text-align:center;min-width:90px}' + '.stat b{display:block;font-size:22px;color:#e85d8a}.stat span{font-size:12px;color:#8a6c74}' + '.mile{margin:10px 0;padding:8px 14px;border-left:3px solid #e85d8a;background:#fff6f9;border-radius:0 8px 8px 0}' + '.mile .d{font-size:12px;color:#a07f88}.q{font-style:italic;color:#6a4f57;margin:6px 0}' + '@media print{body{padding:10px}}</style></head><body>' + '<h1>💞 ' + esc(setup.a.name) + ' &amp; ' + esc(setup.b.name) + '</h1>' + '<p class="sub">' + (setup.loveDate ? 'Bên nhau từ ' + fmtDateVN(setup.loveDate) + ' · ' + loveDays.toLocaleString('vi-VN') + ' ngày' : 'Kỷ yếu tình yêu') + '</p>' + '<div class="grid">' + stat(loveDays.toLocaleString('vi-VN'), 'ngày bên nhau') + stat(timeline.length, 'cột mốc') + stat(notes.length, 'lời nhắn') + stat(photos.length, 'ảnh chung') + stat(spots.filter(s => s.done).length, 'chỗ đã đi') + stat(food.filter(f => f.done).length, 'món đã thử') + stat(bucket.filter(b => b.done).length, 'điều đã làm') + '</div>' + (timeline.length ? '<h2>🕰️ Dòng thời gian</h2>' + timeline.map(t => '<div class="mile"><div class="d">' + fmtDateVN(t.date) + '</div><b>' + (t.icon || '💗') + ' ' + esc(t.title) + '</b>' + (t.note ? '<div class="q">' + esc(t.note) + '</div>' : '') + '</div>').join('') : '') + (jar.length ? '<h2>🫙 Lọ yêu thương</h2>' + jar.slice(0, 20).map(j => '<div class="q">“' + esc(j.text) + '”</div>').join('') : '') + '<p class="sub" style="margin-top:36px">Tạo từ Just Us 💞 · ' + fmtDateVN(todayISO()) + '</p>' + '</body></html>';
     const blob = new Blob([html], {
       type: 'text/html;charset=utf-8'
     });
