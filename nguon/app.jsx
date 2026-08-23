@@ -183,7 +183,7 @@ const HOME_FONTS=[
   {k:'nunito',name:'Nunito · tròn, thân thiện',css:"'Nunito','Segoe UI',system-ui,sans-serif"},
   {k:'quicksand',name:'Quicksand · bo tròn',css:"'Quicksand','Segoe UI',system-ui,sans-serif"},
   {k:'montserrat',name:'Montserrat · hiện đại',css:"'Montserrat','Segoe UI',system-ui,sans-serif"},
-  {k:'lora',name:'Lora · serif thanh lịch',css:"'Lora',Georgia,serif"},
+  {k:'lora',name:'Lora · serif thanh lịch',css:"'Lora',var(--chu-serif)"},
   {k:'system',name:'Hệ thống (nhẹ nhất)',css:"'Segoe UI',system-ui,-apple-system,Roboto,sans-serif"},
 ];
 function applyHomeFont(k){ const f=HOME_FONTS.find(x=>x.k===k)||HOME_FONTS[0]; try{ document.body.style.setProperty('--home-font',f.css); }catch(_){} }
@@ -6460,7 +6460,7 @@ function Profile({setup,setSetup,people,me,setMe,flash}){
     const stat=(n,l)=>'<div class="stat"><b>'+n+'</b><span>'+l+'</span></div>';
     const html='<!doctype html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
       +'<title>Kỷ yếu '+esc(setup.a.name)+' &amp; '+esc(setup.b.name)+'</title><style>'
-      +'body{font-family:Georgia,"Times New Roman",serif;max-width:720px;margin:0 auto;padding:42px 28px;color:#3a2b31;background:#fff}'
+      +'body{font-family:ui-serif,Cambria,\"Noto Serif\",\"Times New Roman\",Times,serif;max-width:720px;margin:0 auto;padding:42px 28px;color:#3a2b31;background:#fff}'
       +'h1{text-align:center;color:#e85d8a;margin:0 0 4px;font-size:30px}.sub{text-align:center;color:#a07f88;margin:0 0 26px}'
       +'h2{color:#e85d8a;border-bottom:2px solid #ffd0de;padding-bottom:4px;margin-top:30px}'
       +'.grid{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}'

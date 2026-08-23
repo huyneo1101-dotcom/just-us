@@ -33,6 +33,10 @@
 <style>
 /* Font viết tay 'Patrick Hand' (có dấu tiếng Việt) tách sang fonts.css — xem <link> ở trên */
 :root{
+  /* Chữ serif. Georgia ĐÃ BỊ LOẠI: bản georgia.ttf trên Windows thiếu glyph ầ ế ố ổ ữ ở ệ ư,
+     trình duyệt phải tách dấu thanh ra vẽ rời nên tiêu đề hiện thành "Đâ`u Tư". Chỗ nào cần
+     chữ serif thì trỏ vào biến này, cấm khai lại tên font tại chỗ. Vá 23/08/2026 theo khuôn app «Đầu Tư». */
+  --chu-serif:ui-serif,"New York",Cambria,"Noto Serif","Times New Roman",Times,serif;
   --bg:#fbf7f6; --bg2:#f6eef0; --card:#ffffff; --text:#2a2228; --muted:#8a7c82;
   --line:#efe6ea; --primary:#d6446e; --primary2:#f2789d; --on-primary:#fff;
   --accent:#b65cff; --chip:#fbedf2; --chip-tx:#a83458; --good:#2bb673; --warn:#e8a13a;
@@ -208,14 +212,14 @@ textarea.inp{resize:vertical;min-height:64px}
 .homev3 .hero:not(.hascover) > button{display:none}
 .homev3 .hero:not(.hascover) .inner{order:1}
 .homev3 .hero:not(.hascover) .names{text-shadow:none;justify-content:center;color:var(--muted);font-weight:600;font-size:11px;letter-spacing:2.5px;text-transform:uppercase}
-.homev3 .hero:not(.hascover) .count{text-shadow:none;font-family:Georgia,"Times New Roman",serif;font-weight:500;font-size:44px;letter-spacing:-1px;color:var(--text);margin-top:6px;line-height:1.05}
+.homev3 .hero:not(.hascover) .count{text-shadow:none;font-family:var(--chu-serif);font-weight:500;font-size:44px;letter-spacing:-1px;color:var(--text);margin-top:6px;line-height:1.05}
 .homev3 .hero:not(.hascover) .sub{text-shadow:none;color:var(--muted)}
 .homev3 .hero:not(.hascover) .badges{order:3;position:static;max-width:none;justify-content:center;margin:12px 0 0}
 .homev3 .hero:not(.hascover) .badges .b{background:transparent;border:1px solid var(--line);color:var(--primary);box-shadow:none;font-weight:600}
 .homev3 .card{box-shadow:none;border:none;border-top:1px solid var(--line);border-radius:0;background:transparent;margin:0 20px;padding:15px 0}
 .homev3 .item{box-shadow:none;border:none;border-top:1px solid var(--line);border-radius:0;background:transparent;margin:0 20px;padding:11px 0}
 .homev3 .stat{box-shadow:none}
-.homev3 .stat .n{font-family:Georgia,"Times New Roman",serif;font-weight:500}
+.homev3 .stat .n{font-family:var(--chu-serif);font-weight:500}
 .homev3 .hc-title{font-size:11px;font-weight:600;letter-spacing:1.3px;text-transform:uppercase;color:var(--primary)}
 .homev3 .item h4{font-weight:600;font-size:14px}
 .homev3 .sec-title{font-size:11px;font-weight:600;letter-spacing:1.3px;text-transform:uppercase;color:var(--primary)}
