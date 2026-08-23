@@ -1,0 +1,9 @@
+{
+  "viec": "dựng bản chạy rồi đẩy lên GitHub, Actions tự đưa lên GitHub Pages",
+  "ghi_chu": "Chuỗi này chạy dưới khoá của HeThong/khoa-app.py để hai phiên không đè bản dựng lên nhau. Just Us KHÔNG đẩy thẳng bằng wrangler như Bếp Nhà hay Tâm Linh: nó lên mạng qua workflow deploy-pages.yml, nổ mỗi lượt push vào main, nên bước cuối là push chứ không phải lệnh deploy. Khoá `dia_chi` để giao-app.py đo được bản NGƯỜI DÙNG ĐANG THẤY — lệnh đẩy trả mã 0 mà bản trên mạng vẫn là bản cũ là lối hỏng câm đã đúc thành mục 9. Sửa ở đây thì đừng chép lại vào CLAUDE.md, nơi kia chỉ trỏ tới file này.",
+  "dia_chi": "https://huyneo1101-dotcom.github.io/just-us/",
+  "lenh": [
+    "python3 /Users/Huy/Claude/HeThong/dungapp/dung.py /Users/Huy/Claude/App/JustUs",
+    "git -C /Users/Huy/Claude/App/JustUs push origin main"
+  ]
+}

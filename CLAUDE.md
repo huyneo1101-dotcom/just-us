@@ -116,12 +116,12 @@ Luật của nó ở `App/BepNha/CLAUDE.md`.
 
 # Just Us — Của riêng hai đứa (app riêng cho một cặp đôi/vợ chồng)
 
-App tĩnh: UI + logic + CSS nằm trong `index.html` (~7810 dòng, ~676KB — vẫn RẤT LỚN), React 18 + Babel Standalone qua CDN, KHÔNG build step. Deploy tĩnh (GitHub Pages qua Actions + Netlify).
+App tĩnh: UI + logic + CSS nằm trong `index.html` (~7810 dòng, ~676KB — vẫn RẤT LỚN), React 18 qua CDN, JSX dịch sẵn lúc dựng (đo 23/08/2026: `index.html` không nạp `@babel/standalone`). Deploy tĩnh (GitHub Pages qua Actions + Netlify).
 
 ## Quy tắc làm việc với file này
 - **KHÔNG đọc cả `index.html` (~676KB, ~7810 dòng)** — LUÔN grep định vị rồi Read cửa sổ nhỏ (xem skill `bigfile-nav`).
 - Sửa nội dung đáng kể → **bump `CACHE` trong `sw.js`** (hiện: `justus-v38`; có thêm cache phụ `justus-noti`).
-- Babel transpile trong trình duyệt: lỗi cú pháp = trắng màn hình. Kiểm tra Console sau khi sửa.
+- Lỗi cú pháp bị bắt ngay lúc `dung.py` chạy, không còn ra trắng màn hình trên máy người dùng. Vẫn kiểm Console sau khi sửa.
 
 ## ⛔ MỌI SETTER CỦA `useLocal` PHẢI VIẾT DẠNG HÀM CẬP NHẬT (vá 10/08/2026)
 
@@ -503,7 +503,6 @@ còn lại. Sửa function thì phải deploy lại:
 
 ## Thư viện (đã pin version, qua cdn.jsdelivr.net)
 - `react@18.2.0` + `react-dom@18.2.0` (production UMD)
-- `@babel/standalone@7.23.6`
 - `@supabase/supabase-js@2.39.7`
 - Leaflet (bản đồ) — dùng cho gợi ý địa điểm Hà Nội / check-in.
 
@@ -513,7 +512,7 @@ còn lại. Sửa function thì phải deploy lại:
 
 ## Quy tắc phát hành (chủ repo đã cho phép — 2026-08-01)
 - **Tự động merge vào `main`, KHÔNG cần hỏi lại.** Sau khi hoàn tất một thay đổi trên nhánh phát triển: mở PR rồi merge luôn vào `main` (hoặc merge thẳng) để deploy — chủ repo đã đồng ý đứng ra chịu trách nhiệm cho app riêng của hai vợ chồng.
-- **Trước khi merge PHẢI:** kiểm cú pháp (transpile Babel khối `text/babel`, xem skill `bigfile-nav`/`smoke-test`) để tránh trắng màn hình; và **bump `CACHE` trong `sw.js`** nếu có sửa nội dung.
+- **Trước khi merge PHẢI:** dựng lại bằng `dungapp/dung.py` để bước dịch JSX bắt lỗi cú pháp; và **bump `CACHE` trong `sw.js`** nếu có sửa nội dung.
 - Mỗi thay đổi lớn = 1 commit rõ ràng; nếu PR của nhánh đã merge thì coi việc tiếp theo là thay đổi mới (restart nhánh từ `main`).
 - Deploy xong nhắc chủ repo **đóng hẳn app rồi mở lại** để service worker nhận bản mới.
 
