@@ -391,7 +391,7 @@ setTimeout(function(){
     var miss=[];
     if(!window.React) miss.push('React');
     if(!window.ReactDOM) miss.push('ReactDOM');
-    if(!window.Babel) miss.push('Babel');
+    if(false) miss.push('Babel');
     var r=document.getElementById('root');
     if(r && !r.firstChild){
       r.innerHTML='<div style="padding:40px 22px;font-family:sans-serif;color:#3a2b31">'
