@@ -6,6 +6,8 @@
 justus-backup-*.json
 *-backup-*.json
 ju-backup*.json
+# Lưới đỡ hằng ngày của `scripts/sao-luu-so.py` — nhật ký riêng của hai vợ chồng, quyền 600
+sao-luu/
 
 # Hệ điều hành / editor
 .DS_Store

@@ -501,6 +501,42 @@ Loại này gửi cho **cả hai máy** trong cặp (`moiNguoi: true`), khác `n
 còn lại. Sửa function thì phải deploy lại:
 `~/bin/supabase functions deploy push-notify --project-ref vvgkjgvzjeklaadusbne --workdir /Users/Huy/Claude/App/JustUs`
 
+## 💾 SAO LƯU SỔ CHUNG — `scripts/sao-luu-so.py` (dựng 03/09/2026)
+
+Toàn bộ state của app nằm trong **đúng một hàng** của bảng `justus_data`, và cả hai máy đều
+**ghi đè trọn hàng ấy** mỗi lần đồng bộ. Không phiên bản, không lịch sử: một lượt ghi hỏng,
+một lần xoá nhầm trong app, hay chính Supabase mất dữ liệu là mất sạch nhật ký, ảnh kỷ niệm
+đã gắn, danh sách mong ước, hộp thư tình — thứ không dựng lại được bằng bất cứ cách nào.
+Đo 03/09: 01 hàng, **101 khoá, 147 KB**, lần ghi gần nhất 23/08.
+
+Bản sao xuống `sao-luu/` (đã `.gitignore`), **quyền 600**, tên `justus-<mốc giờ>-<băm>.json`.
+Giữ **07 ngày**, luôn chừa tối thiểu **08 bản** mới nhất. Lịch: LaunchAgent
+`com.huy.justus-sao-luu-so`, **21:15 mỗi ngày**, bọc `caffeinate -i` (cùng bài học với
+`com.huy.vinha-sync`: launchd fire lúc máy ngủ sâu thì Wi-Fi không lên).
+
+⛔ **Bốn luật, giữ đúng khuôn `App/sync/sao-luu.js`:** khối rỗng hay khối lạ thì **NÉM**, không
+ghi · **quyền 600 ngay lúc tạo**, mở file bằng cờ quyền chứ không ghi rồi `chmod` sau · dọn
+theo ngày nhưng **luôn chừa 08 bản** · khử trùng theo **nội dung**, không theo `updated_at`.
+
+⚠️ **Chiều nguy hiểm hơn cả mất bản sao là GHI BẢN RỖNG.** Đọc máy chủ hỏng mà vẫn ghi xuống
+thì tuần sau bản tốt bị dọn mất, trong khi mọi lệnh vẫn báo thành công — 04 ca đầu của bộ ca
+canh đúng chỗ đó.
+
+**Bộ ca `scripts/test-sao-luu-so.py`** — `python3 test-sao-luu-so.py --tu-kiem`. **13 ca ·
+07 bản hỏng**, chạy hoàn toàn ngoại tuyến, không gọi Supabase, không cần khoá; đồng hồ ghim
+bằng tham số `bay_gio`. Nghiệm thu 03/09: **13/13 ca đạt · 7/7 bản hỏng bị bắt**, và nghiệm
+thu bằng **đường thật qua launchd** (`launchctl kickstart`): log ghi *"101 khoá"* rồi
+*"💾 Đã lưu 147 KB"*, lượt kích thứ hai ra *"Sổ y hệt bản đã lưu — không ghi thêm"*, mã 0.
+
+Đã nạp `BO_TEST` của `khoe.py`, kèm phép đo **đầu ra** `luoi_do_khong_con_tuoi()` ở lớp 5:
+ĐỎ khi bản mới nhất cũ quá **48 giờ**, khi thư mục rỗng, khi thư mục mất, hay khi không file
+nào đọc ra mốc giờ. Phép này khác hẳn lớp 1 — lớp 1 hỏi *"LaunchAgent chạy chưa, mã mấy"*,
+còn routine thoát mã 0 mà không ghi gì (khoá hết hạn, mất quyền thư mục) trông y hệt một
+ngày yên ổn cho tới hôm cần quay lại mới biết cửa sổ giữ đã rỗng.
+
+⚠️ **Đổi lịch chạy thì phải sửa trần giờ trong `LUOI_DO` của `khoe.py`** — hai chỗ không tự
+biết nhau, để lệch là phép đo kêu oan hoặc mất răng trong im lặng.
+
 ## Thư viện (đã pin version, qua cdn.jsdelivr.net)
 - `react@18.2.0` + `react-dom@18.2.0` (production UMD)
 - `@supabase/supabase-js@2.39.7`
