@@ -6789,7 +6789,16 @@ function Onboarding({onDone}){
   return (
     <div style={{minHeight:'100vh',display:'flex',flexDirection:'column',justifyContent:'center',padding:'24px'}}>
       <div className="center" style={{marginBottom:18}}>
-        <div style={{fontSize:54}}>💞</div>
+        {/* Biểu trưng vẽ nét thay emoji: đây là màn ĐẦU TIÊN người mở app nhìn thấy,
+            mà emoji đổi hình theo từng máy nên bộ mặt app mỗi máy một kiểu (luật 28, điều 6) */}
+        <div style={{display:'flex',justifyContent:'center',marginBottom:2}}>
+          <svg width="72" height="60" viewBox="0 0 72 60" aria-hidden="true">
+            <path d="M27 54C27 54 6 39.4 6 24.4 6 16.4 12.2 10 20 10c4.6 0 8.7 2.2 11.3 5.7C33.9 12.2 38 10 42.6 10c7.8 0 14 6.4 14 14.4C56.6 39.4 35.6 54 35.6 54z"
+                  fill="none" stroke="var(--heart,#e85d8a)" strokeWidth="3.2" strokeLinejoin="round"/>
+            <path d="M46 46c8.4-6.6 20-17.4 20-27.2C66 12.4 61.6 8 56 8c-2.7 0-5.2 1-7 2.7"
+                  fill="none" stroke="var(--heart,#e85d8a)" strokeWidth="3.2" strokeLinecap="round" opacity=".55"/>
+          </svg>
+        </div>
         <div className="brand" style={{justifyContent:'center',fontSize:26}}>Just <span className="heart">Us</span></div>
         <div className="muted" style={{marginTop:6}}>Không gian riêng của hai đứa mình</div>
       </div>
