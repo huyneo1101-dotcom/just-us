@@ -136,6 +136,27 @@ body.theme-night .topbar{background:linear-gradient(180deg,rgba(36,27,51,.9),rgb
 .btn.soft{background:var(--chip);color:var(--chip-tx);box-shadow:none}
 .iconbtn{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;background:var(--chip);color:var(--chip-tx);font-size:15px}
 
+/* ===== Vùng chạm 44px cho nút chỉ-có-hình (vá 04/09/2026) =====
+   Trước bản này nút biểu tượng chỉ to bằng con chữ bên trong: .iconbtn 36px, .heartbtn
+   18px, còn nút ✕ mang class .muted không khai kích thước nào nên vùng chạm bằng đúng
+   một ký tự (~15px). Ngón tay cần 44px mới bấm trúng đều — dưới ngưỡng đó là bấm hụt,
+   mà bấm hụt không phát ra lỗi nào, chỉ thành cảm giác "app đơ".
+   Nới bằng lớp phủ trong suốt chứ KHÔNG nới ô hiển thị: đổi width/height thật sẽ đẩy
+   giãn mọi hàng đang chứa các nút này. */
+.iconbtn,.heartbtn,.tapmin,.btn,.pill,.who{position:relative}
+.iconbtn::after,.heartbtn::after,.tapmin::after,.btn::after,.pill::after,.who::after{
+  content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:max(100%,44px);height:max(100%,44px)}
+.heartbtn,.tapmin{display:inline-grid;place-items:center;background:none;border:none;padding:0;color:inherit}
+/* Hàng nút sát nhau: chừa khe để hai vùng chạm không chồng lên nhau */
+.it-meta .iconbtn+.iconbtn,.row .tapmin+.tapmin{margin-left:6px}
+
+/* ===== Số tiền và số đếm giữ đều bề ngang (vá 04/09/2026) =====
+   Chữ số tỷ lệ làm cột số nhảy trái phải khi cuộn danh sách chi tiêu; `tabular-nums`
+   ghim mỗi chữ số một bề ngang nên các hàng thẳng cột. */
+.app b,.pill,.count,.stat b,.hc-lead,.inp[inputmode="numeric"],.tnum{
+  font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+
 /* Inputs */
 .field{display:flex;flex-direction:column;gap:5px;margin-bottom:10px}
 .field label{font-size:12.5px;font-weight:700;color:var(--muted)}

@@ -17,6 +17,57 @@ const SYNC_KEYS=['ju.setup','ju.wish','ju.bucket','ju.watch','ju.links','ju.idea
 /* @@GOM cloud-ju.jsx */
 
 
+/* ============ Bộ biểu tượng nét cho nút chỉ-có-hình (vá 04/09/2026) ============
+   Trước bản này ~80 nút không nhãn chữ chỉ mang một emoji. Ba thứ hỏng cùng lúc:
+   emoji mỗi hệ điều hành vẽ một kiểu và mang màu riêng nên không đổi theo nền tối,
+   cỡ trôi theo `font-size` của thẻ cha nên vùng bấm co lại còn bằng con chữ, và
+   trình đọc màn hình đọc ra tên emoji chứ không phải việc mà nút làm.
+   Nút mang biểu tượng này BẮT BUỘC có `aria-label` hoặc `title`.
+   Phong cách: viewBox 24, nét 1.8, ăn `currentColor` — khớp 02 icon SVG có sẵn ở topbar. */
+function Ic({n,size=17}){
+  const S={fill:'none',stroke:'currentColor',strokeWidth:1.8,strokeLinecap:'round',strokeLinejoin:'round'};
+  const P={
+    dong:'M6 6l12 12M18 6L6 18',
+    sua:'M4.2 19.8h3.6L18.9 8.7a1.9 1.9 0 0 0 0-2.7l-.9-.9a1.9 1.9 0 0 0-2.7 0L4.2 16.2z',
+    thung:'M4.4 6.8h15.2M9.4 6.8V5.4a1.4 1.4 0 0 1 1.4-1.4h2.4a1.4 1.4 0 0 1 1.4 1.4v1.4M17.6 6.8v12.4a1.4 1.4 0 0 1-1.4 1.4H7.8a1.4 1.4 0 0 1-1.4-1.4V6.8',
+    vach:'M10.2 10.6v6M13.8 10.6v6',
+    tick:'M5.2 12.6l4.4 4.4 9.2-9.6',
+    otron:'M5.2 4.4h13.6a.8.8 0 0 1 .8.8v13.6a.8.8 0 0 1-.8.8H5.2a.8.8 0 0 1-.8-.8V5.2a.8.8 0 0 1 .8-.8z',
+    tim:'M12 20.4S3.6 15.2 3.6 9.5A4.6 4.6 0 0 1 12 6.9a4.6 4.6 0 0 1 8.4 2.6c0 5.7-8.4 10.9-8.4 10.9z',
+    len:'M12 19V5M6 11l6-6 6 6',
+    xuong:'M12 5v14M6 13l6 6 6-6',
+    bongden:'M9.3 18.4h5.4M10.2 21.2h3.6M12 2.8a6 6 0 0 0-3.5 10.9c.5.4.6.8.6 1.2v.3h5.8v-.3c0-.4.1-.8.6-1.2A6 6 0 0 0 12 2.8z',
+    chep1:'M8.6 8.6h9.2a1.2 1.2 0 0 1 1.2 1.2v9.2a1.2 1.2 0 0 1-1.2 1.2H8.6a1.2 1.2 0 0 1-1.2-1.2V9.8a1.2 1.2 0 0 1 1.2-1.2z',
+    chep2:'M4.6 15.4a1.2 1.2 0 0 1-1.2-1.2V4.8a1.2 1.2 0 0 1 1.2-1.2h9.4a1.2 1.2 0 0 1 1.2 1.2',
+    chiase:'M12 15.4V3.6M8.2 7.4L12 3.6l3.8 3.8M5 13.6v5.6a1.2 1.2 0 0 0 1.2 1.2h11.6a1.2 1.2 0 0 0 1.2-1.2v-5.6',
+    lienket1:'M10.2 13.8a3.6 3.6 0 0 0 5.4.4l2.6-2.6a3.6 3.6 0 0 0-5.1-5.1l-1.5 1.5',
+    lienket2:'M13.8 10.2a3.6 3.6 0 0 0-5.4-.4l-2.6 2.6a3.6 3.6 0 0 0 5.1 5.1l1.5-1.5',
+    cam1:'M12 3.4a8.6 8.6 0 1 0 0 17.2 8.6 8.6 0 0 0 0-17.2z', cam2:'M5.9 5.9l12.2 12.2',
+    ngonlen:'M7.4 10.6H4.8a1.2 1.2 0 0 0-1.2 1.2v7a1.2 1.2 0 0 0 1.2 1.2h2.6zM7.4 10.6l4.2-7.2a2 2 0 0 1 3.6 1.6l-.7 3.4h4a1.8 1.8 0 0 1 1.8 2.2l-1.4 6.6a1.8 1.8 0 0 1-1.8 1.4H7.4z',
+    chuong:'M18.2 15.6V10a6.2 6.2 0 1 0-12.4 0v5.6L4 18.2h16zM10 21.2a2.4 2.4 0 0 0 4 0',
+  };
+  const V=p=><svg viewBox="0 0 24 24" width={size} height={size} aria-hidden="true" style={{display:'block',flex:'none'}}>{p}</svg>;
+  if(n==='dong')     return V(<path d={P.dong} {...S}/>);
+  if(n==='sua')      return V(<path d={P.sua} {...S}/>);
+  if(n==='xoa')      return V(<><path d={P.thung} {...S}/><path d={P.vach} {...S}/></>);
+  if(n==='tick')     return V(<path d={P.tick} {...S}/>);
+  if(n==='dadanh')   return V(<><path d={P.otron} {...S}/><path d="M8 12.2l2.8 2.8 5.4-5.6" {...S}/></>);
+  if(n==='chuadanh') return V(<path d={P.otron} {...S}/>);
+  if(n==='tim')      return V(<path d={P.tim} fill="currentColor" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round"/>);
+  if(n==='timrong')  return V(<path d={P.tim} {...S}/>);
+  if(n==='len')      return V(<path d={P.len} {...S}/>);
+  if(n==='xuong')    return V(<path d={P.xuong} {...S}/>);
+  if(n==='goiy')     return V(<path d={P.bongden} {...S}/>);
+  if(n==='chep')     return V(<><path d={P.chep1} {...S}/><path d={P.chep2} {...S}/></>);
+  if(n==='chiase')   return V(<path d={P.chiase} {...S}/>);
+  if(n==='lienket')  return V(<><path d={P.lienket1} {...S}/><path d={P.lienket2} {...S}/></>);
+  if(n==='cam')      return V(<><path d={P.cam1} {...S}/><path d={P.cam2} {...S}/></>);
+  if(n==='thich')    return V(<path d={P.ngonlen} {...S}/>);
+  if(n==='khongthich') return V(<g transform="rotate(180 12 12)"><path d={P.ngonlen} {...S}/></g>);
+  if(n==='nhac')     return V(<path d={P.chuong} {...S}/>);
+  return null;
+}
+
 /* ============ helpers ============ */
 const uid=()=> Date.now().toString(36)+Math.random().toString(36).slice(2,7);
 const VND=(n)=> (Number(n)||0).toLocaleString('vi-VN')+'đ';
@@ -190,6 +241,10 @@ function applyHomeFont(k){ const f=HOME_FONTS.find(x=>x.k===k)||HOME_FONTS[0]; t
 
 const AVATARS=['🧑','👩','👨','🧔','👱‍♀️','👩‍🦱','🧑‍🦰','👸','🤴','🐰','🐱','🐻','🦊','🐧','🌷','⭐'];
 const MOODS=['😍','😊','🥰','😌','😎','😴','🤒','😢','😠','🤩','🥺','😋'];
+/* Tên đọc được của từng mặt cười — nút cảm xúc cố ý GIỮ emoji vì emoji chính là nội dung
+   người chọn, không phải biểu tượng điều khiển; nhưng trình đọc màn hình cần tên tiếng Việt. */
+const TEN_MOOD={'😍':'yêu quá','😊':'vui','🥰':'hạnh phúc','😌':'nhẹ nhõm','😎':'phấn khởi','😴':'buồn ngủ',
+  '🤒':'mệt, ốm','😢':'buồn','😠':'bực','🤩':'hào hứng','🥺':'tủi thân','😋':'thèm ăn'};
 
 /* ===== Thư viện gợi ý nội dung (chạm để thêm) ===== */
 const IDEA_SUGGEST=JUD.IDEA_SUGGEST;
@@ -565,8 +620,8 @@ function ReorderSheet({items, menuId, onClose}){
         <div key={k} className="row" style={{padding:'8px 0',borderBottom:i<list.length-1?'1px solid var(--line)':'none',opacity:off?.5:1}}>
           <span style={{fontSize:17,marginRight:8}}>{it.icon}</span><span className="grow" style={{fontSize:14}}>{it.label}</span>
           <button className="pill" style={{marginRight:4,background:off?'var(--bg)':'var(--good)',color:off?'var(--muted)':'#fff',border:off?'1px solid var(--line)':'none'}} onClick={()=>toggleHidden(k)}>{off?'Ẩn':'Hiện'}</button>
-          <button className="iconbtn" style={i===0?{opacity:.3}:{}} onClick={()=>move(i,-1)}>▲</button>
-          <button className="iconbtn" style={i===list.length-1?{opacity:.3}:{}} onClick={()=>move(i,1)}>▼</button>
+          <button className="iconbtn" style={i===0?{opacity:.3}:{}} aria-label="Lên" onClick={()=>move(i,-1)}><Ic n="len" size={16}/></button>
+          <button className="iconbtn" style={i===list.length-1?{opacity:.3}:{}} aria-label="Xuống" onClick={()=>move(i,1)}><Ic n="xuong" size={16}/></button>
         </div>
       ); })}
     </div>
@@ -634,7 +689,7 @@ function SimpleList({skey, people, me, addLabel, doneLabel='Xong', fields=[], ta
     <div>
       <div className="row" style={{margin:'4px 14px 0',gap:8}}>
         <input className="inp grow" placeholder="🔎 Tìm…" value={q} onChange={e=>setQ(e.target.value)} />
-        {suggest && <button className="btn sm soft" onClick={()=>setSugOpen(true)}>💡</button>}
+        {suggest && <button className="btn sm soft" aria-label="Gợi ý" title="Gợi ý" onClick={()=>setSugOpen(true)}><Ic n="goiy"/></button>}
         <button className="btn sm" onClick={()=>{setEdit(null);setOpen(true);}}>＋ Thêm</button>
       </div>
       <div className="filters">
@@ -652,7 +707,7 @@ function SimpleList({skey, people, me, addLabel, doneLabel='Xong', fields=[], ta
         <div key={it.id} className={'item'+(it.done?' dn':'')}>
           <div className="it-top">
             <h4>{it.title}</h4>
-            <button className={'heartbtn'+(it.fav?' on':'')} onClick={()=>toggle(it.id,'fav')}>{it.fav?'❤️':'🤍'}</button>
+            <button className={'heartbtn'+(it.fav?' on':'')} aria-label={it.fav?'Bỏ thích':'Thích'} onClick={()=>toggle(it.id,'fav')}><Ic n={it.fav?'tim':'timrong'} size={18}/></button>
           </div>
           {multi
             ? <React.Fragment>
@@ -679,8 +734,8 @@ function SimpleList({skey, people, me, addLabel, doneLabel='Xong', fields=[], ta
             {claimable && it.by!==me && <button className="pill" onClick={()=>claim(it.id)}
               style={{background:it.claimedBy?'var(--good)':'var(--chip)',color:it.claimedBy?'#fff':'var(--chip-tx)'}}>{it.claimedBy?'🤫 Đã nhận lo':'🤝 Tôi lo'}</button>}
             <button className="pill" onClick={()=>toggle(it.id,'done')}>{it.done?'↩︎ Bỏ':'✓ '+doneLabel}</button>
-            <button className="iconbtn" onClick={()=>{setEdit(it);setOpen(true);}}>✏️</button>
-            <button className="iconbtn" onClick={()=>del(it.id)}>🗑️</button>
+            <button className="iconbtn" aria-label="Sửa" title="Sửa" onClick={()=>{setEdit(it);setOpen(true);}}><Ic n="sua"/></button>
+            <button className="iconbtn" aria-label="Xoá" title="Xoá" onClick={()=>del(it.id)}><Ic n="xoa"/></button>
           </div>
         </div>
       ); })}
@@ -870,7 +925,7 @@ function WeeklyCheckin({people,me}){
     <div className="card">
       <div className="row"><span className="hc-title">📝 Check-in tuần này</span><span className="grow"></span><span className="hc-act">tuần {fmtDateVN(wk)}</span></div>
       <div className="hc-body" style={{margin:'6px 0'}}>Tuần qua của hai đứa thế nào?</div>
-      <div className="row" style={{gap:2}}>{[1,2,3,4,5].map(i=><button key={i} onClick={()=>setRating(i)} style={{fontSize:24,lineHeight:1}}>{i<=rating?'❤️':'🤍'}</button>)}</div>
+      <div className="row" style={{gap:2}}>{[1,2,3,4,5].map(i=><button key={i} onClick={()=>setRating(i)} aria-label={'Chấm '+i+' trên 5'} className="tapmin" style={{lineHeight:1,color:'var(--heart)'}}><Ic n={i<=rating?'tim':'timrong'} size={24}/></button>)}</div>
       <input className="inp" style={{marginTop:8}} placeholder="Điều gì đáng nhớ tuần này? (tuỳ chọn)" value={note} onChange={e=>setNote(e.target.value)} onKeyDown={e=>{ if(e.key==='Enter') save(); }}/>
       <button className="btn" style={{marginTop:8}} onClick={save}>{mine.rating?'Cập nhật check-in':'Gửi check-in'}</button>
       {theirs.rating
@@ -968,8 +1023,8 @@ function FunPickers(){
         <div className="muted" style={{fontSize:12.5}}>{res.label}:</div>
         <div className="row" style={{justifyContent:'center',gap:6,marginTop:2,flexWrap:'wrap'}}>
           <span style={{fontSize:18,fontWeight:800}}>{res.icon} {res.value}</span>
-          {res.food && <button title="Thích" onClick={()=>rate(res.value,1)} style={{fontSize:15,opacity:prefs[res.value]===1?1:.4}}>👍</button>}
-          {res.food && <button title="Không thích (sẽ ít gợi ý lại)" onClick={()=>rate(res.value,-1)} style={{fontSize:15,opacity:prefs[res.value]===-1?1:.4}}>👎</button>}
+          {res.food && <button title="Thích" aria-label="Thích món này" className="tapmin" onClick={()=>rate(res.value,1)} style={{opacity:prefs[res.value]===1?1:.4}}><Ic n="thich" size={16}/></button>}
+          {res.food && <button title="Không thích (sẽ ít gợi ý lại)" onClick={()=>rate(res.value,-1)} aria-label="Không thích món này" className="tapmin" style={{opacity:prefs[res.value]===-1?1:.4}}><Ic n="khongthich" size={16}/></button>}
         </div>
         {res.place && <div className="muted" style={{fontSize:12.5,marginTop:3}}>📍 {res.place.area||res.place.a}{res.place.p?' · 💵 '+res.place.p+((''+res.place.p).indexOf('/')<0?'/người':''):''}</div>}
         {(res.place||res.cook) && <div className="row" style={{justifyContent:'center',gap:8,marginTop:6}}>
@@ -1221,10 +1276,10 @@ function MoodCard({people,me}){
         <span className="muted" style={{fontSize:12.5}}>{people.a.name} <b style={{fontSize:16}}>{today.a||'—'}</b>{today.an?' · '+today.an:''}</span>
         <span className="muted" style={{fontSize:12.5}}>{people.b.name} <b style={{fontSize:16}}>{today.b||'—'}</b>{today.bn?' · '+today.bn:''}</span>
         <span className="grow"></span>
-        <button className="muted" style={{fontSize:11}} onClick={()=>setShowHist(v=>!v)}>📅 14 ngày</button>
+        <button className="muted tapmin" style={{fontSize:11}} onClick={()=>setShowHist(v=>!v)}>📅 14 ngày</button>
       </div>
       <div style={{display:'flex',flexWrap:'wrap',gap:5,marginTop:8}}>
-        {MOODS.map(m=><button key={m} onClick={()=>setMyMood(m)}
+        {MOODS.map(m=><button key={m} onClick={()=>setMyMood(m)} aria-label={'Tâm trạng '+TEN_MOOD[m]} title={TEN_MOOD[m]} className="tapmin"
           style={{fontSize:18,width:33,height:33,borderRadius:9,lineHeight:1,
             background:today[me]===m?'var(--chip)':'var(--bg)',
             border:today[me]===m?'1.5px solid var(--primary)':'1px solid var(--line)'}}>{m}</button>)}
@@ -1262,10 +1317,10 @@ function HabitTracker(){
       {habits.length===0 && <div className="muted" style={{fontSize:12.5,margin:'8px 0'}}>Thêm thói quen cả hai cùng giữ: uống đủ nước, tập thể dục, đọc sách, đi ngủ sớm…</div>}
       {habits.map(h=>{ const done=!!(h.log||{})[key]; const st=streak(h); return (
         <div key={h.id} className="row" style={{padding:'6px 0',borderBottom:'1px solid var(--line)'}}>
-          <button onClick={()=>toggle(h.id)} style={{fontSize:20}}>{done?'✅':'⬜'}</button>
+          <button onClick={()=>toggle(h.id)} aria-label="Đánh dấu xong" className="tapmin">{<Ic n={done?'dadanh':'chuadanh'} size={18}/>}</button>
           <span className="grow" style={{fontSize:14,textDecoration:done?'line-through':'none',opacity:done?.65:1}}>{h.name}</span>
           {st>1 && <span className="pill">🔥 {st}</span>}
-          <button className="muted" onClick={()=>del(h.id)} style={{marginLeft:6}}>✕</button>
+          <button className="muted tapmin" aria-label="Xoá" onClick={()=>del(h.id)} style={{marginLeft:6}}><Ic n="dong" size={15}/></button>
         </div>
       ); })}
       <div className="row" style={{gap:8,marginTop:8}}>
@@ -1293,7 +1348,7 @@ function InstallShare(){
       <span className="grow" style={{fontSize:12.5}}>Cài app & gửi link cho nửa kia</span>
       <button className="btn sm soft" onClick={share}>🔗 Link</button>
       <button className="btn sm" onClick={install}>Cài app</button>
-      <button className="muted" onClick={()=>setDone(true)} style={{marginLeft:2}}>✕</button>
+      <button className="muted tapmin" aria-label="Xoá" onClick={()=>setDone(true)} style={{marginLeft:2}}><Ic n="dong" size={15}/></button>
     </div>
   );
 }
@@ -1522,7 +1577,7 @@ function Coupons({people,me,flash}){
       <div className="row" style={{margin:'0 14px',gap:8}}>
         <input className="inp grow" placeholder={'Tặng '+people[other].name+' một phiếu…'} value={t}
           onChange={e=>setT(e.target.value)} onKeyDown={e=>{ if(e.key==='Enter') add(); }}/>
-        <button className="btn sm soft" onClick={()=>setSugOpen(true)}>💡</button>
+        <button className="btn sm soft" aria-label="Gợi ý" title="Gợi ý" onClick={()=>setSugOpen(true)}><Ic n="goiy"/></button>
         <button className="btn sm" onClick={()=>add()}>Tặng</button>
       </div>
 
@@ -1544,7 +1599,7 @@ function Coupons({people,me,flash}){
       {given.map(c=>(
         <div key={c.id} className={'item'+(c.redeemed?' dn':'')}>
           <div className="it-top"><h4>🎟️ {c.title}</h4>
-            <button className="iconbtn" onClick={()=>del(c.id)}>🗑️</button></div>
+            <button className="iconbtn" aria-label="Xoá" title="Xoá" onClick={()=>del(c.id)}><Ic n="xoa"/></button></div>
           <div className="it-meta"><span className="muted" style={{fontSize:12.5}}>Tặng {people[other].name}</span>
             <span className="grow"></span>
             {c.redeemed ? <span className="pill" style={{background:'var(--good)',color:'#fff'}}>Đã được đổi 🎉</span> : <span className="pill">Chờ đổi</span>}
@@ -1713,7 +1768,7 @@ function MovieList({people,me,flash}){
 
       <div className="row" style={{margin:'4px 14px 0',gap:8}}>
         <input className="inp grow" placeholder="🔎 Tìm phim…" value={q} onChange={e=>setQ(e.target.value)} />
-        <button className="btn sm soft" onClick={()=>setSugOpen(true)}>💡</button>
+        <button className="btn sm soft" aria-label="Gợi ý" title="Gợi ý" onClick={()=>setSugOpen(true)}><Ic n="goiy"/></button>
         <button className="btn sm" onClick={()=>{setEdit(null);setOpen(true);}}>＋ Thêm</button>
       </div>
 
@@ -1740,7 +1795,7 @@ function MovieList({people,me,flash}){
         <div key={it.id} className={'item'+(it.done?' dn':'')}>
           <div className="it-top">
             <h4>{it.title}{it.year?<span className="muted" style={{fontWeight:500}}> ({it.year})</span>:null}</h4>
-            <button className={'heartbtn'+(it.fav?' on':'')} onClick={()=>toggle(it.id,'fav')}>{it.fav?'❤️':'🤍'}</button>
+            <button className={'heartbtn'+(it.fav?' on':'')} aria-label={it.fav?'Bỏ thích':'Thích'} onClick={()=>toggle(it.id,'fav')}><Ic n={it.fav?'tim':'timrong'} size={18}/></button>
           </div>
           {it.note && <div className="it-note">{it.note}</div>}
           {it.link && <div style={{marginTop:6}}><a className="linkout" href={it.link} target="_blank" rel="noreferrer">🔗 {it.link}</a></div>}
@@ -1755,9 +1810,9 @@ function MovieList({people,me,flash}){
             {it.where && <span className="pill">📺 {it.where}</span>}
             <span className="grow"></span>
             <button className="pill" onClick={()=>toggle(it.id,'done')}>{it.done?'↩︎ Chưa xem':'✓ Đã xem'}</button>
-            <button className="iconbtn" title="Chia sẻ" onClick={()=>chiaSeMot(it)}>📤</button>
-            <button className="iconbtn" onClick={()=>{setEdit(it);setOpen(true);}}>✏️</button>
-            <button className="iconbtn" onClick={()=>del(it.id)}>🗑️</button>
+            <button className="iconbtn" title="Chia sẻ" aria-label="Chia sẻ" onClick={()=>chiaSeMot(it)}><Ic n="chiase"/></button>
+            <button className="iconbtn" aria-label="Sửa" title="Sửa" onClick={()=>{setEdit(it);setOpen(true);}}><Ic n="sua"/></button>
+            <button className="iconbtn" aria-label="Xoá" title="Xoá" onClick={()=>del(it.id)}><Ic n="xoa"/></button>
           </div>
         </div>
       ))}
@@ -1988,7 +2043,7 @@ function WeatherCardInner({w,rainy,sel,city}){
       </div>
       {w.rainSoon && !w.rain && !w.storm && <div style={{fontSize:11,marginTop:6,background:'var(--bg)',borderRadius:8,padding:'6px 9px'}}>☔ Hiện đang khô nhưng khả năng mưa tới <b>{w.rainSoonP}%</b> trong ~{(w.soonHrs||0)+1}–3h tới — gợi ý đang ưu tiên chỗ trong nhà.</div>}
       <div className="row" style={{marginTop:6}}>
-        <button className="muted" style={{fontSize:11}} onClick={showFc}>📅 {open?'Ẩn':'Xem'} 3 ngày tới</button>
+        <button className="muted tapmin" style={{fontSize:11}} onClick={showFc}>📅 {open?'Ẩn':'Xem'} 3 ngày tới</button>
         <span className="grow"></span><span className="muted" style={{fontSize:11}}>nguồn: {w.src}</span>
       </div>
       {open && (fc
@@ -2085,7 +2140,7 @@ function HanoiCatalog({me,flash}){
             <a className="pill" href={mapsUrl(s)} target="_blank" rel="noreferrer" style={{textDecoration:'none'}}>⭐ Đánh giá · chỉ đường</a>
             <span className="grow"></span>
             <button className="pill" onClick={()=>isFood(s)?addFood(s):addIdea(s)}>{isFood(s)?'🍽️ Lưu Quán':'💡 Lưu'}</button>
-            <button className="iconbtn" title="Ẩn gợi ý này" onClick={()=>hide(s)}>🚫</button>
+            <button className="iconbtn" title="Ẩn gợi ý này" aria-label="Ẩn gợi ý này" onClick={()=>hide(s)}><Ic n="cam"/></button>
           </div>
         </div>
       ))}
@@ -2339,7 +2394,7 @@ function GameBets({people,me,flash}){
         {pinned.map(t=>(
           <div key={t} className="row" style={{padding:'6px 0',borderBottom:'1px solid var(--line)',gap:8}}>
             <span className="grow" style={{fontSize:13.5}}>{t}</span>
-            <button className="muted" onClick={()=>togglePin(t)}>✕</button>
+            <button className="muted tapmin" aria-label="Xoá" onClick={()=>togglePin(t)}><Ic n="dong" size={15}/></button>
           </div>
         ))}
       </div>}
@@ -2400,8 +2455,8 @@ function CheckIns({people,me}){
             {c.date && <span className="muted" style={{fontSize:12.5}}>{fmtDateVN(c.date)}</span>}
             <a className="pill" href={mapsUrl(c)} target="_blank" rel="noreferrer" style={{textDecoration:'none'}}>🗺️ Google Maps</a>
             <span className="grow"></span>
-            <button className="iconbtn" onClick={()=>{setEdit(c);setOpen(true);}}>✏️</button>
-            <button className="iconbtn" onClick={()=>del(c.id)}>🗑️</button>
+            <button className="iconbtn" aria-label="Sửa" title="Sửa" onClick={()=>{setEdit(c);setOpen(true);}}><Ic n="sua"/></button>
+            <button className="iconbtn" aria-label="Xoá" title="Xoá" onClick={()=>del(c.id)}><Ic n="xoa"/></button>
           </div>
         </div>
       ); })}
@@ -2545,7 +2600,7 @@ function DateIdeas({people,me}){
         <div key={it.id} className={'item'+(it.done?' dn':'')}>
           <div className="it-top">
             <h4>{it.title}</h4>
-            <button className={'heartbtn'+(it.fav?' on':'')} onClick={()=>toggle(it.id,'fav')}>{it.fav?'❤️':'🤍'}</button>
+            <button className={'heartbtn'+(it.fav?' on':'')} aria-label={it.fav?'Bỏ thích':'Thích'} onClick={()=>toggle(it.id,'fav')}><Ic n={it.fav?'tim':'timrong'} size={18}/></button>
           </div>
           {it.note && <div className="it-note">{it.note}</div>}
           <div className="it-meta">
@@ -2554,8 +2609,8 @@ function DateIdeas({people,me}){
             <span className="grow"></span>
             <button className="pill" onClick={()=>{setPlanning(it);setPlanDate('');}}>📅 Lên lịch</button>
             <button className="pill" onClick={()=>toggle(it.id,'done')}>{it.done?'↩︎ Bỏ':'✓ Đã đi'}</button>
-            <button className="iconbtn" onClick={()=>{setEdit(it);setOpen(true);}}>✏️</button>
-            <button className="iconbtn" onClick={()=>del(it.id)}>🗑️</button>
+            <button className="iconbtn" aria-label="Sửa" title="Sửa" onClick={()=>{setEdit(it);setOpen(true);}}><Ic n="sua"/></button>
+            <button className="iconbtn" aria-label="Xoá" title="Xoá" onClick={()=>del(it.id)}><Ic n="xoa"/></button>
           </div>
         </div>
       ))}
@@ -2611,8 +2666,8 @@ function Timeline({people,me}){
               <div style={{position:'absolute',left:-28,top:0,width:20,height:20,borderRadius:'50%',background:'var(--primary)',display:'grid',placeItems:'center',fontSize:11,boxShadow:'0 0 0 3px var(--bg)'}}>{it.icon||'💗'}</div>
               <div className="card" style={{margin:0,padding:'10px 12px'}}>
                 <div className="row"><b style={{fontSize:14,flex:1}}>{it.title}</b>
-                  <button className="iconbtn" onClick={()=>{setEdit(it);setOpen(true);}}>✏️</button>
-                  <button className="iconbtn" onClick={()=>del(it.id)}>🗑️</button></div>
+                  <button className="iconbtn" aria-label="Sửa" title="Sửa" onClick={()=>{setEdit(it);setOpen(true);}}><Ic n="sua"/></button>
+                  <button className="iconbtn" aria-label="Xoá" title="Xoá" onClick={()=>del(it.id)}><Ic n="xoa"/></button></div>
                 <div className="muted" style={{fontSize:12.5,marginTop:2}}>{fmtDateVN(it.date)}</div>
                 {it.photo && <PhotoImg photo={it.photo} style={{width:'100%',maxHeight:220,objectFit:'cover',borderRadius:10,marginTop:8,display:'block'}}/>}
                 {it.note && <div className="it-note">{it.note}</div>}
@@ -2713,10 +2768,10 @@ function Chores({people,me}){
       <div className="card" style={{padding:'4px 13px'}}>
         {items.map(x=>(
           <div key={x.id} className="row" style={{padding:'9px 0',borderBottom:'1px solid var(--line)'}}>
-            <button onClick={()=>toggle(x.id)} style={{fontSize:20}}>{x.done?'✅':'⬜'}</button>
+            <button onClick={()=>toggle(x.id)} aria-label="Đánh dấu xong" className="tapmin">{<Ic n={x.done?'dadanh':'chuadanh'} size={18}/>}</button>
             <span className="grow" style={{textDecoration:x.done?'line-through':'none',opacity:x.done?.55:1}}>{x.title}</span>
             <span className="pill">{whoAv(x.who)} {whoLabel(x.who)}</span>
-            <button className="muted" onClick={()=>del(x.id)} style={{marginLeft:6}}>✕</button>
+            <button className="muted tapmin" aria-label="Xoá" onClick={()=>del(x.id)} style={{marginLeft:6}}><Ic n="dong" size={15}/></button>
           </div>
         ))}
       </div>
@@ -2749,15 +2804,15 @@ function Goals({people,me}){
             <div style={{marginTop:8}}>
               {(g.steps||[]).map(s=>(
                 <div key={s.id} className="row" style={{padding:'3px 0'}}>
-                  <button onClick={()=>toggleStep(g.id,s.id)} style={{fontSize:17}}>{s.done?'✅':'⬜'}</button>
+                  <button onClick={()=>toggleStep(g.id,s.id)} aria-label="Đánh dấu xong" className="tapmin">{<Ic n={s.done?'dadanh':'chuadanh'} size={15}/>}</button>
                   <span className={'grow'+(s.done?' dim':'')} style={{fontSize:14,textDecoration:s.done?'line-through':'none'}}>{s.text}</span>
-                  <button className="muted" onClick={()=>delStep(g.id,s.id)}>✕</button>
+                  <button className="muted tapmin" aria-label="Xoá" onClick={()=>delStep(g.id,s.id)}><Ic n="dong" size={15}/></button>
                 </div>
               ))}
               <TodoAdd onAdd={(t)=>addStep(g.id,t)}/>
             </div>
             <div className="it-meta"><span className="av-sm">{people[g.by]?.avatar}</span><span className="grow"></span>
-              <button className="iconbtn" onClick={()=>del(g.id)}>🗑️</button></div>
+              <button className="iconbtn" aria-label="Xoá" title="Xoá" onClick={()=>del(g.id)}><Ic n="xoa"/></button></div>
           </div>
         );
       })}
@@ -2823,7 +2878,7 @@ function PartnerWishes({people,me}){
       {mine.map(x=>(
         <div key={x.id} className="item"><div className="row"><span className="grow" style={{fontSize:14,textDecoration:x.done?'line-through':'none',opacity:x.done?.6:1}}>{x.text}</span>
           {x.done && <span className="pill" style={{background:'var(--good)',color:'#fff'}}>đã cố ✓</span>}
-          <button className="muted" onClick={()=>del(x.id)} style={{marginLeft:6}}>✕</button></div></div>
+          <button className="muted tapmin" aria-label="Xoá" onClick={()=>del(x.id)} style={{marginLeft:6}}><Ic n="dong" size={15}/></button></div></div>
       ))}
       <div className="sec-title">🌷 {people[partner].name} mong ở mình</div>
       {forMe.length===0 && <div className="empty muted">Chưa có gì — nửa kia chưa viết điều nào.</div>}
@@ -3009,9 +3064,9 @@ function FamilyTodos({people,me}){
       <div className="muted" style={{fontSize:11,fontWeight:700,margin:'0 0 2px'}}>☑️ Việc nhỏ</div>
       {subs.map(s=>(
         <div key={s.id} className="row" style={{gap:6,padding:'2px 0'}}>
-          <button onClick={()=>toggleSub(x.id,s.id)} style={{fontSize:15}}>{s.done?'✅':'⬜'}</button>
+          <button onClick={()=>toggleSub(x.id,s.id)} aria-label="Đánh dấu xong" className="tapmin">{<Ic n={s.done?'dadanh':'chuadanh'} size={13}/>}</button>
           <span className="grow" style={{fontSize:12.5,textDecoration:s.done?'line-through':'none',opacity:s.done?.55:1}}>{s.text}</span>
-          <button className="muted" style={{fontSize:12.5}} onClick={()=>delSub(x.id,s.id)}>✕</button>
+          <button className="muted tapmin" aria-label="Xoá" style={{fontSize:12.5}} onClick={()=>delSub(x.id,s.id)}><Ic n="dong" size={15}/></button>
         </div>
       ))}
       <TodoAdd placeholder="+ việc nhỏ…" onAdd={txt=>addSub(x.id,txt)}/>
@@ -3020,7 +3075,7 @@ function FamilyTodos({people,me}){
         <div key={c.id} style={{background:'var(--chip)',borderRadius:10,padding:'6px 9px',margin:'4px 0'}}>
           <div className="row" style={{gap:6}}>
             <span className="muted grow" style={{fontSize:11}}>{people[c.by]?.avatar} {people[c.by]?.name} · {fmtWhen(c.at)}</span>
-            {c.by===me && <button className="muted" style={{fontSize:11}} onClick={()=>delComment(x.id,c.id)}>✕</button>}
+            {c.by===me && <button className="muted tapmin" aria-label="Xoá" style={{fontSize:11}} onClick={()=>delComment(x.id,c.id)}><Ic n="dong" size={15}/></button>}
           </div>
           <div style={{fontSize:12.5,whiteSpace:'pre-wrap',color:'var(--chip-tx)',marginTop:2}}>{c.text}</div>
         </div>
@@ -3050,9 +3105,9 @@ function FamilyTodos({people,me}){
       {active.map(x=>{ const p=prioOf(x.priority); const dd=x.due?daysFromToday(x.due):null;
         const subs=x.subs||[], sd=subs.filter(s=>s.done).length, cn=(x.comments||[]).length; const isOpen=openId===x.id;
         return <div key={x.id} className="item" style={{borderLeft:'4px solid '+p.color}}>
-          <div className="row"><button onClick={()=>toggle(x.id)} style={{fontSize:19}}>⬜</button>
+          <div className="row"><button onClick={()=>toggle(x.id)} aria-label="Đánh dấu xong" className="tapmin"><Ic n="chuadanh" size={17}/></button>
             <span className="grow" style={{fontSize:14}}>{x.title}</span>
-            <button className="muted" onClick={()=>del(x.id)}>✕</button></div>
+            <button className="muted tapmin" aria-label="Xoá" onClick={()=>del(x.id)}><Ic n="dong" size={15}/></button></div>
           <div className="row" style={{marginTop:5,gap:6,flexWrap:'wrap'}}>
             <span className="pill" style={{background:p.color,color:'#fff'}}>{p.label}</span>
             <span className="pill">{whoAv(x.who)} {whoLabel(x.who)}</span>
@@ -3068,9 +3123,9 @@ function FamilyTodos({people,me}){
         </div>; })}
       {done.length>0 && <div className="row" style={{margin:'10px 14px 0'}}><span className="grow"></span><button className="muted" style={{fontSize:11}} onClick={()=>setShowDone(v=>!v)}>{showDone?'Ẩn':'Xem'} {done.length} việc đã xong</button></div>}
       {showDone && done.map(x=>(
-        <div key={x.id} className="item" style={{opacity:.6}}><div className="row"><button onClick={()=>toggle(x.id)} style={{fontSize:19}}>✅</button>
+        <div key={x.id} className="item" style={{opacity:.6}}><div className="row"><button onClick={()=>toggle(x.id)} aria-label="Bỏ đánh dấu xong" className="tapmin"><Ic n="dadanh" size={17}/></button>
           <span className="grow" style={{textDecoration:'line-through',fontSize:14}}>{x.title}</span>
-          <button className="muted" onClick={()=>del(x.id)}>✕</button></div></div>
+          <button className="muted tapmin" aria-label="Xoá" onClick={()=>del(x.id)}><Ic n="dong" size={15}/></button></div></div>
       ))}
     </div>
   );
@@ -3096,7 +3151,7 @@ function MusicPlaylists({people,me}){
       {items.length===0 && <div className="empty"><span className="big">🎵</span>Thêm playlist / bài hát yêu thích của hai đứa.</div>}
       {items.map(x=>{ const emb=spotifyEmbed(x.url); const h=emb&&(emb.type==='track'||emb.type==='episode')?152:352;
         return <div key={x.id} className="item">
-          <div className="it-top"><h4>🎵 {x.title}</h4><button className="muted" onClick={()=>del(x.id)}>✕</button></div>
+          <div className="it-top"><h4>🎵 {x.title}</h4><button className="muted tapmin" aria-label="Xoá" onClick={()=>del(x.id)}><Ic n="dong" size={15}/></button></div>
           {emb
             ? <iframe title={x.title} src={emb.src} width="100%" height={h} loading="lazy" allow="encrypted-media" style={{borderRadius:12,marginTop:6,border:0}}></iframe>
             : <a className="pill" href={x.url} target="_blank" rel="noreferrer" style={{textDecoration:'none'}}>▶︎ Mở Spotify</a>}
@@ -3180,7 +3235,7 @@ function FamilyRules({people,me}){
               <span className="muted" style={{fontSize:11}}>{people[x.by]?.avatar} thêm</span>
             </div>
           </div>
-          <button className="muted" onClick={()=>del(x.id)} style={{flex:'0 0 auto',fontSize:15}}>✕</button>
+          <button className="muted tapmin" aria-label="Xoá" onClick={()=>del(x.id)} style={{flex:'0 0 auto',fontSize:15}}><Ic n="dong" size={15}/></button>
         </div>
       ))}
     </div>
@@ -3230,7 +3285,7 @@ function FamilyProjects({people,me}){
       <div className="muted center" style={{fontSize:12.5,margin:'10px 14px 0'}}>💒 Dự án lớn của gia đình: việc cần làm + ngày mục tiêu. Tiền nong để VíNhà lo 💰</div>
       <div className="row" style={{margin:'10px 14px',gap:8}}>
         <button className="btn soft grow" onClick={openVinha}>💰 VíNhà</button>
-        <button className="iconbtn" onClick={()=>setLinkOpen(true)} title="Liên kết VíNhà">🔗</button>
+        <button className="iconbtn" onClick={()=>setLinkOpen(true)} title="Liên kết VíNhà" aria-label="Liên kết VíNhà"><Ic n="lienket"/></button>
         <button className="btn sm" onClick={()=>{setEdit(null);setOpen(true);}}>＋ Thêm dự án</button>
       </div>
       {shown.length===0 && <div className="empty"><span className="big">💒</span>Lên kế hoạch đám cưới, sinh nhật, chuyến du lịch… mỗi việc một dự án.</div>}
@@ -3248,9 +3303,9 @@ function FamilyProjects({people,me}){
             <div style={{marginTop:8}}>
               {(p.tasks||[]).map(t=>(
                 <div key={t.id} className="row" style={{padding:'3px 0'}}>
-                  <button onClick={()=>toggleTask(p.id,t.id)} style={{fontSize:17}}>{t.done?'✅':'⬜'}</button>
+                  <button onClick={()=>toggleTask(p.id,t.id)} aria-label="Đánh dấu xong" className="tapmin">{<Ic n={t.done?'dadanh':'chuadanh'} size={15}/>}</button>
                   <span className={'grow'+(t.done?' dim':'')} style={{fontSize:14,textDecoration:t.done?'line-through':'none'}}>{t.text}</span>
-                  <button className="muted" onClick={()=>delTask(p.id,t.id)}>✕</button>
+                  <button className="muted tapmin" aria-label="Xoá" onClick={()=>delTask(p.id,t.id)}><Ic n="dong" size={15}/></button>
                 </div>
               ))}
               <TodoAdd onAdd={(t)=>addTask(p.id,t)}/>
@@ -3267,8 +3322,8 @@ function FamilyProjects({people,me}){
               {vinha && <a className="pill" href={vinha} target="_blank" rel="noreferrer" style={{textDecoration:'none'}}>💰 VíNhà</a>}
               {p.date && <button className="pill" onClick={()=>icsDownload(p.title,p.date,p.note)}>📆 Lịch</button>}
               <span className="grow"></span>
-              <button className="iconbtn" onClick={()=>{setEdit(p);setOpen(true);}}>✏️</button>
-              <button className="iconbtn" onClick={()=>del(p.id)}>🗑️</button>
+              <button className="iconbtn" aria-label="Sửa" title="Sửa" onClick={()=>{setEdit(p);setOpen(true);}}><Ic n="sua"/></button>
+              <button className="iconbtn" aria-label="Xoá" title="Xoá" onClick={()=>del(p.id)}><Ic n="xoa"/></button>
             </div>
           </div>
         );
@@ -3635,7 +3690,7 @@ function IntimacySection({people,me,flash,view}){
                   <div key={x.id} className="row" style={{padding:'7px 0',borderBottom:'1px solid var(--line)',alignItems:'flex-start',gap:8}}>
                     <span className="pill" style={{flex:'0 0 auto'}}>{fmtDateVN(x.date)}</span>
                     <span className="grow" style={{fontSize:13.5}}>{x.by===me?'Bạn ngỏ ý':otName+' ngỏ ý'}{x.note?' · '+x.note:''}</span>
-                    <button className="muted" onClick={()=>delReject(x.id)}>✕</button>
+                    <button className="muted tapmin" aria-label="Xoá" onClick={()=>delReject(x.id)}><Ic n="dong" size={15}/></button>
                   </div>
                 ))}
               </div>}
@@ -3676,10 +3731,10 @@ function IntimacySection({people,me,flash,view}){
           {want.length===0&&<div className="muted" style={{fontSize:12.5,margin:'4px 0 8px'}}>Chưa có mục nào — thêm bên dưới hoặc chọn gợi ý.</div>}
           {want.slice().sort((a,b)=>((b.a&&b.b)?1:0)-((a.a&&a.b)?1:0)).map(w=>{ const mine=w[me],their=w[other],match=w.a&&w.b; return (
             <div key={w.id} className="row" style={{padding:'6px 0',borderBottom:'1px solid var(--line)'}}>
-              <button onClick={()=>toggleWant(w.id)} style={{fontSize:18}}>{mine?'💖':'🤍'}</button>
+              <button onClick={()=>toggleWant(w.id)} aria-label={mine?'Bỏ muốn':'Cũng muốn'} className="tapmin" style={{color:'var(--heart)'}}><Ic n={mine?'tim':'timrong'} size={18}/></button>
               <span className="grow" style={{fontSize:14}}>{w.text}</span>
               {match?<span className="pill" style={{background:'var(--primary)',color:'#fff'}}>💞 Cả hai</span>:(their?<span className="pill">nửa kia 💗</span>:null)}
-              <button className="muted" onClick={()=>delWant(w.id)} style={{marginLeft:6}}>✕</button>
+              <button className="muted tapmin" aria-label="Xoá" onClick={()=>delWant(w.id)} style={{marginLeft:6}}><Ic n="dong" size={15}/></button>
             </div>); })}
           <div className="row" style={{gap:8,marginTop:8}}>
             <input className="inp grow" placeholder="Thêm điều muốn thử…" value={wtext} onChange={e=>setWtext(e.target.value)} onKeyDown={e=>{ if(e.key==='Enter') addWant(); }}/>
@@ -4098,8 +4153,8 @@ function RoutineTab({people,me}){
                 <span style={{width:1,alignSelf:'stretch',background:'var(--line)',flex:'0 0 auto'}}></span>
                 <span className="grow" style={{fontSize:12.5,textAlign:'center'}}>{b.b||'—'}</span>
               </>}
-              <button className="iconbtn" style={{flex:'0 0 auto',opacity:b.remind?1:.32}} title={b.remind?'Đang nhắc giờ này':'Bật nhắc giờ này'} onClick={()=>toggleRemind(b.id)}>🔔</button>
-              <button className="iconbtn" style={{flex:'0 0 auto'}} onClick={()=>setEdit({...b})}>✎</button>
+              <button className="iconbtn" style={{flex:'0 0 auto',opacity:b.remind?1:.32}} title={b.remind?'Đang nhắc giờ này':'Bật nhắc giờ này'} aria-label={b.remind?'Đang nhắc giờ này':'Bật nhắc giờ này'} onClick={()=>toggleRemind(b.id)}><Ic n="nhac"/></button>
+              <button className="iconbtn" style={{flex:'0 0 auto'}} aria-label="Sửa" title="Sửa" onClick={()=>setEdit({...b})}><Ic n="sua"/></button>
             </div>
           ))}
           <div className="muted" style={{fontSize:11,marginTop:6}}>🔔 Mốc có chuông sẽ được nhắc đúng giờ (cần bật <b>Thông báo</b> ở Hồ sơ).</div>
@@ -4137,8 +4192,8 @@ function RoutineTab({people,me}){
           {active.map(it=>{ const top=(it.fix&&ROUTINE_FIXES.find(f=>f.title===it.fix))||routineMatch(it.text)[0]; const open=openFix[it.id]!==false;
             return <div key={it.id} className="card">
               <div className="row"><span className="grow" style={{fontSize:14}}>❓ {it.text}</span>
-                <button className="iconbtn" title="Đánh dấu đã xử lý" onClick={()=>toggleIssue(it.id)}>✓</button>
-                <button className="iconbtn" onClick={()=>delIssue(it.id)}>🗑️</button></div>
+                <button className="iconbtn" title="Đánh dấu đã xử lý" aria-label="Đánh dấu đã xử lý" onClick={()=>toggleIssue(it.id)}><Ic n="tick"/></button>
+                <button className="iconbtn" aria-label="Xoá" title="Xoá" onClick={()=>delIssue(it.id)}><Ic n="xoa"/></button></div>
               {top ? <React.Fragment>
                 <div className="row" style={{marginTop:8,gap:6}}>
                   <span className="pill">💡 {top.icon} {top.title}</span><span className="grow"></span>
@@ -4623,7 +4678,7 @@ function StashItems({people,me}){
         <input className="inp" style={{marginTop:8}} placeholder="Ghi chú (tuỳ chọn)" value={f.note} onChange={e=>setF({...f,note:e.target.value})}/>
         <input className="inp" style={{marginTop:8}} placeholder="🔗 Link Google Photos (tuỳ chọn)" value={f.link} onChange={e=>setF({...f,link:e.target.value})}/>
         <div className="row" style={{gap:8,marginTop:8,alignItems:'center'}}>
-          {f.photo ? <div style={{position:'relative'}}><PhotoImg photo={f.photo} style={{width:52,height:52,borderRadius:10,objectFit:'cover'}}/><button className="muted" style={{position:'absolute',top:-7,right:-7,background:'var(--card)',border:'1px solid var(--line)',borderRadius:'50%',width:20,height:20,fontSize:11}} onClick={()=>setF({...f,photo:null})}>✕</button></div>
+          {f.photo ? <div style={{position:'relative'}}><PhotoImg photo={f.photo} style={{width:52,height:52,borderRadius:10,objectFit:'cover'}}/><button className="muted tapmin" aria-label="Xoá" style={{position:'absolute',top:-7,right:-7,background:'var(--card)',border:'1px solid var(--line)',borderRadius:'50%',width:20,height:20,fontSize:11}} onClick={()=>setF({...f,photo:null})}><Ic n="dong" size={15}/></button></div>
             : <div style={{width:52,height:52,borderRadius:10,background:'var(--chip)',display:'grid',placeItems:'center',fontSize:22}}>🖼️</div>}
           <PhotoAddBtn label={f.photo?'Đổi ảnh':'📷 Thêm ảnh'} onAdd={p=>setF(prev=>({...prev,photo:p}))}/>
           <span className="grow"></span>
@@ -4645,7 +4700,7 @@ function StashItems({people,me}){
               </div>
               {x.note && <div className="muted" style={{fontSize:12.5,marginTop:4}}>{x.note}</div>}
             </div>
-            <button className="muted" style={{flex:'0 0 auto'}} onClick={()=>del(x.id)}>✕</button>
+            <button className="muted tapmin" aria-label="Xoá" style={{flex:'0 0 auto'}} onClick={()=>del(x.id)}><Ic n="dong" size={15}/></button>
           </div>
         </div>; })}
       <PhotoLightbox photo={view} onClose={()=>setView(null)}/>
@@ -4859,8 +4914,8 @@ function DocsVault({people,me}){
           {x.note && <div className="muted" style={{fontSize:12.5,marginTop:6}}>{x.note}</div>}
           {x._bad && <div className="muted" style={{fontSize:12,marginTop:6,color:'#d9534f',lineHeight:1.55}}>Bản ghi này mã hoá bằng mật khẩu khác. Không sửa được — sửa & lưu sẽ ghi đè mất bản gốc. Nếu nhớ ra mật khẩu cũ thì 🔒 khoá lại rồi mở bằng mật khẩu đó.</div>}
           <div className="it-meta"><span className="grow"></span>
-            {!x._bad && <button className="iconbtn" onClick={()=>{setEdit(x);setOpen(true);}}>✏️</button>}
-            <button className="iconbtn" onClick={()=>del(x.id)}>🗑️</button></div>
+            {!x._bad && <button className="iconbtn" aria-label="Sửa" title="Sửa" onClick={()=>{setEdit(x);setOpen(true);}}><Ic n="sua"/></button>}
+            <button className="iconbtn" aria-label="Xoá" title="Xoá" onClick={()=>del(x.id)}><Ic n="xoa"/></button></div>
         </div>; })}
       {open && <DocForm init={edit} onClose={()=>{setOpen(false);setEdit(null);}} onSave={save}/>}
       <PhotoLightbox photo={view} onClose={()=>setView(null)}/>
@@ -4885,7 +4940,7 @@ function DocForm({init,onClose,onSave}){
     </div>
     <div className="field"><label>Ảnh chụp giấy tờ (mặt trước / sau…)</label>
       <div style={{display:'flex',flexWrap:'wrap',gap:8,alignItems:'center'}}>
-        {(f.photos||[]).map((p,i)=><div key={i} style={{position:'relative'}}><PhotoImg photo={p} style={{width:66,height:66,borderRadius:8,objectFit:'cover'}}/><button className="muted" style={{position:'absolute',top:-7,right:-7,background:'var(--card)',border:'1px solid var(--line)',borderRadius:'50%',width:20,height:20,fontSize:11}} onClick={()=>rmPhoto(i)}>✕</button></div>)}
+        {(f.photos||[]).map((p,i)=><div key={i} style={{position:'relative'}}><PhotoImg photo={p} style={{width:66,height:66,borderRadius:8,objectFit:'cover'}}/><button className="muted tapmin" aria-label="Xoá" style={{position:'absolute',top:-7,right:-7,background:'var(--card)',border:'1px solid var(--line)',borderRadius:'50%',width:20,height:20,fontSize:11}} onClick={()=>rmPhoto(i)}><Ic n="dong" size={15}/></button></div>)}
         <PhotoAddBtn size={66} onAdd={addPhoto} make={docPhotoFromFile}/>
       </div>
       <div className="muted" style={{fontSize:11.5,marginTop:6,lineHeight:1.55}}>🔐 Ảnh được mã hoá ngay trên máy trước khi tải lên. Dù vậy vẫn nên cân nhắc: đừng để <b>ảnh giấy tờ + số hiệu + nơi cất bản gốc</b> đủ cả ba trong một mục.</div>
@@ -5126,9 +5181,9 @@ function Events({people,me}){
             <div style={{marginTop:8}}>
               {(e.todos||[]).map(t=>(
                 <div key={t.id} className="row" style={{padding:'3px 0'}}>
-                  <button onClick={()=>toggleTodo(e.id,t.id)} style={{fontSize:17}}>{t.done?'✅':'⬜'}</button>
+                  <button onClick={()=>toggleTodo(e.id,t.id)} aria-label="Đánh dấu xong" className="tapmin">{<Ic n={t.done?'dadanh':'chuadanh'} size={15}/>}</button>
                   <span className={'grow'+(t.done?' dim':'')} style={{fontSize:14,textDecoration:t.done?'line-through':'none'}}>{t.text}</span>
-                  <button className="muted" onClick={()=>delTodo(e.id,t.id)}>✕</button>
+                  <button className="muted tapmin" aria-label="Xoá" onClick={()=>delTodo(e.id,t.id)}><Ic n="dong" size={15}/></button>
                 </div>
               ))}
               <TodoAdd onAdd={(t)=>addTodo(e.id,t)}/>
@@ -5136,8 +5191,8 @@ function Events({people,me}){
             <div className="it-meta">
               <span className="grow"></span>
               {e.date && <button className="pill" onClick={()=>icsDownload(e.title,e.date,e.note)}>📆 Thêm vào lịch</button>}
-              <button className="iconbtn" onClick={()=>{setEdit(e);setOpen(true);}}>✏️</button>
-              <button className="iconbtn" onClick={()=>del(e.id)}>🗑️</button>
+              <button className="iconbtn" aria-label="Sửa" title="Sửa" onClick={()=>{setEdit(e);setOpen(true);}}><Ic n="sua"/></button>
+              <button className="iconbtn" aria-label="Xoá" title="Xoá" onClick={()=>del(e.id)}><Ic n="xoa"/></button>
             </div>
           </div>
         );
@@ -5367,8 +5422,8 @@ function ImportantDates({people,me}){
             <div className="it-meta">
               {kindOf(d)==='birthday' && <button className="pill" onClick={()=>setGiftFor(d)}>🎁 Gợi ý quà</button>}
               <span className="grow"></span>
-              <button className="iconbtn" onClick={()=>{setEdit(d);setOpen(true);}}>✏️</button>
-              <button className="iconbtn" onClick={()=>del(d.id)}>🗑️</button></div>
+              <button className="iconbtn" aria-label="Sửa" title="Sửa" onClick={()=>{setEdit(d);setOpen(true);}}><Ic n="sua"/></button>
+              <button className="iconbtn" aria-label="Xoá" title="Xoá" onClick={()=>del(d.id)}><Ic n="xoa"/></button></div>
           </div>
         );
       })}
@@ -5546,7 +5601,7 @@ function ExpenseTracker({people,me}){
             <span className="grow"><span style={{fontSize:14}}>{c.label}{x.note?' · '+x.note:''}</span>
               <div className="muted" style={{fontSize:11,marginTop:1}}>{fmtDateVN(x.date)}{x.by&&people[x.by]?' · '+people[x.by].name+' trả':''}</div></span>
             <b style={{color:'var(--primary)'}}>{VND(x.amount)}</b>
-            <button className="iconbtn" style={{marginLeft:6}} onClick={()=>del(x.id)}>🗑️</button></div>
+            <button className="iconbtn" style={{marginLeft:6}} aria-label="Xoá" title="Xoá" onClick={()=>del(x.id)}><Ic n="xoa"/></button></div>
         </div>
       ); })}
       {open && <Sheet title="🧾 Ghi khoản chi" onClose={()=>setOpen(false)}><ExpenseForm people={people} me={me} onSave={add}/></Sheet>}
@@ -5790,8 +5845,8 @@ function Fund({people,me}){
             )}
             <div className="it-meta"><span className="grow"></span>
               <button className="pill" onClick={()=>setContrib(g)}>＋ Góp tiền</button>
-              <button className="iconbtn" onClick={()=>{setEdit(g);setOpen(true);}}>✏️</button>
-              <button className="iconbtn" onClick={()=>del(g.id)}>🗑️</button></div>
+              <button className="iconbtn" aria-label="Sửa" title="Sửa" onClick={()=>{setEdit(g);setOpen(true);}}><Ic n="sua"/></button>
+              <button className="iconbtn" aria-label="Xoá" title="Xoá" onClick={()=>del(g.id)}><Ic n="xoa"/></button></div>
           </div>
         );
       })}
@@ -5802,7 +5857,7 @@ function Fund({people,me}){
         <div key={t.id} className="item" style={{padding:'8px 13px'}}>
           <div className="row"><span className="grow" style={{fontSize:14}}>{people[t.from]?.avatar} {people[t.from]?.name} → {people[t.to]?.name}</span>
             <b style={{color:'var(--primary)'}}>{VND(t.amount)}</b>
-            <button className="iconbtn" style={{marginLeft:6}} onClick={()=>delTransfer(t.id)}>🗑️</button></div>
+            <button className="iconbtn" style={{marginLeft:6}} aria-label="Xoá" title="Xoá" onClick={()=>delTransfer(t.id)}><Ic n="xoa"/></button></div>
           <div className="muted" style={{fontSize:11,marginTop:2}}>{fmtDateVN(t.date)}{t.note?' · '+t.note:''}</div>
         </div>
       ))}
@@ -5813,9 +5868,9 @@ function Fund({people,me}){
       <div className="card" style={{padding:'4px 13px',marginTop:8}}>
         {allTips.map(t=>(
           <div key={t} className="row" style={{padding:'7px 0',borderBottom:'1px solid var(--line)'}}>
-            <button onClick={()=>tgTip(t)} style={{fontSize:18}}>{tips[t]?'✅':'⬜'}</button>
+            <button onClick={()=>tgTip(t)} aria-label="Đánh dấu đã áp dụng" className="tapmin"><Ic n={tips[t]?'dadanh':'chuadanh'} size={17}/></button>
             <span className="grow" style={{fontSize:14,textDecoration:tips[t]?'line-through':'none',opacity:tips[t]?.65:1}}>{t}</span>
-            {custom.includes(t) && <button className="muted" onClick={()=>{ if(confirm('Xoá mẹo này?')){ setCustom(prev=>prev.filter(x=>x!==t)); const n={...tips}; delete n[t]; setTips(n); } }}>✕</button>}
+            {custom.includes(t) && <button className="muted tapmin" aria-label="Xoá" onClick={()=>{ if(confirm('Xoá mẹo này?')){ setCustom(prev=>prev.filter(x=>x!==t)); const n={...tips}; delete n[t]; setTips(n); } }}><Ic n="dong" size={15}/></button>}
           </div>
         ))}
         <div className="row" style={{gap:6,padding:'8px 0'}}>
@@ -5899,7 +5954,7 @@ function Notes({people,me}){
           const reacts=[n.reacts&&n.reacts.a, n.reacts&&n.reacts.b].filter(Boolean);
           return (
             <div key={n.id} style={{display:'flex',justifyContent:mine?'flex-end':'flex-start',padding:'4px 10px',gap:4,alignItems:'center'}}>
-              {mine && <button className="muted" style={{fontSize:12.5}} onClick={()=>{ if(confirm('Xoá lời nhắn này?')) del(n.id); }}>✕</button>}
+              {mine && <button className="muted tapmin" aria-label="Xoá" style={{fontSize:12.5}} onClick={()=>{ if(confirm('Xoá lời nhắn này?')) del(n.id); }}><Ic n="dong" size={15}/></button>}
               <div style={{maxWidth:'72%'}}>
                 <div className="muted" style={{fontSize:11,margin:'0 6px 2px',textAlign:mine?'right':'left'}}>{people[n.by]?.avatar} {people[n.by]?.name}</div>
                 <div style={{background:mine?'linear-gradient(135deg,var(--primary),var(--primary2))':'var(--card)',
@@ -5907,17 +5962,17 @@ function Notes({people,me}){
                     padding:'9px 13px',borderRadius:16,fontSize:14,whiteSpace:'pre-wrap',boxShadow:'var(--shadow)'}}>{n.text}</div>
                 {reacts.length>0 && <div style={{textAlign:mine?'right':'left',fontSize:12.5,marginTop:2}}>{reacts.join(' ')}</div>}
               </div>
-              <button onClick={()=>heart(n.id)} style={{fontSize:16,lineHeight:1}}>{(n.reacts&&n.reacts[me])?'❤️':'🤍'}</button>
+              <button onClick={()=>heart(n.id)} aria-label="Thả tim" className="tapmin" style={{lineHeight:1,color:'var(--heart)'}}><Ic n={(n.reacts&&n.reacts[me])?'tim':'timrong'} size={16}/></button>
             </div>
           );
         })}
         <div ref={endRef}></div>
       </div>
       <div className="row" style={{position:'sticky',bottom:0,background:'var(--card)',padding:'10px 14px',borderTop:'1px solid var(--line)',gap:8,margin:'10px 0 0'}}>
-        <button className="btn sm soft" title="Gợi ý lời ngọt" onClick={()=>setT(SWEET_NOTES[Math.floor(Math.random()*SWEET_NOTES.length)])}>💡</button>
+        <button className="btn sm soft" title="Gợi ý lời ngọt" aria-label="Gợi ý lời ngọt" onClick={()=>setT(SWEET_NOTES[Math.floor(Math.random()*SWEET_NOTES.length)])}><Ic n="goiy"/></button>
         <input className="inp grow" placeholder="Nhắn gì đó ngọt ngào…" value={t}
           onChange={e=>setT(e.target.value)} onKeyDown={e=>{ if(e.key==='Enter') add(); }}/>
-        <button className="btn sm" onClick={add}>💕</button>
+        <button className="btn sm" onClick={add}>Gửi</button>
       </div>
     </div>
   );
@@ -6033,7 +6088,7 @@ function AccountPanel({flash}){
             <div className="row" style={{margin:'4px 0 6px',gap:8}}>
               <div className="grow" style={{background:'var(--bg)',border:'1.5px dashed var(--primary)',borderRadius:12,padding:'10px 12px',
                 fontSize:20,fontWeight:900,letterSpacing:3,textAlign:'center'}}>{couple.invite_code}</div>
-              <button className="iconbtn" onClick={copy}>📋</button>
+              <button className="iconbtn" aria-label="Chép" title="Chép" onClick={copy}><Ic n="chep"/></button>
             </div>
             <div className="muted" style={{fontSize:12.5}}>Tài khoản: <b>{Cloud.emailOf()}</b> · Đồng bộ gần nhất: {syncedTxt}</div>
             <div className="row" style={{gap:8,marginTop:12}}>
@@ -6221,7 +6276,7 @@ function PhotoPicker({value,onChange,size,label,hint,make}){
     <div className="phpick">
       {list.map((p,i)=><div key={i} className="cell">
         <PhotoImg photo={p} style={{width:s,height:s,borderRadius:8,objectFit:'cover',display:'block'}}/>
-        <button className="x" onClick={()=>rm(i)}>✕</button>
+        <button className="x" aria-label="Bỏ mục này" onClick={()=>rm(i)}><Ic n="dong" size={15}/></button>
       </div>)}
       <PhotoAddBtn size={s} onAdd={add} make={make} label={list.length?null:(label||null)}/>
       {/* nút phụ để cùng cỡ với nút 📷: có chữ khi chưa có ảnh, thành ô vuông s×s khi đã có ảnh */}
@@ -6373,8 +6428,8 @@ function HomeSettings(){
         <div className="muted" style={{fontSize:12.5,marginBottom:6}}>Bật/tắt & sắp xếp thứ tự các thẻ bằng nút ▲▼.</div>
         {keys.map((k,i)=>(
           <div key={k} className="row" style={{padding:'6px 0',borderBottom:'1px solid var(--line)',gap:4}}>
-            <button className="iconbtn" style={{opacity:i===0?.3:1}} onClick={()=>move(k,-1)}>▲</button>
-            <button className="iconbtn" style={{opacity:i===keys.length-1?.3:1}} onClick={()=>move(k,1)}>▼</button>
+            <button className="iconbtn" style={{opacity:i===0?.3:1}} aria-label="Lên" onClick={()=>move(k,-1)}><Ic n="len" size={16}/></button>
+            <button className="iconbtn" style={{opacity:i===keys.length-1?.3:1}} aria-label="Xuống" onClick={()=>move(k,1)}><Ic n="xuong" size={16}/></button>
             <span className="grow" style={{fontSize:14,marginLeft:4}}>{label(k)}</span>
             <button className="pill" onClick={()=>toggle(k)} style={{background:hidden.includes(k)?'var(--bg)':'var(--good)',color:hidden.includes(k)?'var(--muted)':'#fff',border:hidden.includes(k)?'1px solid var(--line)':'none'}}>{hidden.includes(k)?'Ẩn':'Hiện'}</button>
           </div>
@@ -7024,7 +7079,7 @@ function App(){
         <button className="iconbtn" onClick={()=>setShowQuiz(true)} title="Đố kiến thức gia đình">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9c.5.4.6.8.6 1.2v.4h5.8v-.4c0-.4.1-.8.6-1.2A6 6 0 0 0 12 3z"/></svg>
         </button>
-        <button className="who" onClick={()=>setMe(me==='a'?'b':'a')}>
+        <button className="who" aria-label={'Đang dùng máy với vai '+people[me].name+', chạm để đổi sang người kia'} onClick={()=>setMe(me==='a'?'b':'a')}>
           <span className="av">{people[me].avatar}</span>{people[me].name} ⇄
         </button>
       </div>
