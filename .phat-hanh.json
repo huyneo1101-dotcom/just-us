@@ -1,9 +1,11 @@
 {
-  "viec": "dựng bản chạy rồi đẩy lên GitHub, Actions tự đưa lên GitHub Pages",
-  "ghi_chu": "Chuỗi này chạy dưới khoá của HeThong/khoa-app.py để hai phiên không đè bản dựng lên nhau. Just Us KHÔNG đẩy thẳng bằng wrangler như Bếp Nhà hay Tâm Linh: nó lên mạng qua workflow deploy-pages.yml, nổ mỗi lượt push vào main, nên bước cuối là push chứ không phải lệnh deploy. Khoá `dia_chi` để giao-app.py đo được bản NGƯỜI DÙNG ĐANG THẤY — lệnh đẩy trả mã 0 mà bản trên mạng vẫn là bản cũ là lối hỏng câm đã đúc thành mục 9. Sửa ở đây thì đừng chép lại vào CLAUDE.md, nơi kia chỉ trỏ tới file này.",
-  "dia_chi": "https://huyneo1101-dotcom.github.io/just-us/",
+  "viec": "dựng bản chạy, đẩy lên Cloudflare Pages just-us-nha.pages.dev (bản chính từ 23/11/2026, QD-377), rồi push để GitHub Pages giữ bản cũ trong lúc hai điện thoại chuyển sang",
+  "ghi_chu": "Chuỗi này chạy dưới khoá của HeThong/khoa-app.py. Bản chính là https://just-us-nha.pages.dev/ (dự án Pages just-us-nha), đẩy từ web/ — rsync chỉ mang file chạy, CẤM thêm nguon/, scripts/, sao-luu/, supabase/, CLAUDE.md vào danh sách (BangApp/CLAUDE.md mục 5). Lệnh push cuối giữ bản cũ https://huyneo1101-dotcom.github.io/just-us/ qua workflow deploy-pages.yml, bản đó hiện dải báo chuyển; khi Huy xác nhận cả hai máy đã sang thì thay địa chỉ cũ bằng trang chuyển hướng (khuôn tam-linh/index.html). Khoá dia_chi để giao-app.py đo được bản NGƯỜI DÙNG ĐANG THẤY. Sửa ở đây thì đừng chép lại vào CLAUDE.md, nơi kia chỉ trỏ tới file này.",
+  "dia_chi": "https://just-us-nha.pages.dev/",
   "lenh": [
     "python3 /Users/Huy/Claude/HeThong/dungapp/dung.py /Users/Huy/Claude/App/JustUs",
+    "rsync -a --delete --include=index.html --include=404.html --include=manifest.json --include=sw.js --include=icon.svg --include=fonts.css --include=_headers --include=data/ --include=data/*.json --exclude=* /Users/Huy/Claude/App/JustUs/ /Users/Huy/Claude/App/JustUs/web/",
+    "wrangler pages deploy /Users/Huy/Claude/App/JustUs/web --project-name just-us-nha --branch main --commit-dirty=true",
     "git -C /Users/Huy/Claude/App/JustUs push origin main"
   ]
 }

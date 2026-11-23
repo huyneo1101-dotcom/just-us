@@ -9,6 +9,35 @@ const store={
   del(k){ try{ localStorage.removeItem(k); }catch(e){ delete mem[k]; } }
 };
 
+/* ============ CHUYỂN NHÀ sang địa chỉ riêng (QD-377, 23/11/2026) ============
+   Địa chỉ cũ huyneo1101-dotcom.github.io/just-us/ dùng CHUNG ngăn lưu trình duyệt
+   với 10 app khác của kho github.io (có app hiện nội dung internet), nên phiên đăng
+   nhập Just Us đọc được từ app khác. Bản chạy chính nay ở JU_NHA_MOI. Bản cũ vẫn chạy
+   và vẫn đồng bộ (dữ liệu nằm trên Supabase), chỉ hiện thêm dải báo chuyển.
+   Ô `ju.me` (máy này là ai) KHÔNG đồng bộ, nên dải báo gắn nó vào hash `#me=a|b`
+   để máy mới khỏi chọn lại; chỉ là một chữ a/b, không phải dữ liệu riêng. */
+const JU_NHA_MOI='https://just-us-nha.pages.dev/';
+(function(){
+  try{
+    const m=/^#me=(a|b)$/.exec(location.hash||'');
+    if(m){ store.set('ju.me',m[1]); history.replaceState(null,'',location.pathname+location.search); }
+  }catch(e){}
+  if(location.hostname!=='huyneo1101-dotcom.github.io') return;
+  const ve=()=>{
+    if(document.getElementById('ju-chuyen-nha')) return;
+    let me='a'; try{ me=store.get('ju.me',(store.get('ju.setup',{})||{}).me||'a')==='b'?'b':'a'; }catch(e){}
+    const d=document.createElement('div'); d.id='ju-chuyen-nha';
+    d.setAttribute('style','position:fixed;left:0;right:0;bottom:0;z-index:99999;background:#7a2048;color:#fff;padding:12px 16px calc(12px + env(safe-area-inset-bottom));font:14px/1.45 system-ui,sans-serif;box-shadow:0 -4px 16px rgba(0,0,0,.25)');
+    d.innerHTML='<b>Just Us đã chuyển sang địa chỉ mới.</b> Mở địa chỉ mới, đăng nhập lại một lần, rồi cài lại lên màn hình chính. Dữ liệu trên đám mây giữ nguyên.'
+      +'<div style="display:flex;gap:8px;margin-top:8px"><a id="ju-chuyen-mo" style="flex:1;min-height:44px;display:flex;align-items:center;justify-content:center;background:#fff;color:#7a2048;border-radius:10px;font-weight:700;text-decoration:none">Mở Just Us mới</a>'
+      +'<button id="ju-chuyen-de-sau" style="min-height:44px;padding:0 14px;background:transparent;color:#fff;border:1px solid rgba(255,255,255,.6);border-radius:10px;font:inherit">Để sau</button></div>';
+    document.body.appendChild(d);
+    document.getElementById('ju-chuyen-mo').href=JU_NHA_MOI+'#me='+me;
+    document.getElementById('ju-chuyen-de-sau').onclick=()=>d.remove();
+  };
+  if(document.body) ve(); else document.addEventListener('DOMContentLoaded',ve);
+})();
+
 /* ============ Cloud: đồng bộ 2 máy qua Supabase (tuỳ chọn) ============ */
 const SB_URL='https://vvgkjgvzjeklaadusbne.supabase.co';
 const SB_KEY='sb_publishable_DMMPv5L2kGhrHTxeQ72iKw_dIh13iT1';
@@ -3278,7 +3307,7 @@ function FamilyProjects({people,me}){
   const addTasks=(id,arr)=>setProjects(prev=>prev.map(p=>p.id===id?{...p,tasks:[...(p.tasks||[]),...arr.filter(tx=>!(p.tasks||[]).some(t=>t.text===tx)).map(tx=>({id:uid(),text:tx,done:false}))]}:p));
   const toggleTask=(id,tid)=>setProjects(prev=>prev.map(p=>p.id===id?{...p,tasks:(p.tasks||[]).map(t=>t.id===tid?{...t,done:!t.done}:t)}:p));
   const delTask=(id,tid)=>{ if(confirm('Bạn có chắc muốn xoá? Thao tác này không hoàn tác được.')){ setProjects(prev=>prev.map(p=>p.id===id?{...p,tasks:(p.tasks||[]).filter(t=>t.id!==tid)}:p)); } };
-  const openVinha=()=>{ if(vinha){ window.open(vinha,'_blank','noreferrer'); } else setLinkOpen(true); };
+  const openVinha=()=>{ if(vinha){ window.open(vinhaHref(vinha),'_blank','noreferrer'); } else setLinkOpen(true); };
   const shown=projects.slice().sort((a,b)=>(a.date||'9').localeCompare(b.date||'9'));
   return (
     <div>
@@ -3319,7 +3348,7 @@ function FamilyProjects({people,me}){
               </div>}
             </div>
             <div className="it-meta">
-              {vinha && <a className="pill" href={vinha} target="_blank" rel="noreferrer" style={{textDecoration:'none'}}>💰 VíNhà</a>}
+              {vinha && <a className="pill" href={vinhaHref(vinha)} target="_blank" rel="noreferrer" style={{textDecoration:'none'}}>💰 VíNhà</a>}
               {p.date && <button className="pill" onClick={()=>icsDownload(p.title,p.date,p.note)}>📆 Lịch</button>}
               <span className="grow"></span>
               <button className="iconbtn" aria-label="Sửa" title="Sửa" onClick={()=>{setEdit(p);setOpen(true);}}><Ic n="sua"/></button>
@@ -3988,7 +4017,7 @@ function AppBoard(){
             <span style={{fontSize:17,color:'var(--primary)'}}>{a.ngoai?'↗':'›'}</span></div>
         </a>
       ))}
-      {vinha && <a className="item" href={vinha} target="_blank" rel="noreferrer" style={{display:'block',textDecoration:'none',color:'inherit'}}>
+      {vinha && <a className="item" href={vinhaHref(vinha)} target="_blank" rel="noreferrer" style={{display:'block',textDecoration:'none',color:'inherit'}}>
         <div className="row"><span style={{fontSize:26,flex:'0 0 auto'}}>💰</span>
           <div className="grow"><b style={{fontSize:14.5}}>VíNhà</b>
             <div className="muted" style={{fontSize:12,marginTop:2,lineHeight:1.5}}>Tiền nong của cả nhà — app riêng, mở ở tab mới</div></div>
@@ -5671,6 +5700,11 @@ function normVinha(tx,cats,wallets){
 }
 const VN_SB_URL='https://ltmlueqkajqmduoqghdf.supabase.co';
 const VN_SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx0bWx1ZXFrYWpxbWR1b3FnaGRmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4NTA2NjcsImV4cCI6MjA5NzQyNjY2N30.rvwZsQiaD8a7fFLwBFk5sgSe6o9t9NqbPfVh1hJvxa0';
+/* VíNhà chuyển khỏi github.io sang địa chỉ riêng (QD-377). Ô `ju.vinhaUrl` là link người
+   dùng tự dán và ĐỒNG BỘ qua đám mây, nên đổi ngay trong dữ liệu thì bản đám mây cũ kéo về
+   lại đè mất; đổi lúc mở link thì bản nào cũng ra địa chỉ mới. */
+const VINHA_MOI='https://vinha-web.pages.dev/';
+function vinhaHref(u){ return /github\.io\/vinha-web/i.test(String(u||''))?VINHA_MOI:u; }
 let _vnsb=null;
 function vnSb(){ if(_vnsb) return _vnsb; if(window.supabase&&window.supabase.createClient){ try{ _vnsb=window.supabase.createClient(VN_SB_URL,VN_SB_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}}); }catch(e){ _vnsb=null; } } return _vnsb; }
 async function pullVinhaCloud(){ try{ const c=vnSb(); if(!c) return null; const u=await c.auth.getUser(); if(!(u&&u.data&&u.data.user)) return null;
@@ -5694,6 +5728,19 @@ function MoneyLover(){
   const [msg,setMsg]=useState('');
   const fileRef=useRef(null);
   const [busy,setBusy]=useState(false);
+  /* Đăng nhập VíNhà NGAY TRONG Just Us (QD-377). Trước 23/11/2026 hai app chung một gốc
+     github.io nên Just Us đọc ké phiên đăng nhập VíNhà; tách địa chỉ rồi thì phiên ấy không
+     còn với tới, không có ô này là khối chi tiêu đứng im ở lần đồng bộ cuối mà không báo gì. */
+  const [vnUser,setVnUser]=useState(null);
+  const [vnEmail,setVnEmail]=useState('');
+  const [vnPw,setVnPw]=useState('');
+  useEffect(()=>{ (async()=>{ try{ const c=vnSb(); if(!c) return; const u=await c.auth.getUser(); setVnUser((u&&u.data&&u.data.user)?u.data.user.email:''); }catch(e){ setVnUser(''); } })(); },[]);
+  const vnLogin=async()=>{ const c=vnSb(); if(!c){ setMsg('Cần mạng để đăng nhập VíNhà.'); return; }
+    if(!vnEmail.trim()||!vnPw){ setMsg('Nhập email và mật khẩu VíNhà.'); return; }
+    setBusy(true); setMsg('');
+    try{ const r=await c.auth.signInWithPassword({email:vnEmail.trim(),password:vnPw}); if(r.error) throw r.error;
+      setVnPw(''); setVnUser(vnEmail.trim()); setBusy(false); await refresh(true);
+    }catch(e){ setBusy(false); setMsg('Không đăng nhập được VíNhà: '+((e&&e.message)||String(e))); } };
   const applyRows=(data,src,manual)=>{ const rows=normVinha(data.tx,data.cats,data.wallets); const budgets=normBudgets(data.budgets,data.cats); const sig=rows.length+':'+(rows[0]?rows[0].date+rows[0].id:'')+':b'+budgets.length;
     setSync(s=>{ if(!manual && s && s.sig===sig) return s; return {at:Date.now(),src,sig,rows,budgets}; });
     if(manual){ setMsg('Đã đồng bộ '+rows.length+' giao dịch từ VíNhà'+(src==='cloud'?' (đám mây)':(src==='file'?' (file)':''))+'.'); celebrate(['💵']); } };
@@ -5701,7 +5748,7 @@ function MoneyLover(){
     let d=await pullVinhaCloud(); let src='cloud';
     if(!d||!d.tx||!d.tx.length){ const l=readVinhaLocal(); if(l){ d=l; src='local'; } }
     if(manual) setBusy(false);
-    if(!d||!d.tx||!d.tx.length){ if(manual) setMsg('Chưa lấy được dữ liệu VíNhà. Hãy đăng nhập VíNhà (vinha-web) trên trình duyệt này, hoặc nhập file sao lưu.'); return; }
+    if(!d||!d.tx||!d.tx.length){ if(manual) setMsg('Chưa lấy được dữ liệu VíNhà. Đăng nhập VíNhà ở ô bên dưới, hoặc nhập file sao lưu.'); return; }
     applyRows(d,src,manual); };
   const onFile=(e)=>{ const f=e.target.files&&e.target.files[0]; if(!f) return; const rd=new FileReader();
     rd.onload=()=>{ try{ const j=JSON.parse(rd.result); const data=(j&&j.data)?j.data:j; applyRows({tx:data.tx||[],cats:catsArrToMap(data.cats),wallets:data.wallets||[]},'file',true); }catch(err){ setMsg('File không đọc được — cần đúng file JSON sao lưu từ VíNhà.'); } };
@@ -5722,7 +5769,14 @@ function MoneyLover(){
         <input ref={fileRef} type="file" accept="application/json,.json" style={{display:'none'}} onChange={onFile}/>
       </div>
       {msg && <div className="center" style={{fontSize:11,margin:'0 14px 8px',color:'var(--primary)'}}>{msg}</div>}
-      {!rows.length && <div className="empty"><span className="big">💵</span>Chưa có dữ liệu VíNhà.<br/>Đăng nhập VíNhà (vinha-web) trên trình duyệt này rồi bấm “Đồng bộ ngay”, hoặc nhập file sao lưu JSON của VíNhà.</div>}
+      {vnUser==='' && <div className="card" style={{margin:'0 14px 8px'}}>
+        <div style={{fontSize:13,fontWeight:700,marginBottom:6}}>Đăng nhập VíNhà để lấy chi tiêu</div>
+        <div className="muted" style={{fontSize:11.5,marginBottom:8,lineHeight:1.5}}>Dùng đúng email và mật khẩu đang đăng nhập trong app VíNhà. Chỉ cần làm một lần trên mỗi máy.</div>
+        <input className="inp" type="email" autoComplete="username" placeholder="Email VíNhà" value={vnEmail} onChange={e=>setVnEmail(e.target.value)} style={{marginBottom:8}}/>
+        <input className="inp" type="password" autoComplete="current-password" placeholder="Mật khẩu VíNhà" value={vnPw} onChange={e=>setVnPw(e.target.value)} style={{marginBottom:8}}/>
+        <button className="btn block" style={{minHeight:44}} disabled={busy} onClick={vnLogin}>{busy?'Đang đăng nhập…':'Đăng nhập VíNhà'}</button>
+      </div>}
+      {!rows.length && <div className="empty"><span className="big">💵</span>Chưa có dữ liệu VíNhà.<br/>Đăng nhập VíNhà ở ô trên rồi bấm “Đồng bộ ngay”, hoặc nhập file sao lưu JSON của VíNhà.</div>}
       {rows.length>0 && <div>
         <div className="row" style={{margin:'4px 14px'}}>
           <b style={{fontSize:14}}>🧾 Chi tiêu VíNhà</b><span className="grow"></span>
@@ -5990,7 +6044,7 @@ function authErrVN(e){
   if(m.includes('already_in_couple')) return 'Bạn đã ở trong một cặp đôi khác.';
   return (e&&e.message)||'Có lỗi xảy ra.';
 }
-function AccountPanel({flash}){
+function AccountPanel({flash,moSan}){
   const [,force]=useState(0);
   useEffect(()=>{
     const h=()=>force(x=>x+1);
@@ -6040,7 +6094,7 @@ function AccountPanel({flash}){
   const syncedTxt=synced? new Date(synced).toLocaleString('vi-VN') : '—';
 
   return (
-    <Collapse id="prof-account" title="☁️ Tài khoản & đồng bộ 2 máy" defaultOpen={false}>
+    <Collapse id="prof-account" title="☁️ Tài khoản & đồng bộ 2 máy" defaultOpen={!!moSan}>
       <div className="card">
         {noLib && <div className="danger" style={{fontSize:12.5}}>⚠️ Chưa tải được Supabase (cần Internet/chạy qua web). Mở app qua localhost hoặc bản đã đăng để đăng nhập.</div>}
 
@@ -6780,6 +6834,7 @@ function Onboarding({onDone}){
   const [b,setB]=useState({name:'',avatar:'👩'});
   const [loveDate,setLove]=useState('');
   const [step,setStep]=useState(0);
+  const [daCo,setDaCo]=useState(()=>{ try{ return !!store.get('ju.me',null) && /just-us-nha/.test(location.hostname) && !store.get('ju.setup',null); }catch(e){ return false; } });
   const [pickAv,setPickAv]=useState(null);
 
   const finish=()=>{
@@ -6803,7 +6858,14 @@ function Onboarding({onDone}){
         <div className="muted" style={{marginTop:6}}>Không gian riêng của hai đứa mình</div>
       </div>
 
-      {step===0 && (
+      {/* Máy mới của người ĐÃ dùng Just Us (đổi máy, hoặc chuyển nhà sang địa chỉ riêng ngày
+          23/11/2026, QD-377): đăng nhập là kéo về cả cặp đôi, khỏi gõ lại tên. Kéo xong thì
+          `ju.setup` có giá trị và màn chào tự biến mất qua sự kiện `ju:remote`. */}
+      {step===0 && (daCo
+        ? <div style={{marginBottom:14}}><AccountPanel flash={()=>{}} moSan/>
+            <button className="btn soft block" style={{minHeight:44,marginTop:8}} onClick={()=>setDaCo(false)}>← Lần đầu dùng, tạo mới</button></div>
+        : <button className="btn soft block" style={{minHeight:44,marginBottom:14}} onClick={()=>setDaCo(true)}>Đã dùng Just Us ở máy khác? Đăng nhập</button>)}
+      {step===0 && !daCo && (
         <div className="card">
           <h3 style={{marginTop:0}}>Hai bạn tên gì?</h3>
           <div className="field"><label>Người 1</label>
@@ -7067,7 +7129,9 @@ function App(){
   useEffect(()=>{ if(sbClient()) Cloud.init(); },[]);
 
   if(!setup){
-    return <Onboarding onDone={(s)=>{ setSetup(s); setMe('a'); applyTheme(s.theme); }}/>;
+    /* Giữ nguyên `me`: máy mở từ dải báo chuyển nhà mang sẵn `#me=b` (QD-377); ép 'a' ở đây
+       là vợ mở app mới bị nhận nhầm thành chồng. Máy mới tinh thì `me` đã là 'a' sẵn. */
+    return <Onboarding onDone={(s)=>{ setSetup(s); applyTheme(s.theme); }}/>;
   }
   if(setup.pin && !unlocked){
     return <PinLock pin={setup.pin} onOk={()=>setUnlocked(true)}/>;

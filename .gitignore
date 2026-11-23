@@ -37,3 +37,7 @@ supabase/.temp/
 # trần: hai dòng trên đã khai đích danh hai file `.bak` khác, nới rộng là nuốt luôn chúng.
 supabase/**/*.truoc-*.bak
 tam-linh/__pycache__/
+
+# Thư mục phát hành Cloudflare Pages, sinh lại mỗi lần đẩy (BangApp/CLAUDE.md mục 5)
+web/
+.wrangler/
