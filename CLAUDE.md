@@ -548,13 +548,13 @@ biết nhau, để lệch là phép đo kêu oan hoặc mất răng trong im l�
   chọn đúng file chạy. Thêm file chạy mới thì sửa danh sách `--include`, CẤM nới thành cả thư mục.
 - **Vì sao tách:** `huyneo1101-dotcom.github.io/just-us/` chung ngăn lưu trình duyệt với 10 app
   khác của kho github.io; một lỗi hiển thị ở app tin tức là đọc được phiên đăng nhập Just Us.
-- **Bản cũ GitHub Pages vẫn chạy** (lệnh push cuối chuỗi, workflow `deploy-pages.yml`) kèm dải
-  báo chuyển, khối `JU_NHA_MOI` đầu `nguon/app.jsx`. Link trong dải mang `#me=a|b` vì `ju.me`
+- **Địa chỉ github.io cũ đã TẮT ngày 23/11/2026:** workflow `deploy-pages.yml` chỉ đăng
+  `chuyen-huong/` (xoá `ju.*` và `sb-vvgkjgvzjeklaadusbne-*` khỏi gốc chung, gỡ service worker,
+  chuyển sang địa chỉ mới) kèm `tam-linh/`. ⛔ Đừng trả workflow về `path: .`. Khối `JU_NHA_MOI`
+  đầu `nguon/app.jsx` nay chỉ còn phần đọc `#me=`. Link trong dải mang `#me=a|b` vì `ju.me`
   không đồng bộ. Màn chào có lối «Đã dùng Just Us ở máy khác? Đăng nhập» để khỏi gõ lại tên.
 - Khối chi tiêu VíNhà trước đọc ké phiên VíNhà nhờ chung gốc; nay có ô đăng nhập VíNhà riêng.
   Link VíNhà cũ trong `ju.vinhaUrl` (khoá đồng bộ) đổi lúc mở bằng `vinhaHref()`, không đổi dữ liệu.
-- Khi Huy xác nhận cả hai máy đã sang: thay bản cũ bằng trang chuyển hướng (khuôn
-  `tam-linh/index.html`) xoá `ju.*` và `sb-*` khỏi gốc chung, rồi bỏ lệnh push khỏi chuỗi.
 - **Netlify** qua `netlify.toml` — không dùng nữa, để nguyên.
 
 ## Quy tắc phát hành (chủ repo đã cho phép — 2026-08-01)
