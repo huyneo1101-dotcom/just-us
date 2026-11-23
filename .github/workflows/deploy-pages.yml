@@ -25,10 +25,19 @@ jobs:
         uses: actions/checkout@v4
       - name: Setup Pages
         uses: actions/configure-pages@v5
+      # Từ 23/11/2026 (QD-377) app chạy ở just-us-nha.pages.dev; địa chỉ github.io cũ chỉ còn
+      # trang chuyển hướng dọn dữ liệu khỏi gốc chung, kèm trang chuyển hướng Tâm linh cũ.
+      # ⛔ Đừng trả về `path: .` — đó là đẩy lại cả app lên gốc chung.
+      - name: Gom trang chuyển hướng
+        run: |
+          mkdir -p _site
+          cp -R chuyen-huong/. _site/
+          cp -R tam-linh _site/tam-linh
+          rm -rf _site/tam-linh/__pycache__
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: _site
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4

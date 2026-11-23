@@ -1,6 +1,6 @@
 {
-  "viec": "dựng bản chạy, đẩy lên Cloudflare Pages just-us-nha.pages.dev (bản chính từ 23/11/2026, QD-377), rồi push để GitHub Pages giữ bản cũ trong lúc hai điện thoại chuyển sang",
-  "ghi_chu": "Chuỗi này chạy dưới khoá của HeThong/khoa-app.py. Bản chính là https://just-us-nha.pages.dev/ (dự án Pages just-us-nha), đẩy từ web/ — rsync chỉ mang file chạy, CẤM thêm nguon/, scripts/, sao-luu/, supabase/, CLAUDE.md vào danh sách (BangApp/CLAUDE.md mục 5). Lệnh push cuối giữ bản cũ https://huyneo1101-dotcom.github.io/just-us/ qua workflow deploy-pages.yml, bản đó hiện dải báo chuyển; khi Huy xác nhận cả hai máy đã sang thì thay địa chỉ cũ bằng trang chuyển hướng (khuôn tam-linh/index.html). Khoá dia_chi để giao-app.py đo được bản NGƯỜI DÙNG ĐANG THẤY. Sửa ở đây thì đừng chép lại vào CLAUDE.md, nơi kia chỉ trỏ tới file này.",
+  "viec": "dựng bản chạy, đẩy lên Cloudflare Pages just-us-nha.pages.dev (địa chỉ duy nhất từ 23/11/2026, QD-377), rồi push mã nguồn",
+  "ghi_chu": "Chuỗi này chạy dưới khoá của HeThong/khoa-app.py. Bản chính là https://just-us-nha.pages.dev/ (dự án Pages just-us-nha), đẩy từ web/ — rsync chỉ mang file chạy, CẤM thêm nguon/, scripts/, sao-luu/, supabase/, CLAUDE.md vào danh sách (BangApp/CLAUDE.md mục 5). Lệnh push cuối chỉ lưu mã nguồn lên GitHub; workflow deploy-pages.yml nay chỉ đăng thư mục chuyen-huong/ (trang chuyển hướng dọn dữ liệu khỏi gốc chung github.io, tắt ngày 23/11/2026) kèm tam-linh/. Khoá dia_chi để giao-app.py đo được bản NGƯỜI DÙNG ĐANG THẤY. Sửa ở đây thì đừng chép lại vào CLAUDE.md, nơi kia chỉ trỏ tới file này.",
   "dia_chi": "https://just-us-nha.pages.dev/",
   "lenh": [
     "python3 /Users/Huy/Claude/HeThong/dungapp/dung.py /Users/Huy/Claude/App/JustUs",
