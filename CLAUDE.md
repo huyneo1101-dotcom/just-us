@@ -542,9 +542,20 @@ biết nhau, để lệch là phép đo kêu oan hoặc mất răng trong im l�
 - `@supabase/supabase-js@2.39.7`
 - Leaflet (bản đồ) — dùng cho gợi ý địa điểm Hà Nội / check-in.
 
-## Deploy
-- **GitHub Pages** qua Actions: `.github/workflows/deploy-pages.yml` (push `main` → upload toàn bộ thư mục → `deploy-pages`).
-- **Netlify** qua `netlify.toml` (`publish = "."`, không build, kèm vài security header).
+## Deploy — bản chính ở `just-us-nha.pages.dev` từ 23/11/2026 (QD-377)
+- Phát hành: `python3 /Users/Huy/Claude/HeThong/khoa-app.py /Users/Huy/Claude/App/JustUs --phat-hanh`;
+  chuỗi lệnh ở `.phat-hanh.json`. Dự án Cloudflare Pages `just-us-nha`, đẩy từ `web/` do `rsync`
+  chọn đúng file chạy. Thêm file chạy mới thì sửa danh sách `--include`, CẤM nới thành cả thư mục.
+- **Vì sao tách:** `huyneo1101-dotcom.github.io/just-us/` chung ngăn lưu trình duyệt với 10 app
+  khác của kho github.io; một lỗi hiển thị ở app tin tức là đọc được phiên đăng nhập Just Us.
+- **Bản cũ GitHub Pages vẫn chạy** (lệnh push cuối chuỗi, workflow `deploy-pages.yml`) kèm dải
+  báo chuyển, khối `JU_NHA_MOI` đầu `nguon/app.jsx`. Link trong dải mang `#me=a|b` vì `ju.me`
+  không đồng bộ. Màn chào có lối «Đã dùng Just Us ở máy khác? Đăng nhập» để khỏi gõ lại tên.
+- Khối chi tiêu VíNhà trước đọc ké phiên VíNhà nhờ chung gốc; nay có ô đăng nhập VíNhà riêng.
+  Link VíNhà cũ trong `ju.vinhaUrl` (khoá đồng bộ) đổi lúc mở bằng `vinhaHref()`, không đổi dữ liệu.
+- Khi Huy xác nhận cả hai máy đã sang: thay bản cũ bằng trang chuyển hướng (khuôn
+  `tam-linh/index.html`) xoá `ju.*` và `sb-*` khỏi gốc chung, rồi bỏ lệnh push khỏi chuỗi.
+- **Netlify** qua `netlify.toml` — không dùng nữa, để nguyên.
 
 ## Quy tắc phát hành (chủ repo đã cho phép — 2026-08-01)
 - **Tự động merge vào `main`, KHÔNG cần hỏi lại.** Sau khi hoàn tất một thay đổi trên nhánh phát triển: mở PR rồi merge luôn vào `main` (hoặc merge thẳng) để deploy — chủ repo đã đồng ý đứng ra chịu trách nhiệm cho app riêng của hai vợ chồng.
